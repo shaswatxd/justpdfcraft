@@ -1,5 +1,5 @@
-const CACHE_NAME = 'justpdfcraft-v4';
-const RUNTIME_CACHE = 'justpdfcraft-runtime-v4';
+const CACHE_NAME = 'justpdfcraft-v5';
+const RUNTIME_CACHE = 'justpdfcraft-runtime-v5';
 
 const urlsToCache = [
   '/',
@@ -67,12 +67,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For same-origin requests, use cache first strategy
+  // For same-origin requests, use network first strategy (fresh content on every visit)
   if (url.origin === location.origin) {
     event.respondWith(
-      caches.match(request)
-        .then((response) => response || fetch(request))
-        .catch(() => new Response('Offline', { status: 503 }))
+      fetch(request)
+        .then((response) => {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache));
+          return response;
+        })
+        .catch(() => caches.match(request).then((response) => response || new Response('Offline', { status: 503 })))
     );
     return;
   }
