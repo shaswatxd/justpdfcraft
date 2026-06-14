@@ -3554,7 +3554,7 @@ async function setAnnotatePreviewPage(pageNum) {
 
         // Register Service Worker with auto-update
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('/service-worker.js?v=7', { updateViaCache: 'none' })
+          navigator.serviceWorker.register('/service-worker.js?v=8', { updateViaCache: 'none' })
             .then((reg) => {
               console.log('✅ Service Worker registered:', reg);
               reg.update();
@@ -3576,6 +3576,11 @@ async function setAnnotatePreviewPage(pageNum) {
             .catch((err) => {
               console.log('⚠️ Service Worker registration failed:', err);
             });
+
+          // Auto-reload when new SW takes control (ensures users get latest version)
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            window.location.reload();
+          });
         }
 
         // Check if app is already installed
