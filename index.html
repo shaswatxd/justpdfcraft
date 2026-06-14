@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+// FORCE KILL ALL OLD SERVICE WORKERS AND CACHES
+(function(){try{if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.unregister()})})}if('caches' in window){caches.keys().then(function(n){n.forEach(function(k){caches.delete(k)})})}localStorage.clear()}catch(e){}})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1">
 <meta name="mobile-web-app-capable" content="yes">

@@ -3554,36 +3554,28 @@ async function setAnnotatePreviewPage(pageNum) {
 
         // Register Service Worker with auto-update
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('/service-worker.js', { updateViaCache: 'none' })
+          navigator.serviceWorker.register('/service-worker.js?v=7', { updateViaCache: 'none' })
             .then((reg) => {
               console.log('✅ Service Worker registered:', reg);
-              // Check for updates immediately and every 60 seconds
               reg.update();
               setInterval(() => reg.update(), 60000);
-              // When new SW is waiting, force it to activate
               if (reg.waiting) {
                 reg.waiting.postMessage({ type: 'SKIP_WAITING' });
               }
               reg.addEventListener('updatefound', () => {
                 const newWorker = reg.installing;
-                newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    newWorker.postMessage({ type: 'SKIP_WAITING' });
-                  }
-                });
+                if (newWorker) {
+                  newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                      newWorker.postMessage({ type: 'SKIP_WAITING' });
+                    }
+                  });
+                }
               });
             })
             .catch((err) => {
               console.log('⚠️ Service Worker registration failed:', err);
             });
-          // When controller changes (new SW activated), reload automatically
-          let refreshing = false;
-          navigator.serviceWorker.addEventListener('controllerchange', () => {
-            if (!refreshing) {
-              refreshing = true;
-              window.location.reload();
-            }
-          });
         }
 
         // Check if app is already installed
