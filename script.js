@@ -4277,3 +4277,16 @@ async function setAnnotatePreviewPage(pageNum) {
             due.value = dt.toISOString().split('T')[0];
           }
         })();
+
+        // ══════════════════════════════════════════════════════
+        // EXPOSE NEW TOOL FUNCTIONS TO GLOBAL SCOPE
+        // (Required because HTML inline onclick/onchange handlers
+        //  need them accessible as window-level globals)
+        // ══════════════════════════════════════════════════════
+        window.handlePdf2Word   = handlePdf2Word;
+        window.convertPdf2Word  = convertPdf2Word;
+        window.handleBgRemove   = handleBgRemove;
+        window.applyBgRemove    = applyBgRemove;
+        window.addInvItem       = addInvItem;
+        window.removeInvItem    = removeInvItem;
+        window.generateInvoice  = generateInvoice;
