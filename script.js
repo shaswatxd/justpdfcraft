@@ -3971,3 +3971,309 @@ async function setAnnotatePreviewPage(pageNum) {
             }
           });
         }
+
+        // ══════════════════════════════════════════════════════
+        // PDF TO WORD (DOCX)
+        // ══════════════════════════════════════════════════════
+        function handlePdf2Word(input) {
+          const file = input.files[0];
+          if (!file) return;
+          state.pdf2wordFile = file;
+          state.pdf2wordMode = 'paragraphs';
+          document.getElementById('pdf2word-options').style.display = 'block';
+          toast(`"${file.name}" loaded!`, '📝');
+        }
+
+        async function convertPdf2Word() {
+          if (!state.pdf2wordFile) { toast('Pehle PDF upload karo!', '⚠️'); return; }
+          showLoading('Extracting text from PDF...');
+          const progressWrap = document.getElementById('pdf2word-progress');
+          const fill = document.getElementById('pdf2word-fill');
+          const plab = document.getElementById('pdf2word-plab');
+          progressWrap.style.display = 'block';
+          try {
+            const ab = await readAB(state.pdf2wordFile);
+            const pdfDoc = await pdfjsLib.getDocument({ data: ab }).promise;
+            const totalPages = pdfDoc.numPages;
+            const allParagraphs = [];
+
+            for (let i = 1; i <= totalPages; i++) {
+              plab.textContent = `Page ${i} of ${totalPages} processing...`;
+              fill.style.width = `${(i / totalPages) * 100}%`;
+              const page = await pdfDoc.getPage(i);
+              const content = await page.getTextContent();
+              let pageText = '';
+              let lastY = null;
+              for (const item of content.items) {
+                const y = item.transform ? item.transform[5] : 0;
+                if (lastY !== null && Math.abs(y - lastY) > 5) pageText += '\n';
+                pageText += item.str;
+                lastY = y;
+              }
+              const lines = pageText.split('\n').filter(l => l.trim().length > 0);
+              allParagraphs.push(...lines, '');
+            }
+
+            const { Document, Paragraph, TextRun, HeadingLevel, Packer } = window.docx;
+            const docChildren = [];
+            docChildren.push(new Paragraph({
+              children: [new TextRun({ text: state.pdf2wordFile.name.replace('.pdf',''), bold: true, size: 32 })],
+              heading: HeadingLevel.HEADING_1,
+              spacing: { after: 200 }
+            }));
+            for (const line of allParagraphs) {
+              docChildren.push(new Paragraph({
+                children: [new TextRun({ text: line, size: 24 })],
+                spacing: { after: 80 }
+              }));
+            }
+            const doc = new Document({ sections: [{ properties: {}, children: docChildren }] });
+            const blob = await Packer.toBlob(doc);
+            const outName = state.pdf2wordFile.name.replace('.pdf','.docx');
+            document.getElementById('pdf2word-download').onclick = () => dlBlob(blob, outName);
+            document.getElementById('pdf2word-result-text').textContent = `${totalPages} pages → ${allParagraphs.length} paragraphs extracted`;
+            showResult('pdf2word');
+            toast('DOCX ready!', '✅');
+            saveActivity('pdf2word', `${totalPages} pages converted`);
+          } catch(e) { toast('Error: ' + e.message, '❌'); }
+          finally { hideLoading(); progressWrap.style.display = 'none'; }
+        }
+
+        // ══════════════════════════════════════════════════════
+        // BACKGROUND REMOVER
+        // ══════════════════════════════════════════════════════
+        function handleBgRemove(input) {
+          const file = input.files[0];
+          if (!file) return;
+          state.bgrFile = file;
+          state.bgrCorner = 'tl';
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = document.getElementById('bgremove-original');
+            img.src = e.target.result;
+            img.onload = () => {
+              const canvas = document.getElementById('bgremove-canvas');
+              canvas.width = img.naturalWidth;
+              canvas.height = img.naturalHeight;
+              canvas.getContext('2d').drawImage(img, 0, 0);
+              document.getElementById('bgremove-preview-area').style.display = 'block';
+              document.getElementById('bgremove-result').style.display = 'none';
+              toast('Image loaded! Background hatane ke liye click karo.', '🖼️');
+            };
+          };
+          reader.readAsDataURL(file);
+        }
+
+        function applyBgRemove() {
+          const originalImg = document.getElementById('bgremove-original');
+          if (!originalImg.src || originalImg.src === window.location.href) { toast('Pehle image upload karo!', '⚠️'); return; }
+          showLoading('Removing background...');
+          setTimeout(() => {
+            try {
+              const canvas = document.getElementById('bgremove-canvas');
+              const ctx = canvas.getContext('2d');
+              canvas.width = originalImg.naturalWidth;
+              canvas.height = originalImg.naturalHeight;
+              ctx.drawImage(originalImg, 0, 0);
+              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              const data = imageData.data;
+              const w = canvas.width, h = canvas.height;
+              const threshold = (parseInt(document.getElementById('bgremove-thresh').value) || 30) * 2.5;
+              const corner = state.bgrCorner || 'tl';
+              let sx = 1, sy = 1;
+              if (corner === 'tr') { sx = w-2; sy = 1; }
+              else if (corner === 'bl') { sx = 1; sy = h-2; }
+              else if (corner === 'br') { sx = w-2; sy = h-2; }
+              const si = (sy * w + sx) * 4;
+              const bgR = data[si], bgG = data[si+1], bgB = data[si+2];
+
+              const visited = new Uint8Array(w * h);
+              const queue = [];
+              [[0,0],[w-1,0],[0,h-1],[w-1,h-1]].forEach(([cx,cy]) => {
+                const idx = cy * w + cx;
+                if (!visited[idx]) { visited[idx] = 1; queue.push(idx); }
+              });
+
+              const colorClose = (i4) => {
+                const dr = data[i4]-bgR, dg = data[i4+1]-bgG, db = data[i4+2]-bgB;
+                return Math.sqrt(dr*dr+dg*dg+db*db) < threshold;
+              };
+
+              let head = 0;
+              while (head < queue.length) {
+                const idx = queue[head++];
+                const x = idx % w, y = Math.floor(idx / w);
+                data[idx*4+3] = 0;
+                const neighbors = [];
+                if (x > 0) neighbors.push(idx-1);
+                if (x < w-1) neighbors.push(idx+1);
+                if (y > 0) neighbors.push(idx-w);
+                if (y < h-1) neighbors.push(idx+w);
+                for (const n of neighbors) {
+                  if (!visited[n] && colorClose(n*4)) { visited[n] = 1; queue.push(n); }
+                }
+              }
+              ctx.putImageData(imageData, 0, 0);
+              canvas.toBlob((blob) => {
+                const outName = (state.bgrFile ? state.bgrFile.name.replace(/\.[^.]+$/,'') : 'image') + '_nobg.png';
+                document.getElementById('bgremove-download').onclick = () => dlBlob(blob, outName);
+                showResult('bgremove');
+                toast('Background removed!', '✅');
+                hideLoading();
+              }, 'image/png');
+            } catch(e) { toast('Error: ' + e.message, '❌'); hideLoading(); }
+          }, 50);
+        }
+
+        // ══════════════════════════════════════════════════════
+        // INVOICE GENERATOR
+        // ══════════════════════════════════════════════════════
+        function addInvItem() {
+          const container = document.getElementById('inv-items-container');
+          const row = document.createElement('div');
+          row.className = 'inv-item-row';
+          row.style.cssText = 'display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:0.5rem;margin-bottom:0.5rem;align-items:center';
+          row.innerHTML = `<input type="text" placeholder="Description" class="inv-desc"><input type="number" placeholder="Qty" class="inv-qty" value="1" min="1"><input type="number" placeholder="Unit Price" class="inv-price" min="0"><button class="btn btn-danger btn-sm" onclick="removeInvItem(this)">✕</button>`;
+          container.appendChild(row);
+        }
+
+        function removeInvItem(btn) {
+          if (document.querySelectorAll('.inv-item-row').length <= 1) { toast('At least 1 item chahiye!','⚠️'); return; }
+          btn.closest('.inv-item-row').remove();
+        }
+
+        async function generateInvoice() {
+          showLoading('Generating Invoice PDF...');
+          try {
+            const g = (id) => (document.getElementById(id)||{}).value || '';
+            const fromName = g('inv-from-name') || 'Your Company';
+            const fromAddr = g('inv-from-addr');
+            const fromEmail = g('inv-from-email');
+            const toName = g('inv-to-name') || 'Client';
+            const toAddr = g('inv-to-addr');
+            const toEmail = g('inv-to-email');
+            const invNum = g('inv-number') || 'INV-001';
+            const invDate = g('inv-date') || new Date().toISOString().split('T')[0];
+            const invDue = g('inv-due');
+            const currency = g('inv-currency') || 'INR';
+            const taxPct = parseFloat(g('inv-tax')) || 0;
+            const discPct = parseFloat(g('inv-discount')) || 0;
+            const notes = g('inv-notes');
+            const sym = { INR:'₹', USD:'$', EUR:'€', GBP:'£' }[currency] || currency;
+
+            const items = [...document.querySelectorAll('.inv-item-row')].map(row => {
+              const desc = row.querySelector('.inv-desc')?.value || 'Item';
+              const qty = parseFloat(row.querySelector('.inv-qty')?.value) || 1;
+              const price = parseFloat(row.querySelector('.inv-price')?.value) || 0;
+              return { desc, qty, price, total: qty * price };
+            });
+
+            const subtotal = items.reduce((s,i) => s + i.total, 0);
+            const discAmt = subtotal * (discPct / 100);
+            const taxAmt = (subtotal - discAmt) * (taxPct / 100);
+            const grandTotal = subtotal - discAmt + taxAmt;
+
+            const pdfDoc = await PDFLib.PDFDocument.create();
+            const page = pdfDoc.addPage([595, 842]);
+            const { width, height } = page.getSize();
+            const hB = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+            const h  = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+            const purple = PDFLib.rgb(0.42,0.39,1);
+            const dark   = PDFLib.rgb(0.1,0.1,0.1);
+            const grey   = PDFLib.rgb(0.5,0.5,0.5);
+            const light  = PDFLib.rgb(0.95,0.95,0.97);
+            const white  = PDFLib.rgb(1,1,1);
+
+            // Header
+            page.drawRectangle({ x:0, y:height-90, width, height:90, color:purple });
+            page.drawText('INVOICE', { x:40, y:height-52, size:32, font:hB, color:white });
+            page.drawText(`#${invNum}`, { x:40, y:height-72, size:12, font:h, color:PDFLib.rgb(0.8,0.8,1) });
+            page.drawText(`Date: ${invDate}`, { x:width-200, y:height-40, size:10, font:h, color:white });
+            if (invDue) page.drawText(`Due: ${invDue}`, { x:width-200, y:height-56, size:10, font:h, color:PDFLib.rgb(1,0.85,0.85) });
+
+            // From / To
+            let y = height - 120;
+            page.drawText('FROM', { x:40, y, size:9, font:hB, color:grey });
+            page.drawText('TO',   { x:300, y, size:9, font:hB, color:grey });
+            y -= 18;
+            page.drawText(fromName, { x:40, y, size:12, font:hB, color:dark });
+            page.drawText(toName,   { x:300, y, size:12, font:hB, color:dark });
+            y -= 16;
+            if (fromAddr) page.drawText(fromAddr, { x:40, y, size:10, font:h, color:grey });
+            if (toAddr)   page.drawText(toAddr,   { x:300, y, size:10, font:h, color:grey });
+            y -= 16;
+            if (fromEmail) page.drawText(fromEmail, { x:40, y, size:10, font:h, color:grey });
+            if (toEmail)   page.drawText(toEmail,   { x:300, y, size:10, font:h, color:grey });
+
+            // Table header
+            y -= 40;
+            page.drawRectangle({ x:30, y:y-4, width:width-60, height:24, color:purple });
+            page.drawText('Description', { x:40,   y:y+4, size:10, font:hB, color:white });
+            page.drawText('Qty',         { x:320,  y:y+4, size:10, font:hB, color:white });
+            page.drawText('Price',       { x:375,  y:y+4, size:10, font:hB, color:white });
+            page.drawText('Total',       { x:470,  y:y+4, size:10, font:hB, color:white });
+            y -= 24;
+
+            // Rows
+            items.forEach((item, idx) => {
+              if (idx % 2 === 0) page.drawRectangle({ x:30, y:y-6, width:width-60, height:22, color:light });
+              page.drawText(item.desc.substring(0,38), { x:40,  y, size:10, font:h, color:dark });
+              page.drawText(String(item.qty),           { x:330, y, size:10, font:h, color:dark });
+              page.drawText(`${sym}${item.price.toFixed(2)}`, { x:375, y, size:10, font:h, color:dark });
+              page.drawText(`${sym}${item.total.toFixed(2)}`, { x:470, y, size:10, font:h, color:dark });
+              y -= 22;
+            });
+
+            // Totals
+            y -= 16;
+            page.drawLine({ start:{x:360,y:y+10}, end:{x:width-30,y:y+10}, thickness:0.5, color:PDFLib.rgb(0.8,0.8,0.8) });
+            page.drawText('Subtotal:', { x:370, y, size:10, font:h, color:grey });
+            page.drawText(`${sym}${subtotal.toFixed(2)}`, { x:470, y, size:10, font:h, color:dark });
+            if (discPct > 0) {
+              y -= 18;
+              page.drawText(`Discount (${discPct}%):`, { x:370, y, size:10, font:h, color:grey });
+              page.drawText(`-${sym}${discAmt.toFixed(2)}`, { x:470, y, size:10, font:h, color:PDFLib.rgb(0.8,0.2,0.2) });
+            }
+            if (taxPct > 0) {
+              y -= 18;
+              page.drawText(`Tax (${taxPct}%):`, { x:370, y, size:10, font:h, color:grey });
+              page.drawText(`${sym}${taxAmt.toFixed(2)}`, { x:470, y, size:10, font:h, color:dark });
+            }
+            y -= 12;
+            page.drawRectangle({ x:355, y:y-8, width:width-385, height:28, color:purple });
+            page.drawText('TOTAL:', { x:370, y, size:12, font:hB, color:white });
+            page.drawText(`${sym}${grandTotal.toFixed(2)}`, { x:445, y, size:12, font:hB, color:white });
+
+            if (notes) {
+              y -= 50;
+              page.drawText('Notes:', { x:40, y, size:9, font:hB, color:grey });
+              y -= 14;
+              notes.split('\n').slice(0,5).forEach(nl => {
+                page.drawText(nl.substring(0,90), { x:40, y, size:9, font:h, color:grey });
+                y -= 13;
+              });
+            }
+            page.drawText('Generated by JustPDFCraft • justpdfcraft.xyz', { x:40, y:20, size:8, font:h, color:PDFLib.rgb(0.7,0.7,0.7) });
+
+            const bytes = await pdfDoc.save();
+            const blob = new Blob([bytes], { type:'application/pdf' });
+            document.getElementById('invoice-download').onclick = () => dlBlob(blob, `Invoice_${invNum}.pdf`);
+            document.getElementById('invoice-result-text').textContent = `${items.length} items • Grand Total: ${sym}${grandTotal.toFixed(2)}`;
+            showResult('invoice');
+            toast('Invoice ready!', '✅');
+            saveActivity('invoice', `${invNum} — ${sym}${grandTotal.toFixed(2)}`);
+          } catch(e) { toast('Error: ' + e.message, '❌'); }
+          finally { hideLoading(); }
+        }
+
+        // Auto-fill today's date in invoice
+        (function setInvDates() {
+          const today = new Date().toISOString().split('T')[0];
+          const d = document.getElementById('inv-date');
+          if (d && !d.value) d.value = today;
+          const due = document.getElementById('inv-due');
+          if (due && !due.value) {
+            const dt = new Date(); dt.setDate(dt.getDate()+30);
+            due.value = dt.toISOString().split('T')[0];
+          }
+        })();
