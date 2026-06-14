@@ -4039,91 +4039,6 @@ async function setAnnotatePreviewPage(pageNum) {
           finally { hideLoading(); progressWrap.style.display = 'none'; }
         }
 
-        // ══════════════════════════════════════════════════════
-        // BACKGROUND REMOVER
-        // ══════════════════════════════════════════════════════
-        function handleBgRemove(input) {
-          const file = input.files[0];
-          if (!file) return;
-          state.bgrFile = file;
-          state.bgrCorner = 'tl';
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const img = document.getElementById('bgremove-original');
-            img.src = e.target.result;
-            img.onload = () => {
-              const canvas = document.getElementById('bgremove-canvas');
-              canvas.width = img.naturalWidth;
-              canvas.height = img.naturalHeight;
-              canvas.getContext('2d').drawImage(img, 0, 0);
-              document.getElementById('bgremove-preview-area').style.display = 'block';
-              document.getElementById('bgremove-result').style.display = 'none';
-              toast('Image loaded! Background hatane ke liye click karo.', '🖼️');
-            };
-          };
-          reader.readAsDataURL(file);
-        }
-
-        function applyBgRemove() {
-          const originalImg = document.getElementById('bgremove-original');
-          if (!originalImg.src || originalImg.src === window.location.href) { toast('Pehle image upload karo!', '⚠️'); return; }
-          showLoading('Removing background...');
-          setTimeout(() => {
-            try {
-              const canvas = document.getElementById('bgremove-canvas');
-              const ctx = canvas.getContext('2d');
-              canvas.width = originalImg.naturalWidth;
-              canvas.height = originalImg.naturalHeight;
-              ctx.drawImage(originalImg, 0, 0);
-              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-              const data = imageData.data;
-              const w = canvas.width, h = canvas.height;
-              const threshold = (parseInt(document.getElementById('bgremove-thresh').value) || 30) * 2.5;
-              const corner = state.bgrCorner || 'tl';
-              let sx = 1, sy = 1;
-              if (corner === 'tr') { sx = w-2; sy = 1; }
-              else if (corner === 'bl') { sx = 1; sy = h-2; }
-              else if (corner === 'br') { sx = w-2; sy = h-2; }
-              const si = (sy * w + sx) * 4;
-              const bgR = data[si], bgG = data[si+1], bgB = data[si+2];
-
-              const visited = new Uint8Array(w * h);
-              const queue = [];
-              [[0,0],[w-1,0],[0,h-1],[w-1,h-1]].forEach(([cx,cy]) => {
-                const idx = cy * w + cx;
-                if (!visited[idx]) { visited[idx] = 1; queue.push(idx); }
-              });
-
-              const colorClose = (i4) => {
-                const dr = data[i4]-bgR, dg = data[i4+1]-bgG, db = data[i4+2]-bgB;
-                return Math.sqrt(dr*dr+dg*dg+db*db) < threshold;
-              };
-
-              let head = 0;
-              while (head < queue.length) {
-                const idx = queue[head++];
-                const x = idx % w, y = Math.floor(idx / w);
-                data[idx*4+3] = 0;
-                const neighbors = [];
-                if (x > 0) neighbors.push(idx-1);
-                if (x < w-1) neighbors.push(idx+1);
-                if (y > 0) neighbors.push(idx-w);
-                if (y < h-1) neighbors.push(idx+w);
-                for (const n of neighbors) {
-                  if (!visited[n] && colorClose(n*4)) { visited[n] = 1; queue.push(n); }
-                }
-              }
-              ctx.putImageData(imageData, 0, 0);
-              canvas.toBlob((blob) => {
-                const outName = (state.bgrFile ? state.bgrFile.name.replace(/\.[^.]+$/,'') : 'image') + '_nobg.png';
-                document.getElementById('bgremove-download').onclick = () => dlBlob(blob, outName);
-                showResult('bgremove');
-                toast('Background removed!', '✅');
-                hideLoading();
-              }, 'image/png');
-            } catch(e) { toast('Error: ' + e.message, '❌'); hideLoading(); }
-          }, 50);
-        }
 
         // ══════════════════════════════════════════════════════
         // INVOICE GENERATOR
@@ -4285,8 +4200,6 @@ async function setAnnotatePreviewPage(pageNum) {
         // ══════════════════════════════════════════════════════
         window.handlePdf2Word   = handlePdf2Word;
         window.convertPdf2Word  = convertPdf2Word;
-        window.handleBgRemove   = handleBgRemove;
-        window.applyBgRemove    = applyBgRemove;
         window.addInvItem       = addInvItem;
         window.removeInvItem    = removeInvItem;
         window.generateInvoice  = generateInvoice;

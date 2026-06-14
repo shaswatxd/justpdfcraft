@@ -1,8 +1,8 @@
 // ════════════════════════════════════════════
-// JustPDFCraft Service Worker v10
+// JustPDFCraft Service Worker v11
 // ════════════════════════════════════════════
 
-const CACHE_VERSION = 'v10';
+const CACHE_VERSION = 'v11';
 const STATIC_CACHE = `justpdfcraft-static-${CACHE_VERSION}`;
 const CDN_CACHE = `justpdfcraft-cdn-${CACHE_VERSION}`;
 const ALL_CACHES = [STATIC_CACHE, CDN_CACHE];

@@ -29,7 +29,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./style.css?v=9">
+<link rel="stylesheet" href="./style.css?v=10">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1816823099804360"
      crossorigin="anonymous"></script>
 
@@ -134,7 +134,7 @@
     <button class="tool-btn" id="btn-qr" onclick="showPanel('qr')"><span class="icon">&#128279;</span> QR Generator</button>
     <button class="tool-btn" id="btn-password" onclick="showPanel('password')"><span class="icon">&#128273;</span> Password Generator</button>
     <button class="tool-btn" id="btn-pdf2word" onclick="showPanel('pdf2word')"><span class="icon">📝</span> PDF &rarr; Word</button>
-    <button class="tool-btn" id="btn-bgremove" onclick="showPanel('bgremove')"><span class="icon">✂️</span> Background Remover</button>
+
     <button class="tool-btn" id="btn-invoice" onclick="showPanel('invoice')"><span class="icon">🧾</span> Invoice Generator</button>
     <button class="tool-btn" id="btn-about" onclick="showPanel('about')"><span class="icon">&#8505;&#65039;</span> About</button>
     
@@ -222,7 +222,7 @@
 <div class="tool-section-title">🔥 New Tools</div>
 <div class="tools-grid">
   <div class="tool-card premium-card" onclick="showPanel('pdf2word')"><div class="tool-badge" style="background:linear-gradient(135deg,#6c63ff,#ff6584)">New</div><div class="tc-icon">📝</div><div class="tc-name">PDF &rarr; Word</div><div class="tc-desc">PDF text extract karke DOCX banao</div></div>
-  <div class="tool-card premium-card" onclick="showPanel('bgremove')"><div class="tool-badge" style="background:linear-gradient(135deg,#f093fb,#f5576c)">New</div><div class="tc-icon">✂️</div><div class="tc-name">Background Remover</div><div class="tc-desc">Image ka background instantly hatao</div></div>
+
   <div class="tool-card premium-card" onclick="showPanel('invoice')"><div class="tool-badge" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">New</div><div class="tc-icon">🧾</div><div class="tc-name">Invoice Generator</div><div class="tc-desc">Professional PDF invoice banao</div></div>
 </div>
 
@@ -1691,53 +1691,7 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- BACKGROUND REMOVER PANEL -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="panel" id="panel-bgremove">
-  <h2 class="panel-title">✂️ Background Remover</h2>
-  <p class="panel-desc">Image ka background hatao — output transparent PNG milega. 100% browser-based, koi upload nahi.</p>
-  <div class="dropzone" id="bgremove-dz">
-    <input type="file" id="bgremove-input" accept="image/*" onchange="handleBgRemove(this)">
-    <div class="dz-icon">🖼️</div><h3>Image yahan drop karo</h3><p>JPG, PNG, WebP supported</p>
-  </div>
-  <div id="bgremove-preview-area" style="display:none;margin-top:1.5rem">
-    <div class="two-col" style="gap:1.5rem;align-items:flex-start">
-      <div>
-        <label class="form-label">Original</label>
-        <img id="bgremove-original" style="max-width:100%;border-radius:12px;border:1px solid var(--border)" alt="Original">
-      </div>
-      <div>
-        <label class="form-label">Result (Transparent BG)</label>
-        <div style="background: repeating-conic-gradient(#444 0% 25%, #222 0% 50%) 0 0 / 20px 20px;border-radius:12px;border:1px solid var(--border);overflow:hidden">
-          <canvas id="bgremove-canvas" style="max-width:100%;display:block"></canvas>
-        </div>
-      </div>
-    </div>
-    <div class="form-group" style="margin-top:1.2rem">
-      <label class="form-label">Background Color Threshold: <span id="bgremove-thresh-val">30</span></label>
-      <input type="range" id="bgremove-thresh" min="5" max="100" value="30" oninput="document.getElementById('bgremove-thresh-val').textContent=this.value">
-      <p style="font-size:0.75rem;color:var(--text2);margin-top:0.3rem">Zyada value = zyada background remove hoga (complex backgrounds ke liye badha do)</p>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Sample Background Color From</label>
-      <div class="options-grid" style="grid-template-columns:1fr 1fr 1fr 1fr">
-        <div class="option-card selected" id="bgr-corner-tl" onclick="selectOpt(this,'#bgremove-preview-area .option-card');state.bgrCorner='tl'"><div class="opt-label">Top Left</div></div>
-        <div class="option-card" id="bgr-corner-tr" onclick="selectOpt(this,'#bgremove-preview-area .option-card');state.bgrCorner='tr'"><div class="opt-label">Top Right</div></div>
-        <div class="option-card" id="bgr-corner-bl" onclick="selectOpt(this,'#bgremove-preview-area .option-card');state.bgrCorner='bl'"><div class="opt-label">Bottom Left</div></div>
-        <div class="option-card" id="bgr-corner-br" onclick="selectOpt(this,'#bgremove-preview-area .option-card');state.bgrCorner='br'"><div class="opt-label">Bottom Right</div></div>
-      </div>
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="applyBgRemove()">✂️ Background Hatao</button>
-      <button class="btn btn-secondary" onclick="document.getElementById('bgremove-input').click()">🔄 New Image</button>
-    </div>
-  </div>
-  <div class="result-banner" id="bgremove-result">
-    <div class="res-icon">✅</div><div class="res-text"><h4>Background Removed!</h4><p>Transparent PNG ready hai.</p></div>
-    <button class="btn btn-success" id="bgremove-download">⬇️ Download PNG</button>
-  </div>
-</div>
+
 
 <!-- ═══════════════════════════════════════════ -->
 <!-- INVOICE GENERATOR PANEL -->
@@ -1841,6 +1795,6 @@
   <div class="spinner"></div>
   <div class="processing-text" id="global-processing-text">Processing...</div>
 </div>
-<script src="./script.js?v=9"></script>
+<script src="./script.js?v=10"></script>
 </body>
 </html>
