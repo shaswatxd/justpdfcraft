@@ -146,21 +146,12 @@ const TOOL_CONFIG = {
 };
 
 // Tools that require login
-const PREMIUM_TOOLS = ['ocr', 'sign', 'watermark', 'redact', 'protect', 'reorder'];
+const PREMIUM_TOOLS = [];
 
 // ══════════════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════════════
 function showPanel(id, addToHistory = true) {
-  // Enforce Login for premium tools
-  if (PREMIUM_TOOLS.includes(id)) {
-    const user = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth().currentUser : null;
-    if (!user) {
-      toast("Ye tool use karne ke liye Login zaroori hai! 🔐", "🔒");
-      openAuthModal();
-      return;
-    }
-  }
 
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
@@ -230,6 +221,9 @@ function showPanel(id, addToHistory = true) {
     const tool = urlParams.get('tool') || 'home';
     history.replaceState({ panelId: tool }, '', window.location.search || window.location.pathname);
     showPanel(tool, false);
+
+    // Render local activity on startup
+    renderActivity();
 
     // Inject back buttons into panels
     document.querySelectorAll('.panel:not(#panel-home)').forEach(panel => {
@@ -3700,81 +3694,11 @@ async function setAnnotatePreviewPage(pageNum) {
           }
         });
 
-        // ══════════════════════════════════════════════════════
-        // FIREBASE AUTHENTICATION (Real Implementation)
-        // ══════════════════════════════════════════════════════
 
-        // TODO: Replace with your actual Firebase config from Firebase Console
-        const firebaseConfig = {
-          apiKey: "AIzaSyAnUKaSfVx2NxA_njLSHoEsNGeoI1NvAaE",
-          authDomain: "justpdfcraft.firebaseapp.com",
-          projectId: "justpdfcraft",
-          storageBucket: "justpdfcraft.firebasestorage.app",
-          messagingSenderId: "268319849456",
-          appId: "1:268319849456:web:34e15b8a8a14c9e9307b35",
-          measurementId: "G-VSBGYTCFW2"
-        };
-
-        // Initialize Firebase
-        if (typeof firebase !== 'undefined') {
-          firebase.initializeApp(firebaseConfig);
-          const auth = firebase.auth();
-
-          // Monitor Auth State
-          auth.onAuthStateChanged((user) => {
-            updateAuthUI(user);
-          });
-        }
-
-        function updateAuthUI(user) {
-          const loginBtns = document.querySelectorAll('button[onclick*="openAuthModal"]');
-          if (user) {
-            console.log("Updating UI for user:", user.email);
-            loginBtns.forEach(btn => {
-              btn.innerHTML = `👤 ${user.displayName || user.email.split('@')[0]}`;
-              btn.onclick = () => showPanel('profile');
-            });
-
-            // Populate Profile Page
-            const profName = document.getElementById('prof-name');
-            const profEmail = document.getElementById('prof-email');
-            const profAuthBtn = document.getElementById('prof-auth-btn');
-
-            if (profName) profName.textContent = user.displayName || 'User Account';
-            if (profEmail) profEmail.textContent = user.email;
-            if (profAuthBtn) {
-              profAuthBtn.textContent = 'Logout Account';
-              profAuthBtn.className = 'btn btn-danger';
-              profAuthBtn.onclick = () => firebase.auth().signOut();
-            }
-            renderActivity();
-          } else {
-            console.log("Updating UI for guest");
-            loginBtns.forEach(btn => {
-              btn.innerHTML = `👤 Login`;
-              btn.onclick = openAuthModal;
-            });
-            const profName = document.getElementById('prof-name');
-            const profEmail = document.getElementById('prof-email');
-            const profAuthBtn = document.getElementById('prof-auth-btn');
-
-            if (profName) profName.textContent = 'Guest Account';
-            if (profEmail) profEmail.textContent = 'login to see details';
-            if (profAuthBtn) {
-              profAuthBtn.textContent = 'Login to Account';
-              profAuthBtn.className = 'btn btn-primary';
-              profAuthBtn.onclick = openAuthModal;
-            }
-            renderActivity([]);
-          }
-        }
 
 
         function saveActivity(tool, detail) {
-          const user = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth().currentUser : null;
-          if (!user) return;
-
-          const key = `activity_${user.uid}`;
+          const key = 'justpdfcraft_local_activity';
           const history = JSON.parse(localStorage.getItem(key) || '[]');
 
           const iconMap = {
@@ -3796,16 +3720,10 @@ async function setAnnotatePreviewPage(pageNum) {
         }
 
         function renderActivity() {
-          const user = firebase.auth().currentUser;
           const list = document.getElementById('activity-list');
           if (!list) return;
 
-          if (!user) {
-            list.innerHTML = '<div class="activity-item empty">Login to see your activity.</div>';
-            return;
-          }
-
-          const key = `activity_${user.uid}`;
+          const key = 'justpdfcraft_local_activity';
           const history = JSON.parse(localStorage.getItem(key) || '[]');
 
           if (history.length === 0) {
@@ -3814,101 +3732,14 @@ async function setAnnotatePreviewPage(pageNum) {
           }
 
           list.innerHTML = history.map(item => `
-    <div class="activity-item">
-      <div class="ai-icon">${item.icon}</div>
-      <div class="ai-details">
-        <div class="ai-name">${item.tool}</div>
-        <div class="ai-time">${item.detail} • ${item.time}</div>
-      </div>
-    </div>
-  `).join('');
-        }
-
-        function openAuthModal() {
-          const modal = document.getElementById('auth-modal');
-          if (modal) {
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-          }
-        }
-
-        function closeAuthModal(e) {
-          if (e && e.target !== e.currentTarget && !e.target.closest('.modal-close')) return;
-          const modal = document.getElementById('auth-modal');
-          if (modal) {
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-          }
-        }
-
-        function switchAuthTab(type) {
-          document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-          document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-
-          if (type === 'login') {
-            document.getElementById('tab-login')?.classList.add('active');
-            document.getElementById('auth-login-form')?.classList.add('active');
-          } else {
-            document.getElementById('tab-signup')?.classList.add('active');
-            document.getElementById('auth-signup-form')?.classList.add('active');
-          }
-        }
-
-        async function mockAuth(type, e) {
-          if (e && e.preventDefault) e.preventDefault();
-          const btn = e ? (e.currentTarget || e.target) : null;
-          if (!btn) return;
-
-          const authForm = btn.closest('.auth-form');
-          const email = authForm.querySelector('input[type="email"]')?.value;
-          const password = authForm.querySelector('input[type="password"]')?.value;
-          const name = authForm.querySelector('input[type="text"]')?.value;
-
-          if (!email || !password) {
-            toast("Email aur Password zaroori hain!", "⚠️");
-            return;
-          }
-
-          const originalText = btn.innerHTML;
-          btn.disabled = true;
-          btn.innerHTML = `<span style="display:flex;align-items:center;gap:0.5rem;justify-content:center">
-    <svg width="18" height="18" viewBox="0 0 24 24" style="animation: rotate 1s linear infinite"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-    Processing...
-  </span>`;
-
-          try {
-            const auth = firebase.auth();
-            if (type === 'signup') {
-              const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-              if (name) {
-                await userCredential.user.updateProfile({ displayName: name });
-                // Force refresh user object to get displayName immediately
-                await userCredential.user.reload();
-                const updatedUser = auth.currentUser;
-                // Trigger manual UI update
-                updateAuthUI(updatedUser);
-              }
-              toast('Account created! Welcome to JustPDFCraft.', '✅');
-            } else {
-              await auth.signInWithEmailAndPassword(email, password);
-              toast('Welcome back! Logged in successfully.', '✅');
-            }
-            closeAuthModal();
-          } catch (error) {
-            console.error("Auth Error:", error);
-            toast(error.message, '❌');
-          } finally {
-            btn.disabled = false;
-            btn.innerHTML = originalText;
-          }
-        }
-
-        // Add rotate animation for the loader
-        if (!document.querySelector('style[data-auth-anim]')) {
-          const style = document.createElement('style');
-          style.setAttribute('data-auth-anim', 'true');
-          style.textContent = `@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`;
-          document.head.appendChild(style);
+            <div class="activity-item">
+              <div class="ai-icon">${item.icon}</div>
+              <div class="ai-details">
+                <div class="ai-name">${item.tool}</div>
+                <div class="ai-time">${item.detail} • ${item.time}</div>
+              </div>
+            </div>
+          `).join('');
         }
 
         function acceptCookies() {
@@ -3926,23 +3757,6 @@ async function setAnnotatePreviewPage(pageNum) {
             }, 3000);
           }
         });
-
-
-        async function googleLogin() {
-          try {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            const result = await firebase.auth().signInWithPopup(provider);
-            toast(`Welcome ${result.user.displayName || 'User'}!`, '✅');
-            closeAuthModal();
-          } catch (error) {
-            console.error("Google Auth Error:", error);
-            if (error.code === 'auth/popup-blocked') {
-              toast("Popup block ho gaya hai, please allow karein.", "⚠️");
-            } else {
-              toast(error.message, '❌');
-            }
-          }
-        }
         function filterSidebarTools() {
           const q = document.getElementById('sidebar-search-input').value.toLowerCase();
           document.querySelectorAll('.sidebar .tool-btn').forEach(btn => {
