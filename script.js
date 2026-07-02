@@ -157,19 +157,6 @@ function showPanel(id, addToHistory = true) {
   document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.mobile-tool-btn').forEach(b => b.classList.remove('active'));
   
-  if (id === 'annotate') {
-    openAnnotateModal();
-    const b = document.getElementById('btn-' + id);
-    if (b) b.classList.add('active');
-    const mb = document.getElementById('mbtn-' + id);
-    if (mb) mb.classList.add('active');
-    if (addToHistory) {
-      const stateObj = { panelId: id };
-      history.pushState(stateObj, '', `?tool=${id}`);
-    }
-    return;
-  }
-  
   const p = document.getElementById('panel-' + id);
   if (p) p.classList.add('active');
   
@@ -204,43 +191,8 @@ function showPanel(id, addToHistory = true) {
   }
 }
 
-function openAnnotateModal() {
-  const modal = document.getElementById('annotate-modal');
-  if (modal) {
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-}
-
-function closeAnnotateModal() {
-  const modal = document.getElementById('annotate-modal');
-  if (modal) {
-    modal.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const annotateModal = document.getElementById('annotate-modal');
-  if (annotateModal) {
-    annotateModal.addEventListener('click', (e) => {
-      if (e.target === annotateModal) closeAnnotateModal();
-    });
-  }
-});
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    const annotateModal = document.getElementById('annotate-modal');
-    if (annotateModal && annotateModal.classList.contains('active')) {
-      closeAnnotateModal();
-    }
-  }
-});
-
   // Handle browser back/forward buttons
   window.addEventListener('popstate', (event) => {
-    closeAnnotateModal();
     if (event.state && event.state.panelId) {
       showPanel(event.state.panelId, false);
     } else {
