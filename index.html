@@ -1049,51 +1049,7 @@
   </div>
 </div>
 
-<!--  ANNOTATE  -->
-<div class="panel" id="panel-annotate">
-  <h2 class="panel-title">&#128172; Annotate PDF</h2>
-  <p class="panel-desc">PDF par text boxes, highlights, arrows aur comments add karo.</p>
-  <div class="dropzone">
-    <input type="file" id="ann-input" accept=".pdf" onchange="handleSingleFile(this,'annotate')">
-    <div class="dz-icon">&#128196;</div><h3>PDF yahan drop karo</h3>
-  </div>
-  <div id="ann-options" style="display:none;margin-top:1.5rem">
-    <div class="form-group"><label class="form-label">Annotation Type</label>
-      <div class="options-grid">
-        <div class="option-card selected" onclick="selectOpt(this,'#ann-options .option-card');state.annType='textbox'"><div class="opt-icon">&#128221;</div><div class="opt-label">Text Box</div></div>
-        <div class="option-card" onclick="selectOpt(this,'#ann-options .option-card');state.annType='highlight'"><div class="opt-icon">&#128394;&#65039;</div><div class="opt-label">Highlight Bar</div></div>
-        <div class="option-card" onclick="selectOpt(this,'#ann-options .option-card');state.annType='comment'"><div class="opt-icon">&#128172;</div><div class="opt-label">Comment Box</div></div>
-        <div class="option-card" onclick="selectOpt(this,'#ann-options .option-card');state.annType='underline'"><div class="opt-icon">__</div><div class="opt-label">Underline</div></div>
-        <div class="option-card" onclick="selectOpt(this,'#ann-options .option-card');state.annType='strike'"><div class="opt-icon">~~</div><div class="opt-label">Strikethrough</div></div>
-      </div>
-    </div>
-    <div id="ann-preview-wrap" style="display:none;margin-bottom:1rem">
-      <label class="form-label">PDF Preview - jahan drag/select karoge wahi annotation lagega</label>
-      <div class="preview-toolbar" style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.75rem">
-        <button class="btn btn-secondary btn-sm" type="button" onclick="prevAnnotatePreviewPage()">&#9664; Prev</button>
-        <span style="color:var(--text2);font-size:0.84rem">Page <span id="ann-preview-cur">1</span> of <span id="ann-preview-total">1</span></span>
-        <button class="btn btn-secondary btn-sm" type="button" onclick="nextAnnotatePreviewPage()">Next &#9654;</button>
-      </div>
-      <div class="ann-stage" id="ann-stage">
-        <canvas id="ann-preview-canvas"></canvas>
-        <div class="ann-selection" id="ann-selection"></div>
-      </div>
-      <p id="ann-preview-note" style="color:var(--text2);font-size:0.8rem;margin-top:0.6rem">PDF par drag ya click karo, annotation ussi location par lagega.</p>
-    </div>
-    <div class="two-col">
-      <div class="form-group"><label class="form-label">Annotation Text</label><textarea id="ann-text" placeholder="Annotation likhao..." style="min-height:80px"></textarea></div>
-      <div>
-        <div class="form-group"><label class="form-label">Color</label><input type="color" id="ann-color" value="#ffff00"></div>
-        <div class="form-group"><label class="form-label">Page Number</label><input type="number" id="ann-page" value="1" min="1"></div>
-      </div>
-    </div>
-    <div class="btn-row"><button class="btn btn-primary" onclick="annotatePDF()">&#128172; Add Annotation</button></div>
-  </div>
-  <div class="result-banner" id="annotate-result">
-    <div class="res-icon">&#10004;</div><div class="res-text"><h4>Annotation Added!</h4><p>PDF ready hai.</p></div>
-    <button class="btn btn-success" id="annotate-download">&#11015;&#65039; Download</button>
-  </div>
-</div>
+
 
 <!--  REDACT  -->
 <div class="panel" id="panel-redact">
@@ -1736,6 +1692,55 @@
 </footer>
 
 </main>
+</div>
+
+<!-- ANNOTATE MODAL -->
+<div class="tool-modal-overlay" id="annotate-modal">
+  <div class="tool-modal-content">
+    <button class="tool-modal-close" onclick="closeAnnotateModal()">&times;</button>
+    <h2 class="panel-title">&#128172; Annotate PDF</h2>
+    <p class="panel-desc">PDF par text boxes, highlights, arrows aur comments add karo.</p>
+    <div class="dropzone">
+      <input type="file" id="ann-input" accept=".pdf" onchange="handleSingleFile(this,'annotate')">
+      <div class="dz-icon">&#128196;</div><h3>PDF yahan drop karo</h3>
+    </div>
+    <div id="ann-options" style="display:none;margin-top:1.5rem">
+      <div class="form-group"><label class="form-label">Annotation Type</label>
+        <div class="options-grid">
+          <div class="option-card selected" onclick="selectOpt(this,'#ann-options .option-card');state.annType='textbox'"><div class="opt-icon">&#128221;</div><div class="opt-label">Text Box</div></div>
+          <div class="option-card" onclick="selectOpt(this,'#ann-options .option-card');state.annType='highlight'"><div class="opt-icon">&#128394;&#65039;</div><div class="opt-label">Highlight Bar</div></div>
+          <div class="option-card" onclick="selectOpt(this,'#ann-options .option-card');state.annType='comment'"><div class="opt-icon">&#128172;</div><div class="opt-label">Comment Box</div></div>
+          <div class="option-card" onclick="selectOpt(this,'#ann-options .option-card');state.annType='underline'"><div class="opt-icon">__</div><div class="opt-label">Underline</div></div>
+          <div class="option-card" onclick="selectOpt(this,'#ann-options .option-card');state.annType='strike'"><div class="opt-icon">~~</div><div class="opt-label">Strikethrough</div></div>
+        </div>
+      </div>
+      <div id="ann-preview-wrap" style="display:none;margin-bottom:1rem">
+        <label class="form-label">PDF Preview - jahan drag/select karoge wahi annotation lagega</label>
+        <div class="preview-toolbar" style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.75rem">
+          <button class="btn btn-secondary btn-sm" type="button" onclick="prevAnnotatePreviewPage()">&#9664; Prev</button>
+          <span style="color:var(--text2);font-size:0.84rem">Page <span id="ann-preview-cur">1</span> of <span id="ann-preview-total">1</span></span>
+          <button class="btn btn-secondary btn-sm" type="button" onclick="nextAnnotatePreviewPage()">Next &#9654;</button>
+        </div>
+        <div class="ann-stage" id="ann-stage">
+          <canvas id="ann-preview-canvas"></canvas>
+          <div class="ann-selection" id="ann-selection"></div>
+        </div>
+        <p id="ann-preview-note" style="color:var(--text2);font-size:0.8rem;margin-top:0.6rem">PDF par drag ya click karo, annotation ussi location par lagega.</p>
+      </div>
+      <div class="two-col">
+        <div class="form-group"><label class="form-label">Annotation Text</label><textarea id="ann-text" placeholder="Annotation likhao..." style="min-height:80px"></textarea></div>
+        <div>
+          <div class="form-group"><label class="form-label">Color</label><input type="color" id="ann-color" value="#ffff00"></div>
+          <div class="form-group"><label class="form-label">Page Number</label><input type="number" id="ann-page" value="1" min="1"></div>
+        </div>
+      </div>
+      <div class="btn-row"><button class="btn btn-primary" onclick="annotatePDF()">&#128172; Add Annotation</button></div>
+    </div>
+    <div class="result-banner" id="annotate-result">
+      <div class="res-icon">&#10004;</div><div class="res-text"><h4>Annotation Added!</h4><p>PDF ready hai.</p></div>
+      <button class="btn btn-success" id="annotate-download">&#11015;&#65039; Download</button>
+    </div>
+  </div>
 </div>
 
 <div id="toast-container"></div>
