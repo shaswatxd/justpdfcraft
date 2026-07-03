@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://justpdfcraft.xyz/sitemap.xml
+Sitemap: https://shaswathub.xyz/sitemap.xml

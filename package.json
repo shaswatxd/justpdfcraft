@@ -1,0 +1,12 @@
+{
+  "name": "justpdfcraft",
+  "version": "1.0.0",
+  "description": "Complete Free Browser-Based PDF Tools",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve -s . -l $PORT"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}
