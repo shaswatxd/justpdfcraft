@@ -3,7 +3,7 @@
 
 **JustPDFCraft** is a premium, 100% free web application providing over 30+ tools for PDF editing and student productivity. Everything runs directly in your browser, ensuring your files never leave your device.
 
-🌐 **Live Demo:** [shaswathub.xyz](https://shaswathub.xyz)
+🌐 **Live Demo:** [justpdfcraft.xyz](https://justpdfcraft.xyz)
 
 ---
 
