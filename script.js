@@ -550,32 +550,62 @@ function showPanel(id, addToHistory = true) {
     default: {
       'ats-minimal': '#1f4f8f',
       'modern-slate': '#0f766e',
-      'executive-split': '#0f766e'
+      'executive-split': '#0f766e',
+      'creative-bold': '#d97706',
+      'minimal-clean': '#374151',
+      'corporate-pro': '#1f4f8f',
+      'vibrant-two-col': '#7c3aed',
+      'elegant-dark': '#6366f1'
     },
     blue: {
       'ats-minimal': '#1d4ed8',
       'modern-slate': '#1d4ed8',
-      'executive-split': '#1d4ed8'
+      'executive-split': '#1d4ed8',
+      'creative-bold': '#1d4ed8',
+      'minimal-clean': '#1d4ed8',
+      'corporate-pro': '#1d4ed8',
+      'vibrant-two-col': '#1d4ed8',
+      'elegant-dark': '#60a5fa'
     },
     green: {
       'ats-minimal': '#047857',
       'modern-slate': '#047857',
-      'executive-split': '#047857'
+      'executive-split': '#047857',
+      'creative-bold': '#047857',
+      'minimal-clean': '#047857',
+      'corporate-pro': '#047857',
+      'vibrant-two-col': '#047857',
+      'elegant-dark': '#10b981'
     },
     purple: {
       'ats-minimal': '#6d28d9',
       'modern-slate': '#6d28d9',
-      'executive-split': '#6d28d9'
+      'executive-split': '#6d28d9',
+      'creative-bold': '#6d28d9',
+      'minimal-clean': '#6d28d9',
+      'corporate-pro': '#6d28d9',
+      'vibrant-two-col': '#6d28d9',
+      'elegant-dark': '#8b5cf6'
     },
     grey: {
       'ats-minimal': '#374151',
       'modern-slate': '#374151',
-      'executive-split': '#374151'
+      'executive-split': '#374151',
+      'creative-bold': '#374151',
+      'minimal-clean': '#374151',
+      'corporate-pro': '#374151',
+      'vibrant-two-col': '#374151',
+      'elegant-dark': '#94a3b8'
     },
     red: {
       'ats-minimal': '#b91c1c',
       'modern-slate': '#b91c1c',
-      'executive-split': '#b91c1c'
+      'executive-split': '#b91c1c',
+      'creative-bold': '#b91c1c',
+      'minimal-clean': '#b91c1c',
+      'corporate-pro': '#b91c1c',
+      'vibrant-two-col': '#b91c1c',
+      'elegant-dark': '#ef4444'
     }
   };
 
@@ -807,6 +837,264 @@ function showPanel(id, addToHistory = true) {
               </div>`;
             }).join('')}
           </div>
+        </div>
+      `;
+    } else if (template === 'creative-bold') {
+      // 🎨 Creative Bold — left color strip + bold typography
+      html = `
+        <div style="font-family: 'DM Sans', Arial, sans-serif; color: #1e293b; display: flex; min-height: 800px; width: 100%; box-sizing: border-box;">
+          <!-- Colored Left Strip -->
+          <div style="width: 8px; background: linear-gradient(180deg, ${activeAccentColor}, ${activeAccentColor}88); flex-shrink: 0; border-radius: 0;"></div>
+          <!-- Main Content -->
+          <div style="flex: 1; padding: 2.5rem 2rem; box-sizing: border-box;">
+            <!-- Header -->
+            <div style="margin-bottom: 1.8rem; padding-bottom: 1rem; border-bottom: 3px solid ${activeAccentColor};">
+              <h1 contenteditable="true" data-field="resume-name" style="font-size: 2.2rem; font-weight: 900; margin: 0 0 0.2rem 0; color: #0f172a; letter-spacing: -1px; line-height: 1.1; display: block;">${escapeHtml(name)}</h1>
+              <div contenteditable="true" data-field="resume-role" style="font-size: 1rem; color: ${activeAccentColor}; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.6rem; display: block;">${escapeHtml(role)}</div>
+              <div style="font-size: 0.8rem; color: #64748b; display: flex; flex-wrap: wrap; gap: 1rem;">
+                <span>📧 <span contenteditable="true" data-field="resume-email" style="display:inline-block;">${escapeHtml(email)}</span></span>
+                <span>📞 <span contenteditable="true" data-field="resume-phone" style="display:inline-block;">${escapeHtml(phone)}</span></span>
+                <span>📍 <span contenteditable="true" data-field="resume-location" style="display:inline-block;">${escapeHtml(location)}</span></span>
+              </div>
+            </div>
+            <!-- Summary -->
+            ${summary ? `<div style="margin-bottom: 1.4rem;">
+              <h3 contenteditable="true" data-section-title="summary" style="font-size: 0.78rem; font-weight: 900; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 0.5rem 0; outline: none;">${escapeHtml(window.sectionTitles.summary || 'About Me')}</h3>
+              <div style="font-size: 0.86rem; line-height: 1.6; color: #334155;">${summaryHtml}</div>
+            </div>` : ''}
+            <!-- Skills -->
+            ${skillsInput ? `<div style="margin-bottom: 1.4rem;">
+              <h3 contenteditable="true" data-section-title="skills" style="font-size: 0.78rem; font-weight: 900; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 0.5rem 0; outline: none;">${escapeHtml(window.sectionTitles.skills || 'Skills')}</h3>
+              <div style="font-size: 0.86rem;">${skillsHtml}</div>
+            </div>` : ''}
+            <!-- Projects -->
+            ${projectsInput ? `<div style="margin-bottom: 1.4rem;">
+              <h3 contenteditable="true" data-section-title="projects" style="font-size: 0.78rem; font-weight: 900; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 0.5rem 0; outline: none;">${escapeHtml(window.sectionTitles.projects || 'Experience & Projects')}</h3>
+              <div style="font-size: 0.86rem;">${projectsHtml}</div>
+            </div>` : ''}
+            <!-- Education -->
+            ${educationInput ? `<div style="margin-bottom: 1.4rem;">
+              <h3 contenteditable="true" data-section-title="education" style="font-size: 0.78rem; font-weight: 900; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 0.5rem 0; outline: none;">${escapeHtml(window.sectionTitles.education || 'Education')}</h3>
+              <div style="font-size: 0.86rem;">${educationHtml}</div>
+            </div>` : ''}
+            <!-- Achievements -->
+            ${achievementsInput ? `<div style="margin-bottom: 1.4rem;">
+              <h3 contenteditable="true" data-section-title="achievements" style="font-size: 0.78rem; font-weight: 900; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 0.5rem 0; outline: none;">${escapeHtml(window.sectionTitles.achievements || 'Achievements')}</h3>
+              <div style="font-size: 0.86rem;">${achievementsHtml}</div>
+            </div>` : ''}
+            <!-- Custom Sections -->
+            ${(window.customResumeSections || []).map(sec => {
+              const sv = sec.value || `${sec.title} preview yahan aayega.`;
+              return `<div style="margin-bottom: 1.4rem;">
+                <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.78rem; font-weight: 900; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 0.5rem 0; outline: none;">${escapeHtml(sec.title)}</h3>
+                <div style="font-size: 0.86rem;">${formatResumeSectionText(sv, sec.id)}</div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    } else if (template === 'minimal-clean') {
+      // ✨ Minimal Clean — ultra-minimalist, lots of whitespace, serif-inspired
+      html = `
+        <div style="font-family: 'Georgia', 'DM Sans', serif; color: #1a1a1a; padding: 3rem 3.5rem; box-sizing: border-box; min-height: 800px; background: white;">
+          <!-- Header -->
+          <div style="text-align: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid #d1d5db;">
+            <h1 contenteditable="true" data-field="resume-name" style="font-size: 2.4rem; font-weight: 400; margin: 0 0 0.3rem 0; color: #1a1a1a; letter-spacing: 3px; text-transform: uppercase; font-family: 'DM Sans', sans-serif; display: block;">${escapeHtml(name)}</h1>
+            <div contenteditable="true" data-field="resume-role" style="font-size: 0.85rem; color: #6b7280; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.8rem; font-family: 'DM Sans', sans-serif; display: block;">${escapeHtml(role)}</div>
+            <div style="font-size: 0.78rem; color: #9ca3af; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+              <span contenteditable="true" data-field="resume-email" style="display:inline-block;">${escapeHtml(email)}</span>
+              <span style="color:#d1d5db;">|</span>
+              <span contenteditable="true" data-field="resume-phone" style="display:inline-block;">${escapeHtml(phone)}</span>
+              <span style="color:#d1d5db;">|</span>
+              <span contenteditable="true" data-field="resume-location" style="display:inline-block;">${escapeHtml(location)}</span>
+            </div>
+          </div>
+          <!-- Summary -->
+          ${summary ? `<div style="margin-bottom: 1.6rem;">
+            <h3 contenteditable="true" data-section-title="summary" style="font-size: 0.7rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 3px; margin: 0 0 0.7rem 0; font-family: 'DM Sans', sans-serif; outline: none;">${escapeHtml(window.sectionTitles.summary || 'Profile')}</h3>
+            <div style="font-size: 0.88rem; line-height: 1.7; color: #374151;">${summaryHtml}</div>
+          </div>` : ''}
+          <!-- Skills -->
+          ${skillsInput ? `<div style="margin-bottom: 1.6rem;">
+            <h3 contenteditable="true" data-section-title="skills" style="font-size: 0.7rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 3px; margin: 0 0 0.7rem 0; font-family: 'DM Sans', sans-serif; outline: none;">${escapeHtml(window.sectionTitles.skills || 'Skills')}</h3>
+            <div style="font-size: 0.88rem; color: #374151;">${skillsHtml}</div>
+          </div>` : ''}
+          <!-- Projects -->
+          ${projectsInput ? `<div style="margin-bottom: 1.6rem;">
+            <h3 contenteditable="true" data-section-title="projects" style="font-size: 0.7rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 3px; margin: 0 0 0.7rem 0; font-family: 'DM Sans', sans-serif; outline: none;">${escapeHtml(window.sectionTitles.projects || 'Experience')}</h3>
+            <div style="font-size: 0.88rem; color: #374151;">${projectsHtml}</div>
+          </div>` : ''}
+          <!-- Education -->
+          ${educationInput ? `<div style="margin-bottom: 1.6rem;">
+            <h3 contenteditable="true" data-section-title="education" style="font-size: 0.7rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 3px; margin: 0 0 0.7rem 0; font-family: 'DM Sans', sans-serif; outline: none;">${escapeHtml(window.sectionTitles.education || 'Education')}</h3>
+            <div style="font-size: 0.88rem; color: #374151;">${educationHtml}</div>
+          </div>` : ''}
+          <!-- Achievements -->
+          ${achievementsInput ? `<div style="margin-bottom: 1.6rem;">
+            <h3 contenteditable="true" data-section-title="achievements" style="font-size: 0.7rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 3px; margin: 0 0 0.7rem 0; font-family: 'DM Sans', sans-serif; outline: none;">${escapeHtml(window.sectionTitles.achievements || 'Achievements')}</h3>
+            <div style="font-size: 0.88rem; color: #374151;">${achievementsHtml}</div>
+          </div>` : ''}
+          <!-- Custom Sections -->
+          ${(window.customResumeSections || []).map(sec => {
+            const sv = sec.value || `${sec.title} preview yahan aayega.`;
+            return `<div style="margin-bottom: 1.6rem;">
+              <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.7rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 3px; margin: 0 0 0.7rem 0; font-family: 'DM Sans', sans-serif; outline: none;">${escapeHtml(sec.title)}</h3>
+              <div style="font-size: 0.88rem; color: #374151;">${formatResumeSectionText(sv, sec.id)}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      `;
+    } else if (template === 'corporate-pro') {
+      // 🏢 Corporate Pro — traditional structured with header bar
+      html = `
+        <div style="font-family: 'DM Sans', Arial, sans-serif; color: #1e293b; min-height: 800px; box-sizing: border-box;">
+          <!-- Top Color Bar Header -->
+          <div style="background: ${activeAccentColor}; padding: 1.8rem 2.5rem; color: white;">
+            <h1 contenteditable="true" data-field="resume-name" style="font-size: 2rem; font-weight: 800; margin: 0 0 0.25rem 0; letter-spacing: -0.5px; display: block;">${escapeHtml(name)}</h1>
+            <div contenteditable="true" data-field="resume-role" style="font-size: 0.95rem; font-weight: 500; opacity: 0.9; letter-spacing: 1px; text-transform: uppercase; display: block;">${escapeHtml(role)}</div>
+          </div>
+          <!-- Contact Sub-bar -->
+          <div style="background: ${activeAccentColor}22; padding: 0.6rem 2.5rem; display: flex; flex-wrap: wrap; gap: 1.5rem; font-size: 0.78rem; color: #475569; border-bottom: 2px solid ${activeAccentColor};">
+            <span>📧 <span contenteditable="true" data-field="resume-email" style="display:inline-block;">${escapeHtml(email)}</span></span>
+            <span>📞 <span contenteditable="true" data-field="resume-phone" style="display:inline-block;">${escapeHtml(phone)}</span></span>
+            <span>📍 <span contenteditable="true" data-field="resume-location" style="display:inline-block;">${escapeHtml(location)}</span></span>
+          </div>
+          <!-- Body -->
+          <div style="padding: 1.8rem 2.5rem; box-sizing: border-box;">
+            ${summary ? `<div style="margin-bottom: 1.3rem;">
+              <h3 contenteditable="true" data-section-title="summary" style="font-size: 0.82rem; font-weight: 800; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.5rem 0; padding-bottom: 0.25rem; border-bottom: 2px solid ${activeAccentColor}44; outline: none;">${escapeHtml(window.sectionTitles.summary || 'Executive Profile')}</h3>
+              <div style="font-size: 0.86rem; line-height: 1.6; color: #374151;">${summaryHtml}</div>
+            </div>` : ''}
+            ${skillsInput ? `<div style="margin-bottom: 1.3rem;">
+              <h3 contenteditable="true" data-section-title="skills" style="font-size: 0.82rem; font-weight: 800; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.5rem 0; padding-bottom: 0.25rem; border-bottom: 2px solid ${activeAccentColor}44; outline: none;">${escapeHtml(window.sectionTitles.skills || 'Core Competencies')}</h3>
+              <div style="font-size: 0.86rem;">${skillsHtml}</div>
+            </div>` : ''}
+            ${projectsInput ? `<div style="margin-bottom: 1.3rem;">
+              <h3 contenteditable="true" data-section-title="projects" style="font-size: 0.82rem; font-weight: 800; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.5rem 0; padding-bottom: 0.25rem; border-bottom: 2px solid ${activeAccentColor}44; outline: none;">${escapeHtml(window.sectionTitles.projects || 'Professional Experience')}</h3>
+              <div style="font-size: 0.86rem;">${projectsHtml}</div>
+            </div>` : ''}
+            ${educationInput ? `<div style="margin-bottom: 1.3rem;">
+              <h3 contenteditable="true" data-section-title="education" style="font-size: 0.82rem; font-weight: 800; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.5rem 0; padding-bottom: 0.25rem; border-bottom: 2px solid ${activeAccentColor}44; outline: none;">${escapeHtml(window.sectionTitles.education || 'Education')}</h3>
+              <div style="font-size: 0.86rem;">${educationHtml}</div>
+            </div>` : ''}
+            ${achievementsInput ? `<div style="margin-bottom: 1.3rem;">
+              <h3 contenteditable="true" data-section-title="achievements" style="font-size: 0.82rem; font-weight: 800; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.5rem 0; padding-bottom: 0.25rem; border-bottom: 2px solid ${activeAccentColor}44; outline: none;">${escapeHtml(window.sectionTitles.achievements || 'Achievements & Certifications')}</h3>
+              <div style="font-size: 0.86rem;">${achievementsHtml}</div>
+            </div>` : ''}
+            ${(window.customResumeSections || []).map(sec => {
+              const sv = sec.value || `${sec.title} preview yahan aayega.`;
+              return `<div style="margin-bottom: 1.3rem;">
+                <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.82rem; font-weight: 800; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.5rem 0; padding-bottom: 0.25rem; border-bottom: 2px solid ${activeAccentColor}44; outline: none;">${escapeHtml(sec.title)}</h3>
+                <div style="font-size: 0.86rem;">${formatResumeSectionText(sv, sec.id)}</div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    } else if (template === 'vibrant-two-col') {
+      // 🌈 Vibrant Two-Column — colored sidebar with main content on right
+      html = `
+        <div style="font-family: 'DM Sans', Arial, sans-serif; display: flex; min-height: 800px; width: 100%; box-sizing: border-box; color: #1e293b;">
+          <!-- Left Sidebar -->
+          <div style="width: 38%; background: ${activeAccentColor}; color: white; padding: 2rem 1.5rem; box-sizing: border-box; display: flex; flex-direction: column; gap: 1.4rem;">
+            <!-- Name Block -->
+            <div>
+              <h1 contenteditable="true" data-field="resume-name" style="font-size: 1.6rem; font-weight: 800; margin: 0 0 0.2rem 0; line-height: 1.2; color: white; display: block;">${escapeHtml(name)}</h1>
+              <div contenteditable="true" data-field="resume-role" style="font-size: 0.82rem; font-weight: 600; opacity: 0.85; text-transform: uppercase; letter-spacing: 1.2px; display: block;">${escapeHtml(role)}</div>
+            </div>
+            <!-- Contact -->
+            <div style="border-top: 1px solid rgba(255,255,255,0.25); padding-top: 1rem;">
+              <h4 style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 0.6rem 0; opacity: 0.7; font-weight: 700;">Contact</h4>
+              <div style="font-size: 0.78rem; opacity: 0.9; display: flex; flex-direction: column; gap: 0.35rem; line-height: 1.4;">
+                <div>📧 <span contenteditable="true" data-field="resume-email" style="display:inline-block; word-break: break-all;">${escapeHtml(email)}</span></div>
+                <div>📞 <span contenteditable="true" data-field="resume-phone" style="display:inline-block;">${escapeHtml(phone)}</span></div>
+                <div>📍 <span contenteditable="true" data-field="resume-location" style="display:inline-block;">${escapeHtml(location)}</span></div>
+              </div>
+            </div>
+            <!-- Skills -->
+            ${skillsInput ? `<div style="border-top: 1px solid rgba(255,255,255,0.25); padding-top: 1rem;">
+              <h4 contenteditable="true" data-section-title="skills" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 0.6rem 0; opacity: 0.7; font-weight: 700; outline: none;">${escapeHtml(window.sectionTitles.skills || 'Skills')}</h4>
+              <div style="font-size: 0.78rem; opacity: 0.9; line-height: 1.6;">${skillsHtml}</div>
+            </div>` : ''}
+            <!-- Education -->
+            ${educationInput ? `<div style="border-top: 1px solid rgba(255,255,255,0.25); padding-top: 1rem;">
+              <h4 contenteditable="true" data-section-title="education" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 0.6rem 0; opacity: 0.7; font-weight: 700; outline: none;">${escapeHtml(window.sectionTitles.education || 'Education')}</h4>
+              <div style="font-size: 0.78rem; opacity: 0.9; line-height: 1.5;">${educationHtml}</div>
+            </div>` : ''}
+            <!-- Custom Sections in sidebar -->
+            ${(window.customResumeSections || []).filter((_, i) => i % 2 === 0).map(sec => {
+              const sv = sec.value || `${sec.title} preview yahan aayega.`;
+              return `<div style="border-top: 1px solid rgba(255,255,255,0.25); padding-top: 1rem;">
+                <h4 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 0.6rem 0; opacity: 0.7; font-weight: 700; outline: none;">${escapeHtml(sec.title)}</h4>
+                <div style="font-size: 0.78rem; opacity: 0.9;">${formatResumeSectionText(sv, sec.id)}</div>
+              </div>`;
+            }).join('')}
+          </div>
+          <!-- Right Main -->
+          <div style="width: 62%; padding: 2rem; box-sizing: border-box; display: flex; flex-direction: column; gap: 1.3rem;">
+            ${summary ? `<div>
+              <h3 contenteditable="true" data-section-title="summary" style="font-size: 0.82rem; font-weight: 800; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.5rem 0; outline: none; border-bottom: 2px solid ${activeAccentColor}33; padding-bottom: 0.25rem;">${escapeHtml(window.sectionTitles.summary || 'Profile')}</h3>
+              <div style="font-size: 0.86rem; line-height: 1.6; color: #374151;">${summaryHtml}</div>
+            </div>` : ''}
+            ${projectsInput ? `<div>
+              <h3 contenteditable="true" data-section-title="projects" style="font-size: 0.82rem; font-weight: 800; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.5rem 0; outline: none; border-bottom: 2px solid ${activeAccentColor}33; padding-bottom: 0.25rem;">${escapeHtml(window.sectionTitles.projects || 'Experience & Projects')}</h3>
+              <div style="font-size: 0.86rem; line-height: 1.5; color: #374151;">${projectsHtml}</div>
+            </div>` : ''}
+            ${achievementsInput ? `<div>
+              <h3 contenteditable="true" data-section-title="achievements" style="font-size: 0.82rem; font-weight: 800; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.5rem 0; outline: none; border-bottom: 2px solid ${activeAccentColor}33; padding-bottom: 0.25rem;">${escapeHtml(window.sectionTitles.achievements || 'Achievements')}</h3>
+              <div style="font-size: 0.86rem; line-height: 1.5; color: #374151;">${achievementsHtml}</div>
+            </div>` : ''}
+            ${(window.customResumeSections || []).filter((_, i) => i % 2 !== 0).map(sec => {
+              const sv = sec.value || `${sec.title} preview yahan aayega.`;
+              return `<div>
+                <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.82rem; font-weight: 800; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.5rem 0; outline: none; border-bottom: 2px solid ${activeAccentColor}33; padding-bottom: 0.25rem;">${escapeHtml(sec.title)}</h3>
+                <div style="font-size: 0.86rem; line-height: 1.5; color: #374151;">${formatResumeSectionText(sv, sec.id)}</div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    } else if (template === 'elegant-dark') {
+      // 🌙 Elegant Dark — premium dark background resume
+      html = `
+        <div style="font-family: 'DM Sans', Arial, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 800px; padding: 2.5rem; box-sizing: border-box;">
+          <!-- Header -->
+          <div style="margin-bottom: 2rem; padding-bottom: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.12);">
+            <h1 contenteditable="true" data-field="resume-name" style="font-size: 2.2rem; font-weight: 800; margin: 0 0 0.2rem 0; color: white; letter-spacing: -0.5px; display: block;">${escapeHtml(name)}</h1>
+            <div contenteditable="true" data-field="resume-role" style="font-size: 0.9rem; color: ${activeAccentColor}; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.7rem; display: block;">${escapeHtml(role)}</div>
+            <div style="font-size: 0.78rem; color: #94a3b8; display: flex; flex-wrap: wrap; gap: 1.2rem;">
+              <span>📧 <span contenteditable="true" data-field="resume-email" style="display:inline-block;">${escapeHtml(email)}</span></span>
+              <span>📞 <span contenteditable="true" data-field="resume-phone" style="display:inline-block;">${escapeHtml(phone)}</span></span>
+              <span>📍 <span contenteditable="true" data-field="resume-location" style="display:inline-block;">${escapeHtml(location)}</span></span>
+            </div>
+          </div>
+          ${summary ? `<div style="margin-bottom: 1.5rem;">
+            <h3 contenteditable="true" data-section-title="summary" style="font-size: 0.72rem; font-weight: 700; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2.5px; margin: 0 0 0.6rem 0; outline: none;">${escapeHtml(window.sectionTitles.summary || 'About')}</h3>
+            <div style="font-size: 0.86rem; line-height: 1.7; color: #cbd5e1;">${summaryHtml}</div>
+          </div>` : ''}
+          ${skillsInput ? `<div style="margin-bottom: 1.5rem;">
+            <h3 contenteditable="true" data-section-title="skills" style="font-size: 0.72rem; font-weight: 700; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2.5px; margin: 0 0 0.6rem 0; outline: none;">${escapeHtml(window.sectionTitles.skills || 'Skills')}</h3>
+            <div style="font-size: 0.86rem; color: #cbd5e1;">${skillsHtml}</div>
+          </div>` : ''}
+          ${projectsInput ? `<div style="margin-bottom: 1.5rem;">
+            <h3 contenteditable="true" data-section-title="projects" style="font-size: 0.72rem; font-weight: 700; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2.5px; margin: 0 0 0.6rem 0; outline: none;">${escapeHtml(window.sectionTitles.projects || 'Experience & Projects')}</h3>
+            <div style="font-size: 0.86rem; color: #cbd5e1;">${projectsHtml}</div>
+          </div>` : ''}
+          ${educationInput ? `<div style="margin-bottom: 1.5rem;">
+            <h3 contenteditable="true" data-section-title="education" style="font-size: 0.72rem; font-weight: 700; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2.5px; margin: 0 0 0.6rem 0; outline: none;">${escapeHtml(window.sectionTitles.education || 'Education')}</h3>
+            <div style="font-size: 0.86rem; color: #cbd5e1;">${educationHtml}</div>
+          </div>` : ''}
+          ${achievementsInput ? `<div style="margin-bottom: 1.5rem;">
+            <h3 contenteditable="true" data-section-title="achievements" style="font-size: 0.72rem; font-weight: 700; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2.5px; margin: 0 0 0.6rem 0; outline: none;">${escapeHtml(window.sectionTitles.achievements || 'Achievements')}</h3>
+            <div style="font-size: 0.86rem; color: #cbd5e1;">${achievementsHtml}</div>
+          </div>` : ''}
+          ${(window.customResumeSections || []).map(sec => {
+            const sv = sec.value || `${sec.title} preview yahan aayega.`;
+            return `<div style="margin-bottom: 1.5rem;">
+              <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.72rem; font-weight: 700; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2.5px; margin: 0 0 0.6rem 0; outline: none;">${escapeHtml(sec.title)}</h3>
+              <div style="font-size: 0.86rem; color: #cbd5e1;">${formatResumeSectionText(sv, sec.id)}</div>
+            </div>`;
+          }).join('')}
         </div>
       `;
     }
