@@ -23,15 +23,12 @@
 <title>JustPDFCraft - Complete Free PDF Editor</title>
 <link rel="manifest" href="manifest.json">
 <link rel="alternate icon" href="icon-512.png" type="image/png" sizes="512x512">
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./style.css?v=11">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1816823099804360"
-     crossorigin="anonymous"></script>
 
 </head>
 <body class="dashboard-body">
@@ -68,17 +65,16 @@
     <button class="mobile-tool-btn" onclick="showPanel('compress'); closeMobileMenu()"><span class="icon">&#128476;&#65039;</span> Compress</button>
     <button class="mobile-tool-btn" onclick="showPanel('sign'); closeMobileMenu()"><span class="icon">&#9997;&#65039;</span> Sign PDF</button>
     <button class="mobile-tool-btn" onclick="showPanel('watermark'); closeMobileMenu()"><span class="icon">&#128167;</span> Watermark</button>
-    <button class="mobile-tool-btn" onclick="showPanel('annotate'); closeMobileMenu()"><span class="icon">&#128172;</span> Annotate</button>
-    <button class="mobile-tool-btn" onclick="showPanel('ocr'); closeMobileMenu()"><span class="icon">&#128065;&#65039;</span> OCR / Text</button>
+
   </div>
 
   <div class="mobile-sidebar-section">
     <div class="mobile-section-title">More Tools</div>
     <button class="mobile-tool-btn" onclick="showPanel('preview'); closeMobileMenu()"><span class="icon">&#128064;</span> Preview</button>
     <button class="mobile-tool-btn" onclick="showPanel('word2pdf'); closeMobileMenu()"><span class="icon">&#128221;</span> Word &rarr; PDF</button>
-    <button class="mobile-tool-btn" onclick="showPanel('pdf2txt'); closeMobileMenu()"><span class="icon">&#128196;</span> PDF &rarr; Text</button>
+
     <button class="mobile-tool-btn" onclick="showPanel('img2pdf'); closeMobileMenu()"><span class="icon">&#128444;&#65039;</span> Image &rarr; PDF</button>
-    <button class="mobile-tool-btn" onclick="showPanel('html2pdf'); closeMobileMenu()"><span class="icon">&#127760;</span> HTML &rarr; PDF</button>
+
     <button class="mobile-tool-btn" onclick="showPanel('pdf2img'); closeMobileMenu()"><span class="icon">&#128248;</span> PDF &rarr; Image</button>
   </div>
 </nav>
@@ -100,10 +96,7 @@
     <button class="tool-btn" id="btn-compress" onclick="showPanel('compress')"><span class="icon">&#128476;&#65039;</span> Compress</button>
     <button class="tool-btn" id="btn-sign" onclick="showPanel('sign')"><span class="icon">&#9997;&#65039;</span> Sign PDF</button>
     <button class="tool-btn" id="btn-watermark" onclick="showPanel('watermark')"><span class="icon">&#128167;</span> Watermark</button>
-    <button class="tool-btn" id="btn-annotate" onclick="showPanel('annotate')"><span class="icon">&#128172;</span> Annotate</button>
     <button class="tool-btn" id="btn-word2pdf" onclick="showPanel('word2pdf')"><span class="icon">&#128221;</span> Word &rarr; PDF</button>
-    <button class="tool-btn" id="btn-pdf2txt" onclick="showPanel('pdf2txt')"><span class="icon">&#128196;</span> PDF &rarr; Text</button>
-    <button class="tool-btn" id="btn-ocr" onclick="showPanel('ocr')"><span class="icon">&#128065;&#65039;</span> OCR (PDF/Image)</button>
     <button class="tool-btn" id="btn-img2pdf" onclick="showPanel('img2pdf')"><span class="icon">&#128444;&#65039;</span> Image &rarr; PDF</button>
   </div>
 
@@ -111,35 +104,16 @@
   <div class="sidebar-section">
     <div class="sidebar-heading">More Tools</div>
     <button class="tool-btn" id="btn-pdf2img" onclick="showPanel('pdf2img')"><span class="icon">&#128248;</span> PDF &rarr; Image</button>
-    <button class="tool-btn" id="btn-html2pdf" onclick="showPanel('html2pdf')"><span class="icon">&#127760;</span> HTML &rarr; PDF</button>
     <button class="tool-btn" id="btn-percentage" onclick="showPanel('percentage')"><span class="icon">%</span> Percentage Calculator</button>
-    <button class="tool-btn" id="btn-imgresize" onclick="showPanel('imgresize')"><span class="icon">&#129668;</span> Image Resizer</button>
     <button class="tool-btn" id="btn-resume" onclick="showPanel('resume')"><span class="icon">&#128196;</span> Resume Builder</button>
-    <button class="tool-btn" id="btn-hf" onclick="showPanel('hf')"><span class="icon">HF</span> Header / Footer</button>
-    <button class="tool-btn" id="btn-pagenumber" onclick="showPanel('pagenumber')"><span class="icon">&#128290;</span> Page Numbers</button>
     <button class="tool-btn" id="btn-rotate" onclick="showPanel('rotate')"><span class="icon">&#128260;</span> Rotate</button>
-    <button class="tool-btn" id="btn-crop" onclick="showPanel('crop')"><span class="icon">&#9986;&#65039;</span> Crop Pages</button>
-    <button class="tool-btn" id="btn-redact" onclick="showPanel('redact')"><span class="icon">&#11035;</span> Redact</button>
-    <button class="tool-btn" id="btn-reorder" onclick="showPanel('reorder')"><span class="icon">&#128209;</span> Reorder Pages</button>
-    <button class="tool-btn" id="btn-delete-pages" onclick="showPanel('delete-pages')"><span class="icon">&#128465;&#65039;</span> Delete Pages</button>
-    <button class="tool-btn" id="btn-extract-pages" onclick="showPanel('extract-pages')"><span class="icon">&#128228;</span> Extract Pages</button>
     <button class="tool-btn" id="btn-protect" onclick="showPanel('protect')"><span class="icon">&#128274;</span> Protect PDF</button>
     <button class="tool-btn" id="btn-unlock" onclick="showPanel('unlock')"><span class="icon">&#128275;</span> Unlock PDF</button>
     <button class="tool-btn" id="btn-marks" onclick="showPanel('marks')"><span class="icon">&#128202;</span> Marks Calculator</button>
-    <button class="tool-btn" id="btn-cover-letter" onclick="showPanel('cover-letter')"><span class="icon">&#128221;</span> Cover Letter Generator</button>
-    <button class="tool-btn" id="btn-unit-converter" onclick="showPanel('unit-converter')"><span class="icon">&#128290;</span> Unit Converter</button>
-    <button class="tool-btn" id="btn-qr" onclick="showPanel('qr')"><span class="icon">&#128279;</span> QR Generator</button>
-    <button class="tool-btn" id="btn-password" onclick="showPanel('password')"><span class="icon">&#128273;</span> Password Generator</button>
     <button class="tool-btn" id="btn-pdf2word" onclick="showPanel('pdf2word')"><span class="icon">📝</span> PDF &rarr; Word</button>
 
-    <button class="tool-btn" id="btn-invoice" onclick="showPanel('invoice')"><span class="icon">🧾</span> Invoice Generator</button>
     <button class="tool-btn" id="btn-about" onclick="showPanel('about')"><span class="icon">&#8505;&#65039;</span> About</button>
     
-    <!-- Sidebar Ad Slot -->
-    <div class="ad-slot sidebar-ad">
-      <div class="ad-label">Advertisement</div>
-      <!-- Paste AdSense Code Here -->
-    </div>
   </div>
 </aside>
 
@@ -186,12 +160,6 @@
 
 <!-- HOME -->
 <div class="panel active" id="panel-home">
-  <!-- Header Ad Slot (Top) -->
-  <div class="ad-slot header-ad">
-    <div class="ad-label">Advertisement</div>
-    <!-- Paste AdSense Code Here -->
-  </div>
-
   <div class="home-hero">
     <div class="home-hero-text">
       <div class="hero-kicker">Browser-Based Workspace</div>
@@ -203,7 +171,7 @@
         <span class="hero-pill">Fast previews</span>
       </div>
       <div class="home-hero-stats">
-        <div class="hero-stat"><div class="num">33+</div><div class="lbl">Tools</div></div>
+        <div class="hero-stat"><div class="num">16+</div><div class="lbl">Tools</div></div>
         <div class="hero-stat"><div class="num">100%</div><div class="lbl">Free Forever</div></div>
         <div class="hero-stat"><div class="num">Local</div><div class="lbl">Private Processing</div></div>
         <div class="hero-stat"><div class="num">Live</div><div class="lbl">Tool Previews</div></div>
@@ -220,8 +188,6 @@
 <div class="tool-section-title">🔥 New Tools</div>
 <div class="tools-grid">
   <div class="tool-card premium-card" onclick="showPanel('pdf2word')"><div class="tool-badge" style="background:linear-gradient(135deg,#6c63ff,#ff6584)">New</div><div class="tc-icon">📝</div><div class="tc-name">PDF &rarr; Word</div><div class="tc-desc">PDF text extract karke DOCX banao</div></div>
-
-  <div class="tool-card premium-card" onclick="showPanel('invoice')"><div class="tool-badge" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">New</div><div class="tc-icon">🧾</div><div class="tc-name">Invoice Generator</div><div class="tc-desc">Professional PDF invoice banao</div></div>
 </div>
 
 <div class="tool-section-title">Most Used</div>
@@ -231,32 +197,15 @@
   <div class="tool-card premium-card" onclick="showPanel('compress')"><div class="tool-badge">Fast</div><div class="tc-icon">&#128476;&#65039;</div><div class="tc-name">Compress</div><div class="tc-desc">Size kam karo</div></div>
   <div class="tool-card premium-card" onclick="showPanel('sign')"><div class="tool-badge">PRO</div><div class="tc-icon">&#9997;&#65039;</div><div class="tc-name">Sign PDF</div><div class="tc-desc">Signature lagao</div></div>
   <div class="tool-card" onclick="showPanel('watermark')"><div class="tool-badge">PRO</div><div class="tc-icon">&#128167;</div><div class="tc-name">Watermark</div><div class="tc-desc">Text watermark lagao</div></div>
-  <div class="tool-card" onclick="showPanel('annotate')"><div class="tool-badge">Edit</div><div class="tc-icon">&#128172;</div><div class="tc-name">Annotate</div><div class="tc-desc">Notes & markup</div></div>
   <div class="tool-card" onclick="showPanel('word2pdf')"><div class="tool-badge">Convert</div><div class="tc-icon">&#128221;</div><div class="tc-name">Word &rarr; PDF</div><div class="tc-desc">DOCX text ko PDF banao</div></div>
-  <div class="tool-card" onclick="showPanel('pdf2txt')"><div class="tool-badge">Extract</div><div class="tc-icon">&#128196;</div><div class="tc-name">PDF &rarr; Text</div><div class="tc-desc">Text extract karo</div></div>
-  <div class="tool-card" onclick="showPanel('ocr')"><div class="tool-badge">PRO</div><div class="tc-icon">&#128065;&#65039;</div><div class="tc-name">OCR (PDF/Image)</div><div class="tc-desc">Scanned PDF ya photos se text nikaalo</div></div>
   <div class="tool-card" onclick="showPanel('img2pdf')"><div class="tool-badge">Fast</div><div class="tc-icon">&#128444;&#65039;</div><div class="tc-name">Image &rarr; PDF</div><div class="tc-desc">JPG/PNG to PDF</div></div>
-</div>
-
-<div class="tool-section-title">Convert & Extract</div>
-<div class="tools-grid">
-  <div class="tool-card" onclick="showPanel('ppt2pdf')"><div class="tool-badge">Convert</div><div class="tc-icon">&#128253;&#65039;</div><div class="tc-name">PowerPoint &rarr; PDF</div><div class="tc-desc">PPTX slides convert karo</div></div>
-  <div class="tool-card" onclick="showPanel('excel2pdf')"><div class="tool-badge">Convert</div><div class="tc-icon">&#128215;</div><div class="tc-name">Excel &rarr; PDF</div><div class="tc-desc">XLSX/CSV ko PDF mein</div></div>
-  <div class="tool-card" onclick="showPanel('pdf2excel')"><div class="tool-badge">Extract</div><div class="tc-icon">&#128202;</div><div class="tc-name">PDF &rarr; Excel</div><div class="tc-desc">Text rows ko Excel sheet banao</div></div>
-  <div class="tool-card" onclick="showPanel('pdf2img')"><div class="tool-badge">Export</div><div class="tc-icon">&#128248;</div><div class="tc-name">PDF &rarr; Image</div><div class="tc-desc">Pages export karo</div></div>
-  <div class="tool-card" onclick="showPanel('html2pdf')"><div class="tool-badge">Convert</div><div class="tc-icon">&#127760;</div><div class="tc-name">HTML &rarr; PDF</div><div class="tc-desc">HTML se PDF banao</div></div>
-  <div class="tool-card" onclick="showPanel('imgresize')"><div class="tool-badge">Utility</div><div class="tc-icon">&#129668;</div><div class="tc-name">Image Resizer</div><div class="tc-desc">Target KB mein compress karo</div></div>
-  <div class="tool-card" onclick="showPanel('preview')"><div class="tool-badge">View</div><div class="tc-icon">&#128064;</div><div class="tc-name">Preview</div><div class="tc-desc">PDF dekho browser mein</div></div>
 </div>
 
 <div class="tool-section-title">Edit & Organize</div>
 <div class="tools-grid">
   <div class="tool-card" onclick="showPanel('rotate')"><div class="tool-badge">Edit</div><div class="tc-icon">&#128260;</div><div class="tc-name">Rotate</div><div class="tc-desc">Pages ghuma do</div></div>
-  <div class="tool-card" onclick="showPanel('crop')"><div class="tool-badge">Edit</div><div class="tc-icon">&#9986;&#65039;</div><div class="tc-name">Crop Pages</div><div class="tc-desc">Page margins trim karo</div></div>
-  <div class="tool-card" onclick="showPanel('redact')"><div class="tool-badge">PRO</div><div class="tc-icon">&#11035;</div><div class="tc-name">Redact</div><div class="tc-desc">Content black out karo</div></div>
-  <div class="tool-card" onclick="showPanel('reorder')"><div class="tool-badge">PRO</div><div class="tc-icon">&#128209;</div><div class="tc-name">Reorder Pages</div><div class="tc-desc">Pages ki order badlo</div></div>
-  <div class="tool-card" onclick="showPanel('delete-pages')"><div class="tool-badge">Organize</div><div class="tc-icon">&#128465;&#65039;</div><div class="tc-name">Delete Pages</div><div class="tc-desc">Specific pages hatao</div></div>
-  <div class="tool-card" onclick="showPanel('extract-pages')"><div class="tool-badge">Organize</div><div class="tc-icon">&#128228;</div><div class="tc-name">Extract Pages</div><div class="tc-desc">Pages alag PDF mein</div></div>
+  <div class="tool-card" onclick="showPanel('preview')"><div class="tool-badge">View</div><div class="tc-icon">&#128064;</div><div class="tc-name">Preview</div><div class="tc-desc">PDF dekho browser mein</div></div>
+  <div class="tool-card" onclick="showPanel('pdf2img')"><div class="tool-badge">Export</div><div class="tc-icon">&#128248;</div><div class="tc-name">PDF &rarr; Image</div><div class="tc-desc">Pages export karo</div></div>
 </div>
 
 <div class="tool-section-title">Student & Utility</div>
@@ -264,10 +213,6 @@
   <div class="tool-card" onclick="showPanel('percentage')"><div class="tool-badge">Student</div><div class="tc-icon">%</div><div class="tc-name">Percentage Calculator</div><div class="tc-desc">Obtained aur total marks se percentage nikalo</div></div>
   <div class="tool-card" onclick="showPanel('marks')"><div class="tool-badge">Student</div><div class="tc-icon">&#128202;</div><div class="tc-name">Marks Calculator</div><div class="tc-desc">Total, average aur percentage nikalo</div></div>
   <div class="tool-card" onclick="showPanel('resume')"><div class="tool-badge">Popular</div><div class="tc-icon">&#128196;</div><div class="tc-name">Resume Builder</div><div class="tc-desc">Quick resume template banao</div></div>
-  <div class="tool-card" onclick="showPanel('cover-letter')"><div class="tool-badge">Student</div><div class="tc-icon">&#128221;</div><div class="tc-name">Cover Letter Generator</div><div class="tc-desc">Job-specific cover letter generate karo</div></div>
-  <div class="tool-card" onclick="showPanel('unit-converter')"><div class="tool-badge">Utility</div><div class="tc-icon">&#128290;</div><div class="tc-name">Unit Converter</div><div class="tc-desc">Length, weight, temp convert karo</div></div>
-  <div class="tool-card" onclick="showPanel('qr')"><div class="tool-badge">New</div><div class="tc-icon">&#128279;</div><div class="tc-name">QR Generator</div><div class="tc-desc">Links aur text ke QR banao</div></div>
-  <div class="tool-card" onclick="showPanel('password')"><div class="tool-badge">Utility</div><div class="tc-icon">&#128273;</div><div class="tc-name">Password Generator</div><div class="tc-desc">Strong passwords instantly</div></div>
   <div class="tool-card" onclick="showPanel('about')"><div class="tool-badge">Info</div><div class="tc-icon">&#8505;&#65039;</div><div class="tc-name">About</div><div class="tc-desc">Project details dekho</div></div>
 </div>
 
@@ -303,7 +248,7 @@
         <div class="step">
           <div class="step-num">1</div>
           <h3>Select Your Tool</h3>
-          <p>Choose from over 30+ PDF and student utility tools from our dashboard.</p>
+          <p>Choose from over 16+ PDF and student utility tools from our dashboard.</p>
         </div>
         <div class="step">
           <div class="step-num">2</div>
@@ -326,7 +271,7 @@
       <div class="faq-grid">
         <div class="faq-item">
           <h3>Is JustPDFCraft really free?</h3>
-          <p>Yes, 100%. All tools are free to use as many times as you need. We support the site through subtle, non-intrusive advertisements.</p>
+          <p>Yes, 100%. All tools are free to use as many times as you need. We keep the site running with community support.</p>
         </div>
         <div class="faq-item">
           <h3>Are my files safe?</h3>
@@ -396,84 +341,10 @@
     <button class="btn btn-success" id="split-download">&#11015;&#65039; Download ZIP</button>
   </div>
 </div>
-<!-- REORDER -->
-<div class="panel" id="panel-reorder">
-  <h2 class="panel-title">&#128209; Reorder Pages</h2>
-  <p class="panel-desc">PDF pages ki order change karo. New order comma-separated likhao (e.g. 3,1,2,4,5).</p>
-  <div class="dropzone">
-    <input type="file" id="reorder-input" accept=".pdf" onchange="handleSingleFile(this,'reorder')">
-    <div class="dz-icon">&#128196;</div><h3>PDF yahan drop karo</h3>
-  </div>
-  <div id="reorder-options" style="display:none;margin-top:1.5rem">
-    <div class="form-group">
-      <label class="form-label">Current Pages (<span id="reorder-total"></span> pages hain)</label>
-      <div class="page-grid" id="reorder-page-grid"></div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">New Order (comma separated, e.g. 3,1,2 for 3-page PDF)</label>
-      <input type="text" id="reorder-val" placeholder="e.g. 2,1,3,4">
-      <p style="font-size:0.75rem;color:var(--text2);margin-top:0.3rem">Default: reverse order ke liye "3,2,1" likhao</p>
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="reorderPages()">&#128209; Reorder karo</button>
-      <button class="btn btn-secondary" onclick="reversePages()">&#128260; Reverse karo</button>
-    </div>
-  </div>
-  <div class="result-banner" id="reorder-result">
-    <div class="res-icon">&#10004;&#65039;</div><div class="res-text"><h4>Pages Reordered!</h4><p>PDF ready hai.</p></div>
-    <button class="btn btn-success" id="reorder-download">&#11015;&#65039; Download</button>
-  </div>
-</div>
-<!-- DELETE PAGES -->
-<div class="panel" id="panel-delete-pages">
-  <h2 class="panel-title">Delete Pages</h2>
-  <p class="panel-desc">PDF mein se specific pages permanently delete karo.</p>
-  <div class="dropzone">
-    <input type="file" id="delpages-input" accept=".pdf" onchange="handleSingleFile(this,'delpages')">
-    <div class="dz-icon">&#128196;</div><h3>PDF yahan drop karo</h3>
-  </div>
-  <div id="delpages-options" style="display:none;margin-top:1.5rem">
-    <div class="form-group">
-      <label class="form-label">Delete karne wale pages choose karo (click to toggle)</label>
-      <div class="btn-row" style="margin-bottom:0.8rem">
-        <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllDelete(true)">Select All</button>
-        <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllDelete(false)">Deselect All</button>
-      </div>
-      <div class="page-grid" id="delpages-page-grid"></div>
-    </div>
-    <p style="font-size:0.75rem;color:var(--orange);margin-bottom:0.75rem">Selected pages permanently delete ho jayenge</p>
-    <div class="btn-row"><button class="btn btn-danger" onclick="deletePages()"> Delete karo</button></div>
-  </div>
-  <div class="result-banner" id="delpages-result">
-    <div class="res-icon">&#10004;&#65039;</div><div class="res-text"><h4>Pages Deleted!</h4><p id="delpages-result-text"></p></div>
-    <button class="btn btn-success" id="delpages-download">&#11015;&#65039; Download</button>
-  </div>
-</div>
 
-<!--  EXTRACT PAGES  -->
-<div class="panel" id="panel-extract-pages">
-  <h2 class="panel-title">Extract Pages</h2>
-  <p class="panel-desc">PDF mein se specific pages nikaalo aur alag PDF banao.</p>
-  <div class="dropzone">
-    <input type="file" id="extract-input" accept=".pdf" onchange="handleSingleFile(this,'extract')">
-    <div class="dz-icon">&#128196;</div><h3>PDF yahan drop karo</h3>
-  </div>
-  <div id="extract-options" style="display:none;margin-top:1.5rem">
-    <div class="form-group">
-      <label class="form-label">Extract karne wali pages choose karo</label>
-      <div class="page-grid" id="extract-page-grid"></div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Ya range type karo (e.g. 2-5, 8)</label>
-      <input type="text" id="extract-range" placeholder="2-5, 8, 10-12">
-    </div>
-    <div class="btn-row"><button class="btn btn-primary" onclick="extractPages()"> Extract karo</button></div>
-  </div>
-  <div class="result-banner" id="extract-result">
-    <div class="res-icon">&#10004;&#65039;</div><div class="res-text"><h4>Pages Extracted!</h4><p id="extract-result-text"></p></div>
-    <button class="btn btn-success" id="extract-download">&#11015;&#65039; Download</button>
-  </div>
-</div>
+
+
+
 
 <!--  COMPRESS  -->
 <div class="panel" id="panel-compress">
@@ -618,115 +489,16 @@
   </div>
 </div>
 
-<!--  PAGE NUMBERS  -->
-<div class="panel" id="panel-pagenumber">
-  <h2 class="panel-title">Page Numbers</h2>
-  <p class="panel-desc">PDF mein automatic page numbers add karo, position, style aur starting number customize karo.</p>
-  <div class="dropzone">
-    <input type="file" id="pn-input" accept=".pdf" onchange="handleSingleFile(this,'pn')">
-    <div class="dz-icon">&#128196;</div><h3>PDF yahan drop karo</h3>
-  </div>
-  <div id="pn-options" style="display:none;margin-top:1.5rem">
-    <div class="two-col">
-      <div>
-        <div class="form-group"><label class="form-label">Position</label>
-          <select id="pn-pos">
-            <option value="bottom-center">Bottom Center</option>
-            <option value="bottom-right">Bottom Right</option>
-            <option value="bottom-left">Bottom Left</option>
-            <option value="top-center">Top Center</option>
-            <option value="top-right">Top Right</option>
-            <option value="top-left">Top Left</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="form-label">Starting Number</label><input type="number" id="pn-start" value="1" min="0"></div>
-        <div class="form-group"><label class="form-label">Font Size</label><input type="number" id="pn-size" value="12" min="8" max="24"></div>
-      </div>
-      <div>
-        <div class="form-group"><label class="form-label">Format</label>
-          <select id="pn-format">
-            <option value="num">1, 2, 3...</option>
-            <option value="page-of">Page 1 of 10</option>
-            <option value="dash">- 1 -</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="form-label">Color</label><input type="color" id="pn-color" value="#333333"></div>
-        <div class="checkbox-row"><input type="checkbox" id="pn-skip-first"><label for="pn-skip-first">First page skip karo (cover page)</label></div>
-      </div>
-    </div>
-    <div class="btn-row"><button class="btn btn-primary" onclick="addPageNumbers()">🔢 Add Page Numbers</button></div>
-  </div>
-  <div class="progress-wrap" id="pn-progress"><div class="progress-bar"><div class="progress-fill" id="pn-fill"></div></div><div class="progress-label" id="pn-plab">Adding numbers...</div></div>
-  <div class="result-banner" id="pn-result">
-    <div class="res-icon">✅</div><div class="res-text"><h4>Numbers Added!</h4><p>PDF ready with page numbers.</p></div>
-    <button class="btn btn-success" id="pn-download">⬇️ Download</button>
-  </div>
-</div>
-
-
-
-<div class="panel" id="panel-hf">
-  <h2 class="panel-title">Header / Footer</h2>
-  <p class="panel-desc">Har page ke top aur bottom par custom text add karo, jaise company name, draft note, ya website.</p>
-  <div class="dropzone">
-    <input type="file" id="hf-input" accept=".pdf" onchange="handleSingleFile(this,'hf')">
-    <div class="dz-icon">&#128196;</div><h3>PDF yahan drop karo</h3>
-  </div>
-  <div id="hf-options" style="display:none;margin-top:1.5rem">
-    <div class="two-col">
-      <div>
-        <div class="form-group"><label class="form-label">Header Text</label><input type="text" id="hf-header" placeholder="Company Name | Report Title"></div>
-        <div class="form-group"><label class="form-label">Footer Text</label><input type="text" id="hf-footer" placeholder="Draft | www.example.com"></div>
-        <div class="form-group"><label class="form-label">Font Size</label><input type="number" id="hf-size" value="11" min="8" max="28"></div>
-      </div>
-      <div>
-        <div class="form-group"><label class="form-label">Color</label><input type="color" id="hf-color" value="#333333"></div>
-        <div class="form-group"><label class="form-label">Alignment</label>
-          <select id="hf-align">
-            <option value="center">Center</option>
-            <option value="left">Left</option>
-            <option value="right">Right</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="form-label">Start Page</label><input type="number" id="hf-start-page" value="1" min="1"></div>
-      </div>
-    </div>
-    <div class="btn-row"><button class="btn btn-primary" onclick="addHeaderFooter()">📝 Add Header/Footer</button></div>
-  </div>
-  <div class="progress-wrap" id="hf-progress"><div class="progress-bar"><div class="progress-fill" id="hf-fill"></div></div><div class="progress-label" id="hf-plab">Applying...</div></div>
-  <div class="result-banner" id="hf-result">
-    <div class="res-icon">✅</div><div class="res-text"><h4>Header/Footer Added!</h4><p>PDF ready for download.</p></div>
-    <button class="btn btn-success" id="hf-download">⬇️ Download</button>
-  </div>
-</div>
 
 
 
 
-<!--  CROP  -->
-<div class="panel" id="panel-crop">
-  <h2 class="panel-title">Crop PDF Pages</h2>
-  <p class="panel-desc">PDF pages ke margins trim karo, top, bottom, left, right alag-alag set karo.</p>
-  <div class="dropzone">
-    <input type="file" id="crop-input" accept=".pdf" onchange="handleSingleFile(this,'crop')">
-    <div class="dz-icon">&#128196;</div><h3>PDF yahan drop karo</h3>
-  </div>
-  <div id="crop-options" style="display:none;margin-top:1.5rem">
-    <p style="color:var(--text2);font-size:0.85rem;margin-bottom:1rem">Margin points mein (72pt = 1 inch, 28pt  1cm)</p>
-    <div class="options-grid" style="grid-template-columns:1fr 1fr;">
-      <div class="form-group"><label class="form-label">Top Margin (pt)</label><input type="number" id="crop-top" value="0" min="0" max="200"></div>
-      <div class="form-group"><label class="form-label">Bottom Margin (pt)</label><input type="number" id="crop-bottom" value="0" min="0" max="200"></div>
-      <div class="form-group"><label class="form-label">Left Margin (pt)</label><input type="number" id="crop-left" value="0" min="0" max="200"></div>
-      <div class="form-group"><label class="form-label">Right Margin (pt)</label><input type="number" id="crop-right" value="0" min="0" max="200"></div>
-    </div>
-    <div class="btn-row"><button class="btn btn-primary" onclick="cropPDF()">✂️ Crop karo</button></div>
-  </div>
-  <div class="progress-wrap" id="crop-progress"><div class="progress-bar"><div class="progress-fill" id="crop-fill"></div></div><div class="progress-label" id="crop-plab">Cropping...</div></div>
-  <div class="result-banner" id="crop-result">
-    <div class="res-icon">✅</div><div class="res-text"><h4>Cropped Successfully!</h4><p>Margins adjusted.</p></div>
-    <button class="btn btn-success" id="crop-download">⬇️ Download</button>
-  </div>
-</div>
+
+
+
+
+
+
 
 <!--  IMAGE TO PDF  -->
 <div class="panel" id="panel-img2pdf">
@@ -759,51 +531,7 @@
   </div>
 </div>
 
-<!-- IMAGE RESIZER -->
-<div class="panel" id="panel-imgresize">
-  <h2 class="panel-title">Image Resizer</h2>
-  <p class="panel-desc">Image ko target KB ke aas-paas compress karo. Width limit, format aur quality browser mein hi control hogi.</p>
-  <div class="dropzone">
-    <input type="file" id="imgresize-input" multiple accept="image/*" onchange="handleImageResizeFile(this.files)">
-    <div class="dz-icon">🖼️</div><h3>Images upload karo</h3><p>Batch resize images to target KB</p>
-  </div>
-  <div class="file-list" id="imgresize-list"></div>
-  <div id="imgresize-options" style="display:none;margin-top:1.5rem">
-    <div class="two-col">
-      <div>
-        <div class="form-group"><label class="form-label">Target Size (KB)</label><input type="number" id="imgresize-target" value="200" min="10" max="10000"></div>
-        <div class="form-group"><label class="form-label">Max Width (px)</label><input type="number" id="imgresize-maxw" value="1920" min="100" max="8000"></div>
-        <div class="form-group"><label class="form-label">Format</label>
-          <select id="imgresize-format">
-            <option value="image/jpeg">JPEG (recommended)</option>
-            <option value="image/webp">WebP</option>
-            <option value="image/png">PNG</option>
-          </select>
-        </div>
-      </div>
-      <div>
-        <div class="form-group"><label class="form-label">Quality Bias</label>
-          <select id="imgresize-bias">
-            <option value="balanced">Balanced</option>
-            <option value="quality">Better quality</option>
-            <option value="small">Smaller file</option>
-          </select>
-        </div>
-        <div class="checkbox-row"><input type="checkbox" id="imgresize-keep" checked><label for="imgresize-keep">Aspect ratio preserve karo</label></div>
-        <p style="color:var(--text2);font-size:0.8rem;margin-top:0.75rem">PNG exact KB target ke liye limited hota hai, isliye tight target par JPEG/WebP zyada reliable rahega.</p>
-      </div>
-    </div>
-    <div class="btn-row"><button class="btn btn-primary" onclick="resizeImageToTarget()"> Resize karo</button></div>
-  </div>
-  <div class="progress-wrap" id="imgresize-progress"><div class="progress-bar"><div class="progress-fill" id="imgresize-fill"></div></div><div class="progress-label" id="imgresize-plab">Resizing...</div></div>
-  <div class="result-banner" id="imgresize-result">
-    <div class="res-icon">✅</div><div class="res-text"><h4>Resize Done!</h4><p id="imgresize-result-text"></p></div>
-    <div class="btn-row">
-      <button class="btn btn-success" id="imgresize-download-zip" style="display:none">&#11015;&#65039; Download All (ZIP)</button>
-      <button class="btn btn-success" id="imgresize-download">⬇️ Download ZIP</button>
-    </div>
-  </div>
-</div>
+
 
 <div class="panel" id="panel-word2pdf">
   <h2 class="panel-title">Word to PDF</h2>
@@ -819,45 +547,11 @@
   </div>
 </div>
 
-<div class="panel" id="panel-ppt2pdf">
-  <h2 class="panel-title">PowerPoint to PDF</h2>
-  <p class="panel-desc">PPTX slides se text extract karke slide-wise PDF generate karo. Har slide ek page banegi.</p>
-  <div class="dropzone">
-    <input type="file" id="ppt2pdf-input" accept=".pptx" onchange="convertPowerPointToPDF(this)">
-    <div class="dz-icon"></div><h3>PPTX yahan drop karo</h3><p>PowerPoint deck ko readable PDF mein badlo</p>
-  </div>
-  <div class="result-banner" id="ppt2pdf-result">
-    <div class="res-icon">&#10004;&#65039;</div><div class="res-text"><h4>PDF Ready!</h4><p id="ppt2pdf-result-text"></p></div>
-    <button class="btn btn-success" id="ppt2pdf-download">&#11015;&#65039; Download PDF</button>
-  </div>
-</div>
 
-<div class="panel" id="panel-excel2pdf">
-  <h2 class="panel-title">Excel to PDF</h2>
-  <p class="panel-desc">XLSX ya CSV sheet ko table-style PDF mein convert karo. Spreadsheet ko pages mein split karke render kiya jayega.</p>
-  <div class="dropzone">
-    <input type="file" id="excel2pdf-input" accept=".xlsx,.csv" onchange="convertExcelToPDF(this)">
-    <div class="dz-icon"></div><h3>XLSX / CSV yahan drop karo</h3><p>Sheets ko browser mein parse karke PDF banao</p>
-  </div>
-  <div class="result-banner" id="excel2pdf-result">
-    <div class="res-icon">&#10004;&#65039;</div><div class="res-text"><h4>PDF Ready!</h4><p id="excel2pdf-result-text"></p></div>
-    <button class="btn btn-success" id="excel2pdf-download">&#11015;&#65039; Download PDF</button>
-  </div>
-</div>
 
-<div class="panel" id="panel-pdf2excel">
-  <h2 class="panel-title">PDF to Excel</h2>
-  <p class="panel-desc">PDF text ko row-based Excel-compatible `.xls` sheet mein export karo. Har line ek row banegi.</p>
-  <div class="dropzone">
-    <input type="file" id="pdf2excel-input" accept=".pdf" onchange="convertPDFToExcel(this)">
-    <div class="dz-icon">&#128196;</div><h3>PDF yahan drop karo</h3><p>Text rows ko spreadsheet format mein nikalo</p>
-  </div>
-  <div class="result-banner" id="pdf2excel-result">
-    <div class="res-icon">✅</div><div class="res-text"><h4>Excel File Ready!</h4><p id="pdf2excel-result-text"></p></div>
-    <button class="btn btn-success" id="pdf2excel-download">⬇️ Download XLS</button>
-  </div>
-  <div class="progress-wrap" id="pdf2excel-progress"><div class="progress-bar"><div class="progress-fill" id="pdf2excel-fill"></div></div><div class="progress-label" id="pdf2excel-plab">Extracting...</div></div>
-</div>
+
+
+
 
 <!--  PDF TO IMAGE  -->
 <div class="panel" id="panel-pdf2img">
@@ -899,53 +593,8 @@
   </div>
 </div>
 
-<!--  PDF TO TEXT  -->
-<div class="panel" id="panel-pdf2txt">
-  <h2 class="panel-title">PDF to Text</h2>
-  <p class="panel-desc">PDF se text extract karo, copy, edit, ya .txt file download karo. PDF.js engine use hota hai.</p>
-  <div class="dropzone">
-    <input type="file" id="pdf2txt-input" accept=".pdf" onchange="extractText(this)">
-    <div class="dz-icon">&#128196;</div><h3>PDF yahan drop karo</h3><p>Text automatically extract hoga</p>
-  </div>
-  <div id="pdf2txt-output" style="display:none;margin-top:1.5rem">
-    <div class="stats-row" id="txt-stats"></div>
-    <div class="form-group">
-      <label class="form-label">Extracted Text</label>
-      <textarea id="txt-area" style="min-height:320px;" readonly></textarea>
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('txt-area').value);toast('Copied!','')"> Copy Text</button>
-      <button class="btn btn-success" onclick="downloadText()"> Download .txt</button>
-      <button class="btn btn-secondary" onclick="document.getElementById('txt-area').readOnly=!document.getElementById('txt-area').readOnly;this.textContent=document.getElementById('txt-area').readOnly?' Edit':' Lock'"> Edit</button>
-    </div>
-  </div>
-</div>
 
-<!--  HTML TO PDF  -->
-<div class="panel" id="panel-html2pdf">
-  <h2 class="panel-title">HTML to PDF</h2>
-  <p class="panel-desc">HTML ya plain text content ko PDF mein convert karo. Tags strip hokar text PDF mein add hoga.</p>
-  <div class="two-col">
-    <div>
-      <div class="form-group"><label class="form-label">HTML / Text Content</label>
-        <textarea id="html2pdf-content" style="min-height:280px;font-family:monospace;font-size:0.82rem" placeholder="&lt;h1&gt;Title&lt;/h1&gt;&#10;&lt;p&gt;Apna content yahan paste karo...&lt;/p&gt;"></textarea>
-      </div>
-    </div>
-    <div>
-      <div class="form-group"><label class="form-label">Page Size</label><select id="html2pdf-size"><option value="A4">A4</option><option value="Letter">Letter</option><option value="A3">A3</option></select></div>
-      <div class="form-group"><label class="form-label">Font Size</label><input type="number" id="html2pdf-fontsize" value="11" min="8" max="20"></div>
-      <div class="form-group"><label class="form-label">Margin (pt)</label><input type="number" id="html2pdf-margin" value="50" min="0" max="150"></div>
-      <div class="form-group"><label class="form-label">Title</label><input type="text" id="html2pdf-title" placeholder="Document title (optional)"></div>
-    </div>
-  </div>
-  <div class="btn-row"><button class="btn btn-primary" onclick="htmlToPDF()"> Convert karo</button></div>
-  <div class="result-banner" id="html2pdf-result">
-    <div class="res-icon">&#10004;&#65039;</div><div class="res-text"><h4>PDF Ready!</h4><p id="html2pdf-result-text"></p></div>
-    <button class="btn btn-success" id="html2pdf-download">&#11015;&#65039; Download</button>
-  </div>
-</div>
 
-<!--  BLANK PDF  -->
 
 
 <!--  PROTECT  -->
@@ -1051,69 +700,7 @@
 
 
 
-<!--  REDACT  -->
-<div class="panel" id="panel-redact">
-  <h2 class="panel-title">Redact PDF</h2>
-  <p class="panel-desc">Sensitive content ko black boxes se cover karo. Yeh permanent hai, recover nahi hoga.</p>
-  <div class="dropzone">
-    <input type="file" id="redact-input" accept=".pdf" onchange="handleSingleFile(this,'redact')">
-    <div class="dz-icon">&#128196;</div><h3>PDF yahan drop karo</h3>
-  </div>
-  <div id="redact-options" style="display:none;margin-top:1.5rem">
-    <div class="form-group"><label class="form-label">Redact karne wale text (ek per line)</label>
-      <textarea id="redact-words" placeholder="Sensitive Name&#10;Phone Number&#10;Email@domain.com&#10;Account Number" style="min-height:140px"></textarea>
-    </div>
-    <div class="checkbox-row"><input type="checkbox" id="redact-case"><label for="redact-case">Case-sensitive match karo</label></div>
-    <div class="form-group"><label class="form-label">Redaction Color</label>
-      <div class="color-row">
-        <input type="color" id="redact-color" value="#000000">
-        <div class="color-swatch active" style="background:#000000" onclick="document.getElementById('redact-color').value='#000000'"></div>
-        <div class="color-swatch" style="background:#0000aa" onclick="document.getElementById('redact-color').value='#0000aa'"></div>
-        <div class="color-swatch" style="background:#aa0000" onclick="document.getElementById('redact-color').value='#aa0000'"></div>
-      </div>
-    </div>
-    <p style="color:var(--red);font-size:0.8rem;margin-bottom:0.75rem"> WARNING: Yeh operation permanent hai. Original text permanently overwrite ho jayega.</p>
-    <div class="btn-row"><button class="btn btn-danger" onclick="redactPDF()"> Redact karo</button></div>
-  </div>
-  <div class="result-banner" id="redact-result">
-    <div class="res-icon">&#10004;&#65039;</div><div class="res-text"><h4>Redaction Complete!</h4><p id="redact-result-text"></p></div>
-    <button class="btn btn-success" id="redact-download">&#11015;&#65039; Download</button>
-  </div>
-</div>
 
-<!--  INSPECT  -->
-
-
-<!--  OCR  -->
-<div class="panel" id="panel-ocr">
-  <h2 class="panel-title">OCR / Text Extract (PDF & Images)</h2>
-  <p class="panel-desc">Kisi bhi PDF ya Image (JPG/PNG) se text extract karo. Scanned documents aur photos par bhi kaam karta hai.</p>
-  <div class="dropzone">
-    <input type="file" id="ocr-input" accept=".pdf,image/*" onchange="runOCR(this)">
-    <div class="dz-icon">&#128444;&#65039;</div><h3>PDF ya Image (JPG/PNG) drop karo</h3><p>Smart OCR text extraction</p>
-  </div>
-  <div id="ocr-progress" style="display:none;margin-top:1.5rem">
-    <p style="color:var(--text2);font-size:0.88rem;margin-bottom:0.5rem">Extracting text... <span id="ocr-page-count"></span></p>
-    <div class="progress-bar"><div class="progress-fill" id="ocr-fill" style="width:0%"></div></div>
-  </div>
-  <div id="ocr-preview-wrap" style="display:none;margin-top:1.5rem">
-    <label class="form-label">Preview</label>
-    <div class="pdf-preview-box preview-extended" id="ocr-preview-box"></div>
-  </div>
-  <div id="ocr-output" style="display:none;margin-top:1.5rem">
-    <div class="stats-row" id="ocr-stats"></div>
-    <div class="form-group"><label class="form-label">Extracted Text</label><textarea id="ocr-text" style="min-height:340px" readonly></textarea></div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('ocr-text').value).then(()=>toast('Copied!',''))"> Copy</button>
-      <button class="btn btn-success" onclick="downloadOCR()"> Download .txt</button>
-      <button class="btn btn-secondary" onclick="searchInText()"> Search</button>
-    </div>
-    <div id="ocr-search" style="display:none;margin-top:0.75rem">
-      <div class="home-search"><span></span><input type="text" id="ocr-search-input" placeholder="Text mein search karo..." oninput="highlightSearch(this.value)"></div>
-      <p id="ocr-search-result" style="font-size:0.8rem;color:var(--text2)"></p>
-    </div>
-  </div>
-</div>
 
 <!--  PREVIEW  -->
 <div class="panel" id="panel-preview">
@@ -1134,12 +721,6 @@
     </div>
   </div>
 </div>
-
-<!--  COMPARE  -->
-
-
-<!--  REPAIR  -->
-
 
 <!--  ABOUT  -->
 
@@ -1351,21 +932,6 @@
   </div>
 </div>
 
-<div class="panel" id="panel-cover-letter">
-  <h2 class="panel-title">Cover Letter Generator</h2>
-  <p class="panel-desc">Role aur company ke hisaab se quick cover letter generate karo.</p>
-  <div class="two-col">
-    <div>
-      <div class="form-group"><label class="form-label">Your Name</label><input type="text" id="cl-name" placeholder="Aman Sharma"></div>
-      <div class="form-group"><label class="form-label">Job Role</label><input type="text" id="cl-role" placeholder="Frontend Intern"></div>
-      <div class="form-group"><label class="form-label">Company</label><input type="text" id="cl-company" placeholder="ABC Tech"></div>
-      <div class="form-group"><label class="form-label">Key Skills</label><textarea id="cl-skills" rows="4" placeholder="React, communication, problem solving"></textarea></div>
-      <div class="form-group"><label class="form-label">Why this role?</label><textarea id="cl-reason" rows="4" placeholder="Why you fit this opportunity"></textarea></div>
-      <div class="btn-row"><button class="btn btn-primary" onclick="generateCoverLetter()">Generate</button><button class="btn btn-secondary" onclick="copyOutput('cl-output')">Copy</button></div>
-    </div>
-    <div class="form-group"><label class="form-label">Cover Letter Output</label><textarea id="cl-output" rows="22" placeholder="Generated cover letter yahan aayega"></textarea></div>
-  </div>
-</div>
 
 
 
@@ -1373,115 +939,19 @@
 
 
 
-<div class="panel" id="panel-unit-converter">
-  <h2 class="panel-title">Unit Converter</h2>
-  <p class="panel-desc">Length, weight aur temperature quickly convert karo.</p>
-  <div class="two-col">
-    <div class="form-group">
-      <label class="form-label">Category</label>
-      <select id="uc-category" onchange="updateUnitOptions()">
-        <option value="length">Length</option>
-        <option value="weight">Weight</option>
-        <option value="temperature">Temperature</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Value</label>
-      <input type="number" id="uc-value" step="0.01" placeholder="10">
-    </div>
-    <div class="form-group">
-      <label class="form-label">From</label>
-      <select id="uc-from"></select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">To</label>
-      <select id="uc-to"></select>
-    </div>
-  </div>
-  <div class="btn-row"><button class="btn btn-primary" onclick="convertUnits()">Convert</button><button class="btn btn-secondary" onclick="resetUnitConverter()">Reset</button></div>
-  <div class="stats-row" style="margin-top:1rem">
-    <div class="stat-card"><div class="st-val" id="uc-result">0</div><div class="st-label">Converted Value</div></div>
-  </div>
-</div>
 
-<div class="panel" id="panel-qr">
-  <h2 class="panel-title">QR Generator</h2>
-  <p class="panel-desc">Website link, text, phone number ya short note ke liye instant QR image banao.</p>
-  <div class="two-col">
-    <div>
-      <div class="form-group">
-        <label class="form-label">Content Type</label>
-        <select id="qr-type" onchange="updateQRPlaceholder()">
-          <option value="url">Website URL</option>
-          <option value="text">Plain Text</option>
-          <option value="email">Email</option>
-          <option value="phone">Phone Number</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">QR Content</label>
-        <textarea id="qr-input" rows="6" placeholder="https://example.com"></textarea>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="generateQRCode()">Generate QR</button>
-        <button class="btn btn-secondary" onclick="downloadQRCode()">Download PNG</button>
-      </div>
-    </div>
-    <div>
-      <label class="form-label">Preview</label>
-      <div class="resume-live-preview" style="display:flex;align-items:center;justify-content:center;min-height:320px;">
-        <canvas id="qr-canvas" width="320" height="320" style="max-width:100%;height:auto;background:#fff;border-radius:14px;"></canvas>
-      </div>
-    </div>
-  </div>
-</div>
 
-<div class="panel" id="panel-password">
-  <h2 class="panel-title">Password Generator</h2>
-  <p class="panel-desc">Strong random password banao with letters, numbers aur symbols. Copy bhi easily kar sakte ho.</p>
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.25rem;">
-    <div class="two-col">
-      <div class="form-group">
-        <label class="form-label">Length</label>
-        <input type="number" id="pw-length" min="6" max="64" value="14">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Must Include</label>
-        <select id="pw-strength">
-          <option value="balanced">Balanced</option>
-          <option value="letters">Letters Only</option>
-          <option value="alnum">Letters + Numbers</option>
-          <option value="strong">Letters + Numbers + Symbols</option>
-        </select>
-      </div>
-    </div>
-    <div class="options-grid" style="margin-bottom:1rem;">
-      <div class="option-card selected" id="pw-opt-upper" onclick="togglePasswordOption('upper')"><div class="opt-icon">A</div><div class="opt-label">Uppercase</div></div>
-      <div class="option-card selected" id="pw-opt-lower" onclick="togglePasswordOption('lower')"><div class="opt-icon">a</div><div class="opt-label">Lowercase</div></div>
-      <div class="option-card selected" id="pw-opt-number" onclick="togglePasswordOption('number')"><div class="opt-icon">1</div><div class="opt-label">Numbers</div></div>
-      <div class="option-card selected" id="pw-opt-symbol" onclick="togglePasswordOption('symbol')"><div class="opt-icon">#</div><div class="opt-label">Symbols</div></div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Generated Password</label>
-      <input type="text" id="pw-output" readonly placeholder="Click generate to create password">
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="generatePassword()">Generate Password</button>
-      <button class="btn btn-secondary" onclick="copyOutput('pw-output')">Copy</button>
-    </div>
-    <div class="stats-row" style="margin-top:1rem;">
-      <div class="stat-card"><div class="st-val" id="pw-score">0/4</div><div class="st-label">Strength Score</div></div>
-      <div class="stat-card"><div class="st-val" id="pw-label">Not Generated</div><div class="st-label">Strength Label</div></div>
-    </div>
-  </div>
-</div>
+
+
+
+
 
 <div class="panel" id="panel-about">
   <h2 class="panel-title">JustPDFCraft</h2>
   <p class="panel-desc">100% Free, browser-based PDF editor. Koi file upload nahi, koi server nahi.</p>
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem">
     <div class="stats-row">
-      <div class="stat-card"><div class="st-val">22+</div><div class="st-label">PDF Tools</div></div>
+      <div class="stat-card"><div class="st-val">16+</div><div class="st-label">PDF Tools</div></div>
       <div class="stat-card"><div class="st-val">100%</div><div class="st-label">Browser-based</div></div>
       <div class="stat-card"><div class="st-val">0</div><div class="st-label">Cost</div></div>
       <div class="stat-card"><div class="st-val"></div><div class="st-label">Private & Secure</div></div>
@@ -1497,16 +967,11 @@
     <hr class="divider">
     <p style="color:var(--text2);font-size:0.85rem;line-height:1.7">
        <strong style="color:var(--text)">Privacy Guarantee:</strong> Aapki koi bhi file kisi server par upload nahi hoti. Sari processing aapke browser mein hoti hai  files sirf aapke device par hain.<br><br>
-       <strong style="color:var(--text)">Tip:</strong> Complex tools ke liye (image-based OCR, Word conversion) server-side tools jaise LibreOffice, Tesseract.js, qpdf ki zaroorat hoti hai.
+       <strong style="color:var(--text)">Tip:</strong> Complex tools ke liye (image-based OCR, Word conversion) server-side tools jaise LibreOffice, qpdf ki zaroorat hoti hai.
     </p>
   </div>
 </div>
 
-  <!-- Mobile Only Ad Slot -->
-  <div class="ad-slot mobile-ad">
-    <div class="ad-label">Advertisement</div>
-    <!-- Paste AdSense Code Here -->
-  </div>
 
 
 <!-- PRIVACY POLICY -->
@@ -1597,115 +1062,9 @@
 
 
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- INVOICE GENERATOR PANEL -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="panel" id="panel-invoice">
-  <h2 class="panel-title">🧾 Invoice Generator</h2>
-  <p class="panel-desc">Professional PDF invoice banao — company details, client info, items aur tax sab customize karo.</p>
 
-  <div class="two-col" style="gap:1.5rem">
-    <!-- From / To -->
-    <div>
-      <div class="form-group"><label class="form-label">From (Your Business)</label><input type="text" id="inv-from-name" placeholder="Your Company / Your Name"></div>
-      <div class="form-group"><input type="text" id="inv-from-addr" placeholder="Address"></div>
-      <div class="form-group"><input type="text" id="inv-from-email" placeholder="Email / Phone"></div>
-    </div>
-    <div>
-      <div class="form-group"><label class="form-label">To (Client)</label><input type="text" id="inv-to-name" placeholder="Client Name / Company"></div>
-      <div class="form-group"><input type="text" id="inv-to-addr" placeholder="Client Address"></div>
-      <div class="form-group"><input type="text" id="inv-to-email" placeholder="Client Email"></div>
-    </div>
-  </div>
 
-  <div class="two-col" style="gap:1.5rem;margin-top:0">
-    <div class="form-group"><label class="form-label">Invoice #</label><input type="text" id="inv-number" placeholder="INV-001" value="INV-001"></div>
-    <div class="form-group"><label class="form-label">Date</label><input type="date" id="inv-date"></div>
-    <div class="form-group"><label class="form-label">Due Date</label><input type="date" id="inv-due"></div>
-    <div class="form-group"><label class="form-label">Currency</label>
-      <select id="inv-currency">
-        <option value="INR">₹ INR (Indian Rupee)</option>
-        <option value="USD">$ USD (US Dollar)</option>
-        <option value="EUR">€ EUR (Euro)</option>
-        <option value="GBP">£ GBP (British Pound)</option>
-      </select>
-    </div>
-  </div>
 
-  <!-- Line Items -->
-  <div class="form-group" style="margin-top:0.5rem">
-    <label class="form-label">Items / Services</label>
-    <div id="inv-items-container">
-      <div class="inv-item-row" style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:0.5rem;margin-bottom:0.5rem;align-items:center">
-        <input type="text" placeholder="Description" class="inv-desc">
-        <input type="number" placeholder="Qty" class="inv-qty" value="1" min="1">
-        <input type="number" placeholder="Unit Price" class="inv-price" min="0">
-        <button class="btn btn-danger btn-sm" onclick="removeInvItem(this)">✕</button>
-      </div>
-    </div>
-    <button class="btn btn-secondary btn-sm" style="margin-top:0.5rem" onclick="addInvItem()">➕ Add Item</button>
-  </div>
-
-  <div class="two-col" style="gap:1.5rem">
-    <div class="form-group"><label class="form-label">Tax %</label><input type="number" id="inv-tax" value="18" min="0" max="100" placeholder="18"></div>
-    <div class="form-group"><label class="form-label">Discount %</label><input type="number" id="inv-discount" value="0" min="0" max="100" placeholder="0"></div>
-  </div>
-  <div class="form-group"><label class="form-label">Notes / Terms</label><textarea id="inv-notes" rows="2" placeholder="Payment due within 30 days. Thank you for your business!"></textarea></div>
-
-  <div class="btn-row"><button class="btn btn-primary" onclick="generateInvoice()">🧾 Generate Invoice PDF</button></div>
-  <div class="result-banner" id="invoice-result">
-    <div class="res-icon">✅</div><div class="res-text"><h4>Invoice Ready!</h4><p id="invoice-result-text"></p></div>
-    <button class="btn btn-success" id="invoice-download">⬇️ Download PDF</button>
-  </div>
-</div>
-
-<!-- ANNOTATE PANEL -->
-<div class="panel" id="panel-annotate">
-  <h2 class="panel-title">&#128172; Annotate PDF</h2>
-  <p class="panel-desc">PDF par text boxes, highlights, arrows aur comments add karo.</p>
-  <div class="dropzone">
-    <input type="file" id="ann-input" accept=".pdf" onchange="handleSingleFile(this,'annotate')">
-    <div class="dz-icon">&#128196;</div><h3>PDF yahan drop karo</h3>
-  </div>
-  <div id="ann-options" style="display:none;margin-top:1.5rem">
-    <div class="form-group"><label class="form-label">Annotation Type</label>
-      <div class="options-grid">
-        <div class="option-card selected" onclick="selectOpt(this,'#ann-options .option-card');state.annType='textbox'"><div class="opt-icon">&#128221;</div><div class="opt-label">Text Box</div></div>
-        <div class="option-card" onclick="selectOpt(this,'#ann-options .option-card');state.annType='highlight'"><div class="opt-icon">&#128394;&#65039;</div><div class="opt-label">Highlight Bar</div></div>
-        <div class="option-card" onclick="selectOpt(this,'#ann-options .option-card');state.annType='comment'"><div class="opt-icon">&#128172;</div><div class="opt-label">Comment Box</div></div>
-        <div class="option-card" onclick="selectOpt(this,'#ann-options .option-card');state.annType='underline'"><div class="opt-icon">__</div><div class="opt-label">Underline</div></div>
-        <div class="option-card" onclick="selectOpt(this,'#ann-options .option-card');state.annType='strike'"><div class="opt-icon">~~</div><div class="opt-label">Strikethrough</div></div>
-      </div>
-    </div>
-    <div id="ann-preview-wrap" style="display:none;margin-bottom:1rem">
-      <label class="form-label">PDF Preview - jahan drag/select karoge wahi annotation lagega</label>
-      <div class="preview-toolbar" style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.75rem">
-        <button class="btn btn-secondary btn-sm" type="button" onclick="prevAnnotatePreviewPage()">&#9664; Prev</button>
-        <span style="color:var(--text2);font-size:0.84rem">Page <span id="ann-preview-cur">1</span> of <span id="ann-preview-total">1</span></span>
-        <button class="btn btn-secondary btn-sm" type="button" onclick="nextAnnotatePreviewPage()">Next &#9654;</button>
-      </div>
-      <div class="pdf-preview-box preview-extended" id="ann-preview-box" style="max-height:620px;justify-content:center">
-        <div class="ann-stage" id="ann-stage">
-          <canvas id="ann-preview-canvas"></canvas>
-          <div class="ann-selection" id="ann-selection"></div>
-        </div>
-      </div>
-      <p id="ann-preview-note" style="color:var(--text2);font-size:0.8rem;margin-top:0.6rem">PDF par drag ya click karo, annotation ussi location par lagega.</p>
-    </div>
-    <div class="two-col">
-      <div class="form-group"><label class="form-label">Annotation Text</label><textarea id="ann-text" placeholder="Annotation likhao..." style="min-height:80px"></textarea></div>
-      <div>
-        <div class="form-group"><label class="form-label">Color</label><input type="color" id="ann-color" value="#ffff00"></div>
-        <div class="form-group"><label class="form-label">Page Number</label><input type="number" id="ann-page" value="1" min="1"></div>
-      </div>
-    </div>
-    <div class="btn-row"><button class="btn btn-primary" onclick="annotatePDF()">&#128172; Add Annotation</button></div>
-  </div>
-  <div class="result-banner" id="annotate-result">
-    <div class="res-icon">✅</div><div class="res-text"><h4>Annotation Added!</h4><p id="annotate-result-text">PDF ready hai.</p></div>
-    <button class="btn btn-success" id="annotate-download">⬇️ Download PDF</button>
-  </div>
-</div>
 
 <!-- FOOTER -->
 <footer class="site-footer">
@@ -1720,7 +1079,7 @@
         <a href="#" onclick="showPanel('merge'); return false;">Merge PDF</a>
         <a href="#" onclick="showPanel('compress'); return false;">Compress PDF</a>
         <a href="#" onclick="showPanel('sign'); return false;">Sign PDF</a>
-        <a href="#" onclick="showPanel('ocr'); return false;">OCR</a>
+        <a href="#" onclick="showPanel('pdf2img'); return false;">PDF → Image</a>
       </div>
     </div>
     <div>
