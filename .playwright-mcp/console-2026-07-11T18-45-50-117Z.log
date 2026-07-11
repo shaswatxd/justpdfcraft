@@ -1,0 +1,105 @@
+[     166ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2335
+[     282ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[     282ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[     282ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[     395ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2364
+[     396ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2384
+[     396ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0
+[   10829ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2335
+[   10849ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   10849ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   10849ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   10899ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2364
+[   10900ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2384
+[   10900ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0
+[   11569ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2335
+[   11632ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   11632ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   11632ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   11674ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2364
+[   11675ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2384
+[   11676ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0
+[   14996ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2335
+[   15016ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   15016ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   15016ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   15059ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2364
+[   15060ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2384
+[   15060ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0
+[   15296ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   15296ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   15296ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   15301ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2335
+[   15350ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2364
+[   15351ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2384
+[   15351ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0
+[   15797ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   15797ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   15797ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   15801ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2335
+[   15840ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2364
+[   15841ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2384
+[   15841ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0
+[   41021ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2335
+[   41040ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   41040ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   41041ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   41063ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2364
+[   41063ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2384
+[   41064ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0
+[   41261ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   41261ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   41261ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   41274ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2335
+[   41332ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2364
+[   41332ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2384
+[   41333ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0
+[   41799ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   41799ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   41799ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[   41804ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2335
+[   41835ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2364
+[   41835ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2384
+[   41835ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0
+[  182456ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2335
+[  182488ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  182488ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  182488ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  182530ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2364
+[  182530ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2384
+[  182530ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0
+[  273396ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2344
+[  273421ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  273421ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  273421ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  273439ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2373
+[  273439ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2393
+[  273440ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0
+[  336944ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2344
+[  336966ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  336966ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  336966ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  336993ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2373
+[  336994ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2393
+[  337003ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0
+[  510907ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2344
+[  510932ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  510932ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  510932ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  510955ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2373
+[  510955ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2393
+[  510956ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0
+[  511147ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  511147ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  511147ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  511162ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2344
+[  511189ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2373
+[  511190ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2393
+[  511190ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0
+[  511468ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  511468ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  511468ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5000/:0
+[  511516ms] [LOG] ✅ Service Worker registered: ServiceWorkerRegistration @ http://localhost:5000/script.js?v=11:2344
+[  511546ms] [LOG] ✅ beforeinstallprompt event fired @ http://localhost:5000/script.js?v=11:2373
+[  511547ms] [LOG] 🔘 Install button visible @ http://localhost:5000/script.js?v=11:2393
+[  511547ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:5000/:0

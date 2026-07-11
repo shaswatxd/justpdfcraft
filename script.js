@@ -488,7 +488,7 @@ function showPanel(id, addToHistory = true) {
     syncResumeTemplatePreview(value);
   }
 
-  function formatResumeSectionText(text) {
+  function formatResumeSectionText(text, fieldId) {
     if (!text) return '';
     const lines = text.split('\n');
     let html = '';
@@ -512,7 +512,7 @@ function showPanel(id, addToHistory = true) {
           inList = true;
         }
         const itemText = trimmed.substring(1).trim();
-        html += `<li style="margin-bottom: 0.25rem; line-height: 1.45; font-size: 0.85rem; color: #374151;">${escapeHtml(itemText)}</li>`;
+        html += `<li contenteditable="true" data-field="${fieldId}" data-type="list" style="margin-bottom: 0.25rem; line-height: 1.45; font-size: 0.85rem; color: #374151;">${escapeHtml(itemText)}</li>`;
         continue;
       }
 
@@ -526,23 +526,58 @@ function showPanel(id, addToHistory = true) {
         const parts = trimmed.split('|').map(p => p.trim());
         html += `
           <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 0.4rem; margin-bottom: 0.15rem; font-size: 0.88rem;">
-            <span style="font-weight: 700; color: #111827;">${escapeHtml(parts[0])}</span>
-            <span style="font-size: 0.82rem; font-weight: 600; color: #6b7280; font-style: italic;">${escapeHtml(parts[1])}</span>
+            <span contenteditable="true" data-field="${fieldId}" data-type="split-left" style="font-weight: 700; color: #111827;">${escapeHtml(parts[0])}</span>
+            <span contenteditable="true" data-field="${fieldId}" data-type="split-right" style="font-size: 0.82rem; font-weight: 600; color: #6b7280; font-style: italic;">${escapeHtml(parts[1])}</span>
           </div>
         `;
         continue;
       }
 
       // Standard text line
-      html += `<p style="margin: 0 0 0.35rem 0; line-height: 1.5; font-size: 0.85rem; color: #374151;">${escapeHtml(trimmed)}</p>`;
+      html += `<p contenteditable="true" data-field="${fieldId}" data-type="p" style="margin: 0 0 0.35rem 0; line-height: 1.5; font-size: 0.85rem; color: #374151;">${escapeHtml(trimmed)}</p>`;
     }
 
     if (inList) {
       html += '</ul>';
     }
 
-    return html;
+    return `<div class="live-section-container" data-field="${fieldId}">${html}</div>`;
   }
+
+  // Accent Color Mapping
+  window.currentResumeAccentColor = 'default';
+  const ACCENT_COLORS = {
+    default: {
+      'ats-minimal': '#1f4f8f',
+      'modern-slate': '#0f766e',
+      'executive-split': '#0f766e'
+    },
+    blue: {
+      'ats-minimal': '#1d4ed8',
+      'modern-slate': '#1d4ed8',
+      'executive-split': '#1d4ed8'
+    },
+    green: {
+      'ats-minimal': '#047857',
+      'modern-slate': '#047857',
+      'executive-split': '#047857'
+    },
+    purple: {
+      'ats-minimal': '#6d28d9',
+      'modern-slate': '#6d28d9',
+      'executive-split': '#6d28d9'
+    },
+    grey: {
+      'ats-minimal': '#374151',
+      'modern-slate': '#374151',
+      'executive-split': '#374151'
+    },
+    red: {
+      'ats-minimal': '#b91c1c',
+      'modern-slate': '#b91c1c',
+      'executive-split': '#b91c1c'
+    }
+  };
 
   function renderResumeTemplatePreview() {
     const get = (id, fallback = '') => document.getElementById(id)?.value?.trim() || fallback;
@@ -552,7 +587,7 @@ function showPanel(id, addToHistory = true) {
     const email = get('resume-email', 'your@email.com');
     const phone = get('resume-phone', '+91 XXXXX XXXXX');
     const location = get('resume-location', 'Your City');
-    const role = get('resume-role', 'Target Role');
+    const role = get('resume-role', 'Designation');
     const summaryInput = get('resume-summary', '');
     const educationInput = get('resume-education', 'BCA - XYZ College');
     const skillsInput = get('resume-skills', 'HTML, CSS, JavaScript');
@@ -572,12 +607,15 @@ function showPanel(id, addToHistory = true) {
     // Sync template class
     paper.className = `resume-paper ${template}`;
 
+    // Get active accent color for template
+    const activeAccentColor = (ACCENT_COLORS[window.currentResumeAccentColor] || ACCENT_COLORS.default)[template];
+
     // Parse formatting into HTML
-    const summaryHtml = formatResumeSectionText(summary);
-    const skillsHtml = formatResumeSectionText(skillsInput);
-    const educationHtml = formatResumeSectionText(educationInput);
-    const projectsHtml = formatResumeSectionText(projectsInput);
-    const achievementsHtml = formatResumeSectionText(achievementsInput);
+    const summaryHtml = formatResumeSectionText(summary, 'resume-summary');
+    const skillsHtml = formatResumeSectionText(skillsInput, 'resume-skills');
+    const educationHtml = formatResumeSectionText(educationInput, 'resume-education');
+    const projectsHtml = formatResumeSectionText(projectsInput, 'resume-projects');
+    const achievementsHtml = formatResumeSectionText(achievementsInput, 'resume-achievements');
 
     let html = '';
 
@@ -586,93 +624,119 @@ function showPanel(id, addToHistory = true) {
         <div style="font-family: 'DM Sans', Arial, sans-serif; color: #111827; line-height: 1.45; font-size: 0.88rem; width: 100%; box-sizing: border-box;">
           <!-- Center Aligned Header -->
           <div style="text-align: center; margin-bottom: 1.2rem; border-bottom: 2px solid #111827; padding-bottom: 0.6rem;">
-            <h1 style="font-size: 1.75rem; font-weight: 800; text-transform: uppercase; margin: 0 0 0.15rem 0; letter-spacing: 0.5px; color: #111827;">${escapeHtml(name)}</h1>
-            <div style="font-size: 0.95rem; color: #4b5563; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem;">${escapeHtml(role)}</div>
-            <div style="font-size: 0.8rem; color: #4b5563; font-weight: 500;">${escapeHtml(email)} &bull; ${escapeHtml(phone)} &bull; ${escapeHtml(location)}</div>
+            <h1 contenteditable="true" data-field="resume-name" style="font-size: 1.75rem; font-weight: 800; text-transform: uppercase; margin: 0 0 0.15rem 0; letter-spacing: 0.5px; color: #111827; display: inline-block; min-width: 100px;">${escapeHtml(name)}</h1>
+            <div contenteditable="true" data-field="resume-role" style="font-size: 0.95rem; color: #4b5563; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; display: block; min-width: 80px;">${escapeHtml(role)}</div>
+            <div style="font-size: 0.8rem; color: #4b5563; font-weight: 500;">
+              <span contenteditable="true" data-field="resume-email" style="display:inline-block; min-width: 50px;">${escapeHtml(email)}</span> &bull; 
+              <span contenteditable="true" data-field="resume-phone" style="display:inline-block; min-width: 50px;">${escapeHtml(phone)}</span> &bull; 
+              <span contenteditable="true" data-field="resume-location" style="display:inline-block; min-width: 50px;">${escapeHtml(location)}</span>
+            </div>
           </div>
 
           <!-- Summary -->
           ${summary ? `
           <div style="margin-bottom: 0.95rem;">
-            <h3 style="font-size: 0.88rem; font-weight: 800; color: #1f4f8f; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Professional Summary</h3>
+            <h3 contenteditable="true" data-section-title="summary" style="font-size: 0.88rem; font-weight: 800; color: ${activeAccentColor}; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px; outline: none;">${escapeHtml(window.sectionTitles.summary || 'Professional Summary')}</h3>
             <div style="line-height: 1.5;">${summaryHtml}</div>
           </div>` : ''}
 
           <!-- Skills -->
           ${skillsInput ? `
           <div style="margin-bottom: 0.95rem;">
-            <h3 style="font-size: 0.88rem; font-weight: 800; color: #1f4f8f; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Skills</h3>
+            <h3 contenteditable="true" data-section-title="skills" style="font-size: 0.88rem; font-weight: 800; color: ${activeAccentColor}; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px; outline: none;">${escapeHtml(window.sectionTitles.skills || 'Skills')}</h3>
             <div>${skillsHtml}</div>
           </div>` : ''}
 
           <!-- Experience & Projects -->
           ${projectsInput ? `
           <div style="margin-bottom: 0.95rem;">
-            <h3 style="font-size: 0.88rem; font-weight: 800; color: #1f4f8f; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Experience & Projects</h3>
+            <h3 contenteditable="true" data-section-title="projects" style="font-size: 0.88rem; font-weight: 800; color: ${activeAccentColor}; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px; outline: none;">${escapeHtml(window.sectionTitles.projects || 'Experience & Projects')}</h3>
             <div>${projectsHtml}</div>
           </div>` : ''}
 
           <!-- Education -->
           ${educationInput ? `
           <div style="margin-bottom: 0.95rem;">
-            <h3 style="font-size: 0.88rem; font-weight: 800; color: #1f4f8f; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Education</h3>
+            <h3 contenteditable="true" data-section-title="education" style="font-size: 0.88rem; font-weight: 800; color: ${activeAccentColor}; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px; outline: none;">${escapeHtml(window.sectionTitles.education || 'Education')}</h3>
             <div>${educationHtml}</div>
           </div>` : ''}
 
           <!-- Achievements -->
           ${achievementsInput ? `
           <div style="margin-bottom: 0.95rem;">
-            <h3 style="font-size: 0.88rem; font-weight: 800; color: #1f4f8f; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Certifications & Achievements</h3>
+            <h3 contenteditable="true" data-section-title="achievements" style="font-size: 0.88rem; font-weight: 800; color: ${activeAccentColor}; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px; outline: none;">${escapeHtml(window.sectionTitles.achievements || 'Certifications & Achievements')}</h3>
             <div>${achievementsHtml}</div>
           </div>` : ''}
+
+          <!-- Custom Sections -->
+          ${(window.customResumeSections || []).map(sec => {
+            const secValue = sec.value || `${sec.title} preview yahan aayega.`;
+            return `
+            <div style="margin-bottom: 0.95rem;">
+              <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.88rem; font-weight: 800; color: ${activeAccentColor}; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px; outline: none;">${escapeHtml(sec.title)}</h3>
+              <div>${formatResumeSectionText(secValue, sec.id)}</div>
+            </div>`;
+          }).join('')}
         </div>
       `;
     } else if (template === 'modern-slate') {
       html = `
         <div style="font-family: 'DM Sans', Arial, sans-serif; color: #0f172a; line-height: 1.5; font-size: 0.88rem; width: 100%; box-sizing: border-box;">
           <!-- Left Aligned Header with Side Border -->
-          <div style="border-left: 6px solid #0f766e; padding-left: 1.25rem; margin-bottom: 1.5rem; padding-top: 0.2rem; padding-bottom: 0.2rem;">
-            <h1 style="font-size: 2rem; font-weight: 800; margin: 0 0 0.15rem 0; color: #0f172a; letter-spacing: -0.5px;">${escapeHtml(name)}</h1>
-            <div style="font-size: 0.95rem; color: #0f766e; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">${escapeHtml(role)}</div>
+          <div style="border-left: 6px solid ${activeAccentColor}; padding-left: 1.25rem; margin-bottom: 1.5rem; padding-top: 0.2rem; padding-bottom: 0.2rem;">
+            <h1 contenteditable="true" data-field="resume-name" style="font-size: 2rem; font-weight: 800; margin: 0 0 0.15rem 0; color: #0f172a; letter-spacing: -0.5px; display: inline-block; min-width: 100px;">${escapeHtml(name)}</h1>
+            <div contenteditable="true" data-field="resume-role" style="font-size: 0.95rem; color: ${activeAccentColor}; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; display: block; min-width: 80px;">${escapeHtml(role)}</div>
             <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.5rem; font-weight: 500;">
-              📧 ${escapeHtml(email)} &nbsp;&bull;&nbsp; 📞 ${escapeHtml(phone)} &nbsp;&bull;&nbsp; 📍 ${escapeHtml(location)}
+              📧 <span contenteditable="true" data-field="resume-email" style="display:inline-block; min-width: 50px;">${escapeHtml(email)}</span> &nbsp;&bull;&nbsp; 
+              📞 <span contenteditable="true" data-field="resume-phone" style="display:inline-block; min-width: 50px;">${escapeHtml(phone)}</span> &nbsp;&bull;&nbsp; 
+              📍 <span contenteditable="true" data-field="resume-location" style="display:inline-block; min-width: 50px;">${escapeHtml(location)}</span>
             </div>
           </div>
 
           <!-- Summary -->
           ${summary ? `
           <div style="margin-bottom: 1.2rem;">
-            <h3 style="font-size: 0.92rem; font-weight: 800; color: #0f766e; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem;">About Me</h3>
+            <h3 contenteditable="true" data-section-title="summary" style="font-size: 0.92rem; font-weight: 800; color: ${activeAccentColor}; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem; outline: none;">${escapeHtml(window.sectionTitles.summary || 'About Me')}</h3>
             <div>${summaryHtml}</div>
           </div>` : ''}
 
           <!-- Skills -->
           ${skillsInput ? `
           <div style="margin-bottom: 1.2rem;">
-            <h3 style="font-size: 0.92rem; font-weight: 800; color: #0f766e; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem;">Technical Toolkit</h3>
+            <h3 contenteditable="true" data-section-title="skills" style="font-size: 0.92rem; font-weight: 800; color: ${activeAccentColor}; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem; outline: none;">${escapeHtml(window.sectionTitles.skills || 'Technical Toolkit')}</h3>
             <div>${skillsHtml}</div>
           </div>` : ''}
 
           <!-- Experience & Projects -->
           ${projectsInput ? `
           <div style="margin-bottom: 1.2rem;">
-            <h3 style="font-size: 0.92rem; font-weight: 800; color: #0f766e; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem;">Work & Projects</h3>
+            <h3 contenteditable="true" data-section-title="projects" style="font-size: 0.92rem; font-weight: 800; color: ${activeAccentColor}; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem; outline: none;">${escapeHtml(window.sectionTitles.projects || 'Work & Projects')}</h3>
             <div>${projectsHtml}</div>
           </div>` : ''}
 
           <!-- Education -->
           ${educationInput ? `
           <div style="margin-bottom: 1.2rem;">
-            <h3 style="font-size: 0.92rem; font-weight: 800; color: #0f766e; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem;">Education</h3>
+            <h3 contenteditable="true" data-section-title="education" style="font-size: 0.92rem; font-weight: 800; color: ${activeAccentColor}; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem; outline: none;">${escapeHtml(window.sectionTitles.education || 'Education')}</h3>
             <div>${educationHtml}</div>
           </div>` : ''}
 
           <!-- Achievements -->
           ${achievementsInput ? `
           <div style="margin-bottom: 1.2rem;">
-            <h3 style="font-size: 0.92rem; font-weight: 800; color: #0f766e; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem;">Achievements</h3>
+            <h3 contenteditable="true" data-section-title="achievements" style="font-size: 0.92rem; font-weight: 800; color: ${activeAccentColor}; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem; outline: none;">${escapeHtml(window.sectionTitles.achievements || 'Achievements')}</h3>
             <div>${achievementsHtml}</div>
           </div>` : ''}
+
+          <!-- Custom Sections -->
+          ${(window.customResumeSections || []).map(sec => {
+            const secValue = sec.value || `${sec.title} preview yahan aayega.`;
+            return `
+            <div style="margin-bottom: 1.2rem;">
+              <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.92rem; font-weight: 800; color: ${activeAccentColor}; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem; outline: none;">${escapeHtml(sec.title)}</h3>
+              <div>${formatResumeSectionText(secValue, sec.id)}</div>
+            </div>`;
+          }).join('')}
         </div>
       `;
     } else if (template === 'executive-split') {
@@ -681,31 +745,31 @@ function showPanel(id, addToHistory = true) {
           <!-- Left Narrow Sidebar Column -->
           <div style="width: 33%; background: #f8fafc; padding: 1.5rem; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 1.4rem; box-sizing: border-box;">
             <div>
-              <h1 style="font-size: 1.45rem; font-weight: 800; margin: 0 0 0.2rem 0; color: #0f172a; line-height: 1.15; letter-spacing: -0.5px;">${escapeHtml(name)}</h1>
-              <div style="font-size: 0.8rem; color: #0f766e; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">${escapeHtml(role)}</div>
+              <h1 contenteditable="true" data-field="resume-name" style="font-size: 1.45rem; font-weight: 800; margin: 0 0 0.2rem 0; color: #0f172a; line-height: 1.15; letter-spacing: -0.5px; display: inline-block; min-width: 100px;">${escapeHtml(name)}</h1>
+              <div contenteditable="true" data-field="resume-role" style="font-size: 0.8rem; color: ${activeAccentColor}; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: block; min-width: 80px;">${escapeHtml(role)}</div>
             </div>
 
             <!-- Contact Section -->
             <div style="border-top: 1.5px solid #e2e8f0; padding-top: 0.8rem;">
               <h4 style="font-size: 0.75rem; text-transform: uppercase; color: #475569; letter-spacing: 1px; margin: 0 0 0.5rem 0; font-weight: 800;">Contact</h4>
               <div style="font-size: 0.78rem; line-height: 1.5; color: #475569; display: flex; flex-direction: column; gap: 0.35rem;">
-                <div style="display:flex; align-items:center; gap: 0.3rem;">📍 <span style="word-break:break-all;">${escapeHtml(location)}</span></div>
-                <div style="display:flex; align-items:center; gap: 0.3rem;">📧 <span style="word-break:break-all;">${escapeHtml(email)}</span></div>
-                <div style="display:flex; align-items:center; gap: 0.3rem;">📞 <span style="word-break:break-all;">${escapeHtml(phone)}</span></div>
+                <div style="display:flex; align-items:center; gap: 0.3rem;">📍 <span contenteditable="true" data-field="resume-location" style="word-break:break-all; display:inline-block; min-width: 50px;">${escapeHtml(location)}</span></div>
+                <div style="display:flex; align-items:center; gap: 0.3rem;">📧 <span contenteditable="true" data-field="resume-email" style="word-break:break-all; display:inline-block; min-width: 50px;">${escapeHtml(email)}</span></div>
+                <div style="display:flex; align-items:center; gap: 0.3rem;">📞 <span contenteditable="true" data-field="resume-phone" style="word-break:break-all; display:inline-block; min-width: 50px;">${escapeHtml(phone)}</span></div>
               </div>
             </div>
 
             <!-- Skills Section -->
             ${skillsInput ? `
             <div style="border-top: 1.5px solid #e2e8f0; padding-top: 0.8rem;">
-              <h4 style="font-size: 0.75rem; text-transform: uppercase; color: #475569; letter-spacing: 1px; margin: 0 0 0.5rem 0; font-weight: 800;">Expertise</h4>
+              <h4 contenteditable="true" data-section-title="skills" style="font-size: 0.75rem; text-transform: uppercase; color: #475569; letter-spacing: 1px; margin: 0 0 0.5rem 0; font-weight: 800; outline: none;">${escapeHtml(window.sectionTitles.skills || 'Expertise')}</h4>
               <div style="font-size: 0.78rem; color: #475569; line-height: 1.45;">${skillsHtml}</div>
             </div>` : ''}
 
             <!-- Education Section -->
             ${educationInput ? `
             <div style="border-top: 1.5px solid #e2e8f0; padding-top: 0.8rem;">
-              <h4 style="font-size: 0.75rem; text-transform: uppercase; color: #475569; letter-spacing: 1px; margin: 0 0 0.5rem 0; font-weight: 800;">Education</h4>
+              <h4 contenteditable="true" data-section-title="education" style="font-size: 0.75rem; text-transform: uppercase; color: #475569; letter-spacing: 1px; margin: 0 0 0.5rem 0; font-weight: 800; outline: none;">${escapeHtml(window.sectionTitles.education || 'Education')}</h4>
               <div style="font-size: 0.78rem; color: #475569; line-height: 1.45;">${educationHtml}</div>
             </div>` : ''}
           </div>
@@ -715,29 +779,44 @@ function showPanel(id, addToHistory = true) {
             <!-- Summary -->
             ${summary ? `
             <div>
-              <h3 style="font-size: 0.88rem; font-weight: 800; text-transform: uppercase; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3rem; margin: 0 0 0.5rem 0; letter-spacing: 0.5px;">Executive Summary</h3>
+              <h3 contenteditable="true" data-section-title="summary" style="font-size: 0.88rem; font-weight: 800; text-transform: uppercase; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3rem; margin: 0 0 0.5rem 0; letter-spacing: 0.5px; outline: none;">${escapeHtml(window.sectionTitles.summary || 'Executive Summary')}</h3>
               <div style="font-size: 0.85rem; color: #334155; line-height: 1.5;">${summaryHtml}</div>
             </div>` : ''}
 
             <!-- Experience & Projects -->
             ${projectsInput ? `
             <div>
-              <h3 style="font-size: 0.88rem; font-weight: 800; text-transform: uppercase; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3rem; margin: 0 0 0.5rem 0; letter-spacing: 0.5px;">Professional History</h3>
+              <h3 contenteditable="true" data-section-title="projects" style="font-size: 0.88rem; font-weight: 800; text-transform: uppercase; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3rem; margin: 0 0 0.5rem 0; letter-spacing: 0.5px; outline: none;">${escapeHtml(window.sectionTitles.projects || 'Professional History')}</h3>
               <div style="font-size: 0.85rem; color: #334155; line-height: 1.45;">${projectsHtml}</div>
             </div>` : ''}
 
             <!-- Achievements -->
             ${achievementsInput ? `
             <div>
-              <h3 style="font-size: 0.88rem; font-weight: 800; text-transform: uppercase; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3rem; margin: 0 0 0.5rem 0; letter-spacing: 0.5px;">Key Honors</h3>
+              <h3 contenteditable="true" data-section-title="achievements" style="font-size: 0.88rem; font-weight: 800; text-transform: uppercase; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3rem; margin: 0 0 0.5rem 0; letter-spacing: 0.5px; outline: none;">${escapeHtml(window.sectionTitles.achievements || 'Key Honors')}</h3>
               <div style="font-size: 0.85rem; color: #334155; line-height: 1.45;">${achievementsHtml}</div>
             </div>` : ''}
+
+            <!-- Custom Sections -->
+            ${(window.customResumeSections || []).map(sec => {
+              const secValue = sec.value || `${sec.title} preview yahan aayega.`;
+              return `
+              <div>
+                <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.88rem; font-weight: 800; text-transform: uppercase; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3rem; margin: 0 0 0.5rem 0; letter-spacing: 0.5px; outline: none;">${escapeHtml(sec.title)}</h3>
+                <div style="font-size: 0.85rem; color: #334155; line-height: 1.45;">${formatResumeSectionText(secValue, sec.id)}</div>
+              </div>`;
+            }).join('')}
           </div>
         </div>
       `;
     }
 
     paper.innerHTML = html;
+
+    // Trigger ATS score update whenever the preview re-renders (meaning content changed)
+    if (typeof updateAtsScore === 'function') {
+      updateAtsScore();
+    }
   }
 
   function generateResume() {
@@ -747,7 +826,7 @@ function showPanel(id, addToHistory = true) {
     const email = document.getElementById('resume-email')?.value?.trim() || 'your@email.com';
     const phone = document.getElementById('resume-phone')?.value?.trim() || '+91 XXXXX XXXXX';
     const location = document.getElementById('resume-location')?.value?.trim() || 'Your City';
-    const role = document.getElementById('resume-role')?.value?.trim() || 'Target Role';
+    const role = document.getElementById('resume-role')?.value?.trim() || 'Designation';
     const summaryInput = document.getElementById('resume-summary')?.value?.trim();
     const education = document.getElementById('resume-education')?.value?.trim() || 'Add education details';
     const skills = document.getElementById('resume-skills')?.value?.trim() || 'Add skills';
@@ -789,6 +868,14 @@ ${education}
 CERTIFICATIONS & ACHIEVEMENTS
 =========================================
 ${achievements}`;
+
+    if (window.customResumeSections && window.customResumeSections.length > 0) {
+      window.customResumeSections.forEach(sec => {
+        if (sec.value) {
+          out += `\n\n=========================================\n${sec.title.toUpperCase()}\n=========================================\n${sec.value}`;
+        }
+      });
+    }
 
     const box = document.getElementById('resume-output');
     if (box) box.value = out;
@@ -2155,12 +2242,16 @@ function nextSignPreviewPage() {
           document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
 
           if (document.getElementById('resume-template')) {
-            syncResumeTemplatePreview(document.getElementById('resume-template').value || 'modern');
+            syncResumeTemplatePreview(document.getElementById('resume-template').value || 'ats-minimal');
             ['resume-template', 'resume-level', 'resume-name', 'resume-email', 'resume-phone', 'resume-location', 'resume-role', 'resume-summary', 'resume-education', 'resume-skills', 'resume-projects', 'resume-achievements'].forEach(id => {
               const el = document.getElementById(id);
               if (el) el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', renderResumeTemplatePreview);
             });
             renderResumeTemplatePreview();
+            
+            if (typeof initResumeEnhancements === 'function') {
+              initResumeEnhancements();
+            }
           }
 
           // ── Animation Enhancements ──────────────────────
@@ -2249,7 +2340,7 @@ function nextSignPreviewPage() {
 
         // Register Service Worker with auto-update
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('/service-worker.js?v=8', { updateViaCache: 'none' })
+          navigator.serviceWorker.register('/service-worker.js?v=9', { updateViaCache: 'none' })
             .then((reg) => {
               console.log('✅ Service Worker registered:', reg);
               reg.update();
@@ -3160,3 +3251,480 @@ window.setResumeTemplate = setResumeTemplate;
 window.generateResume = generateResume;
 window.downloadResumeText = downloadResumeText;
 window.downloadResumePDF = downloadResumePDF;
+
+// Resume Builder Enhancements Expose
+window.setResumeAccentColor = setResumeAccentColor;
+window.addCustomSectionPrompt = addCustomSectionPrompt;
+window.removeCustomSection = removeCustomSection;
+window.closeCustomSectionModal = closeCustomSectionModal;
+window.submitCustomSectionModal = submitCustomSectionModal;
+window.closeConfirmDeleteModal = closeConfirmDeleteModal;
+window.saveSectionTitles = saveSectionTitles;
+window.loadSectionTitles = loadSectionTitles;
+window.initResumeEnhancements = initResumeEnhancements;
+window.updateAtsScore = updateAtsScore;
+
+// ── Helper Functions for Resume Builder Enhancements ──
+function reconstructTextarea(fieldId) {
+  const container = document.querySelector(`.live-section-container[data-field="${fieldId}"]`);
+  if (!container) return;
+
+  let lines = [];
+
+  function traverse(node) {
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const type = node.getAttribute('data-type');
+      if (type === 'p') {
+        lines.push(node.innerText);
+      } else if (type === 'list') {
+        lines.push(`- ${node.innerText}`);
+      } else if (node.style.height === '6px') {
+        lines.push('');
+      } else if (node.style.display === 'flex' || node.style.display === 'inline-flex') {
+        const left = node.querySelector('[data-type="split-left"]');
+        const right = node.querySelector('[data-type="split-right"]');
+        const leftText = left ? left.innerText.trim() : '';
+        const rightText = right ? right.innerText.trim() : '';
+        if (leftText || rightText) {
+          lines.push(`${leftText} | ${rightText}`);
+        }
+      } else {
+        node.childNodes.forEach(child => traverse(child));
+      }
+    }
+  }
+
+  container.childNodes.forEach(child => traverse(child));
+
+  const textarea = document.getElementById(fieldId);
+  if (textarea) {
+    textarea.value = lines.join('\n');
+    
+    // Sync to state if it is a custom section
+    if (fieldId.startsWith('resume-custom-') && window.customResumeSections) {
+      const sec = window.customResumeSections.find(s => s.id === fieldId);
+      if (sec) {
+        sec.value = textarea.value;
+        saveCustomSections();
+      }
+    }
+  }
+}
+
+function setResumeAccentColor(color, swatch) {
+  window.currentResumeAccentColor = color;
+  
+  document.querySelectorAll('.color-swatch').forEach(btn => btn.classList.remove('active'));
+  if (swatch) {
+    swatch.classList.add('active');
+  } else {
+    const activeSwatch = document.querySelector(`.color-swatch[data-color="${color}"]`);
+    if (activeSwatch) activeSwatch.classList.add('active');
+  }
+  
+  renderResumeTemplatePreview();
+  toast(`Accent color set to ${color}`, '🎨');
+}
+
+function updateAtsScore() {
+  const getVal = (id) => document.getElementById(id)?.value?.trim() || '';
+  const name = getVal('resume-name');
+  const email = getVal('resume-email');
+  const phone = getVal('resume-phone');
+  const location = getVal('resume-location');
+  const role = getVal('resume-role');
+  const summary = getVal('resume-summary');
+  const skills = getVal('resume-skills');
+  const projects = getVal('resume-projects');
+  const education = getVal('resume-education');
+
+  let score = 0;
+  let tips = [];
+
+  // Name check
+  if (name && name !== 'Your Name') {
+    score += 15;
+  } else {
+    tips.push('Add your full name.');
+  }
+
+  // Email check
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (email && emailRegex.test(email) && email !== 'your@email.com') {
+    score += 15;
+  } else {
+    tips.push('Provide a valid email address.');
+  }
+
+  // Phone check
+  if (phone && phone.length >= 8 && !phone.includes('XXXXX')) {
+    score += 10;
+  } else {
+    tips.push('Add a valid phone number.');
+  }
+
+  // Location check
+  if (location && location !== 'Your City') {
+    score += 10;
+  } else {
+    tips.push('Add your location (City, Country).');
+  }
+
+  // Designation check
+  if (role && role !== 'Designation') {
+    score += 10;
+  } else {
+    tips.push('Specify a Designation.');
+  }
+
+  // Summary check
+  if (summary.length >= 100) {
+    score += 15;
+  } else if (summary.length > 0) {
+    score += 5;
+    tips.push('Make summary stronger (aim for 100+ chars).');
+  } else {
+    tips.push('Write a professional summary.');
+  }
+
+  // Skills check
+  const skillsList = skills.split(',').map(s => s.trim()).filter(s => s.length > 0);
+  if (skillsList.length >= 5) {
+    score += 10;
+  } else {
+    tips.push('List at least 5 skills (separated by commas).');
+  }
+
+  // Projects check
+  if (projects && projects.length > 30 && !projects.includes('preview yahan aayega')) {
+    score += 10;
+  } else {
+    tips.push('Add detailed project/experience descriptions.');
+  }
+
+  // Education check
+  if (education && education.length > 10) {
+    score += 5;
+  } else {
+    tips.push('List your educational background.');
+  }
+
+  const scoreValEl = document.getElementById('ats-score-val');
+  const scoreFillEl = document.getElementById('ats-score-fill');
+  const tipsListEl = document.getElementById('ats-tips-list');
+
+  if (scoreValEl) scoreValEl.textContent = `${score}%`;
+  if (scoreFillEl) scoreFillEl.style.width = `${score}%`;
+
+  if (tipsListEl) {
+    if (tips.length === 0) {
+      tipsListEl.innerHTML = '<div style="color: #10b981; font-size: 0.8rem; font-weight: 600;">✨ Perfect! Your resume is fully optimized.</div>';
+    } else {
+      tipsListEl.innerHTML = tips.slice(0, 3).map(tip => `
+        <div class="ats-tip-item">
+          <span class="ats-tip-icon">💡</span>
+          <span>${tip}</span>
+        </div>
+      `).join('');
+    }
+  }
+}
+
+// Section Titles Customization State
+window.sectionTitles = {
+  summary: '',
+  skills: '',
+  projects: '',
+  education: '',
+  achievements: ''
+};
+
+function saveSectionTitles() {
+  localStorage.setItem('justpdfcraft_resume_section_titles', JSON.stringify(window.sectionTitles));
+}
+
+function loadSectionTitles() {
+  const stored = localStorage.getItem('justpdfcraft_resume_section_titles');
+  if (stored) {
+    try {
+      window.sectionTitles = { ...window.sectionTitles, ...JSON.parse(stored) };
+    } catch (e) {}
+  }
+  
+  // Sync the form labels in the sidebar
+  const syncLabel = (inputId, title) => {
+    if (!title) return;
+    const input = document.getElementById(inputId);
+    if (input && input.previousElementSibling) {
+      input.previousElementSibling.textContent = title;
+    }
+  };
+  
+  syncLabel('resume-summary', window.sectionTitles.summary);
+  syncLabel('resume-skills', window.sectionTitles.skills);
+  syncLabel('resume-projects', window.sectionTitles.projects);
+  syncLabel('resume-education', window.sectionTitles.education);
+  syncLabel('resume-achievements', window.sectionTitles.achievements);
+}
+
+// Dynamic Custom Resume Sections State
+window.customResumeSections = [];
+
+function saveCustomSections() {
+  localStorage.setItem('justpdfcraft_resume_custom_sections', JSON.stringify(window.customResumeSections));
+}
+
+function loadCustomSections() {
+  const stored = localStorage.getItem('justpdfcraft_resume_custom_sections');
+  if (stored) {
+    try {
+      window.customResumeSections = JSON.parse(stored);
+    } catch (e) {
+      window.customResumeSections = [];
+    }
+  } else {
+    window.customResumeSections = [];
+  }
+  
+  // Clear and rebuild custom fields inside the container
+  const container = document.getElementById('custom-sections-container');
+  if (container) {
+    container.innerHTML = '';
+    window.customResumeSections.forEach(sec => {
+      createCustomSectionFormElement(sec);
+    });
+  }
+  renderResumeTemplatePreview();
+}
+
+function createCustomSectionFormElement(section) {
+  const container = document.getElementById('custom-sections-container');
+  if (!container) return;
+
+  const div = document.createElement('div');
+  div.className = 'form-group';
+  div.id = `group-${section.id}`;
+  div.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+      <label class="form-label" style="margin-bottom: 0;">${escapeHtml(section.title)}</label>
+      <button type="button" class="btn-delete-section" onclick="removeCustomSection('${section.id}')">✕ Delete</button>
+    </div>
+    <textarea id="${section.id}" rows="4" placeholder="Enter details for ${escapeHtml(section.title)}...">${escapeHtml(section.value || '')}</textarea>
+  `;
+
+  container.appendChild(div);
+
+  // Bind input event to update state and trigger preview
+  const textarea = div.querySelector('textarea');
+  if (textarea) {
+    textarea.addEventListener('input', () => {
+      section.value = textarea.value;
+      renderResumeTemplatePreview();
+      saveCustomSections();
+    });
+  }
+}
+
+function addCustomSectionPrompt() {
+  const modal = document.getElementById('custom-section-modal');
+  const input = document.getElementById('custom-section-title-input');
+  if (modal && input) {
+    input.value = '';
+    modal.style.display = 'flex';
+    // Trigger transition reflow
+    modal.offsetHeight; 
+    modal.classList.add('active');
+    modal.style.opacity = '1';
+    modal.style.pointerEvents = 'auto';
+    input.focus();
+  }
+}
+
+function closeCustomSectionModal() {
+  const modal = document.getElementById('custom-section-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.opacity = '0';
+    modal.style.pointerEvents = 'none';
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 250);
+  }
+}
+
+function submitCustomSectionModal() {
+  const input = document.getElementById('custom-section-title-input');
+  if (!input || !input.value.trim()) return;
+
+  const title = input.value.trim();
+  const id = `resume-custom-${Date.now()}`;
+  const section = { id, title, value: '' };
+
+  window.customResumeSections.push(section);
+  createCustomSectionFormElement(section);
+  saveCustomSections();
+  renderResumeTemplatePreview();
+  closeCustomSectionModal();
+  toast(`Section "${title}" added!`, '➕');
+}
+
+let sectionIdToDelete = null;
+
+function removeCustomSection(id) {
+  const section = window.customResumeSections.find(s => s.id === id);
+  const title = section ? section.title : 'Section';
+  
+  sectionIdToDelete = id;
+  
+  const modal = document.getElementById('confirm-delete-modal');
+  const message = document.getElementById('confirm-delete-message');
+  const confirmBtn = document.getElementById('confirm-delete-btn');
+  
+  if (modal && message && confirmBtn) {
+    message.textContent = `Are you sure you want to delete the "${title}" section? This will remove all its content.`;
+    
+    // Bind click event once
+    confirmBtn.onclick = () => {
+      executeDeleteSection();
+    };
+    
+    modal.style.display = 'flex';
+    modal.offsetHeight;
+    modal.classList.add('active');
+    modal.style.opacity = '1';
+    modal.style.pointerEvents = 'auto';
+  }
+}
+
+function closeConfirmDeleteModal() {
+  const modal = document.getElementById('confirm-delete-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.opacity = '0';
+    modal.style.pointerEvents = 'none';
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 250);
+  }
+  sectionIdToDelete = null;
+}
+
+function executeDeleteSection() {
+  if (!sectionIdToDelete) return;
+  const id = sectionIdToDelete;
+  const section = window.customResumeSections.find(s => s.id === id);
+  const title = section ? section.title : 'Section';
+
+  window.customResumeSections = window.customResumeSections.filter(s => s.id !== id);
+  const element = document.getElementById(`group-${id}`);
+  if (element) element.remove();
+  
+  saveCustomSections();
+  renderResumeTemplatePreview();
+  closeConfirmDeleteModal();
+  toast(`Section "${title}" removed`, '🗑️');
+}
+
+function initResumeEnhancements() {
+  loadSectionTitles();
+  loadCustomSections();
+  updateAtsScore();
+  
+  const formIds = [
+    'resume-name', 'resume-email', 'resume-phone', 'resume-location', 
+    'resume-role', 'resume-summary', 'resume-education', 'resume-skills', 
+    'resume-projects', 'resume-achievements'
+  ];
+  formIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', updateAtsScore);
+    }
+  });
+
+  const paper = document.getElementById('resume-paper');
+  if (paper) {
+    paper.addEventListener('input', (e) => {
+      const target = e.target;
+      
+      // 1. Handle standard section title edit
+      const sectionTitleKey = target.getAttribute('data-section-title');
+      if (sectionTitleKey) {
+        const newTitle = target.innerText.trim();
+        window.sectionTitles[sectionTitleKey] = newTitle;
+        saveSectionTitles();
+        
+        // Sync to form label
+        const inputId = {
+          summary: 'resume-summary',
+          skills: 'resume-skills',
+          projects: 'resume-projects',
+          education: 'resume-education',
+          achievements: 'resume-achievements'
+        }[sectionTitleKey];
+        
+        if (inputId) {
+          const input = document.getElementById(inputId);
+          if (input && input.previousElementSibling) {
+            input.previousElementSibling.textContent = newTitle;
+          }
+        }
+        return;
+      }
+
+      // 2. Handle custom section title edit
+      const customSectionId = target.getAttribute('data-custom-section-title');
+      if (customSectionId) {
+        const newTitle = target.innerText.trim();
+        const sec = window.customResumeSections.find(s => s.id === customSectionId);
+        if (sec) {
+          sec.title = newTitle;
+          saveCustomSections();
+          
+          // Sync to form label
+          const label = document.querySelector(`#group-${customSectionId} label`);
+          if (label) {
+            label.textContent = newTitle;
+          }
+        }
+        return;
+      }
+
+      const fieldId = target.getAttribute('data-field');
+      if (!fieldId) return;
+
+      const isSection = target.hasAttribute('data-type');
+      if (isSection) {
+        reconstructTextarea(fieldId);
+      } else {
+        const input = document.getElementById(fieldId);
+        if (input) {
+          input.value = target.innerText.trim();
+        }
+      }
+      
+      updateAtsScore();
+    });
+
+    paper.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const target = e.target;
+        if (target.hasAttribute('data-field') || target.hasAttribute('data-section-title') || target.hasAttribute('data-custom-section-title')) {
+          e.preventDefault();
+          target.blur();
+        }
+      }
+    });
+  }
+
+  // Handle Enter key inside the custom section title modal input
+  const modalInput = document.getElementById('custom-section-title-input');
+  if (modalInput) {
+    modalInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submitCustomSectionModal();
+      }
+    });
+  }
+}

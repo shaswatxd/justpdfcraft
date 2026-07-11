@@ -3219,6 +3219,136 @@ body.dashboard-body { overflow: hidden; }
   outline: none;
 }
 
+/* ── Live Editing & Resume Customization ────────── */
+.resume-paper [contenteditable="true"] {
+  outline: none;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  padding: 1px 3px;
+  cursor: text;
+}
+.resume-paper [contenteditable="true"]:hover {
+  background: rgba(108, 99, 255, 0.06);
+  box-shadow: 0 0 0 1px rgba(108, 99, 255, 0.2);
+}
+.resume-paper [contenteditable="true"]:focus {
+  background: rgba(16, 185, 129, 0.08) !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.35) !important;
+}
+
+/* Accent Color Swatches */
+.color-picker-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.2rem;
+  background: rgba(30, 41, 59, 0.3);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.color-picker-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+.color-swatches {
+  display: flex;
+  gap: 0.5rem;
+}
+.color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.color-swatch:hover {
+  transform: scale(1.15);
+}
+.color-swatch.active {
+  border-color: white;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+/* ATS Score Widget */
+.ats-score-widget {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(12px);
+}
+.ats-score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+.ats-score-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.ats-score-value {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--accent3);
+}
+.ats-progress-bar-bg {
+  height: 8px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.ats-progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent3));
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+.ats-tips-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.ats-tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.35;
+}
+.ats-tip-icon {
+  margin-top: 2px;
+}
+
+/* Delete Section Link */
+.btn-delete-section {
+  background: none;
+  border: none;
+  color: #f87171;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+.btn-delete-section:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
 /* ── Resume Print Styling ─────────────────────── */
 @media print {
   body {
@@ -3228,7 +3358,8 @@ body.dashboard-body { overflow: hidden; }
   
   header, footer, aside, .sidebar, nav, .mobile-sidebar, .hamburger-btn, .theme-btn, .btn,
   .resume-template-showcase, .two-col > div:first-child, .form-group, .panel-title, .panel-desc,
-  #toast-container, .cookie-banner, .panel-back-btn, #resume-output {
+  #toast-container, .cookie-banner, .panel-back-btn, #resume-output,
+  .ats-score-widget, .color-picker-container {
     display: none !important;
   }
 
@@ -3265,9 +3396,37 @@ body.dashboard-body { overflow: hidden; }
     color: black !important;
   }
 
+  .resume-paper [contenteditable="true"] {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+
   @page {
     size: A4;
     margin: 15mm 20mm 15mm 20mm;
   }
 }
+
+/* Custom Modal Styles */
+.custom-modal {
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.custom-modal.active {
+  display: flex !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+.custom-modal.active .modal-content {
+  transform: scale(1) !important;
+}
+.custom-modal .modal-content {
+  transform: scale(0.92);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 
