@@ -163,6 +163,20 @@ function showPanel(id, addToHistory = true) {
   
   if (id === 'sign') initSignCanvas();
   if (id === 'handwriting') renderHandwritingPreview();
+  if (id === 'resume') {
+    // Small timeout to let the panel become visible first
+    setTimeout(() => {
+      if (!window.sectionTitles) window.sectionTitles = { summary: '', skills: '', projects: '', education: '', achievements: '' };
+      if (!window.customResumeSections) window.customResumeSections = [];
+      if (typeof window.syncResumeTemplatePreview === 'function') {
+        window.syncResumeTemplatePreview(document.getElementById('resume-template')?.value || 'ats-minimal');
+      }
+      if (typeof window.initResumeEnhancements === 'function' && !window._resumeEnhancementsInited) {
+        window.initResumeEnhancements();
+        window._resumeEnhancementsInited = true;
+      }
+    }, 50);
+  }
 
   const b = document.getElementById('btn-' + id);
   if (b) b.classList.add('active');
@@ -634,8 +648,23 @@ function showPanel(id, addToHistory = true) {
     const paper = document.getElementById('resume-paper');
     if (!paper) return;
     
+    // Ensure global state is initialized
+    if (!window.sectionTitles) window.sectionTitles = { summary: '', skills: '', projects: '', education: '', achievements: '' };
+    if (!window.customResumeSections) window.customResumeSections = [];
+    
     // Sync template class
     paper.className = `resume-paper ${template}`;
+    
+    // Reset paper base styles per template
+    if (template === 'elegant-dark') {
+      paper.style.cssText = `border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); min-height: 800px; box-sizing: border-box; overflow: hidden; background: #0f172a; padding: 0;`;
+    } else if (template === 'vibrant-two-col' || template === 'creative-bold') {
+      paper.style.cssText = `border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); min-height: 800px; box-sizing: border-box; overflow: hidden; background: white; padding: 0;`;
+    } else if (template === 'corporate-pro') {
+      paper.style.cssText = `border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); min-height: 800px; box-sizing: border-box; overflow: hidden; background: white; padding: 0;`;
+    } else {
+      paper.style.cssText = `border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); min-height: 800px; box-sizing: border-box; overflow: hidden; background: white; padding: 0;`;
+    }
 
     // Get active accent color for template
     const activeAccentColor = (ACCENT_COLORS[window.currentResumeAccentColor] || ACCENT_COLORS.default)[template];
@@ -2539,6 +2568,7 @@ function nextSignPreviewPage() {
             
             if (typeof initResumeEnhancements === 'function') {
               initResumeEnhancements();
+              window._resumeEnhancementsInited = true;
             }
           }
 
@@ -3535,6 +3565,7 @@ window.downloadTxtOutput = downloadTxtOutput;
 window.resetPdf2Txt = resetPdf2Txt;
 
 window.syncResumeTemplatePreview = syncResumeTemplatePreview;
+window.renderResumeTemplatePreview = renderResumeTemplatePreview;
 window.setResumeTemplate = setResumeTemplate;
 window.generateResume = generateResume;
 window.downloadResumeText = downloadResumeText;
