@@ -28,6 +28,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Homemade+Apple&family=Shadows+Into+Light&family=Patrick+Hand&family=Architects+Daughter&family=Gochi+Hand&family=Reenie+Beanie&family=Delius&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./style.css?v=11">
 
 </head>
@@ -76,6 +77,8 @@
     <button class="mobile-tool-btn" onclick="showPanel('img2pdf'); closeMobileMenu()"><span class="icon">&#128444;&#65039;</span> Image &rarr; PDF</button>
 
     <button class="mobile-tool-btn" onclick="showPanel('pdf2img'); closeMobileMenu()"><span class="icon">&#128248;</span> PDF &rarr; Image</button>
+    <button class="mobile-tool-btn" id="mbtn-handwriting" onclick="showPanel('handwriting'); closeMobileMenu()"><span class="icon">✍️</span> Handwriting Gen</button>
+    <button class="mobile-tool-btn" id="mbtn-pdf2txt" onclick="showPanel('pdf2txt'); closeMobileMenu()"><span class="icon">📄</span> PDF &rarr; Text</button>
   </div>
 </nav>
 
@@ -111,6 +114,8 @@
     <button class="tool-btn" id="btn-unlock" onclick="showPanel('unlock')"><span class="icon">&#128275;</span> Unlock PDF</button>
     <button class="tool-btn" id="btn-marks" onclick="showPanel('marks')"><span class="icon">&#128202;</span> Marks Calculator</button>
     <button class="tool-btn" id="btn-pdf2word" onclick="showPanel('pdf2word')"><span class="icon">📝</span> PDF &rarr; Word</button>
+    <button class="tool-btn" id="btn-handwriting" onclick="showPanel('handwriting')"><span class="icon">✍️</span> Handwriting Gen</button>
+    <button class="tool-btn" id="btn-pdf2txt" onclick="showPanel('pdf2txt')"><span class="icon">📄</span> PDF &rarr; Text</button>
 
     <button class="tool-btn" id="btn-about" onclick="showPanel('about')"><span class="icon">&#8505;&#65039;</span> About</button>
     
@@ -206,39 +211,19 @@
   <div class="tool-card" onclick="showPanel('rotate')"><div class="tool-badge">Edit</div><div class="tc-icon">&#128260;</div><div class="tc-name">Rotate</div><div class="tc-desc">Pages ghuma do</div></div>
   <div class="tool-card" onclick="showPanel('preview')"><div class="tool-badge">View</div><div class="tc-icon">&#128064;</div><div class="tc-name">Preview</div><div class="tc-desc">PDF dekho browser mein</div></div>
   <div class="tool-card" onclick="showPanel('pdf2img')"><div class="tool-badge">Export</div><div class="tc-icon">&#128248;</div><div class="tc-name">PDF &rarr; Image</div><div class="tc-desc">Pages export karo</div></div>
+  <div class="tool-card" onclick="showPanel('pdf2txt')"><div class="tool-badge">Popular</div><div class="tc-icon">📄</div><div class="tc-name">PDF &rarr; Text</div><div class="tc-desc">PDF se text extract karke TXT file download karo</div></div>
 </div>
 
 <div class="tool-section-title">Student & Utility</div>
 <div class="tools-grid">
+  <div class="tool-card" onclick="showPanel('handwriting')" style="border: 1px solid rgba(255, 101, 132, 0.3)"><div class="tool-badge" style="background:linear-gradient(135deg,#ff6584,#ff8a00)">Special</div><div class="tc-icon">✍️</div><div class="tc-name">Handwriting Gen</div><div class="tc-desc">Text ko realistic scanned assignment PDF banao</div></div>
   <div class="tool-card" onclick="showPanel('percentage')"><div class="tool-badge">Student</div><div class="tc-icon">%</div><div class="tc-name">Percentage Calculator</div><div class="tc-desc">Obtained aur total marks se percentage nikalo</div></div>
   <div class="tool-card" onclick="showPanel('marks')"><div class="tool-badge">Student</div><div class="tc-icon">&#128202;</div><div class="tc-name">Marks Calculator</div><div class="tc-desc">Total, average aur percentage nikalo</div></div>
   <div class="tool-card" onclick="showPanel('resume')"><div class="tool-badge">Popular</div><div class="tc-icon">&#128196;</div><div class="tc-name">Resume Builder</div><div class="tc-desc">Quick resume template banao</div></div>
   <div class="tool-card" onclick="showPanel('about')"><div class="tool-badge">Info</div><div class="tc-icon">&#8505;&#65039;</div><div class="tc-name">About</div><div class="tc-desc">Project details dekho</div></div>
 </div>
 
-  <!-- WHY US SECTION -->
-  <section class="home-info-section">
-    <div class="info-container">
-      <h2 class="section-heading">Why Choose JustPDFCraft?</h2>
-      <div class="info-grid">
-        <div class="info-card">
-          <div class="info-icon">🔒</div>
-          <h3>Privacy First</h3>
-          <p>Your files never leave your computer. We use browser-based processing (JavaScript/WebAssembly) to handle all operations locally. This ensures your sensitive documents remain private and secure.</p>
-        </div>
-        <div class="info-card">
-          <div class="info-icon">⚡</div>
-          <h3>Zero Wait Time</h3>
-          <p>Since there's no uploading or downloading from a server, processing is near-instant. The only limit is your device's speed. Merge or compress large files in seconds.</p>
-        </div>
-        <div class="info-card">
-          <div class="info-icon">✨</div>
-          <h3>100% Free Forever</h3>
-          <p>We don't believe in subscriptions or "pro" versions for basic tasks. Access every single tool, from OCR to PDF signing, without paying a single penny or creating an account.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+
 
   <!-- HOW IT WORKS SECTION -->
   <section class="home-how-section">
@@ -780,66 +765,30 @@
     <div class="resume-template-showcase__head">
       <div>
         <label class="form-label">Choose Resume Template</label>
-        <p class="resume-template-showcase__sub">Canva-style elite gallery se template pick karo, live preview right side mein update hoga.</p>
+        <p class="resume-template-showcase__sub">Select a premium template layout from our curated list. Live preview will automatically update below.</p>
       </div>
       <div class="resume-template-showcase__meta">
-        <span class="resume-template-chip">9 layouts</span>
+        <span class="resume-template-chip">3 layouts</span>
       </div>
     </div>
-    <div class="resume-template-grid">
-      <button type="button" class="template-card active" onclick="setResumeTemplate('ats', this)">
-        <span class="template-card__badge">Featured</span>
+    <div class="resume-template-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
+      <button type="button" class="template-card active" onclick="setResumeTemplate('ats-minimal', this)">
+        <span class="template-card__badge">ATS Friendly</span>
         <span class="template-card__thumb ats"></span>
-        <span class="template-card__title">ATS</span>
-        <span class="template-card__desc">Keyword-safe recruiter layout</span>
+        <span class="template-card__title">ATS Minimal</span>
+        <span class="template-card__desc">Standard recruiters-safe format</span>
       </button>
-      <button type="button" class="template-card" onclick="setResumeTemplate('professional', this)">
-        <span class="template-card__badge">Featured</span>
-        <span class="template-card__thumb professional"></span>
-        <span class="template-card__title">Professional</span>
-        <span class="template-card__desc">Classic hiring-safe format</span>
-      </button>
-      <button type="button" class="template-card" onclick="setResumeTemplate('simple', this)">
-        <span class="template-card__badge">Clean</span>
-        <span class="template-card__thumb simple"></span>
-        <span class="template-card__title">Simple</span>
-        <span class="template-card__desc">Minimal one-page layout</span>
-      </button>
-      <button type="button" class="template-card" onclick="setResumeTemplate('modern', this)">
+      <button type="button" class="template-card" onclick="setResumeTemplate('modern-slate', this)">
         <span class="template-card__badge">Popular</span>
         <span class="template-card__thumb modern"></span>
-        <span class="template-card__title">Modern</span>
-        <span class="template-card__desc">Sharp spacing and clean sections</span>
+        <span class="template-card__title">Modern Slate</span>
+        <span class="template-card__desc">Clean left-aligned slate design</span>
       </button>
-      <button type="button" class="template-card" onclick="setResumeTemplate('creative', this)">
-        <span class="template-card__badge">Creative</span>
-        <span class="template-card__thumb creative"></span>
-        <span class="template-card__title">Creative</span>
-        <span class="template-card__desc">Portfolio-style standout profile</span>
-      </button>
-      <button type="button" class="template-card" onclick="setResumeTemplate('executive', this)">
-        <span class="template-card__badge">Featured</span>
+      <button type="button" class="template-card" onclick="setResumeTemplate('executive-split', this)">
+        <span class="template-card__badge">Premium</span>
         <span class="template-card__thumb executive"></span>
-        <span class="template-card__title">Executive</span>
-        <span class="template-card__desc">Leadership-first professional look</span>
-      </button>
-      <button type="button" class="template-card" onclick="setResumeTemplate('premium-onyx', this)">
-        <span class="template-card__badge">Modern</span>
-        <span class="template-card__thumb premium-onyx"></span>
-        <span class="template-card__title">Onyx</span>
-        <span class="template-card__desc">Bold dark accent business style</span>
-      </button>
-      <button type="button" class="template-card" onclick="setResumeTemplate('premium-aura', this)">
-        <span class="template-card__badge">Modern</span>
-        <span class="template-card__thumb premium-aura"></span>
-        <span class="template-card__title">Aura</span>
-        <span class="template-card__desc">Elegant colorful modern branding</span>
-      </button>
-      <button type="button" class="template-card" onclick="setResumeTemplate('premium-slate', this)">
-        <span class="template-card__badge">Modern</span>
-        <span class="template-card__thumb premium-slate"></span>
-        <span class="template-card__title">Slate</span>
-        <span class="template-card__desc">Refined slate accent corporate layout</span>
+        <span class="template-card__title">Executive Split</span>
+        <span class="template-card__desc">Elegant two-column design</span>
       </button>
     </div>
   </div>
@@ -849,15 +798,9 @@
         <div class="form-group">
             <label class="form-label">Template</label>
             <select id="resume-template" onchange="syncResumeTemplatePreview(this.value)">
-              <option value="ats">ATS</option>
-              <option value="professional">Professional</option>
-              <option value="simple">Simple</option>
-              <option value="modern">Modern</option>
-              <option value="creative">Creative</option>
-              <option value="executive">Executive</option>
-              <option value="premium-onyx">Onyx</option>
-              <option value="premium-aura">Aura</option>
-              <option value="premium-slate">Slate</option>
+              <option value="ats-minimal" selected>ATS Minimal</option>
+              <option value="modern-slate">Modern Slate</option>
+              <option value="executive-split">Executive Split</option>
             </select>
           </div>
         <div class="form-group">
@@ -887,41 +830,14 @@
         <button class="btn btn-primary" onclick="generateResume()">Build Resume</button>
         <button class="btn btn-secondary" onclick="copyOutput('resume-output')">Copy</button>
         <button class="btn btn-secondary" onclick="downloadResumeText()">Download TXT</button>
+        <button class="btn btn-primary" style="background: linear-gradient(135deg, #10b981, #059669);" onclick="downloadResumePDF()">⬇️ Download PDF</button>
       </div>
     </div>
     <div>
       <label class="form-label">Live Template Preview</label>
-      <div class="resume-live-preview" id="resume-live-preview">
-        <div class="resume-paper ats" id="resume-paper">
-          <div class="resume-paper-header">
-            <div>
-              <h3 id="resume-paper-name">Your Name</h3>
-              <p id="resume-paper-role">Target Role</p>
-            </div>
-            <div class="resume-paper-contact" id="resume-paper-contact">your@email.com | +91 XXXXX XXXXX | Your City</div>
-          </div>
-          <div class="resume-paper-section">
-            <div class="resume-paper-title" id="resume-summary-title">Professional Summary</div>
-            <p id="resume-paper-summary">Template select karte hi yahan live preview dikhega.</p>
-          </div>
-          <div class="resume-paper-grid">
-            <div class="resume-paper-section">
-              <div class="resume-paper-title" id="resume-skills-title">Skills</div>
-              <p id="resume-paper-skills">HTML, CSS, JavaScript</p>
-            </div>
-            <div class="resume-paper-section">
-              <div class="resume-paper-title" id="resume-education-title">Education</div>
-              <p id="resume-paper-education">BCA - XYZ College</p>
-            </div>
-          </div>
-          <div class="resume-paper-section">
-            <div class="resume-paper-title" id="resume-projects-title">Projects / Experience</div>
-            <p id="resume-paper-projects">Project details preview yahan aayega.</p>
-          </div>
-          <div class="resume-paper-section">
-            <div class="resume-paper-title" id="resume-achievements-title">Achievements / Certifications</div>
-            <p id="resume-paper-achievements">Achievements preview yahan aayega.</p>
-          </div>
+      <div class="resume-live-preview" id="resume-live-preview" style="background: #e2e8f0; padding: 1.5rem; border-radius: 16px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);">
+        <div class="resume-paper ats-minimal" id="resume-paper" style="background: white; color: black; padding: 2.5rem; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); min-height: 800px; box-sizing: border-box;">
+          <!-- Dynamically populated via JS -->
         </div>
       </div>
       <div class="form-group" style="margin-top:0.9rem">
@@ -1023,13 +939,7 @@
   </div>
 </div>
 
-<!-- COOKIE BANNER -->
-<div class="cookie-banner" id="cookie-banner">
-  <div class="cb-content">
-    <span>🍪 We use cookies to ensure you get the best experience on our website.</span>
-    <button class="btn btn-primary btn-sm" onclick="acceptCookies()">Got it!</button>
-  </div>
-</div>
+
 
 
 
@@ -1060,11 +970,179 @@
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════ -->
+<!-- HANDWRITING GENERATOR PANEL -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panel-handwriting">
+  <h2 class="panel-title">✍️ Handwriting Generator</h2>
+  <p class="panel-desc">Paste assignment text, customize fonts, paper style and apply scanner camera shadow filters to generate organic handwritten sheets.</p>
+  
+  <div class="two-col handwriting-layout">
+    <!-- Left Column: Controls -->
+    <div class="handwriting-controls">
+      <div class="form-group">
+        <label class="form-label">Assignment Text / Notes</label>
+        <textarea id="hw-text" rows="8" placeholder="Apna text yahan likhein ya copy-paste karein..." oninput="updateHandwritingState('text', this.value)"></textarea>
+      </div>
 
+      <div class="two-col">
+        <div class="form-group">
+          <label class="form-label">Handwriting Font</label>
+          <select id="hw-font" onchange="updateHandwritingState('font', this.value)">
+            <option value="Caveat" selected>Caveat (Casual)</option>
+            <option value="'Homemade Apple'">Homemade Apple (Cursive)</option>
+            <option value="'Shadows Into Light'">Shadows Into Light</option>
+            <option value="'Patrick Hand'">Patrick Hand (Clean)</option>
+            <option value="'Architects Daughter'">Architects Daughter</option>
+            <option value="'Gochi Hand'">Gochi Hand (Chubby)</option>
+            <option value="'Reenie Beanie'">Reenie Beanie (Quick Scratch)</option>
+            <option value="Delius">Delius (Neat)</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Paper Type</label>
+          <select id="hw-paper" onchange="updateHandwritingState('paper', this.value)">
+            <option value="ruled" selected>Ruled Page (Notebook)</option>
+            <option value="plain">Plain Page (A4 Paper)</option>
+            <option value="grid">Grid Sheet (Graph Page)</option>
+          </select>
+        </div>
+      </div>
 
+      <div class="two-col">
+        <div class="form-group">
+          <label class="form-label">Ink Type / Color</label>
+          <div class="color-row" style="margin-top:0.25rem">
+            <input type="color" id="hw-color" value="#1d3557" onchange="updateHandwritingState('ink', this.value)">
+            <div class="color-swatch active" style="background:#1d3557" onclick="selectInkSwatch('#1d3557', this)" title="Royal Blue Gel"></div>
+            <div class="color-swatch" style="background:#111111" onclick="selectInkSwatch('#111111', this)" title="Black Gel Pen"></div>
+            <div class="color-swatch" style="background:#b7094c" onclick="selectInkSwatch('#b7094c', this)" title="Red Pen"></div>
+            <div class="color-swatch" style="background:#006d77" onclick="selectInkSwatch('#006d77', this)" title="Teal Ink"></div>
+          </div>
+        </div>
 
+        <div class="form-group">
+          <label class="form-label">Font Size (<span id="hw-size-lbl">26</span>px)</label>
+          <input type="range" id="hw-size" min="18" max="42" value="26" step="1" oninput="updateHandwritingState('size', parseInt(this.value))">
+        </div>
+      </div>
 
+      <div class="two-col">
+        <div class="form-group">
+          <label class="form-label">Line Spacing (<span id="hw-spacing-lbl">40</span>px)</label>
+          <input type="range" id="hw-spacing" min="30" max="65" value="40" step="1" oninput="updateHandwritingState('lineHeight', parseInt(this.value))">
+        </div>
 
+        <div class="form-group">
+          <label class="form-label">Scanner Effect (<span id="hw-scanner-lbl">50</span>%)</label>
+          <input type="range" id="hw-scanner" min="0" max="100" value="50" step="5" oninput="updateHandwritingState('scannerEffect', parseInt(this.value))">
+        </div>
+      </div>
+      
+      <div class="btn-row" style="margin-top:1.5rem">
+        <button class="btn btn-primary" onclick="generateHandwritingPDF()">✍️ PDF Generate Karo</button>
+        <button class="btn btn-secondary" onclick="resetHandwriting()">🗑️ Clear</button>
+      </div>
+    </div>
+
+    <!-- Right Column: Preview -->
+    <div class="handwriting-preview-panel">
+      <div class="preview-toolbar" style="display:flex;align-items:center;justify-content:space-between;gap:0.75rem;margin-bottom:0.75rem">
+        <span class="form-label" style="margin:0">Live Page Preview</span>
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <button class="btn btn-secondary btn-sm" type="button" onclick="prevHwPage()">◀ Prev</button>
+          <span style="color:var(--text2);font-size:0.84rem;font-weight:600">Page <span id="hw-preview-cur">1</span> of <span id="hw-preview-total">1</span></span>
+          <button class="btn btn-secondary btn-sm" type="button" onclick="nextHwPage()">Next ▶</button>
+        </div>
+      </div>
+
+      <div class="hw-preview-container">
+        <!-- Responsive canvas container -->
+        <canvas id="hw-preview-canvas" width="1240" height="1754" style="width:100%; height:auto; display:block; border-radius:12px; border:1px solid var(--border); box-shadow:var(--shadow)"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-wrap" id="handwriting-progress"><div class="progress-bar"><div class="progress-fill" id="handwriting-fill"></div></div><div class="progress-label" id="handwriting-plab">Generating PDF...</div></div>
+  <div class="result-banner" id="handwriting-result">
+    <div class="res-icon">✅</div><div class="res-text"><h4>Assignment Generated!</h4><p id="handwriting-result-text"></p></div>
+    <button class="btn btn-success" id="handwriting-download">⬇️ Download PDF</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PDF TO TEXT EXTRACTOR PANEL -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panel-pdf2txt">
+  <h2 class="panel-title">📄 PDF to Text Extractor</h2>
+  <p class="panel-desc">Upload a PDF file to extract all text locally in the browser. You can select formatting layouts, preview the text instantly, and copy or download it.</p>
+  
+  <div class="dropzone" id="pdf2txt-dz">
+    <input type="file" id="pdf2txt-input" accept=".pdf" onchange="handlePdf2TxtFile(this.files[0])">
+    <div class="dz-icon">📄</div>
+    <h3>PDF yahan drop karo</h3>
+    <p>Click karke ya drag & drop se PDF file choose karo</p>
+  </div>
+
+  <div id="pdf2txt-options" style="display:none; margin-top:1.5rem">
+    <div class="form-group">
+      <label class="form-label">Extraction Settings</label>
+      <div class="options-grid" style="margin-bottom: 1rem">
+        <div class="option-card selected" id="p2t-mode-flow" onclick="selectPdf2TxtMode('flow')">
+          <div class="opt-icon">📋</div>
+          <div class="opt-label">Paragraph Flow (Recommended)</div>
+        </div>
+        <div class="option-card" id="p2t-mode-raw" onclick="selectPdf2TxtMode('raw')">
+          <div class="opt-icon">📃</div>
+          <div class="opt-label">Raw Line Breaks</div>
+        </div>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="p2t-clean-lines" checked onchange="togglePdf2TxtClean()">
+        <label for="p2t-clean-lines">Consecutive blank lines remove karo</label>
+      </div>
+    </div>
+    
+    <div class="btn-row" style="margin-top:1rem">
+      <button class="btn btn-primary" onclick="convertPdf2Txt()">📄 Extract Text</button>
+      <button class="btn btn-secondary" onclick="resetPdf2Txt()">🗑️ Clear File</button>
+    </div>
+  </div>
+
+  <div class="progress-wrap" id="pdf2txt-progress">
+    <div class="progress-bar"><div class="progress-fill" id="pdf2txt-fill"></div></div>
+    <div class="progress-label" id="pdf2txt-plab">Extracting...</div>
+  </div>
+
+  <div id="pdf2txt-result" style="display:none; margin-top:2rem">
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:1.5rem">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem">
+        <h3 style="font-family:'Syne',sans-serif; font-size:1.1rem; margin:0">Extracted Text Preview</h3>
+        <div style="display:flex; gap:0.5rem">
+          <button class="btn btn-secondary btn-sm" onclick="copyTxtOutput()">📋 Copy Text</button>
+          <button class="btn btn-success btn-sm" onclick="downloadTxtOutput()">⬇️ Download .txt</button>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1rem">
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:0.4rem 0.8rem; border-radius:8px; font-size:0.8rem; font-weight:600">
+          Words: <span id="p2t-stat-words" style="color:var(--accent)">0</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:0.4rem 0.8rem; border-radius:8px; font-size:0.8rem; font-weight:600">
+          Characters: <span id="p2t-stat-chars" style="color:var(--accent)">0</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:0.4rem 0.8rem; border-radius:8px; font-size:0.8rem; font-weight:600">
+          Reading Time: <span id="p2t-stat-time" style="color:var(--accent)">0 min</span>
+        </div>
+      </div>
+
+      <!-- Preview Textarea -->
+      <textarea id="pdf2txt-output" rows="12" style="width:100%; font-family:var(--font-mono, monospace); font-size:0.9rem; line-height:1.6; padding:1rem; border-radius:10px; border:1px solid var(--border); background:rgba(0,0,0,0.1); color:var(--text); resize:vertical" placeholder="Extracted text yahan preview hoga..."></textarea>
+    </div>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer class="site-footer">

@@ -21,6 +21,22 @@ const state = {
   signFile: null, signType: 'draw', signDrawing: false, signLastX: 0, signLastY: 0,
   previewDoc: null, previewPage: 1, previewTotal: 0,
   resultBlobs: {},
+  handwriting: {
+    text: '',
+    font: 'Caveat',
+    ink: '#1d3557',
+    paper: 'ruled',
+    size: 26,
+    lineHeight: 40,
+    scannerEffect: 50,
+    currentPage: 1
+  },
+  pdf2txt: {
+    file: null,
+    text: '',
+    mode: 'flow',
+    clean: true
+  }
 };
 
 // ══════════════════════════════════════════════════════
@@ -146,6 +162,7 @@ function showPanel(id, addToHistory = true) {
   if (p) p.classList.add('active');
   
   if (id === 'sign') initSignCanvas();
+  if (id === 'handwriting') renderHandwritingPreview();
 
   const b = document.getElementById('btn-' + id);
   if (b) b.classList.add('active');
@@ -423,47 +440,26 @@ function showPanel(id, addToHistory = true) {
   }
 
   const RESUME_TEMPLATE_META = {
-    ats: {
-      title: 'ATS',
-      tag: 'Keyword-safe recruiter friendly layout',
-      badge: 'Featured',
-      layout: 'Summary + Skills + Experience + Education',
-      note: 'Best for online applications, recruiter screening and hiring-safe formatting.'
-    },
-    professional: {
-      title: 'Professional',
-      tag: 'Classic hiring-safe structure',
-      badge: 'Featured',
+    'ats-minimal': {
+      title: 'ATS Minimal',
+      tag: 'Standard recruiters-safe format',
+      badge: 'ATS Friendly',
       layout: 'Header + Summary + Skills + Experience + Education',
-      note: 'Best for business, office, campus and general job applications.'
+      note: 'Best for engineering, finance, tech, and corporate applications.'
     },
-    simple: {
-      title: 'Simple',
-      tag: 'Minimal clean one-page look',
-      badge: 'Featured',
-      layout: 'Compact profile + skills + experience + education',
-      note: 'Best when you want a clean resume without extra visual noise.'
+    'modern-slate': {
+      title: 'Modern Slate',
+      tag: 'Clean left-aligned slate design',
+      badge: 'Popular',
+      layout: 'Left Header + Summary + Toolkit + Experience + Education',
+      note: 'Refined modern design with clean lines and teal/slate accents.'
     },
-    modern: {
-      title: 'Modern',
-      tag: 'Sharp headings with modern spacing',
-      badge: 'Featured',
-      layout: 'Header + Summary + Skills + Experience + Education',
-      note: 'Best for polished modern resumes that still feel safe and readable.'
-    },
-    executive: {
-      title: 'Executive',
-      tag: 'Leadership-first professional structure',
-      badge: 'Featured',
-      layout: 'Headline + Impact Summary + Core Skills + Experience Highlights',
-      note: 'Best for senior profiles, leadership roles and polished client-facing resumes.'
-    },
-    creative: {
-      title: 'Creative',
-      tag: 'Portfolio-style standout presentation',
-      badge: 'Featured',
-      layout: 'Brand-style intro + Skills + Projects + Achievements',
-      note: 'Best for designers, creators, marketing roles and visually expressive profiles.'
+    'executive-split': {
+      title: 'Executive Split',
+      tag: 'Elegant two-column design',
+      badge: 'Premium',
+      layout: 'Two-Column Layout (Sidebar + Experience)',
+      note: 'Perfect for split content presentation with high information density.'
     }
   };
 
@@ -476,7 +472,7 @@ function showPanel(id, addToHistory = true) {
 
   function syncResumeTemplatePreview(value) {
     const select = document.getElementById('resume-template');
-    const template = value || select?.value || 'modern';
+    const template = value || select?.value || 'ats-minimal';
     if (select && value) select.value = value;
     updateActiveResumeTemplateCard(template);
     renderResumeTemplatePreview();
@@ -492,9 +488,65 @@ function showPanel(id, addToHistory = true) {
     syncResumeTemplatePreview(value);
   }
 
+  function formatResumeSectionText(text) {
+    if (!text) return '';
+    const lines = text.split('\n');
+    let html = '';
+    let inList = false;
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) {
+        if (inList) {
+          html += '</ul>';
+          inList = false;
+        }
+        html += '<div style="height: 6px;"></div>';
+        continue;
+      }
+
+      // Check if it is a list item
+      if (trimmed.startsWith('-') || trimmed.startsWith('*') || trimmed.startsWith('•')) {
+        if (!inList) {
+          html += '<ul style="margin: 0.25rem 0 0.5rem 1.2rem; padding: 0; list-style-type: disc;">';
+          inList = true;
+        }
+        const itemText = trimmed.substring(1).trim();
+        html += `<li style="margin-bottom: 0.25rem; line-height: 1.45; font-size: 0.85rem; color: #374151;">${escapeHtml(itemText)}</li>`;
+        continue;
+      }
+
+      if (inList) {
+        html += '</ul>';
+        inList = false;
+      }
+
+      // Split lines containing pipe character for right-aligned subheaders/dates
+      if (trimmed.includes('|')) {
+        const parts = trimmed.split('|').map(p => p.trim());
+        html += `
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 0.4rem; margin-bottom: 0.15rem; font-size: 0.88rem;">
+            <span style="font-weight: 700; color: #111827;">${escapeHtml(parts[0])}</span>
+            <span style="font-size: 0.82rem; font-weight: 600; color: #6b7280; font-style: italic;">${escapeHtml(parts[1])}</span>
+          </div>
+        `;
+        continue;
+      }
+
+      // Standard text line
+      html += `<p style="margin: 0 0 0.35rem 0; line-height: 1.5; font-size: 0.85rem; color: #374151;">${escapeHtml(trimmed)}</p>`;
+    }
+
+    if (inList) {
+      html += '</ul>';
+    }
+
+    return html;
+  }
+
   function renderResumeTemplatePreview() {
     const get = (id, fallback = '') => document.getElementById(id)?.value?.trim() || fallback;
-    const template = get('resume-template', 'modern');
+    const template = get('resume-template', 'ats-minimal');
     const level = get('resume-level', 'student');
     const name = get('resume-name', 'Your Name');
     const email = get('resume-email', 'your@email.com');
@@ -502,48 +554,194 @@ function showPanel(id, addToHistory = true) {
     const location = get('resume-location', 'Your City');
     const role = get('resume-role', 'Target Role');
     const summaryInput = get('resume-summary', '');
-    const education = get('resume-education', 'BCA - XYZ College');
-    const skills = get('resume-skills', 'HTML, CSS, JavaScript');
-    const projects = get('resume-projects', 'Project details preview yahan aayega.');
-    const achievements = get('resume-achievements', 'Achievements preview yahan aayega.');
+    const educationInput = get('resume-education', 'BCA - XYZ College');
+    const skillsInput = get('resume-skills', 'HTML, CSS, JavaScript');
+    const projectsInput = get('resume-projects', 'Project details preview yahan aayega.');
+    const achievementsInput = get('resume-achievements', 'Achievements preview yahan aayega.');
+    
     const defaultSummaries = {
       student: 'Motivated student with strong learning ability, project exposure, and a practical approach to solving real-world problems.',
       intern: 'Enthusiastic internship applicant with hands-on academic work, collaboration skills, and readiness to contribute quickly.',
       experienced: 'Results-oriented professional with execution strength, ownership mindset, and a track record of delivering strong outcomes.'
     };
     const summary = summaryInput || defaultSummaries[level] || defaultSummaries.student;
-    const titles = {
-      ats: { summary: 'Professional Summary', skills: 'Keyword Skills', education: 'Education', projects: 'Work Experience / Projects', achievements: 'Certifications / Achievements' },
-      professional: { summary: 'Professional Summary', skills: 'Core Skills', education: 'Education', projects: 'Experience', achievements: 'Achievements' },
-      simple: { summary: 'Profile', skills: 'Skills', education: 'Education', projects: 'Projects / Experience', achievements: 'Certifications' },
-      modern: { summary: 'Professional Summary', skills: 'Core Skills', education: 'Education', projects: 'Projects / Experience', achievements: 'Achievements / Certifications' },
-      executive: { summary: 'Executive Profile', skills: 'Core Competencies', education: 'Education', projects: 'Leadership Highlights', achievements: 'Awards / Certifications' },
-      creative: { summary: 'Personal Brand Summary', skills: 'Creative Toolkit', education: 'Education', projects: 'Featured Work / Projects', achievements: 'Highlights' },
-      'premium-onyx': { summary: 'Brand Statement', skills: 'Core Strengths', education: 'Education', projects: 'Signature Projects', achievements: 'Awards / Certifications' },
-      'premium-aura': { summary: 'Profile Snapshot', skills: 'Skill Stack', education: 'Education', projects: 'Impact Projects', achievements: 'Highlights' },
-      'premium-slate': { summary: 'Career Summary', skills: 'Capabilities', education: 'Education', projects: 'Experience Highlights', achievements: 'Recognition' },
-    };
-    const copy = titles[template] || titles.modern;
-    const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+
     const paper = document.getElementById('resume-paper');
-    if (paper) paper.className = `resume-paper ${template}`;
-    set('resume-paper-name', name);
-    set('resume-paper-role', role);
-    set('resume-paper-contact', `${email} | ${phone} | ${location}`);
-    set('resume-summary-title', copy.summary);
-    set('resume-skills-title', copy.skills);
-    set('resume-education-title', copy.education);
-    set('resume-projects-title', copy.projects);
-    set('resume-achievements-title', copy.achievements);
-    set('resume-paper-summary', summary);
-    set('resume-paper-skills', skills);
-    set('resume-paper-education', education);
-    set('resume-paper-projects', projects);
-    set('resume-paper-achievements', achievements);
+    if (!paper) return;
+    
+    // Sync template class
+    paper.className = `resume-paper ${template}`;
+
+    // Parse formatting into HTML
+    const summaryHtml = formatResumeSectionText(summary);
+    const skillsHtml = formatResumeSectionText(skillsInput);
+    const educationHtml = formatResumeSectionText(educationInput);
+    const projectsHtml = formatResumeSectionText(projectsInput);
+    const achievementsHtml = formatResumeSectionText(achievementsInput);
+
+    let html = '';
+
+    if (template === 'ats-minimal') {
+      html = `
+        <div style="font-family: 'DM Sans', Arial, sans-serif; color: #111827; line-height: 1.45; font-size: 0.88rem; width: 100%; box-sizing: border-box;">
+          <!-- Center Aligned Header -->
+          <div style="text-align: center; margin-bottom: 1.2rem; border-bottom: 2px solid #111827; padding-bottom: 0.6rem;">
+            <h1 style="font-size: 1.75rem; font-weight: 800; text-transform: uppercase; margin: 0 0 0.15rem 0; letter-spacing: 0.5px; color: #111827;">${escapeHtml(name)}</h1>
+            <div style="font-size: 0.95rem; color: #4b5563; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem;">${escapeHtml(role)}</div>
+            <div style="font-size: 0.8rem; color: #4b5563; font-weight: 500;">${escapeHtml(email)} &bull; ${escapeHtml(phone)} &bull; ${escapeHtml(location)}</div>
+          </div>
+
+          <!-- Summary -->
+          ${summary ? `
+          <div style="margin-bottom: 0.95rem;">
+            <h3 style="font-size: 0.88rem; font-weight: 800; color: #1f4f8f; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Professional Summary</h3>
+            <div style="line-height: 1.5;">${summaryHtml}</div>
+          </div>` : ''}
+
+          <!-- Skills -->
+          ${skillsInput ? `
+          <div style="margin-bottom: 0.95rem;">
+            <h3 style="font-size: 0.88rem; font-weight: 800; color: #1f4f8f; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Skills</h3>
+            <div>${skillsHtml}</div>
+          </div>` : ''}
+
+          <!-- Experience & Projects -->
+          ${projectsInput ? `
+          <div style="margin-bottom: 0.95rem;">
+            <h3 style="font-size: 0.88rem; font-weight: 800; color: #1f4f8f; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Experience & Projects</h3>
+            <div>${projectsHtml}</div>
+          </div>` : ''}
+
+          <!-- Education -->
+          ${educationInput ? `
+          <div style="margin-bottom: 0.95rem;">
+            <h3 style="font-size: 0.88rem; font-weight: 800; color: #1f4f8f; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Education</h3>
+            <div>${educationHtml}</div>
+          </div>` : ''}
+
+          <!-- Achievements -->
+          ${achievementsInput ? `
+          <div style="margin-bottom: 0.95rem;">
+            <h3 style="font-size: 0.88rem; font-weight: 800; color: #1f4f8f; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Certifications & Achievements</h3>
+            <div>${achievementsHtml}</div>
+          </div>` : ''}
+        </div>
+      `;
+    } else if (template === 'modern-slate') {
+      html = `
+        <div style="font-family: 'DM Sans', Arial, sans-serif; color: #0f172a; line-height: 1.5; font-size: 0.88rem; width: 100%; box-sizing: border-box;">
+          <!-- Left Aligned Header with Side Border -->
+          <div style="border-left: 6px solid #0f766e; padding-left: 1.25rem; margin-bottom: 1.5rem; padding-top: 0.2rem; padding-bottom: 0.2rem;">
+            <h1 style="font-size: 2rem; font-weight: 800; margin: 0 0 0.15rem 0; color: #0f172a; letter-spacing: -0.5px;">${escapeHtml(name)}</h1>
+            <div style="font-size: 0.95rem; color: #0f766e; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">${escapeHtml(role)}</div>
+            <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.5rem; font-weight: 500;">
+              📧 ${escapeHtml(email)} &nbsp;&bull;&nbsp; 📞 ${escapeHtml(phone)} &nbsp;&bull;&nbsp; 📍 ${escapeHtml(location)}
+            </div>
+          </div>
+
+          <!-- Summary -->
+          ${summary ? `
+          <div style="margin-bottom: 1.2rem;">
+            <h3 style="font-size: 0.92rem; font-weight: 800; color: #0f766e; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem;">About Me</h3>
+            <div>${summaryHtml}</div>
+          </div>` : ''}
+
+          <!-- Skills -->
+          ${skillsInput ? `
+          <div style="margin-bottom: 1.2rem;">
+            <h3 style="font-size: 0.92rem; font-weight: 800; color: #0f766e; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem;">Technical Toolkit</h3>
+            <div>${skillsHtml}</div>
+          </div>` : ''}
+
+          <!-- Experience & Projects -->
+          ${projectsInput ? `
+          <div style="margin-bottom: 1.2rem;">
+            <h3 style="font-size: 0.92rem; font-weight: 800; color: #0f766e; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem;">Work & Projects</h3>
+            <div>${projectsHtml}</div>
+          </div>` : ''}
+
+          <!-- Education -->
+          ${educationInput ? `
+          <div style="margin-bottom: 1.2rem;">
+            <h3 style="font-size: 0.92rem; font-weight: 800; color: #0f766e; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem;">Education</h3>
+            <div>${educationHtml}</div>
+          </div>` : ''}
+
+          <!-- Achievements -->
+          ${achievementsInput ? `
+          <div style="margin-bottom: 1.2rem;">
+            <h3 style="font-size: 0.92rem; font-weight: 800; color: #0f766e; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem;">Achievements</h3>
+            <div>${achievementsHtml}</div>
+          </div>` : ''}
+        </div>
+      `;
+    } else if (template === 'executive-split') {
+      html = `
+        <div style="font-family: 'DM Sans', Arial, sans-serif; color: #1e293b; display: flex; gap: 1.5rem; min-height: 800px; width: 100%; box-sizing: border-box; margin: 0; padding: 0;">
+          <!-- Left Narrow Sidebar Column -->
+          <div style="width: 33%; background: #f8fafc; padding: 1.5rem; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 1.4rem; box-sizing: border-box;">
+            <div>
+              <h1 style="font-size: 1.45rem; font-weight: 800; margin: 0 0 0.2rem 0; color: #0f172a; line-height: 1.15; letter-spacing: -0.5px;">${escapeHtml(name)}</h1>
+              <div style="font-size: 0.8rem; color: #0f766e; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">${escapeHtml(role)}</div>
+            </div>
+
+            <!-- Contact Section -->
+            <div style="border-top: 1.5px solid #e2e8f0; padding-top: 0.8rem;">
+              <h4 style="font-size: 0.75rem; text-transform: uppercase; color: #475569; letter-spacing: 1px; margin: 0 0 0.5rem 0; font-weight: 800;">Contact</h4>
+              <div style="font-size: 0.78rem; line-height: 1.5; color: #475569; display: flex; flex-direction: column; gap: 0.35rem;">
+                <div style="display:flex; align-items:center; gap: 0.3rem;">📍 <span style="word-break:break-all;">${escapeHtml(location)}</span></div>
+                <div style="display:flex; align-items:center; gap: 0.3rem;">📧 <span style="word-break:break-all;">${escapeHtml(email)}</span></div>
+                <div style="display:flex; align-items:center; gap: 0.3rem;">📞 <span style="word-break:break-all;">${escapeHtml(phone)}</span></div>
+              </div>
+            </div>
+
+            <!-- Skills Section -->
+            ${skillsInput ? `
+            <div style="border-top: 1.5px solid #e2e8f0; padding-top: 0.8rem;">
+              <h4 style="font-size: 0.75rem; text-transform: uppercase; color: #475569; letter-spacing: 1px; margin: 0 0 0.5rem 0; font-weight: 800;">Expertise</h4>
+              <div style="font-size: 0.78rem; color: #475569; line-height: 1.45;">${skillsHtml}</div>
+            </div>` : ''}
+
+            <!-- Education Section -->
+            ${educationInput ? `
+            <div style="border-top: 1.5px solid #e2e8f0; padding-top: 0.8rem;">
+              <h4 style="font-size: 0.75rem; text-transform: uppercase; color: #475569; letter-spacing: 1px; margin: 0 0 0.5rem 0; font-weight: 800;">Education</h4>
+              <div style="font-size: 0.78rem; color: #475569; line-height: 1.45;">${educationHtml}</div>
+            </div>` : ''}
+          </div>
+          
+          <!-- Right Main Column -->
+          <div style="width: 67%; display: flex; flex-direction: column; gap: 1.3rem; padding-top: 1.5rem; padding-bottom: 1.5rem; padding-right: 1.5rem; box-sizing: border-box;">
+            <!-- Summary -->
+            ${summary ? `
+            <div>
+              <h3 style="font-size: 0.88rem; font-weight: 800; text-transform: uppercase; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3rem; margin: 0 0 0.5rem 0; letter-spacing: 0.5px;">Executive Summary</h3>
+              <div style="font-size: 0.85rem; color: #334155; line-height: 1.5;">${summaryHtml}</div>
+            </div>` : ''}
+
+            <!-- Experience & Projects -->
+            ${projectsInput ? `
+            <div>
+              <h3 style="font-size: 0.88rem; font-weight: 800; text-transform: uppercase; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3rem; margin: 0 0 0.5rem 0; letter-spacing: 0.5px;">Professional History</h3>
+              <div style="font-size: 0.85rem; color: #334155; line-height: 1.45;">${projectsHtml}</div>
+            </div>` : ''}
+
+            <!-- Achievements -->
+            ${achievementsInput ? `
+            <div>
+              <h3 style="font-size: 0.88rem; font-weight: 800; text-transform: uppercase; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3rem; margin: 0 0 0.5rem 0; letter-spacing: 0.5px;">Key Honors</h3>
+              <div style="font-size: 0.85rem; color: #334155; line-height: 1.45;">${achievementsHtml}</div>
+            </div>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    paper.innerHTML = html;
   }
 
   function generateResume() {
-    const template = document.getElementById('resume-template')?.value || 'modern';
+    const template = document.getElementById('resume-template')?.value || 'ats-minimal';
     const level = document.getElementById('resume-level')?.value || 'student';
     const name = document.getElementById('resume-name')?.value?.trim() || 'Your Name';
     const email = document.getElementById('resume-email')?.value?.trim() || 'your@email.com';
@@ -555,148 +753,69 @@ function showPanel(id, addToHistory = true) {
     const skills = document.getElementById('resume-skills')?.value?.trim() || 'Add skills';
     const projects = document.getElementById('resume-projects')?.value?.trim() || 'Add projects / experience';
     const achievements = document.getElementById('resume-achievements')?.value?.trim() || 'Add achievements / certifications';
+    
     const defaultSummaries = {
       student: 'Motivated student with strong learning ability, practical problem-solving skills, and interest in building real-world projects.',
       intern: 'Enthusiastic internship applicant with hands-on academic project experience, teamwork mindset, and eagerness to contribute quickly.',
       experienced: 'Results-oriented professional with practical execution experience, ownership mindset, and the ability to deliver strong outcomes.'
     };
     const summary = summaryInput || defaultSummaries[level] || defaultSummaries.student;
-    let out = '';
-    if (template === 'executive') {
-      out = `${name}
-${role}
-${location} | ${email} | ${phone}
 
-EXECUTIVE PROFILE
-${summary}
-
-LEADERSHIP HIGHLIGHTS
-${projects}
-
-CORE COMPETENCIES
-${skills}
-
-EDUCATION
-${education}
-
-AWARDS / CERTIFICATIONS
-${achievements}`;
-    } else if (template === 'premium-onyx') {
-      out = `${name}
+    let out = `${name.toUpperCase()}
 ${role}
 ${email} | ${phone} | ${location}
 
-BRAND STATEMENT
-${summary}
-
-CORE STRENGTHS
-${skills}
-
-SIGNATURE PROJECTS
-${projects}
-
-EDUCATION
-${education}
-
-AWARDS / CERTIFICATIONS
-${achievements}`;
-    } else if (template === 'premium-aura') {
-      out = `${name}
-${role}
-${location}
-Contact: ${email} | ${phone}
-
-PROFILE SNAPSHOT
-${summary}
-
-SKILL STACK
-${skills}
-
-IMPACT PROJECTS
-${projects}
-
-EDUCATION
-${education}
-
-HIGHLIGHTS
-${achievements}`;
-    } else if (template === 'premium-slate') {
-      out = `${name}
-${role}
-${email} | ${phone} | ${location}
-
-CAREER SUMMARY
-${summary}
-
-CAPABILITIES
-${skills}
-
-EXPERIENCE HIGHLIGHTS
-${projects}
-
-EDUCATION
-${education}
-
-RECOGNITION
-${achievements}`;
-    } else if (template === 'creative') {
-      out = `${name}
-  Creative Resume | ${role}
-${location} | ${email} | ${phone}
-
-PERSONAL BRAND SUMMARY
-${summary}
-
-KEY SKILLS
-${skills}
-
-FEATURED WORK / PROJECTS
-${projects}
-
-EDUCATION
-${education}
-
-CERTIFICATIONS / HIGHLIGHTS
-${achievements}`;
-    } else if (template === 'ats') {
-      out = `${name}
-${role}
-${email} | ${phone} | ${location}
-
+=========================================
 PROFESSIONAL SUMMARY
+=========================================
 ${summary}
 
-KEYWORDS / CORE SKILLS
+=========================================
+EXPERIENCE & PROJECTS
+=========================================
+${projects}
+
+=========================================
+CORE SKILLS
+=========================================
 ${skills}
 
-WORK EXPERIENCE / PROJECTS
-${projects}
-
+=========================================
 EDUCATION
+=========================================
 ${education}
 
-CERTIFICATIONS / ACHIEVEMENTS
+=========================================
+CERTIFICATIONS & ACHIEVEMENTS
+=========================================
 ${achievements}`;
-    } else if (template === 'simple') {
-      out = `${name} | ${role}
-${location} | ${email} | ${phone}
-${projects}
 
-EDUCATION
-${education}
-
-ACHIEVEMENTS / CERTIFICATIONS
-${achievements}`;
-    }
-    const box = document.getElementById('resume-output'); if (box) box.value = out;
+    const box = document.getElementById('resume-output');
+    if (box) box.value = out;
+    
     renderResumeTemplatePreview();
-    toast('Resume draft ready', 'ðŸ“‹');
+    toast('Resume draft ready', '📋');
   }
 
   function downloadResumeText() {
     const content = document.getElementById('resume-output')?.value || '';
-    if (!content.trim()) return toast('Pehle resume generate karo', 'ðŸ"‹');
+    if (!content.trim()) return toast('Pehle resume generate karo', '📋');
     dlBlob(new Blob([content], { type: 'text/plain;charset=utf-8' }), 'resume.txt');
+  }
+
+  function downloadResumePDF() {
+    const name = document.getElementById('resume-name')?.value?.trim() || 'resume';
+    const originalTitle = document.title;
+    
+    // Set system print filename via document title
+    document.title = `${name.replace(/\s+/g, '_')}_resume`;
+    
+    window.print();
+    
+    // Restore original document title
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 1000);
   }
 
   // ══════════════════════════════════════════════════════
@@ -2422,8 +2541,622 @@ function nextSignPreviewPage() {
         }
 
 
-        // ══════════════════════════════════════════════════════
-        // EXPOSE NEW TOOL FUNCTIONS TO GLOBAL SCOPE
-        // ══════════════════════════════════════════════════════
-        window.handlePdf2Word   = handlePdf2Word;
-        window.convertPdf2Word  = convertPdf2Word;
+// ══════════════════════════════════════════════════════
+// HANDWRITING GENERATOR ENGINE
+// ══════════════════════════════════════════════════════
+let hwRenderTimeout;
+
+async function ensureFontLoaded(fontFamily, size = 26) {
+  try {
+    if (document.fonts && document.fonts.load) {
+      await document.fonts.load(`${size}px ${fontFamily}`);
+    }
+  } catch (e) {
+    console.warn("Font loading fallback to system:", e);
+  }
+}
+
+function updateHandwritingState(field, val) {
+  state.handwriting[field] = val;
+  
+  if (field === 'size') {
+    const lbl = document.getElementById('hw-size-lbl');
+    if (lbl) lbl.textContent = val;
+  } else if (field === 'lineHeight') {
+    const lbl = document.getElementById('hw-spacing-lbl');
+    if (lbl) lbl.textContent = val;
+  } else if (field === 'scannerEffect') {
+    const lbl = document.getElementById('hw-scanner-lbl');
+    if (lbl) lbl.textContent = val;
+  }
+
+  clearTimeout(hwRenderTimeout);
+  hwRenderTimeout = setTimeout(() => {
+    renderHandwritingPreview();
+  }, 100);
+}
+
+function selectInkSwatch(color, el) {
+  state.handwriting.ink = color;
+  
+  const swatches = document.querySelectorAll('#panel-handwriting .color-swatch');
+  swatches.forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+
+  const inputColor = document.getElementById('hw-color');
+  if (inputColor) inputColor.value = color;
+
+  renderHandwritingPreview();
+}
+
+function calculateHwPages(text, font, size, lineHeight) {
+  const canvas = document.getElementById('hw-preview-canvas') || document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  
+  const pw = 1240;
+  const ph = 1754;
+  const topMargin = 160;
+  const bottomMargin = 100;
+  const leftMargin = 150;
+  const rightMargin = 100;
+  const printableWidth = pw - leftMargin - rightMargin;
+
+  ctx.font = `${size}px ${font}`;
+  
+  const paragraphs = text.split('\n');
+  const pageLines = [];
+  let currentPage = [];
+  const maxLines = Math.floor((ph - topMargin - bottomMargin) / lineHeight);
+
+  for (const para of paragraphs) {
+    if (para.trim() === '') {
+      currentPage.push('');
+      if (currentPage.length >= maxLines) {
+        pageLines.push(currentPage);
+        currentPage = [];
+      }
+      continue;
+    }
+
+    const words = para.split(' ');
+    let currentLine = '';
+
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      const testLine = currentLine ? currentLine + ' ' + word : word;
+      const metrics = ctx.measureText(testLine);
+      
+      if (metrics.width > printableWidth && currentLine) {
+        currentPage.push(currentLine);
+        if (currentPage.length >= maxLines) {
+          pageLines.push(currentPage);
+          currentPage = [];
+        }
+        currentLine = word;
+      } else {
+        currentLine = testLine;
+      }
+    }
+    if (currentLine) {
+      currentPage.push(currentLine);
+      if (currentPage.length >= maxLines) {
+        pageLines.push(currentPage);
+        currentPage = [];
+      }
+    }
+    
+    if (currentPage.length > 0 && currentPage.length < maxLines) {
+      currentPage.push('');
+    }
+  }
+  
+  if (currentPage.length > 0) {
+    pageLines.push(currentPage);
+  }
+  
+  if (pageLines.length === 0) {
+    pageLines.push(['']);
+  }
+  
+  return pageLines;
+}
+
+async function drawHwPageCanvas(canvas, pageLines) {
+  const ctx = canvas.getContext('2d');
+  const pw = canvas.width;
+  const ph = canvas.height;
+  
+  ctx.fillStyle = '#faf9f5';
+  ctx.fillRect(0, 0, pw, ph);
+
+  const topMargin = 160;
+  const bottomMargin = 100;
+  const leftMargin = 150;
+  const lineHeight = state.handwriting.lineHeight;
+  const fontSize = state.handwriting.size;
+  const fontName = state.handwriting.font;
+  const inkColor = state.handwriting.ink;
+  const paperType = state.handwriting.paper;
+  const scannerEffect = state.handwriting.scannerEffect;
+
+  if (paperType === 'ruled') {
+    ctx.beginPath();
+    ctx.moveTo(140, 0);
+    ctx.lineTo(140, ph);
+    ctx.strokeStyle = 'rgba(255, 90, 120, 0.45)';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, topMargin - lineHeight);
+    ctx.lineTo(pw, topMargin - lineHeight);
+    ctx.strokeStyle = 'rgba(255, 90, 120, 0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(80, 140, 240, 0.28)';
+    ctx.lineWidth = 1.0;
+    for (let y = topMargin; y < ph - bottomMargin; y += lineHeight) {
+      ctx.moveTo(0, y);
+      ctx.lineTo(pw, y);
+    }
+    ctx.stroke();
+  } else if (paperType === 'grid') {
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(80, 140, 240, 0.15)';
+    ctx.lineWidth = 1.0;
+    const gridGap = 30;
+    for (let y = gridGap; y < ph; y += gridGap) {
+      ctx.moveTo(0, y);
+      ctx.lineTo(pw, y);
+    }
+    for (let x = gridGap; x < pw; x += gridGap) {
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, ph);
+    }
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = inkColor;
+  ctx.font = `${fontSize}px ${fontName}`;
+  ctx.textBaseline = 'alphabetic';
+
+  ctx.save();
+  const pageSkewAngle = (Math.random() - 0.5) * 0.002;
+  ctx.rotate(pageSkewAngle);
+
+  for (let i = 0; i < pageLines.length; i++) {
+    const line = pageLines[i];
+    if (!line) continue;
+
+    const y = topMargin + (i + 1) * lineHeight - 6;
+    const lineYJitter = (Math.random() - 0.5) * 2.0;
+    const targetY = y + lineYJitter;
+
+    let currentX = leftMargin + (Math.random() - 0.5) * 3;
+
+    const words = line.split(' ');
+    for (let w = 0; w < words.length; w++) {
+      const word = words[w];
+      ctx.save();
+      
+      const wordRotation = (Math.random() - 0.5) * 0.016;
+      const wordYOffset = (Math.random() - 0.5) * 1.5;
+
+      ctx.translate(currentX, targetY + wordYOffset);
+      ctx.rotate(wordRotation);
+      
+      ctx.fillText(word, 0, 0);
+      ctx.restore();
+
+      const wordWidth = ctx.measureText(word).width;
+      const spaceWidth = ctx.measureText(' ').width;
+      const spaceJitter = (Math.random() - 0.5) * 1.5;
+      currentX += wordWidth + spaceWidth + spaceJitter;
+    }
+  }
+  ctx.restore();
+
+  if (scannerEffect > 0) {
+    const shadowIntensity = scannerEffect / 100;
+
+    ctx.save();
+    const shadowGrad = ctx.createLinearGradient(0, 0, pw, ph);
+    shadowGrad.addColorStop(0, `rgba(10, 8, 5, ${shadowIntensity * 0.20})`);
+    shadowGrad.addColorStop(0.4, `rgba(10, 8, 5, ${shadowIntensity * 0.08})`);
+    shadowGrad.addColorStop(0.8, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = shadowGrad;
+    ctx.fillRect(0, 0, pw, ph);
+    ctx.restore();
+
+    ctx.save();
+    const radialGrad = ctx.createRadialGradient(pw / 2, 0, pw * 0.3, pw / 2, ph / 2, ph * 0.8);
+    radialGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    radialGrad.addColorStop(1, `rgba(0, 5, 10, ${shadowIntensity * 0.14})`);
+    ctx.fillStyle = radialGrad;
+    ctx.fillRect(0, 0, pw, ph);
+    ctx.restore();
+
+    ctx.save();
+    const noiseCanvas = document.createElement('canvas');
+    noiseCanvas.width = 250;
+    noiseCanvas.height = 250;
+    const nCtx = noiseCanvas.getContext('2d');
+    const nData = nCtx.createImageData(250, 250);
+    const noiseLimit = Math.floor(shadowIntensity * 22);
+    for (let i = 0; i < nData.data.length; i += 4) {
+      const val = Math.floor(Math.random() * noiseLimit);
+      nData.data[i] = val;
+      nData.data[i+1] = val;
+      nData.data[i+2] = val;
+      nData.data[i+3] = 16;
+    }
+    nCtx.putImageData(nData, 0, 0);
+    const pattern = ctx.createPattern(noiseCanvas, 'repeat');
+    ctx.fillStyle = pattern;
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.fillRect(0, 0, pw, ph);
+    ctx.restore();
+  }
+}
+
+async function renderHandwritingPreview() {
+  const font = state.handwriting.font;
+  const size = state.handwriting.size;
+  const lineHeight = state.handwriting.lineHeight;
+  const text = state.handwriting.text || "Apna assignment text yahan paste karein. Adjust variables automatically to update page guidelines, ink flow, and realistic camera scan effects.";
+  
+  await ensureFontLoaded(font, size);
+
+  const pages = calculateHwPages(text, font, size, lineHeight);
+  const total = pages.length;
+  
+  if (state.handwriting.currentPage > total) state.handwriting.currentPage = total;
+  if (state.handwriting.currentPage < 1) state.handwriting.currentPage = 1;
+  
+  const curPageIdx = state.handwriting.currentPage - 1;
+  const pageLines = pages[curPageIdx];
+
+  const canvas = document.getElementById('hw-preview-canvas');
+  if (canvas) {
+    await drawHwPageCanvas(canvas, pageLines);
+  }
+
+  const curSpan = document.getElementById('hw-preview-cur');
+  const totSpan = document.getElementById('hw-preview-total');
+  if (curSpan) curSpan.textContent = state.handwriting.currentPage;
+  if (totSpan) totSpan.textContent = total;
+}
+
+async function generateHandwritingPDF() {
+  const text = state.handwriting.text;
+  if (!text || text.trim() === '') {
+    toast("Pehle text field me notes ya assignment content enter karo!", "⚠️");
+    return;
+  }
+
+  const font = state.handwriting.font;
+  const size = state.handwriting.size;
+  const lineHeight = state.handwriting.lineHeight;
+
+  showLoading('Generating Assignment PDF...');
+  const progressWrap = document.getElementById('handwriting-progress');
+  const fill = document.getElementById('handwriting-fill');
+  const plab = document.getElementById('handwriting-plab');
+  if (progressWrap) progressWrap.style.display = 'block';
+
+  try {
+    await ensureFontLoaded(font, size);
+    const pages = calculateHwPages(text, font, size, lineHeight);
+    const totalPages = pages.length;
+
+    const pdfDoc = await PDFLib.PDFDocument.create();
+
+    for (let i = 0; i < totalPages; i++) {
+      if (plab) plab.textContent = `Rendering page ${i + 1} of ${totalPages}...`;
+      if (fill) fill.style.width = `${((i + 1) / totalPages) * 100}%`;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 1240;
+      canvas.height = 1754;
+
+      await drawHwPageCanvas(canvas, pages[i]);
+
+      const imgDataUrl = canvas.toDataURL('image/jpeg', 0.90);
+      const imgBytes = await fetch(imgDataUrl).then(res => res.arrayBuffer());
+      const embeddedImg = await pdfDoc.embedJpg(imgBytes);
+
+      const pdfPage = pdfDoc.addPage([595, 842]);
+      pdfPage.drawImage(embeddedImg, {
+        x: 0,
+        y: 0,
+        width: 595,
+        height: 842
+      });
+    }
+
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+
+    const resultBanner = document.getElementById('handwriting-result');
+    const resultText = document.getElementById('handwriting-result-text');
+    const downloadBtn = document.getElementById('handwriting-download');
+
+    if (resultText) resultText.textContent = `${totalPages} pages generated • ${fmtSize(blob.size)}`;
+    if (downloadBtn) {
+      downloadBtn.onclick = () => dlBlob(blob, `handwritten_assignment_${Date.now()}.pdf`);
+    }
+    if (resultBanner) resultBanner.classList.add('show');
+    
+    toast('Assignment Generated Successfully!', '✅');
+    saveActivity('handwriting', `${totalPages} pages assignment generated`);
+  } catch (e) {
+    toast('Error: ' + e.message, '❌');
+    console.error(e);
+  } finally {
+    hideLoading();
+    if (progressWrap) progressWrap.style.display = 'none';
+  }
+}
+
+function prevHwPage() {
+  if (state.handwriting.currentPage > 1) {
+    state.handwriting.currentPage--;
+    renderHandwritingPreview();
+  }
+}
+
+function nextHwPage() {
+  const text = state.handwriting.text || "Apna assignment text yahan paste karein. Adjust variables automatically to update page guidelines, ink flow, and realistic camera scan effects.";
+  const pages = calculateHwPages(text, state.handwriting.font, state.handwriting.size, state.handwriting.lineHeight);
+  if (state.handwriting.currentPage < pages.length) {
+    state.handwriting.currentPage++;
+    renderHandwritingPreview();
+  }
+}
+
+function resetHandwriting() {
+  state.handwriting.text = '';
+  state.handwriting.currentPage = 1;
+  const txtArea = document.getElementById('hw-text');
+  if (txtArea) txtArea.value = '';
+  
+  const res = document.getElementById('handwriting-result');
+  if (res) res.classList.remove('show');
+  
+  renderHandwritingPreview();
+  toast('Workspace cleared', '🗑️');
+}
+
+// ══════════════════════════════════════════════════════
+// PDF TO TEXT EXTRACTOR LOGIC
+// ══════════════════════════════════════════════════════
+function handlePdf2TxtFile(file) {
+  if (!file) return;
+  if (file.type !== 'application/pdf' && !file.name.endsWith('.pdf')) {
+    toast('Please upload a valid PDF file!', '⚠️');
+    return;
+  }
+  
+  state.pdf2txt.file = file;
+  
+  const dz = document.getElementById('pdf2txt-dz');
+  if (dz) {
+    dz.innerHTML = `
+      <div class="dz-icon">📄</div>
+      <h3>${escapeHtml(file.name)}</h3>
+      <p>File loaded successfully • Size: ${fmtSize(file.size)}</p>
+    `;
+  }
+  
+  const opts = document.getElementById('pdf2txt-options');
+  if (opts) opts.style.display = 'block';
+  
+  // Hide previous result if any
+  const res = document.getElementById('pdf2txt-result');
+  if (res) res.style.display = 'none';
+  
+  toast('PDF loaded, choose settings!', 'ℹ️');
+}
+
+function selectPdf2TxtMode(mode) {
+  state.pdf2txt.mode = mode;
+  
+  const flowCard = document.getElementById('p2t-mode-flow');
+  const rawCard = document.getElementById('p2t-mode-raw');
+  
+  if (flowCard && rawCard) {
+    if (mode === 'flow') {
+      flowCard.classList.add('selected');
+      rawCard.classList.remove('selected');
+    } else {
+      rawCard.classList.add('selected');
+      flowCard.classList.remove('selected');
+    }
+  }
+}
+
+function togglePdf2TxtClean() {
+  const cb = document.getElementById('p2t-clean-lines');
+  if (cb) {
+    state.pdf2txt.clean = cb.checked;
+  }
+}
+
+async function convertPdf2Txt() {
+  if (!state.pdf2txt.file) {
+    toast('Pehle PDF upload karo!', '⚠️');
+    return;
+  }
+  
+  const progressWrap = document.getElementById('pdf2txt-progress');
+  const fill = document.getElementById('pdf2txt-fill');
+  const plab = document.getElementById('pdf2txt-plab');
+  
+  if (progressWrap) progressWrap.style.display = 'block';
+  if (fill) fill.style.width = '0%';
+  
+  try {
+    const file = state.pdf2txt.file;
+    const ab = await readAB(file);
+    const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+    const totalPages = pdf.numPages;
+    
+    let extractedPages = [];
+    const mode = state.pdf2txt.mode;
+    
+    for (let i = 1; i <= totalPages; i++) {
+      if (plab) plab.textContent = `Extracting page ${i} of ${totalPages}...`;
+      if (fill) fill.style.width = `${(i / totalPages) * 100}%`;
+      
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      
+      let pageText = '';
+      let lastY = null;
+      
+      for (const item of content.items) {
+        const y = item.transform ? item.transform[5] : 0;
+        if (lastY !== null && Math.abs(y - lastY) > 5) {
+          pageText += '\n';
+        }
+        pageText += item.str;
+        lastY = y;
+      }
+      
+      if (mode === 'flow') {
+        let paragraphs = pageText.split('\n')
+          .map(line => line.trim())
+          .filter(line => line.length > 0);
+        
+        let pageFlowText = '';
+        for (let p = 0; p < paragraphs.length; p++) {
+          const line = paragraphs[p];
+          pageFlowText += line;
+          if (p < paragraphs.length - 1) {
+            if (/[.\-!?:]$/.test(line)) {
+              pageFlowText += '\n\n';
+            } else {
+              pageFlowText += ' ';
+            }
+          }
+        }
+        extractedPages.push(pageFlowText);
+      } else {
+        extractedPages.push(pageText);
+      }
+    }
+    
+    let fullText = extractedPages.join('\n\n--- Page Break ---\n\n');
+    
+    if (state.pdf2txt.clean) {
+      fullText = fullText.replace(/\n{3,}/g, '\n\n');
+    }
+    
+    state.pdf2txt.text = fullText;
+    
+    const outputArea = document.getElementById('pdf2txt-output');
+    if (outputArea) outputArea.value = fullText;
+    
+    const resultPanel = document.getElementById('pdf2txt-result');
+    if (resultPanel) resultPanel.style.display = 'block';
+    
+    updatePdf2TxtStats(fullText);
+    
+    toast('Text Extracted successfully!', '✅');
+    saveActivity('pdf2txt', `${totalPages} pages extracted to text`);
+  } catch (e) {
+    toast('Error: ' + e.message, '❌');
+    console.error(e);
+  } finally {
+    if (progressWrap) progressWrap.style.display = 'none';
+  }
+}
+
+function updatePdf2TxtStats(text) {
+  const charCount = text.length;
+  const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+  const readTime = Math.max(1, Math.round(wordCount / 200));
+  
+  const wordsEl = document.getElementById('p2t-stat-words');
+  const charsEl = document.getElementById('p2t-stat-chars');
+  const timeEl = document.getElementById('p2t-stat-time');
+  
+  if (wordsEl) wordsEl.textContent = wordCount.toLocaleString();
+  if (charsEl) charsEl.textContent = charCount.toLocaleString();
+  if (timeEl) timeEl.textContent = `${readTime} min`;
+}
+
+function copyTxtOutput() {
+  const output = document.getElementById('pdf2txt-output');
+  if (!output || !output.value) return;
+  
+  output.select();
+  output.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(output.value)
+    .then(() => toast('Text copied to clipboard!', '📋'))
+    .catch(err => toast('Copy failed: ' + err.message, '❌'));
+}
+
+function downloadTxtOutput() {
+  const output = document.getElementById('pdf2txt-output');
+  if (!output || !output.value) return;
+  
+  const blob = new Blob([output.value], { type: 'text/plain;charset=utf-8' });
+  const baseName = state.pdf2txt.file ? state.pdf2txt.file.name.replace('.pdf', '') : 'extracted_text';
+  dlBlob(blob, `${baseName}_extracted.txt`);
+}
+
+function resetPdf2Txt() {
+  state.pdf2txt.file = null;
+  state.pdf2txt.text = '';
+  
+  const input = document.getElementById('pdf2txt-input');
+  if (input) input.value = '';
+  
+  const dz = document.getElementById('pdf2txt-dz');
+  if (dz) {
+    dz.innerHTML = `
+      <input type="file" id="pdf2txt-input" accept=".pdf" onchange="handlePdf2TxtFile(this.files[0])">
+      <div class="dz-icon">📄</div>
+      <h3>PDF yahan drop karo</h3>
+      <p>Click karke ya drag & drop se PDF file choose karo</p>
+    `;
+  }
+  
+  const opts = document.getElementById('pdf2txt-options');
+  if (opts) opts.style.display = 'none';
+  
+  const res = document.getElementById('pdf2txt-result');
+  if (res) res.style.display = 'none';
+  
+  toast('Workspace cleared', '🗑️');
+}
+
+// ══════════════════════════════════════════════════════
+// EXPOSE NEW TOOL FUNCTIONS TO GLOBAL SCOPE
+// ══════════════════════════════════════════════════════
+window.handlePdf2Word = handlePdf2Word;
+window.convertPdf2Word = convertPdf2Word;
+window.updateHandwritingState = updateHandwritingState;
+window.selectInkSwatch = selectInkSwatch;
+window.generateHandwritingPDF = generateHandwritingPDF;
+window.resetHandwriting = resetHandwriting;
+window.prevHwPage = prevHwPage;
+window.nextHwPage = nextHwPage;
+window.renderHandwritingPreview = renderHandwritingPreview;
+
+window.handlePdf2TxtFile = handlePdf2TxtFile;
+window.selectPdf2TxtMode = selectPdf2TxtMode;
+window.togglePdf2TxtClean = togglePdf2TxtClean;
+window.convertPdf2Txt = convertPdf2Txt;
+window.copyTxtOutput = copyTxtOutput;
+window.downloadTxtOutput = downloadTxtOutput;
+window.resetPdf2Txt = resetPdf2Txt;
+
+window.syncResumeTemplatePreview = syncResumeTemplatePreview;
+window.setResumeTemplate = setResumeTemplate;
+window.generateResume = generateResume;
+window.downloadResumeText = downloadResumeText;
+window.downloadResumePDF = downloadResumePDF;
