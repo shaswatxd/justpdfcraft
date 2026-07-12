@@ -38,7 +38,7 @@ All processing is done **locally in the browser** using JavaScript libraries lik
 ---
 
 ## 📄 License
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **All Rights Reserved** license - see the [LICENSE](LICENSE) file for details.
 
 ---
 
