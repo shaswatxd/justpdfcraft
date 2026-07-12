@@ -36,6 +36,13 @@ const state = {
     text: '',
     mode: 'flow',
     clean: true
+  },
+  imgCompress: {
+    entries: [],
+    quality: 75,
+    format: 'auto',
+    resizeMode: 'none',
+    maxDim: 1920
   }
 };
 
@@ -135,6 +142,169 @@ function renderImageFilesList() {
     list.appendChild(item);
   });
 }
+
+// ══════════════════════════════════════════════════════
+// IMAGE COMPRESSOR
+// ══════════════════════════════════════════════════════
+function handleCompressImageFiles(files) {
+  if (!files || files.length === 0) return;
+  for (const f of files) {
+    if (!f.type.startsWith('image/')) continue;
+    state.imgCompress.entries.push({
+      id: 'imgc-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+      file: f,
+      thumbUrl: URL.createObjectURL(f),
+      status: 'pending',
+      resultBlob: null,
+      resultMime: null,
+      resultUrl: null
+    });
+  }
+  const opts = document.getElementById('imgcompress-options');
+  if (opts) opts.style.display = 'block';
+  document.getElementById('imgcompress-zip-btn').style.display = 'none';
+  document.getElementById('imgcompress-result')?.classList.remove('show');
+  renderCompressImageList();
+}
+
+function removeCompressImageEntry(id) {
+  const entry = state.imgCompress.entries.find(e => e.id === id);
+  if (entry) {
+    if (entry.resultUrl) URL.revokeObjectURL(entry.resultUrl);
+    if (entry.thumbUrl) URL.revokeObjectURL(entry.thumbUrl);
+  }
+  state.imgCompress.entries = state.imgCompress.entries.filter(e => e.id !== id);
+  renderCompressImageList();
+}
+
+function extForMime(mime) {
+  if (mime === 'image/png') return 'png';
+  if (mime === 'image/webp') return 'webp';
+  return 'jpg';
+}
+
+function renderCompressImageList() {
+  const list = document.getElementById('imgcompress-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const entries = state.imgCompress.entries;
+  if (entries.length === 0) {
+    list.innerHTML = '<div style="opacity:0.5;padding:1rem;text-align:center">No images added yet.</div>';
+    return;
+  }
+  entries.forEach(entry => {
+    const item = document.createElement('div');
+    item.style.cssText = 'display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:rgba(255,255,255,0.05);border-radius:8px;margin-bottom:0.5rem;flex-wrap:wrap';
+    const savings = entry.status === 'done' ? Math.max(0, Math.round((1 - entry.resultBlob.size / entry.file.size) * 100)) : null;
+    item.innerHTML = `
+      <img src="${entry.thumbUrl}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;flex-shrink:0">
+      <div style="flex:1;min-width:150px">
+        <div style="font-weight:600;font-size:0.9rem;word-break:break-all">${escapeHtml(entry.file.name)}</div>
+        <div style="font-size:0.75rem;opacity:0.7">
+          ${fmtSize(entry.file.size)}
+          ${entry.status === 'done' ? ` &rarr; <span style="color:#10b981;font-weight:700">${fmtSize(entry.resultBlob.size)} (${savings}% smaller)</span>` : entry.status === 'error' ? ' <span style="color:#ef4444">Failed</span>' : ''}
+        </div>
+      </div>
+      <div style="display:flex;gap:0.4rem;align-items:center">
+        ${entry.status === 'done' ? `<button class="btn btn-success btn-sm" onclick="downloadOneCompressed('${entry.id}')" style="padding:0.3rem 0.6rem">⬇️</button>` : ''}
+        <button class="btn btn-secondary btn-sm" onclick="removeCompressImageEntry('${entry.id}')" style="padding:0.3rem 0.6rem">✕</button>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+async function compressImageFile(entry) {
+  const opts = state.imgCompress;
+  const img = await loadImageFromFile(entry.file);
+  let targetW = img.width, targetH = img.height;
+  if (opts.resizeMode === 'maxdim') {
+    const maxDim = opts.maxDim || 1920;
+    const longest = Math.max(targetW, targetH);
+    if (longest > maxDim) {
+      const scale = maxDim / longest;
+      targetW = Math.max(1, Math.round(targetW * scale));
+      targetH = Math.max(1, Math.round(targetH * scale));
+    }
+  }
+  let outMime = opts.format;
+  if (outMime === 'auto') {
+    outMime = (entry.file.type === 'image/png' || entry.file.type === 'image/gif') ? 'image/png' : 'image/jpeg';
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = targetW; canvas.height = targetH;
+  const ctx = canvas.getContext('2d');
+  if (outMime === 'image/jpeg') {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, targetW, targetH);
+  }
+  ctx.drawImage(img, 0, 0, targetW, targetH);
+  const quality = (opts.quality || 75) / 100;
+  const blob = await new Promise(res => canvas.toBlob(res, outMime, quality));
+  return { blob, mime: outMime };
+}
+
+async function compressAllImages() {
+  const entries = state.imgCompress.entries;
+  if (entries.length === 0) { toast('Please upload images first!', '⚠️'); return; }
+  setProgress('imgcompress', 5);
+  let origTotal = 0, newTotal = 0;
+  for (let i = 0; i < entries.length; i++) {
+    const entry = entries[i];
+    try {
+      const { blob, mime } = await compressImageFile(entry);
+      if (entry.resultUrl) URL.revokeObjectURL(entry.resultUrl);
+      entry.resultBlob = blob;
+      entry.resultMime = mime;
+      entry.resultUrl = URL.createObjectURL(blob);
+      entry.status = 'done';
+      origTotal += entry.file.size;
+      newTotal += blob.size;
+    } catch (e) {
+      entry.status = 'error';
+    }
+    setProgress('imgcompress', 5 + ((i + 1) / entries.length) * 95);
+    renderCompressImageList();
+  }
+  const doneCount = entries.filter(e => e.status === 'done').length;
+  if (doneCount > 0) {
+    const savings = origTotal > 0 ? Math.round((1 - newTotal / origTotal) * 100) : 0;
+    showResult('imgcompress', `${doneCount} image(s): ${fmtSize(origTotal)} → ${fmtSize(newTotal)} (${savings}% smaller)`);
+    document.getElementById('imgcompress-zip-btn').style.display = doneCount > 1 ? 'inline-flex' : 'none';
+    saveActivity('imgcompress', `${doneCount} image(s) compressed, ${savings}% smaller`);
+  }
+  setProgress('imgcompress', 100);
+}
+
+function downloadOneCompressed(id) {
+  const entry = state.imgCompress.entries.find(e => e.id === id);
+  if (!entry || !entry.resultBlob) return;
+  const base = entry.file.name.replace(/\.[^.]+$/, '');
+  dlBlob(entry.resultBlob, `${base}-compressed.${extForMime(entry.resultMime)}`);
+}
+
+async function downloadAllCompressedZip() {
+  const done = state.imgCompress.entries.filter(e => e.status === 'done');
+  if (done.length === 0) { toast('Please compress the images first!', '⚠️'); return; }
+  const zip = new JSZip();
+  const usedNames = new Set();
+  done.forEach(entry => {
+    const base = entry.file.name.replace(/\.[^.]+$/, '');
+    let name = `${base}.${extForMime(entry.resultMime)}`;
+    let n = 1;
+    while (usedNames.has(name)) { name = `${base}-${n++}.${extForMime(entry.resultMime)}`; }
+    usedNames.add(name);
+    zip.file(name, entry.resultBlob);
+  });
+  const zipBlob = await zip.generateAsync({ type: 'blob' });
+  dlBlob(zipBlob, 'compressed-images.zip');
+}
+
+window.handleCompressImageFiles = handleCompressImageFiles;
+window.removeCompressImageEntry = removeCompressImageEntry;
+window.compressAllImages = compressAllImages;
+window.downloadOneCompressed = downloadOneCompressed;
+window.downloadAllCompressedZip = downloadAllCompressedZip;
 
 
 let signCtx = null;
@@ -313,7 +483,7 @@ function showPanel(id, addToHistory = true) {
     const resultEl = document.getElementById('percentage-result');
     const remainingEl = document.getElementById('percentage-remaining');
     if (!Number.isFinite(obtained) || !Number.isFinite(total) || total <= 0) {
-      if (showToast) toast('Valid obtained aur total marks enter karo', 'â„¹ï¸');
+      if (showToast) toast('Please enter valid obtained and total marks', 'ℹ️');
       if (resultEl) resultEl.textContent = '0.00%';
       if (remainingEl) remainingEl.textContent = '0';
       return;
@@ -322,7 +492,7 @@ function showPanel(id, addToHistory = true) {
     const remaining = Math.max(0, total - obtained);
     if (resultEl) resultEl.textContent = `${percentage.toFixed(2)}%`;
     if (remainingEl) remainingEl.textContent = remaining.toFixed(remaining % 1 ? 2 : 0);
-    if (showToast) toast(`Percentage ${percentage.toFixed(2)}%`, 'ðŸ“‹');
+    if (showToast) toast(`Percentage ${percentage.toFixed(2)}%`, '📋');
   }
 
   function resetPercentageCalculator() {
@@ -340,26 +510,26 @@ function showPanel(id, addToHistory = true) {
     const gpa = parseFloat(document.getElementById('gpa-input')?.value || '');
     const resultEl = document.getElementById('gpa-to-percentage-result');
     if (!Number.isFinite(gpa) || gpa < 0) {
-      if (showToast) toast('Valid GPA enter karo', 'â„¹ï¸');
+      if (showToast) toast('Please enter a valid GPA', 'ℹ️');
       if (resultEl) resultEl.textContent = '0.00%';
       return;
     }
     const percentage = gpa * 9.5;
     if (resultEl) resultEl.textContent = `${percentage.toFixed(2)}%`;
-    if (showToast) toast(`Percentage ${percentage.toFixed(2)}%`, 'ðŸ“‹');
+    if (showToast) toast(`Percentage ${percentage.toFixed(2)}%`, '📋');
   }
 
   function convertPercentageToGpa(showToast = true) {
     const percentage = parseFloat(document.getElementById('percentage-input')?.value || '');
     const resultEl = document.getElementById('percentage-to-gpa-result');
     if (!Number.isFinite(percentage) || percentage < 0) {
-      if (showToast) toast('Valid percentage enter karo', 'â„¹ï¸');
+      if (showToast) toast('Please enter a valid percentage', 'ℹ️');
       if (resultEl) resultEl.textContent = '0.00';
       return;
     }
     const gpa = percentage / 9.5;
     if (resultEl) resultEl.textContent = gpa.toFixed(2);
-    if (showToast) toast(`Estimated GPA ${gpa.toFixed(2)}`, 'ðŸ“‹');
+    if (showToast) toast(`Estimated GPA ${gpa.toFixed(2)}`, '📋');
   }
 
   function resetGpaConverter() {
@@ -402,7 +572,7 @@ function showPanel(id, addToHistory = true) {
   function removeMarksRow(btn) {
     const rows = document.querySelectorAll('#marks-rows .marks-row');
     if (rows.length <= 1) {
-      toast('At least one subject row rehni chahiye', 'â„¹ï¸');
+      toast('At least one subject row is required', 'ℹ️');
       return;
     }
     btn.closest('.marks-row')?.remove();
@@ -433,7 +603,7 @@ function showPanel(id, addToHistory = true) {
     set('marks-highest-result', highest.toFixed(highest % 1 ? 2 : 0));
     set('marks-lowest-result', lowest.toFixed(lowest % 1 ? 2 : 0));
     set('marks-percentage-result', `${percentage.toFixed(2)}%`);
-    if (showToast) toast(values.length ? `Marks percentage ${percentage.toFixed(2)}%` : 'Marks enter karo', 'ðŸ“‹');
+    if (showToast) toast(values.length ? `Marks percentage ${percentage.toFixed(2)}%` : 'Please enter marks', '📋');
   }
 
   function resetMarksCalculator() {
@@ -449,8 +619,8 @@ function showPanel(id, addToHistory = true) {
 
   function copyOutput(id) {
     const el = document.getElementById(id);
-    if (!el || !el.value) return toast('Pehle content generate karo', 'â„¹ï¸');
-    navigator.clipboard.writeText(el.value).then(() => toast('Copied to clipboard', 'ðŸ“‹')).catch(() => toast('Copy nahi ho paya', 'âŒ'));
+    if (!el || !el.value) return toast('Please generate content first', 'ℹ️');
+    navigator.clipboard.writeText(el.value).then(() => toast('Copied to clipboard', '📋')).catch(() => toast('Copy failed', '❌'));
   }
 
   const RESUME_TEMPLATE_META = {
@@ -502,11 +672,14 @@ function showPanel(id, addToHistory = true) {
     syncResumeTemplatePreview(value);
   }
 
-  function formatResumeSectionText(text, fieldId) {
+  function formatResumeSectionText(text, fieldId, dark = false) {
     if (!text) return '';
     const lines = text.split('\n');
     let html = '';
     let inList = false;
+    const textColor = dark ? '#cbd5e1' : '#374151';
+    const splitLeftColor = dark ? '#f1f5f9' : '#111827';
+    const splitRightColor = dark ? '#94a3b8' : '#6b7280';
 
     for (const line of lines) {
       const trimmed = line.trim();
@@ -526,7 +699,7 @@ function showPanel(id, addToHistory = true) {
           inList = true;
         }
         const itemText = trimmed.substring(1).trim();
-        html += `<li contenteditable="true" data-field="${fieldId}" data-type="list" style="margin-bottom: 0.25rem; line-height: 1.45; font-size: 0.85rem; color: #374151;">${escapeHtml(itemText)}</li>`;
+        html += `<li contenteditable="true" data-field="${fieldId}" data-type="list" style="margin-bottom: 0.25rem; line-height: 1.45; font-size: 0.85rem; color: ${textColor};">${escapeHtml(itemText)}</li>`;
         continue;
       }
 
@@ -540,15 +713,15 @@ function showPanel(id, addToHistory = true) {
         const parts = trimmed.split('|').map(p => p.trim());
         html += `
           <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 0.4rem; margin-bottom: 0.15rem; font-size: 0.88rem;">
-            <span contenteditable="true" data-field="${fieldId}" data-type="split-left" style="font-weight: 700; color: #111827;">${escapeHtml(parts[0])}</span>
-            <span contenteditable="true" data-field="${fieldId}" data-type="split-right" style="font-size: 0.82rem; font-weight: 600; color: #6b7280; font-style: italic;">${escapeHtml(parts[1])}</span>
+            <span contenteditable="true" data-field="${fieldId}" data-type="split-left" style="font-weight: 700; color: ${splitLeftColor};">${escapeHtml(parts[0])}</span>
+            <span contenteditable="true" data-field="${fieldId}" data-type="split-right" style="font-size: 0.82rem; font-weight: 600; color: ${splitRightColor}; font-style: italic;">${escapeHtml(parts[1])}</span>
           </div>
         `;
         continue;
       }
 
       // Standard text line
-      html += `<p contenteditable="true" data-field="${fieldId}" data-type="p" style="margin: 0 0 0.35rem 0; line-height: 1.5; font-size: 0.85rem; color: #374151;">${escapeHtml(trimmed)}</p>`;
+      html += `<p contenteditable="true" data-field="${fieldId}" data-type="p" style="margin: 0 0 0.35rem 0; line-height: 1.5; font-size: 0.85rem; color: ${textColor};">${escapeHtml(trimmed)}</p>`;
     }
 
     if (inList) {
@@ -569,7 +742,10 @@ function showPanel(id, addToHistory = true) {
       'minimal-clean': '#374151',
       'corporate-pro': '#1f4f8f',
       'vibrant-two-col': '#7c3aed',
-      'elegant-dark': '#6366f1'
+      'elegant-dark': '#6366f1',
+      'tech-startup': '#4f46e5',
+      'academic-elegant': '#1e3a8a',
+      'fresher-bold': '#f97316'
     },
     blue: {
       'ats-minimal': '#1d4ed8',
@@ -579,7 +755,10 @@ function showPanel(id, addToHistory = true) {
       'minimal-clean': '#1d4ed8',
       'corporate-pro': '#1d4ed8',
       'vibrant-two-col': '#1d4ed8',
-      'elegant-dark': '#60a5fa'
+      'elegant-dark': '#60a5fa',
+      'tech-startup': '#1d4ed8',
+      'academic-elegant': '#1d4ed8',
+      'fresher-bold': '#1d4ed8'
     },
     green: {
       'ats-minimal': '#047857',
@@ -589,7 +768,10 @@ function showPanel(id, addToHistory = true) {
       'minimal-clean': '#047857',
       'corporate-pro': '#047857',
       'vibrant-two-col': '#047857',
-      'elegant-dark': '#10b981'
+      'elegant-dark': '#10b981',
+      'tech-startup': '#047857',
+      'academic-elegant': '#047857',
+      'fresher-bold': '#047857'
     },
     purple: {
       'ats-minimal': '#6d28d9',
@@ -599,7 +781,10 @@ function showPanel(id, addToHistory = true) {
       'minimal-clean': '#6d28d9',
       'corporate-pro': '#6d28d9',
       'vibrant-two-col': '#6d28d9',
-      'elegant-dark': '#8b5cf6'
+      'elegant-dark': '#8b5cf6',
+      'tech-startup': '#6d28d9',
+      'academic-elegant': '#6d28d9',
+      'fresher-bold': '#6d28d9'
     },
     grey: {
       'ats-minimal': '#374151',
@@ -609,7 +794,10 @@ function showPanel(id, addToHistory = true) {
       'minimal-clean': '#374151',
       'corporate-pro': '#374151',
       'vibrant-two-col': '#374151',
-      'elegant-dark': '#94a3b8'
+      'elegant-dark': '#94a3b8',
+      'tech-startup': '#374151',
+      'academic-elegant': '#374151',
+      'fresher-bold': '#374151'
     },
     red: {
       'ats-minimal': '#b91c1c',
@@ -619,9 +807,39 @@ function showPanel(id, addToHistory = true) {
       'minimal-clean': '#b91c1c',
       'corporate-pro': '#b91c1c',
       'vibrant-two-col': '#b91c1c',
-      'elegant-dark': '#ef4444'
+      'elegant-dark': '#ef4444',
+      'tech-startup': '#b91c1c',
+      'academic-elegant': '#b91c1c',
+      'fresher-bold': '#b91c1c'
     }
   };
+
+  // Font Style Mapping
+  window.currentResumeFont = window.currentResumeFont || 'dm-sans';
+  window.customResumeAccentHex = window.customResumeAccentHex || null;
+  window.resumePhotoData = window.resumePhotoData || null;
+  const RESUME_FONTS = {
+    'dm-sans': "'DM Sans', Arial, sans-serif",
+    'inter': "'Inter', Arial, sans-serif",
+    'poppins': "'Poppins', Arial, sans-serif",
+    'lora': "'Lora', Georgia, serif",
+    'roboto-slab': "'Roboto Slab', Georgia, serif",
+    'georgia': "'Georgia', 'Times New Roman', serif"
+  };
+
+  function buildResumePhotoHtml(size = 64) {
+    if (!window.resumePhotoData) return '';
+    return `<img src="${window.resumePhotoData}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,0.5);box-shadow:0 2px 6px rgba(0,0,0,0.15)">`;
+  }
+
+  function buildResumeSocialHtml(linkedin, github, portfolio, color, justify) {
+    const items = [];
+    if (linkedin) items.push(`<span>🔗 <span contenteditable="true" data-field="resume-linkedin" style="display:inline-block;">${escapeHtml(linkedin)}</span></span>`);
+    if (github) items.push(`<span>💻 <span contenteditable="true" data-field="resume-github" style="display:inline-block;">${escapeHtml(github)}</span></span>`);
+    if (portfolio) items.push(`<span>🌐 <span contenteditable="true" data-field="resume-portfolio" style="display:inline-block;">${escapeHtml(portfolio)}</span></span>`);
+    if (items.length === 0) return '';
+    return `<div style="font-size:0.76rem;color:${color || '#4b5563'};display:flex;flex-wrap:wrap;gap:0.9rem;justify-content:${justify || 'flex-start'};margin-top:0.35rem">${items.join('')}</div>`;
+  }
 
   function renderResumeTemplatePreview() {
     const get = (id, fallback = '') => document.getElementById(id)?.value?.trim() || fallback;
@@ -635,9 +853,14 @@ function showPanel(id, addToHistory = true) {
     const summaryInput = get('resume-summary', '');
     const educationInput = get('resume-education', 'BCA - XYZ College');
     const skillsInput = get('resume-skills', 'HTML, CSS, JavaScript');
-    const projectsInput = get('resume-projects', 'Project details preview yahan aayega.');
-    const achievementsInput = get('resume-achievements', 'Achievements preview yahan aayega.');
-    
+    const projectsInput = get('resume-projects', 'Project details preview will appear here.');
+    const achievementsInput = get('resume-achievements', 'Achievements preview will appear here.');
+    const linkedinInput = get('resume-linkedin', '');
+    const githubInput = get('resume-github', '');
+    const portfolioInput = get('resume-portfolio', '');
+    const photoHtml = buildResumePhotoHtml();
+    const fontFamily = RESUME_FONTS[window.currentResumeFont] || RESUME_FONTS['dm-sans'];
+
     const defaultSummaries = {
       student: 'Motivated student with strong learning ability, project exposure, and a practical approach to solving real-world problems.',
       intern: 'Enthusiastic internship applicant with hands-on academic work, collaboration skills, and readiness to contribute quickly.',
@@ -667,7 +890,9 @@ function showPanel(id, addToHistory = true) {
     }
 
     // Get active accent color for template
-    const activeAccentColor = (ACCENT_COLORS[window.currentResumeAccentColor] || ACCENT_COLORS.default)[template];
+    const activeAccentColor = (window.currentResumeAccentColor === 'custom' && window.customResumeAccentHex)
+      ? window.customResumeAccentHex
+      : (ACCENT_COLORS[window.currentResumeAccentColor] || ACCENT_COLORS.default)[template];
 
     // Parse formatting into HTML
     const summaryHtml = formatResumeSectionText(summary, 'resume-summary');
@@ -680,16 +905,18 @@ function showPanel(id, addToHistory = true) {
 
     if (template === 'ats-minimal') {
       html = `
-        <div style="font-family: 'DM Sans', Arial, sans-serif; color: #111827; line-height: 1.45; font-size: 0.88rem; width: 100%; box-sizing: border-box;">
+        <div style="font-family: ${fontFamily}; color: #111827; line-height: 1.45; font-size: 0.88rem; width: 100%; box-sizing: border-box;">
           <!-- Center Aligned Header -->
           <div style="text-align: center; margin-bottom: 1.2rem; border-bottom: 2px solid #111827; padding-bottom: 0.6rem;">
+            ${photoHtml ? `<div style="display:flex;justify-content:center;margin-bottom:0.6rem">${photoHtml}</div>` : ''}
             <h1 contenteditable="true" data-field="resume-name" style="font-size: 1.75rem; font-weight: 800; text-transform: uppercase; margin: 0 0 0.15rem 0; letter-spacing: 0.5px; color: #111827; display: inline-block; min-width: 100px;">${escapeHtml(name)}</h1>
             <div contenteditable="true" data-field="resume-role" style="font-size: 0.95rem; color: #4b5563; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; display: block; min-width: 80px;">${escapeHtml(role)}</div>
             <div style="font-size: 0.8rem; color: #4b5563; font-weight: 500;">
-              <span contenteditable="true" data-field="resume-email" style="display:inline-block; min-width: 50px;">${escapeHtml(email)}</span> &bull; 
-              <span contenteditable="true" data-field="resume-phone" style="display:inline-block; min-width: 50px;">${escapeHtml(phone)}</span> &bull; 
+              <span contenteditable="true" data-field="resume-email" style="display:inline-block; min-width: 50px;">${escapeHtml(email)}</span> &bull;
+              <span contenteditable="true" data-field="resume-phone" style="display:inline-block; min-width: 50px;">${escapeHtml(phone)}</span> &bull;
               <span contenteditable="true" data-field="resume-location" style="display:inline-block; min-width: 50px;">${escapeHtml(location)}</span>
             </div>
+            ${buildResumeSocialHtml(linkedinInput, githubInput, portfolioInput, '#4b5563', 'center')}
           </div>
 
           <!-- Summary -->
@@ -729,7 +956,7 @@ function showPanel(id, addToHistory = true) {
 
           <!-- Custom Sections -->
           ${(window.customResumeSections || []).map(sec => {
-            const secValue = sec.value || `${sec.title} preview yahan aayega.`;
+            const secValue = sec.value || `${sec.title} preview will appear here.`;
             return `
             <div style="margin-bottom: 0.95rem;">
               <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.88rem; font-weight: 800; color: ${activeAccentColor}; margin: 0 0 0.35rem 0; text-transform: uppercase; letter-spacing: 0.5px; outline: none;">${escapeHtml(sec.title)}</h3>
@@ -740,15 +967,19 @@ function showPanel(id, addToHistory = true) {
       `;
     } else if (template === 'modern-slate') {
       html = `
-        <div style="font-family: 'DM Sans', Arial, sans-serif; color: #0f172a; line-height: 1.5; font-size: 0.88rem; width: 100%; box-sizing: border-box;">
+        <div style="font-family: ${fontFamily}; color: #0f172a; line-height: 1.5; font-size: 0.88rem; width: 100%; box-sizing: border-box;">
           <!-- Left Aligned Header with Side Border -->
-          <div style="border-left: 6px solid ${activeAccentColor}; padding-left: 1.25rem; margin-bottom: 1.5rem; padding-top: 0.2rem; padding-bottom: 0.2rem;">
+          <div style="border-left: 6px solid ${activeAccentColor}; padding-left: 1.25rem; margin-bottom: 1.5rem; padding-top: 0.2rem; padding-bottom: 0.2rem; display: flex; align-items: center; gap: 1rem;">
+            ${photoHtml}
+            <div>
             <h1 contenteditable="true" data-field="resume-name" style="font-size: 2rem; font-weight: 800; margin: 0 0 0.15rem 0; color: #0f172a; letter-spacing: -0.5px; display: inline-block; min-width: 100px;">${escapeHtml(name)}</h1>
             <div contenteditable="true" data-field="resume-role" style="font-size: 0.95rem; color: ${activeAccentColor}; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; display: block; min-width: 80px;">${escapeHtml(role)}</div>
             <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.5rem; font-weight: 500;">
-              📧 <span contenteditable="true" data-field="resume-email" style="display:inline-block; min-width: 50px;">${escapeHtml(email)}</span> &nbsp;&bull;&nbsp; 
-              📞 <span contenteditable="true" data-field="resume-phone" style="display:inline-block; min-width: 50px;">${escapeHtml(phone)}</span> &nbsp;&bull;&nbsp; 
+              📧 <span contenteditable="true" data-field="resume-email" style="display:inline-block; min-width: 50px;">${escapeHtml(email)}</span> &nbsp;&bull;&nbsp;
+              📞 <span contenteditable="true" data-field="resume-phone" style="display:inline-block; min-width: 50px;">${escapeHtml(phone)}</span> &nbsp;&bull;&nbsp;
               📍 <span contenteditable="true" data-field="resume-location" style="display:inline-block; min-width: 50px;">${escapeHtml(location)}</span>
+            </div>
+            ${buildResumeSocialHtml(linkedinInput, githubInput, portfolioInput, '#64748b', 'flex-start')}
             </div>
           </div>
 
@@ -789,7 +1020,7 @@ function showPanel(id, addToHistory = true) {
 
           <!-- Custom Sections -->
           ${(window.customResumeSections || []).map(sec => {
-            const secValue = sec.value || `${sec.title} preview yahan aayega.`;
+            const secValue = sec.value || `${sec.title} preview will appear here.`;
             return `
             <div style="margin-bottom: 1.2rem;">
               <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.92rem; font-weight: 800; color: ${activeAccentColor}; margin: 0 0 0.45rem 0; text-transform: uppercase; letter-spacing: 0.75px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 0.2rem; outline: none;">${escapeHtml(sec.title)}</h3>
@@ -800,9 +1031,10 @@ function showPanel(id, addToHistory = true) {
       `;
     } else if (template === 'executive-split') {
       html = `
-        <div style="font-family: 'DM Sans', Arial, sans-serif; color: #1e293b; display: flex; gap: 1.5rem; min-height: 800px; width: 100%; box-sizing: border-box; margin: 0; padding: 0;">
+        <div style="font-family: ${fontFamily}; color: #1e293b; display: flex; gap: 1.5rem; min-height: 800px; width: 100%; box-sizing: border-box; margin: 0; padding: 0;">
           <!-- Left Narrow Sidebar Column -->
           <div style="width: 33%; background: #f8fafc; padding: 1.5rem; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 1.4rem; box-sizing: border-box;">
+            ${photoHtml ? `<div style="display:flex;justify-content:center">${photoHtml}</div>` : ''}
             <div>
               <h1 contenteditable="true" data-field="resume-name" style="font-size: 1.45rem; font-weight: 800; margin: 0 0 0.2rem 0; color: #0f172a; line-height: 1.15; letter-spacing: -0.5px; display: inline-block; min-width: 100px;">${escapeHtml(name)}</h1>
               <div contenteditable="true" data-field="resume-role" style="font-size: 0.8rem; color: ${activeAccentColor}; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: block; min-width: 80px;">${escapeHtml(role)}</div>
@@ -815,6 +1047,9 @@ function showPanel(id, addToHistory = true) {
                 <div style="display:flex; align-items:center; gap: 0.3rem;">📍 <span contenteditable="true" data-field="resume-location" style="word-break:break-all; display:inline-block; min-width: 50px;">${escapeHtml(location)}</span></div>
                 <div style="display:flex; align-items:center; gap: 0.3rem;">📧 <span contenteditable="true" data-field="resume-email" style="word-break:break-all; display:inline-block; min-width: 50px;">${escapeHtml(email)}</span></div>
                 <div style="display:flex; align-items:center; gap: 0.3rem;">📞 <span contenteditable="true" data-field="resume-phone" style="word-break:break-all; display:inline-block; min-width: 50px;">${escapeHtml(phone)}</span></div>
+                ${linkedinInput ? `<div style="display:flex; align-items:center; gap: 0.3rem;">🔗 <span contenteditable="true" data-field="resume-linkedin" style="word-break:break-all; display:inline-block;">${escapeHtml(linkedinInput)}</span></div>` : ''}
+                ${githubInput ? `<div style="display:flex; align-items:center; gap: 0.3rem;">💻 <span contenteditable="true" data-field="resume-github" style="word-break:break-all; display:inline-block;">${escapeHtml(githubInput)}</span></div>` : ''}
+                ${portfolioInput ? `<div style="display:flex; align-items:center; gap: 0.3rem;">🌐 <span contenteditable="true" data-field="resume-portfolio" style="word-break:break-all; display:inline-block;">${escapeHtml(portfolioInput)}</span></div>` : ''}
               </div>
             </div>
 
@@ -858,7 +1093,7 @@ function showPanel(id, addToHistory = true) {
 
             <!-- Custom Sections -->
             ${(window.customResumeSections || []).map(sec => {
-              const secValue = sec.value || `${sec.title} preview yahan aayega.`;
+              const secValue = sec.value || `${sec.title} preview will appear here.`;
               return `
               <div>
                 <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.88rem; font-weight: 800; text-transform: uppercase; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3rem; margin: 0 0 0.5rem 0; letter-spacing: 0.5px; outline: none;">${escapeHtml(sec.title)}</h3>
@@ -871,19 +1106,23 @@ function showPanel(id, addToHistory = true) {
     } else if (template === 'creative-bold') {
       // 🎨 Creative Bold — left color strip + bold typography
       html = `
-        <div style="font-family: 'DM Sans', Arial, sans-serif; color: #1e293b; display: flex; min-height: 800px; width: 100%; box-sizing: border-box;">
+        <div style="font-family: ${fontFamily}; color: #1e293b; display: flex; min-height: 800px; width: 100%; box-sizing: border-box;">
           <!-- Colored Left Strip -->
           <div style="width: 8px; background: linear-gradient(180deg, ${activeAccentColor}, ${activeAccentColor}88); flex-shrink: 0; border-radius: 0;"></div>
           <!-- Main Content -->
           <div style="flex: 1; padding: 2.5rem 2rem; box-sizing: border-box;">
             <!-- Header -->
-            <div style="margin-bottom: 1.8rem; padding-bottom: 1rem; border-bottom: 3px solid ${activeAccentColor};">
+            <div style="margin-bottom: 1.8rem; padding-bottom: 1rem; border-bottom: 3px solid ${activeAccentColor}; display: flex; align-items: center; gap: 1.2rem;">
+              ${photoHtml}
+              <div>
               <h1 contenteditable="true" data-field="resume-name" style="font-size: 2.2rem; font-weight: 900; margin: 0 0 0.2rem 0; color: #0f172a; letter-spacing: -1px; line-height: 1.1; display: block;">${escapeHtml(name)}</h1>
               <div contenteditable="true" data-field="resume-role" style="font-size: 1rem; color: ${activeAccentColor}; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.6rem; display: block;">${escapeHtml(role)}</div>
               <div style="font-size: 0.8rem; color: #64748b; display: flex; flex-wrap: wrap; gap: 1rem;">
                 <span>📧 <span contenteditable="true" data-field="resume-email" style="display:inline-block;">${escapeHtml(email)}</span></span>
                 <span>📞 <span contenteditable="true" data-field="resume-phone" style="display:inline-block;">${escapeHtml(phone)}</span></span>
                 <span>📍 <span contenteditable="true" data-field="resume-location" style="display:inline-block;">${escapeHtml(location)}</span></span>
+              </div>
+              ${buildResumeSocialHtml(linkedinInput, githubInput, portfolioInput, '#64748b', 'flex-start')}
               </div>
             </div>
             <!-- Summary -->
@@ -913,7 +1152,7 @@ function showPanel(id, addToHistory = true) {
             </div>` : ''}
             <!-- Custom Sections -->
             ${(window.customResumeSections || []).map(sec => {
-              const sv = sec.value || `${sec.title} preview yahan aayega.`;
+              const sv = sec.value || `${sec.title} preview will appear here.`;
               return `<div style="margin-bottom: 1.4rem;">
                 <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.78rem; font-weight: 900; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 0.5rem 0; outline: none;">${escapeHtml(sec.title)}</h3>
                 <div style="font-size: 0.86rem;">${formatResumeSectionText(sv, sec.id)}</div>
@@ -925,11 +1164,12 @@ function showPanel(id, addToHistory = true) {
     } else if (template === 'minimal-clean') {
       // ✨ Minimal Clean — ultra-minimalist, lots of whitespace, serif-inspired
       html = `
-        <div style="font-family: 'Georgia', 'DM Sans', serif; color: #1a1a1a; padding: 3rem 3.5rem; box-sizing: border-box; min-height: 800px; background: white;">
+        <div style="font-family: ${window.currentResumeFont === 'dm-sans' ? "'Georgia', 'DM Sans', serif" : fontFamily}; color: #1a1a1a; padding: 3rem 3.5rem; box-sizing: border-box; min-height: 800px; background: white;">
           <!-- Header -->
           <div style="text-align: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid #d1d5db;">
-            <h1 contenteditable="true" data-field="resume-name" style="font-size: 2.4rem; font-weight: 400; margin: 0 0 0.3rem 0; color: #1a1a1a; letter-spacing: 3px; text-transform: uppercase; font-family: 'DM Sans', sans-serif; display: block;">${escapeHtml(name)}</h1>
-            <div contenteditable="true" data-field="resume-role" style="font-size: 0.85rem; color: #6b7280; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.8rem; font-family: 'DM Sans', sans-serif; display: block;">${escapeHtml(role)}</div>
+            ${photoHtml ? `<div style="display:flex;justify-content:center;margin-bottom:0.8rem">${photoHtml}</div>` : ''}
+            <h1 contenteditable="true" data-field="resume-name" style="font-size: 2.4rem; font-weight: 400; margin: 0 0 0.3rem 0; color: #1a1a1a; letter-spacing: 3px; text-transform: uppercase; font-family: ${fontFamily}; display: block;">${escapeHtml(name)}</h1>
+            <div contenteditable="true" data-field="resume-role" style="font-size: 0.85rem; color: #6b7280; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.8rem; font-family: ${fontFamily}; display: block;">${escapeHtml(role)}</div>
             <div style="font-size: 0.78rem; color: #9ca3af; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
               <span contenteditable="true" data-field="resume-email" style="display:inline-block;">${escapeHtml(email)}</span>
               <span style="color:#d1d5db;">|</span>
@@ -937,6 +1177,7 @@ function showPanel(id, addToHistory = true) {
               <span style="color:#d1d5db;">|</span>
               <span contenteditable="true" data-field="resume-location" style="display:inline-block;">${escapeHtml(location)}</span>
             </div>
+            ${buildResumeSocialHtml(linkedinInput, githubInput, portfolioInput, '#9ca3af', 'center')}
           </div>
           <!-- Summary -->
           ${summary ? `<div style="margin-bottom: 1.6rem;">
@@ -965,7 +1206,7 @@ function showPanel(id, addToHistory = true) {
           </div>` : ''}
           <!-- Custom Sections -->
           ${(window.customResumeSections || []).map(sec => {
-            const sv = sec.value || `${sec.title} preview yahan aayega.`;
+            const sv = sec.value || `${sec.title} preview will appear here.`;
             return `<div style="margin-bottom: 1.6rem;">
               <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.7rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 3px; margin: 0 0 0.7rem 0; font-family: 'DM Sans', sans-serif; outline: none;">${escapeHtml(sec.title)}</h3>
               <div style="font-size: 0.88rem; color: #374151;">${formatResumeSectionText(sv, sec.id)}</div>
@@ -976,17 +1217,23 @@ function showPanel(id, addToHistory = true) {
     } else if (template === 'corporate-pro') {
       // 🏢 Corporate Pro — traditional structured with header bar
       html = `
-        <div style="font-family: 'DM Sans', Arial, sans-serif; color: #1e293b; min-height: 800px; box-sizing: border-box;">
+        <div style="font-family: ${fontFamily}; color: #1e293b; min-height: 800px; box-sizing: border-box;">
           <!-- Top Color Bar Header -->
-          <div style="background: ${activeAccentColor}; padding: 1.8rem 2.5rem; color: white;">
+          <div style="background: ${activeAccentColor}; padding: 1.8rem 2.5rem; color: white; display: flex; align-items: center; gap: 1.2rem;">
+            ${photoHtml}
+            <div>
             <h1 contenteditable="true" data-field="resume-name" style="font-size: 2rem; font-weight: 800; margin: 0 0 0.25rem 0; letter-spacing: -0.5px; display: block;">${escapeHtml(name)}</h1>
             <div contenteditable="true" data-field="resume-role" style="font-size: 0.95rem; font-weight: 500; opacity: 0.9; letter-spacing: 1px; text-transform: uppercase; display: block;">${escapeHtml(role)}</div>
+            </div>
           </div>
           <!-- Contact Sub-bar -->
           <div style="background: ${activeAccentColor}22; padding: 0.6rem 2.5rem; display: flex; flex-wrap: wrap; gap: 1.5rem; font-size: 0.78rem; color: #475569; border-bottom: 2px solid ${activeAccentColor};">
             <span>📧 <span contenteditable="true" data-field="resume-email" style="display:inline-block;">${escapeHtml(email)}</span></span>
             <span>📞 <span contenteditable="true" data-field="resume-phone" style="display:inline-block;">${escapeHtml(phone)}</span></span>
             <span>📍 <span contenteditable="true" data-field="resume-location" style="display:inline-block;">${escapeHtml(location)}</span></span>
+            ${linkedinInput ? `<span>🔗 <span contenteditable="true" data-field="resume-linkedin" style="display:inline-block;">${escapeHtml(linkedinInput)}</span></span>` : ''}
+            ${githubInput ? `<span>💻 <span contenteditable="true" data-field="resume-github" style="display:inline-block;">${escapeHtml(githubInput)}</span></span>` : ''}
+            ${portfolioInput ? `<span>🌐 <span contenteditable="true" data-field="resume-portfolio" style="display:inline-block;">${escapeHtml(portfolioInput)}</span></span>` : ''}
           </div>
           <!-- Body -->
           <div style="padding: 1.8rem 2.5rem; box-sizing: border-box;">
@@ -1011,7 +1258,7 @@ function showPanel(id, addToHistory = true) {
               <div style="font-size: 0.86rem;">${achievementsHtml}</div>
             </div>` : ''}
             ${(window.customResumeSections || []).map(sec => {
-              const sv = sec.value || `${sec.title} preview yahan aayega.`;
+              const sv = sec.value || `${sec.title} preview will appear here.`;
               return `<div style="margin-bottom: 1.3rem;">
                 <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.82rem; font-weight: 800; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.5rem 0; padding-bottom: 0.25rem; border-bottom: 2px solid ${activeAccentColor}44; outline: none;">${escapeHtml(sec.title)}</h3>
                 <div style="font-size: 0.86rem;">${formatResumeSectionText(sv, sec.id)}</div>
@@ -1023,9 +1270,10 @@ function showPanel(id, addToHistory = true) {
     } else if (template === 'vibrant-two-col') {
       // 🌈 Vibrant Two-Column — colored sidebar with main content on right
       html = `
-        <div style="font-family: 'DM Sans', Arial, sans-serif; display: flex; min-height: 800px; width: 100%; box-sizing: border-box; color: #1e293b;">
+        <div style="font-family: ${fontFamily}; display: flex; min-height: 800px; width: 100%; box-sizing: border-box; color: #1e293b;">
           <!-- Left Sidebar -->
           <div style="width: 38%; background: ${activeAccentColor}; color: white; padding: 2rem 1.5rem; box-sizing: border-box; display: flex; flex-direction: column; gap: 1.4rem;">
+            ${photoHtml ? `<div style="display:flex;justify-content:center">${photoHtml}</div>` : ''}
             <!-- Name Block -->
             <div>
               <h1 contenteditable="true" data-field="resume-name" style="font-size: 1.6rem; font-weight: 800; margin: 0 0 0.2rem 0; line-height: 1.2; color: white; display: block;">${escapeHtml(name)}</h1>
@@ -1038,6 +1286,9 @@ function showPanel(id, addToHistory = true) {
                 <div>📧 <span contenteditable="true" data-field="resume-email" style="display:inline-block; word-break: break-all;">${escapeHtml(email)}</span></div>
                 <div>📞 <span contenteditable="true" data-field="resume-phone" style="display:inline-block;">${escapeHtml(phone)}</span></div>
                 <div>📍 <span contenteditable="true" data-field="resume-location" style="display:inline-block;">${escapeHtml(location)}</span></div>
+                ${linkedinInput ? `<div>🔗 <span contenteditable="true" data-field="resume-linkedin" style="display:inline-block; word-break: break-all;">${escapeHtml(linkedinInput)}</span></div>` : ''}
+                ${githubInput ? `<div>💻 <span contenteditable="true" data-field="resume-github" style="display:inline-block; word-break: break-all;">${escapeHtml(githubInput)}</span></div>` : ''}
+                ${portfolioInput ? `<div>🌐 <span contenteditable="true" data-field="resume-portfolio" style="display:inline-block; word-break: break-all;">${escapeHtml(portfolioInput)}</span></div>` : ''}
               </div>
             </div>
             <!-- Skills -->
@@ -1052,7 +1303,7 @@ function showPanel(id, addToHistory = true) {
             </div>` : ''}
             <!-- Custom Sections in sidebar -->
             ${(window.customResumeSections || []).filter((_, i) => i % 2 === 0).map(sec => {
-              const sv = sec.value || `${sec.title} preview yahan aayega.`;
+              const sv = sec.value || `${sec.title} preview will appear here.`;
               return `<div style="border-top: 1px solid rgba(255,255,255,0.25); padding-top: 1rem;">
                 <h4 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 0.6rem 0; opacity: 0.7; font-weight: 700; outline: none;">${escapeHtml(sec.title)}</h4>
                 <div style="font-size: 0.78rem; opacity: 0.9;">${formatResumeSectionText(sv, sec.id)}</div>
@@ -1074,7 +1325,7 @@ function showPanel(id, addToHistory = true) {
               <div style="font-size: 0.86rem; line-height: 1.5; color: #374151;">${achievementsHtml}</div>
             </div>` : ''}
             ${(window.customResumeSections || []).filter((_, i) => i % 2 !== 0).map(sec => {
-              const sv = sec.value || `${sec.title} preview yahan aayega.`;
+              const sv = sec.value || `${sec.title} preview will appear here.`;
               return `<div>
                 <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.82rem; font-weight: 800; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.5rem 0; outline: none; border-bottom: 2px solid ${activeAccentColor}33; padding-bottom: 0.25rem;">${escapeHtml(sec.title)}</h3>
                 <div style="font-size: 0.86rem; line-height: 1.5; color: #374151;">${formatResumeSectionText(sv, sec.id)}</div>
@@ -1085,10 +1336,17 @@ function showPanel(id, addToHistory = true) {
       `;
     } else if (template === 'elegant-dark') {
       // 🌙 Elegant Dark — premium dark background resume
+      const summaryHtmlDark = formatResumeSectionText(summary, 'resume-summary', true);
+      const skillsHtmlDark = formatResumeSectionText(skillsInput, 'resume-skills', true);
+      const educationHtmlDark = formatResumeSectionText(educationInput, 'resume-education', true);
+      const projectsHtmlDark = formatResumeSectionText(projectsInput, 'resume-projects', true);
+      const achievementsHtmlDark = formatResumeSectionText(achievementsInput, 'resume-achievements', true);
       html = `
-        <div style="font-family: 'DM Sans', Arial, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 800px; padding: 2.5rem; box-sizing: border-box;">
+        <div style="font-family: ${fontFamily}; background: #0f172a; color: #e2e8f0; min-height: 800px; padding: 2.5rem; box-sizing: border-box;">
           <!-- Header -->
-          <div style="margin-bottom: 2rem; padding-bottom: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.12);">
+          <div style="margin-bottom: 2rem; padding-bottom: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; gap: 1.2rem;">
+            ${photoHtml}
+            <div>
             <h1 contenteditable="true" data-field="resume-name" style="font-size: 2.2rem; font-weight: 800; margin: 0 0 0.2rem 0; color: white; letter-spacing: -0.5px; display: block;">${escapeHtml(name)}</h1>
             <div contenteditable="true" data-field="resume-role" style="font-size: 0.9rem; color: ${activeAccentColor}; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.7rem; display: block;">${escapeHtml(role)}</div>
             <div style="font-size: 0.78rem; color: #94a3b8; display: flex; flex-wrap: wrap; gap: 1.2rem;">
@@ -1096,34 +1354,178 @@ function showPanel(id, addToHistory = true) {
               <span>📞 <span contenteditable="true" data-field="resume-phone" style="display:inline-block;">${escapeHtml(phone)}</span></span>
               <span>📍 <span contenteditable="true" data-field="resume-location" style="display:inline-block;">${escapeHtml(location)}</span></span>
             </div>
+            ${buildResumeSocialHtml(linkedinInput, githubInput, portfolioInput, '#94a3b8', 'flex-start')}
+            </div>
           </div>
           ${summary ? `<div style="margin-bottom: 1.5rem;">
             <h3 contenteditable="true" data-section-title="summary" style="font-size: 0.72rem; font-weight: 700; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2.5px; margin: 0 0 0.6rem 0; outline: none;">${escapeHtml(window.sectionTitles.summary || 'About')}</h3>
-            <div style="font-size: 0.86rem; line-height: 1.7; color: #cbd5e1;">${summaryHtml}</div>
+            <div style="font-size: 0.86rem; line-height: 1.7; color: #cbd5e1;">${summaryHtmlDark}</div>
           </div>` : ''}
           ${skillsInput ? `<div style="margin-bottom: 1.5rem;">
             <h3 contenteditable="true" data-section-title="skills" style="font-size: 0.72rem; font-weight: 700; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2.5px; margin: 0 0 0.6rem 0; outline: none;">${escapeHtml(window.sectionTitles.skills || 'Skills')}</h3>
-            <div style="font-size: 0.86rem; color: #cbd5e1;">${skillsHtml}</div>
+            <div style="font-size: 0.86rem; color: #cbd5e1;">${skillsHtmlDark}</div>
           </div>` : ''}
           ${projectsInput ? `<div style="margin-bottom: 1.5rem;">
             <h3 contenteditable="true" data-section-title="projects" style="font-size: 0.72rem; font-weight: 700; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2.5px; margin: 0 0 0.6rem 0; outline: none;">${escapeHtml(window.sectionTitles.projects || 'Experience & Projects')}</h3>
-            <div style="font-size: 0.86rem; color: #cbd5e1;">${projectsHtml}</div>
+            <div style="font-size: 0.86rem; color: #cbd5e1;">${projectsHtmlDark}</div>
           </div>` : ''}
           ${educationInput ? `<div style="margin-bottom: 1.5rem;">
             <h3 contenteditable="true" data-section-title="education" style="font-size: 0.72rem; font-weight: 700; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2.5px; margin: 0 0 0.6rem 0; outline: none;">${escapeHtml(window.sectionTitles.education || 'Education')}</h3>
-            <div style="font-size: 0.86rem; color: #cbd5e1;">${educationHtml}</div>
+            <div style="font-size: 0.86rem; color: #cbd5e1;">${educationHtmlDark}</div>
           </div>` : ''}
           ${achievementsInput ? `<div style="margin-bottom: 1.5rem;">
             <h3 contenteditable="true" data-section-title="achievements" style="font-size: 0.72rem; font-weight: 700; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2.5px; margin: 0 0 0.6rem 0; outline: none;">${escapeHtml(window.sectionTitles.achievements || 'Achievements')}</h3>
-            <div style="font-size: 0.86rem; color: #cbd5e1;">${achievementsHtml}</div>
+            <div style="font-size: 0.86rem; color: #cbd5e1;">${achievementsHtmlDark}</div>
           </div>` : ''}
           ${(window.customResumeSections || []).map(sec => {
-            const sv = sec.value || `${sec.title} preview yahan aayega.`;
+            const sv = sec.value || `${sec.title} preview will appear here.`;
             return `<div style="margin-bottom: 1.5rem;">
               <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size: 0.72rem; font-weight: 700; color: ${activeAccentColor}; text-transform: uppercase; letter-spacing: 2.5px; margin: 0 0 0.6rem 0; outline: none;">${escapeHtml(sec.title)}</h3>
-              <div style="font-size: 0.86rem; color: #cbd5e1;">${formatResumeSectionText(sv, sec.id)}</div>
+              <div style="font-size: 0.86rem; color: #cbd5e1;">${formatResumeSectionText(sv, sec.id, true)}</div>
             </div>`;
           }).join('')}
+        </div>
+      `;
+    } else if (template === 'tech-startup') {
+      const skillTags = skillsInput.split(',').map(s => s.trim()).filter(Boolean);
+      html = `
+        <div style="font-family: ${fontFamily}; color: #0f172a; min-height: 800px; box-sizing: border-box; padding: 2.2rem 2.4rem;">
+          <div style="display:flex;align-items:center;gap:1.2rem;margin-bottom:1.4rem;padding-bottom:1.2rem;border-bottom:2px dashed ${activeAccentColor}66;">
+            ${photoHtml}
+            <div>
+              <h1 contenteditable="true" data-field="resume-name" style="font-size:1.9rem;font-weight:800;margin:0 0 0.3rem 0;color:#0f172a;letter-spacing:-0.5px;display:block;">${escapeHtml(name)}</h1>
+              <div contenteditable="true" data-field="resume-role" style="display:inline-block;font-size:0.78rem;font-weight:700;color:white;background:${activeAccentColor};padding:0.2rem 0.65rem;border-radius:20px;letter-spacing:0.5px;">${escapeHtml(role)}</div>
+              <div style="font-size:0.78rem;color:#64748b;margin-top:0.55rem;font-family:'Courier New',monospace;display:flex;flex-wrap:wrap;gap:1rem;">
+                <span contenteditable="true" data-field="resume-email">${escapeHtml(email)}</span>
+                <span contenteditable="true" data-field="resume-phone">${escapeHtml(phone)}</span>
+                <span contenteditable="true" data-field="resume-location">${escapeHtml(location)}</span>
+              </div>
+              ${buildResumeSocialHtml(linkedinInput, githubInput, portfolioInput, activeAccentColor, 'flex-start')}
+            </div>
+          </div>
+          ${summary ? `<div style="margin-bottom:1.3rem;">
+            <h3 contenteditable="true" data-section-title="summary" style="font-size:0.8rem;font-weight:800;color:${activeAccentColor};margin:0 0 0.45rem 0;text-transform:uppercase;letter-spacing:1px;outline:none;">// ${escapeHtml(window.sectionTitles.summary || 'about')}</h3>
+            <div style="font-size:0.86rem;line-height:1.6;color:#334155;">${summaryHtml}</div>
+          </div>` : ''}
+          ${skillTags.length ? `<div style="margin-bottom:1.3rem;">
+            <h3 contenteditable="true" data-section-title="skills" style="font-size:0.8rem;font-weight:800;color:${activeAccentColor};margin:0 0 0.5rem 0;text-transform:uppercase;letter-spacing:1px;outline:none;">// ${escapeHtml(window.sectionTitles.skills || 'stack')}</h3>
+            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
+              ${skillTags.map(s => `<span style="font-size:0.76rem;font-weight:600;background:${activeAccentColor}14;color:${activeAccentColor};padding:0.25rem 0.65rem;border-radius:6px;border:1px solid ${activeAccentColor}33;">${escapeHtml(s)}</span>`).join('')}
+            </div>
+          </div>` : ''}
+          ${projectsInput ? `<div style="margin-bottom:1.3rem;">
+            <h3 contenteditable="true" data-section-title="projects" style="font-size:0.8rem;font-weight:800;color:${activeAccentColor};margin:0 0 0.45rem 0;text-transform:uppercase;letter-spacing:1px;outline:none;">// ${escapeHtml(window.sectionTitles.projects || 'projects')}</h3>
+            <div style="font-size:0.86rem;color:#334155;">${projectsHtml}</div>
+          </div>` : ''}
+          ${educationInput ? `<div style="margin-bottom:1.3rem;">
+            <h3 contenteditable="true" data-section-title="education" style="font-size:0.8rem;font-weight:800;color:${activeAccentColor};margin:0 0 0.45rem 0;text-transform:uppercase;letter-spacing:1px;outline:none;">// ${escapeHtml(window.sectionTitles.education || 'education')}</h3>
+            <div style="font-size:0.86rem;color:#334155;">${educationHtml}</div>
+          </div>` : ''}
+          ${achievementsInput ? `<div style="margin-bottom:1.3rem;">
+            <h3 contenteditable="true" data-section-title="achievements" style="font-size:0.8rem;font-weight:800;color:${activeAccentColor};margin:0 0 0.45rem 0;text-transform:uppercase;letter-spacing:1px;outline:none;">// ${escapeHtml(window.sectionTitles.achievements || 'achievements')}</h3>
+            <div style="font-size:0.86rem;color:#334155;">${achievementsHtml}</div>
+          </div>` : ''}
+          ${(window.customResumeSections || []).map(sec => {
+            const sv = sec.value || `${sec.title} preview will appear here.`;
+            return `<div style="margin-bottom:1.3rem;">
+              <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size:0.8rem;font-weight:800;color:${activeAccentColor};margin:0 0 0.45rem 0;text-transform:uppercase;letter-spacing:1px;outline:none;">// ${escapeHtml(sec.title)}</h3>
+              <div style="font-size:0.86rem;color:#334155;">${formatResumeSectionText(sv, sec.id)}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      `;
+    } else if (template === 'academic-elegant') {
+      const academicFont = window.currentResumeFont === 'dm-sans' ? "'Lora', 'Georgia', serif" : fontFamily;
+      html = `
+        <div style="font-family: ${academicFont}; color: #1f2937; padding: 2.8rem 3rem; box-sizing: border-box; min-height: 800px; background: white;">
+          <div style="text-align:center;margin-bottom:1.6rem;padding:1rem 0;border-top:3px double ${activeAccentColor};border-bottom:3px double ${activeAccentColor};">
+            ${photoHtml ? `<div style="display:flex;justify-content:center;margin-bottom:0.7rem">${photoHtml}</div>` : ''}
+            <h1 contenteditable="true" data-field="resume-name" style="font-size:2rem;font-weight:700;margin:0 0 0.25rem 0;color:#1f2937;letter-spacing:0.5px;display:block;">${escapeHtml(name)}</h1>
+            <div contenteditable="true" data-field="resume-role" style="font-size:0.85rem;color:${activeAccentColor};font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:0.5rem;display:block;">${escapeHtml(role)}</div>
+            <div style="font-size:0.78rem;color:#6b7280;display:flex;justify-content:center;gap:1.2rem;flex-wrap:wrap;">
+              <span contenteditable="true" data-field="resume-email">${escapeHtml(email)}</span>
+              <span contenteditable="true" data-field="resume-phone">${escapeHtml(phone)}</span>
+              <span contenteditable="true" data-field="resume-location">${escapeHtml(location)}</span>
+            </div>
+            ${buildResumeSocialHtml(linkedinInput, githubInput, portfolioInput, '#6b7280', 'center')}
+          </div>
+          ${summary ? `<div style="margin-bottom:1.4rem;">
+            <h3 contenteditable="true" data-section-title="summary" style="font-size:0.78rem;font-weight:700;color:${activeAccentColor};text-transform:uppercase;letter-spacing:2px;margin:0 0 0.55rem 0;outline:none;">${escapeHtml(window.sectionTitles.summary || 'Profile')}</h3>
+            <div style="font-size:0.87rem;line-height:1.65;color:#374151;">${summaryHtml}</div>
+          </div>` : ''}
+          ${educationInput ? `<div style="margin-bottom:1.4rem;">
+            <h3 contenteditable="true" data-section-title="education" style="font-size:0.78rem;font-weight:700;color:${activeAccentColor};text-transform:uppercase;letter-spacing:2px;margin:0 0 0.55rem 0;outline:none;">${escapeHtml(window.sectionTitles.education || 'Education')}</h3>
+            <div style="font-size:0.87rem;color:#374151;">${educationHtml}</div>
+          </div>` : ''}
+          ${skillsInput ? `<div style="margin-bottom:1.4rem;">
+            <h3 contenteditable="true" data-section-title="skills" style="font-size:0.78rem;font-weight:700;color:${activeAccentColor};text-transform:uppercase;letter-spacing:2px;margin:0 0 0.55rem 0;outline:none;">${escapeHtml(window.sectionTitles.skills || 'Skills & Competencies')}</h3>
+            <div style="font-size:0.87rem;color:#374151;">${skillsHtml}</div>
+          </div>` : ''}
+          ${projectsInput ? `<div style="margin-bottom:1.4rem;">
+            <h3 contenteditable="true" data-section-title="projects" style="font-size:0.78rem;font-weight:700;color:${activeAccentColor};text-transform:uppercase;letter-spacing:2px;margin:0 0 0.55rem 0;outline:none;">${escapeHtml(window.sectionTitles.projects || 'Research & Projects')}</h3>
+            <div style="font-size:0.87rem;color:#374151;">${projectsHtml}</div>
+          </div>` : ''}
+          ${achievementsInput ? `<div style="margin-bottom:1.4rem;">
+            <h3 contenteditable="true" data-section-title="achievements" style="font-size:0.78rem;font-weight:700;color:${activeAccentColor};text-transform:uppercase;letter-spacing:2px;margin:0 0 0.55rem 0;outline:none;">${escapeHtml(window.sectionTitles.achievements || 'Publications & Achievements')}</h3>
+            <div style="font-size:0.87rem;color:#374151;">${achievementsHtml}</div>
+          </div>` : ''}
+          ${(window.customResumeSections || []).map(sec => {
+            const sv = sec.value || `${sec.title} preview will appear here.`;
+            return `<div style="margin-bottom:1.4rem;">
+              <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size:0.78rem;font-weight:700;color:${activeAccentColor};text-transform:uppercase;letter-spacing:2px;margin:0 0 0.55rem 0;outline:none;">${escapeHtml(sec.title)}</h3>
+              <div style="font-size:0.87rem;color:#374151;">${formatResumeSectionText(sv, sec.id)}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      `;
+    } else if (template === 'fresher-bold') {
+      const skillTags = skillsInput.split(',').map(s => s.trim()).filter(Boolean);
+      html = `
+        <div style="font-family: ${fontFamily}; color: #1e293b; min-height: 800px; box-sizing: border-box;">
+          <div style="background:linear-gradient(135deg, ${activeAccentColor}, ${activeAccentColor}cc); padding:2.2rem 2.4rem; color:white; display:flex; align-items:center; gap:1.2rem;">
+            ${photoHtml}
+            <div>
+              <h1 contenteditable="true" data-field="resume-name" style="font-size:2.1rem;font-weight:900;margin:0 0 0.2rem 0;letter-spacing:-0.5px;display:block;">${escapeHtml(name)}</h1>
+              <div contenteditable="true" data-field="resume-role" style="font-size:0.92rem;font-weight:600;opacity:0.92;text-transform:uppercase;letter-spacing:1px;display:block;">${escapeHtml(role)}</div>
+              <div style="font-size:0.78rem;opacity:0.88;margin-top:0.5rem;display:flex;flex-wrap:wrap;gap:1rem;">
+                <span contenteditable="true" data-field="resume-email">${escapeHtml(email)}</span>
+                <span contenteditable="true" data-field="resume-phone">${escapeHtml(phone)}</span>
+                <span contenteditable="true" data-field="resume-location">${escapeHtml(location)}</span>
+              </div>
+              ${buildResumeSocialHtml(linkedinInput, githubInput, portfolioInput, 'rgba(255,255,255,0.9)', 'flex-start')}
+            </div>
+          </div>
+          <div style="padding:1.8rem 2.4rem;">
+            ${skillTags.length ? `<div style="margin-bottom:1.3rem;">
+              <h3 contenteditable="true" data-section-title="skills" style="font-size:0.82rem;font-weight:800;color:${activeAccentColor};margin:0 0 0.55rem 0;text-transform:uppercase;letter-spacing:1px;outline:none;">${escapeHtml(window.sectionTitles.skills || 'Key Skills')}</h3>
+              <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+                ${skillTags.map(s => `<span style="font-size:0.8rem;font-weight:700;background:${activeAccentColor};color:white;padding:0.3rem 0.75rem;border-radius:20px;">${escapeHtml(s)}</span>`).join('')}
+              </div>
+            </div>` : ''}
+            ${summary ? `<div style="margin-bottom:1.3rem;">
+              <h3 contenteditable="true" data-section-title="summary" style="font-size:0.82rem;font-weight:800;color:${activeAccentColor};margin:0 0 0.5rem 0;text-transform:uppercase;letter-spacing:1px;outline:none;">${escapeHtml(window.sectionTitles.summary || 'About Me')}</h3>
+              <div style="font-size:0.86rem;line-height:1.6;color:#334155;">${summaryHtml}</div>
+            </div>` : ''}
+            ${educationInput ? `<div style="margin-bottom:1.3rem;">
+              <h3 contenteditable="true" data-section-title="education" style="font-size:0.82rem;font-weight:800;color:${activeAccentColor};margin:0 0 0.5rem 0;text-transform:uppercase;letter-spacing:1px;outline:none;">${escapeHtml(window.sectionTitles.education || 'Education')}</h3>
+              <div style="font-size:0.86rem;color:#334155;">${educationHtml}</div>
+            </div>` : ''}
+            ${projectsInput ? `<div style="margin-bottom:1.3rem;">
+              <h3 contenteditable="true" data-section-title="projects" style="font-size:0.82rem;font-weight:800;color:${activeAccentColor};margin:0 0 0.5rem 0;text-transform:uppercase;letter-spacing:1px;outline:none;">${escapeHtml(window.sectionTitles.projects || 'Projects & Internships')}</h3>
+              <div style="font-size:0.86rem;color:#334155;">${projectsHtml}</div>
+            </div>` : ''}
+            ${achievementsInput ? `<div style="margin-bottom:1.3rem;">
+              <h3 contenteditable="true" data-section-title="achievements" style="font-size:0.82rem;font-weight:800;color:${activeAccentColor};margin:0 0 0.5rem 0;text-transform:uppercase;letter-spacing:1px;outline:none;">${escapeHtml(window.sectionTitles.achievements || 'Achievements & Certifications')}</h3>
+              <div style="font-size:0.86rem;color:#334155;">${achievementsHtml}</div>
+            </div>` : ''}
+            ${(window.customResumeSections || []).map(sec => {
+              const sv = sec.value || `${sec.title} preview will appear here.`;
+              return `<div style="margin-bottom:1.3rem;">
+                <h3 contenteditable="true" data-custom-section-title="${sec.id}" style="font-size:0.82rem;font-weight:800;color:${activeAccentColor};margin:0 0 0.5rem 0;text-transform:uppercase;letter-spacing:1px;outline:none;">${escapeHtml(sec.title)}</h3>
+                <div style="font-size:0.86rem;color:#334155;">${formatResumeSectionText(sv, sec.id)}</div>
+              </div>`;
+            }).join('')}
+          </div>
         </div>
       `;
     }
@@ -1203,7 +1605,7 @@ ${achievements}`;
 
   function downloadResumeText() {
     const content = document.getElementById('resume-output')?.value || '';
-    if (!content.trim()) return toast('Pehle resume generate karo', '📋');
+    if (!content.trim()) return toast('Please generate the resume first', '📋');
     dlBlob(new Blob([content], { type: 'text/plain;charset=utf-8' }), 'resume.txt');
   }
 
@@ -1399,7 +1801,7 @@ ${achievements}`;
     });
     initSignCanvas();
     showPanel('home');
-    toast('JustPDFCraft ready hai! 🎉', '🚀', 2500);
+    toast('JustPDFCraft is ready! 🎉', '🚀', 2500);
   });
 
   // ══════════════════════════════════════════════════════
@@ -1423,11 +1825,6 @@ ${achievements}`;
     }
     if (tool === 'sign') {
       await initSignPreview(file);
-    }
-    if (tool === 'split') {
-      const ab = await readAB(file);
-      const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
-      renderPageGrid('split-page-grid', pdf.numPages, toggleSplitPage);
     }
     // show result banners hide
     const results = document.querySelectorAll('#panel-' + tool + ' .result-banner');
@@ -1560,7 +1957,7 @@ ${achievements}`;
     renderMergeList();
   }
   async function mergePDFs() {
-    if (state.mergeFiles.length < 2) { toast('Kam se kam 2 PDF files chahiye!', '⚠️'); return; }
+    if (state.mergeFiles.length < 2) { toast('You need at least 2 PDF files!', '⚠️'); return; }
     showLoading('Merging PDFs...');
     setProgress('merge', 10, 'Loading files...');
     try {
@@ -1613,7 +2010,7 @@ ${achievements}`;
     });
   }
   async function splitPDF() {
-    if (!state.splitFile) { toast('Pehle PDF upload karo!', '⚠️'); return; }
+    if (!state.splitFile) { toast('Please upload a PDF first!', '⚠️'); return; }
     showLoading('Splitting PDF...');
     try {
       const ab = await readAB(state.splitFile);
@@ -1652,7 +2049,7 @@ ${achievements}`;
   // COMPRESS
   // ══════════════════════════════════════════════════════
   async function compressPDF() {
-    if (!state.compressFile) { toast('Pehle PDF upload karo!', '⚠️'); return; }
+    if (!state.compressFile) { toast('Please upload a PDF first!', '⚠️'); return; }
     showLoading('Compressing PDF...');
     setProgress('compress', 20);
     try {
@@ -1684,7 +2081,7 @@ ${achievements}`;
 // ══════════════════════════════════════════════════════
 document.addEventListener('change', e => { if (e.target.id === 'rotate-pages') { document.getElementById('rotate-custom').style.display = e.target.value === 'custom' ? 'block' : 'none'; } });
 async function rotatePDF() {
-  if (!state.rotateFile) { toast('Pehle PDF upload karo!', '⚠️'); return; }
+  if (!state.rotateFile) { toast('Please upload a PDF first!', '⚠️'); return; }
   showLoading('Rotating pages...');
   try {
     const ab = await readAB(state.rotateFile);
@@ -1731,7 +2128,7 @@ async function initWatermarkPreview(file) {
     await renderWatermarkPreviewBase();
     renderWatermarkOverlay();
   } catch (e) {
-    toast('Preview load error: ' + e.message, 'âŒ');
+    toast('Preview load error: ' + e.message, '❌');
   }
 }
 
@@ -1873,12 +2270,12 @@ function renderWatermarkOverlay() {
   if (note) {
     note.textContent = position === 'custom'
       ? `Custom placement set: ${ Math.round(state.wmCustomPos.x * 100) }% x, ${ Math.round(state.wmCustomPos.y * 100) }% y`
-      : 'Preview first page dikhata hai. Click location se watermark ka placement set hoga.';
+      : 'This preview shows the first page. Click anywhere on it to set the watermark position.';
   }
 }
 
 async function watermarkPDF() {
-  if (!state.watermarkFile) { toast('Pehle PDF upload karo!', '⚠️'); return; }
+  if (!state.watermarkFile) { toast('Please upload a PDF first!', '⚠️'); return; }
   showLoading('Adding Watermark...');
   try {
     const ab = await readAB(state.watermarkFile);
@@ -1894,7 +2291,7 @@ async function watermarkPDF() {
 
     let wmImageEmbed = null;
     if (state.wmType === 'image') {
-      if (!state.wmImage) { toast('Pehle watermark image upload karo!', '⚠️'); return; }
+      if (!state.wmImage) { toast('Please upload a watermark image first!', '⚠️'); return; }
       const imgAb = await fetch(state.wmImage.src).then(r => r.arrayBuffer());
       wmImageEmbed = state.wmImage.src.includes('png') ? await pdf.embedPng(imgAb) : await pdf.embedJpg(imgAb);
     }
@@ -1947,7 +2344,7 @@ async function watermarkPDF() {
 }
 
 async function imageToPDF() {
-  if (state.img2pdfFiles.length === 0) { toast('Pehle images upload karo!', '⚠️'); return; }
+  if (state.img2pdfFiles.length === 0) { toast('Please upload images first!', '⚠️'); return; }
   showLoading('Creating PDF from images...');
   try {
     const pdf = await PDFLib.PDFDocument.create();
@@ -2002,7 +2399,7 @@ async function imageToPDF() {
 // PDF TO IMAGE
 // ══════════════════════════════════════════════════════
 async function pdfToImages() {
-  if (!state.pdf2imgFile) { toast('Pehle PDF upload karo!', '⚠️'); return; }
+  if (!state.pdf2imgFile) { toast('Please upload a PDF first!', '⚠️'); return; }
   showLoading('Converting PDF to Images...');
   const prog = document.getElementById('pdf2img-progress'); prog.style.display = 'block';
   const fill = document.getElementById('pdf2img-fill');
@@ -2047,7 +2444,7 @@ async function pdfToImages() {
   finally { hideLoading(); }
 }
 async function downloadAllImages() {
-  if (state.pdf2imgCanvases.length === 0) { toast('Pehle convert karo!', '⚠️'); return; }
+  if (state.pdf2imgCanvases.length === 0) { toast('Please convert first!', '⚠️'); return; }
   const zip = new JSZip();
   toast('Creating ZIP...', '⏳');
   
@@ -2295,10 +2692,10 @@ async function generateBlank() {
 // PROTECT PDF
 // ══════════════════════════════════════════════════════
 async function protectPDF() {
-  if (!state.protectFile) { toast('Pehle PDF upload karo!', '⚠️'); return; }
+  if (!state.protectFile) { toast('Please upload a PDF first!', '⚠️'); return; }
   const p1 = document.getElementById('protect-pass').value;
   const p2 = document.getElementById('protect-pass2').value;
-  if (!p1) { toast('Password enter karo!', '⚠️'); return; }
+  if (!p1) { toast('Please enter a password!', '⚠️'); return; }
   if (p1 !== p2) { toast('Passwords match nahi karte!', '⚠️'); return; }
   try {
     const ab = await readAB(state.protectFile);
@@ -2317,7 +2714,7 @@ async function protectPDF() {
 // UNLOCK PDF
 // ══════════════════════════════════════════════════════
 async function unlockPDF() {
-  if (!state.unlockFile) { toast('Pehle PDF upload karo!', '⚠️'); return; }
+  if (!state.unlockFile) { toast('Please upload a PDF first!', '⚠️'); return; }
   const pass = document.getElementById('unlock-pass').value;
   try {
     const ab = await readAB(state.unlockFile);
@@ -2425,7 +2822,7 @@ async function initSignPreview(file) {
     bindSignPreviewControls();
     await setSignPreviewPage(state.signPreviewPageNum);
   } catch (e) {
-    toast('Sign preview load error: ' + e.message, 'âŒ');
+    toast('Sign preview load error: ' + e.message, '❌');
   }
 }
 
@@ -2464,7 +2861,7 @@ function nextSignPreviewPage() {
 }
 
         async function signPDF() {
-          if (!state.signFile) { toast('Pehle PDF upload karo!', '⚠️'); return; }
+          if (!state.signFile) { toast('Please upload a PDF first!', '⚠️'); return; }
           showLoading('Adding Signature...');
           try {
             const ab = await readAB(state.signFile);
@@ -2495,7 +2892,7 @@ function nextSignPreviewPage() {
               page.drawText(name, { x: sx, y: sy + 10, size: fontSize, font, color: PDFLib.rgb(0.1, 0.1, 0.5) });
             } else {
               const imgFile = document.getElementById('sign-img-file').files[0];
-              if (!imgFile) { toast('Signature image upload karo!', '⚠️'); return; }
+              if (!imgFile) { toast('Please upload a signature image!', '⚠️'); return; }
               const imgAB = await readAB(imgFile);
               let pdfImg;
               if (imgFile.type === 'image/jpeg') pdfImg = await pdf.embedJpg(imgAB);
@@ -2700,7 +3097,7 @@ function nextSignPreviewPage() {
           console.log('✅ App installed successfully!');
           isInstalled = true;
           hideInstallButton();
-          toast('🎉 App installed! Home screen mein check karo!', '✅');
+          toast('🎉 App installed! Check your home screen!', '✅');
         });
 
         // Show install button when prompt is available
@@ -2724,7 +3121,7 @@ function nextSignPreviewPage() {
         // Install the app
         async function installApp() {
           if (!installPrompt) {
-            toast('Installation option abhi available nahi hai. HTTPS par deploy karo ya Chrome browser use karo.', '⚠️');
+            toast('Install option is not available right now. Make sure the site is on HTTPS and you are using Chrome.', '⚠️');
             return;
           }
 
@@ -2734,10 +3131,10 @@ function nextSignPreviewPage() {
             console.log(`User response to install prompt: ${outcome}`);
 
             if (outcome === 'accepted') {
-              toast('🎉 Installing... Home screen mein check karo! ⬇️', '✅');
+              toast('🎉 Installing... Check your home screen! ⬇️', '✅');
               hideInstallButton();
             } else {
-              toast('Installation cancel ho gaya', '❌');
+              toast('Installation cancelled', '❌');
             }
 
             installPrompt = null;
@@ -2813,7 +3210,7 @@ function nextSignPreviewPage() {
 
           const iconMap = {
             merge: '🔗', split: '✂️', compress: '📉',
-            sign: '🖋️', watermark: '💧', protect: '🔐'
+            sign: '🖋️', watermark: '💧', protect: '🔐', imgcompress: '🗜️'
           };
 
           const item = {
@@ -2895,7 +3292,7 @@ function nextSignPreviewPage() {
         }
 
         async function convertPdf2Word() {
-          if (!state.pdf2wordFile) { toast('Pehle PDF upload karo!', '⚠️'); return; }
+          if (!state.pdf2wordFile) { toast('Please upload a PDF first!', '⚠️'); return; }
           showLoading('Extracting text from PDF...');
           const progressWrap = document.getElementById('pdf2word-progress');
           const fill = document.getElementById('pdf2word-fill');
@@ -3214,7 +3611,7 @@ async function renderHandwritingPreview() {
   const font = state.handwriting.font;
   const size = state.handwriting.size;
   const lineHeight = state.handwriting.lineHeight;
-  const text = state.handwriting.text || "Apna assignment text yahan paste karein. Adjust variables automatically to update page guidelines, ink flow, and realistic camera scan effects.";
+  const text = state.handwriting.text || "Paste your assignment text here. Adjust the settings to update page guidelines, ink flow, and realistic camera scan effects.";
   
   await ensureFontLoaded(font, size);
 
@@ -3241,7 +3638,7 @@ async function renderHandwritingPreview() {
 async function generateHandwritingPDF() {
   const text = state.handwriting.text;
   if (!text || text.trim() === '') {
-    toast("Pehle text field me notes ya assignment content enter karo!", "⚠️");
+    toast("Please enter some notes or assignment content in the text field first!", "⚠️");
     return;
   }
 
@@ -3317,7 +3714,7 @@ function prevHwPage() {
 }
 
 function nextHwPage() {
-  const text = state.handwriting.text || "Apna assignment text yahan paste karein. Adjust variables automatically to update page guidelines, ink flow, and realistic camera scan effects.";
+  const text = state.handwriting.text || "Paste your assignment text here. Adjust the settings to update page guidelines, ink flow, and realistic camera scan effects.";
   const pages = calculateHwPages(text, state.handwriting.font, state.handwriting.size, state.handwriting.lineHeight);
   if (state.handwriting.currentPage < pages.length) {
     state.handwriting.currentPage++;
@@ -3395,7 +3792,7 @@ function togglePdf2TxtClean() {
 
 async function convertPdf2Txt() {
   if (!state.pdf2txt.file) {
-    toast('Pehle PDF upload karo!', '⚠️');
+    toast('Please upload a PDF first!', '⚠️');
     return;
   }
   
@@ -3529,8 +3926,8 @@ function resetPdf2Txt() {
     dz.innerHTML = `
       <input type="file" id="pdf2txt-input" accept=".pdf" onchange="handlePdf2TxtFile(this.files[0])">
       <div class="dz-icon">📄</div>
-      <h3>PDF yahan drop karo</h3>
-      <p>Click karke ya drag & drop se PDF file choose karo</p>
+      <h3>Drop your PDF here</h3>
+      <p>Click to browse, or drag and drop a PDF file</p>
     `;
   }
   
@@ -3582,6 +3979,13 @@ window.saveSectionTitles = saveSectionTitles;
 window.loadSectionTitles = loadSectionTitles;
 window.initResumeEnhancements = initResumeEnhancements;
 window.updateAtsScore = updateAtsScore;
+window.handleResumePhotoUpload = handleResumePhotoUpload;
+window.removeResumePhoto = removeResumePhoto;
+window.setResumeCustomAccentColor = setResumeCustomAccentColor;
+window.setResumeFont = setResumeFont;
+window.saveResumeDraft = saveResumeDraft;
+window.loadResumeDraft = loadResumeDraft;
+window.clearResumeDraft = clearResumeDraft;
 
 // ── Helper Functions for Resume Builder Enhancements ──
 function reconstructTextarea(fieldId) {
@@ -3643,6 +4047,116 @@ function setResumeAccentColor(color, swatch) {
   
   renderResumeTemplatePreview();
   toast(`Accent color set to ${color}`, '🎨');
+  saveResumeDraft();
+}
+
+function setResumeCustomAccentColor(hex) {
+  window.customResumeAccentHex = hex;
+  window.currentResumeAccentColor = 'custom';
+  document.querySelectorAll('.color-swatch').forEach(btn => btn.classList.remove('active'));
+  renderResumeTemplatePreview();
+  saveResumeDraft();
+}
+
+function setResumeFont(fontKey) {
+  window.currentResumeFont = fontKey;
+  renderResumeTemplatePreview();
+  saveResumeDraft();
+}
+
+function handleResumePhotoUpload(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('Please upload an image file', '⚠️'); return; }
+  readURL(file).then(dataUrl => {
+    window.resumePhotoData = dataUrl;
+    const preview = document.getElementById('resume-photo-preview');
+    if (preview) preview.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover">`;
+    renderResumeTemplatePreview();
+    saveResumeDraft();
+  });
+}
+
+function removeResumePhoto() {
+  window.resumePhotoData = null;
+  const input = document.getElementById('resume-photo-input');
+  if (input) input.value = '';
+  const preview = document.getElementById('resume-photo-preview');
+  if (preview) preview.innerHTML = '👤';
+  renderResumeTemplatePreview();
+  saveResumeDraft();
+}
+
+// ── Resume Draft Autosave ──
+const RESUME_DRAFT_KEY = 'justpdfcraft_resume_draft';
+const RESUME_DRAFT_FIELD_IDS = [
+  'resume-template', 'resume-level', 'resume-name', 'resume-email', 'resume-phone',
+  'resume-location', 'resume-role', 'resume-summary', 'resume-education', 'resume-skills',
+  'resume-projects', 'resume-achievements', 'resume-linkedin', 'resume-github', 'resume-portfolio'
+];
+
+function saveResumeDraft() {
+  const draft = {};
+  RESUME_DRAFT_FIELD_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) draft[id] = el.value;
+  });
+  draft.accentColor = window.currentResumeAccentColor;
+  draft.customAccentHex = window.customResumeAccentHex;
+  draft.font = window.currentResumeFont;
+  draft.photo = window.resumePhotoData;
+  localStorage.setItem(RESUME_DRAFT_KEY, JSON.stringify(draft));
+}
+
+function loadResumeDraft() {
+  const stored = localStorage.getItem(RESUME_DRAFT_KEY);
+  if (!stored) return;
+  let draft;
+  try { draft = JSON.parse(stored); } catch (e) { return; }
+
+  RESUME_DRAFT_FIELD_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && draft[id] !== undefined) el.value = draft[id];
+  });
+
+  if (draft.font) {
+    window.currentResumeFont = draft.font;
+    const fontSelect = document.getElementById('resume-font');
+    if (fontSelect) fontSelect.value = draft.font;
+  }
+  if (draft.accentColor) {
+    window.currentResumeAccentColor = draft.accentColor;
+    window.customResumeAccentHex = draft.customAccentHex || null;
+    document.querySelectorAll('.color-swatch').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-color') === draft.accentColor));
+    if (draft.customAccentHex) {
+      const colorInput = document.getElementById('resume-custom-color');
+      if (colorInput) colorInput.value = draft.customAccentHex;
+    }
+  }
+  if (draft.photo) {
+    window.resumePhotoData = draft.photo;
+    const preview = document.getElementById('resume-photo-preview');
+    if (preview) preview.innerHTML = `<img src="${draft.photo}" style="width:100%;height:100%;object-fit:cover">`;
+  }
+}
+
+function clearResumeDraft() {
+  localStorage.removeItem(RESUME_DRAFT_KEY);
+  RESUME_DRAFT_FIELD_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  window.currentResumeAccentColor = 'default';
+  window.customResumeAccentHex = null;
+  window.currentResumeFont = 'dm-sans';
+  window.resumePhotoData = null;
+  const fontSelect = document.getElementById('resume-font');
+  if (fontSelect) fontSelect.value = 'dm-sans';
+  document.querySelectorAll('.color-swatch').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-color') === 'default'));
+  const preview = document.getElementById('resume-photo-preview');
+  if (preview) preview.innerHTML = '👤';
+  renderResumeTemplatePreview();
+  toast('Draft cleared', '🗑️');
 }
 
 function updateAtsScore() {
@@ -3715,7 +4229,7 @@ function updateAtsScore() {
   }
 
   // Projects check
-  if (projects && projects.length > 30 && !projects.includes('preview yahan aayega')) {
+  if (projects && projects.length > 30 && !projects.includes('preview will appear here')) {
     score += 10;
   } else {
     tips.push('Add detailed project/experience descriptions.');
@@ -3945,20 +4459,25 @@ function executeDeleteSection() {
 }
 
 function initResumeEnhancements() {
+  loadResumeDraft();
   loadSectionTitles();
   loadCustomSections();
   updateAtsScore();
-  
+
   const formIds = [
-    'resume-name', 'resume-email', 'resume-phone', 'resume-location', 
-    'resume-role', 'resume-summary', 'resume-education', 'resume-skills', 
-    'resume-projects', 'resume-achievements'
+    'resume-name', 'resume-email', 'resume-phone', 'resume-location',
+    'resume-role', 'resume-summary', 'resume-education', 'resume-skills',
+    'resume-projects', 'resume-achievements', 'resume-linkedin', 'resume-github', 'resume-portfolio'
   ];
   formIds.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-      el.addEventListener('input', updateAtsScore);
+      el.addEventListener('input', () => { updateAtsScore(); saveResumeDraft(); });
     }
+  });
+  ['resume-template', 'resume-level'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', saveResumeDraft);
   });
 
   const paper = document.getElementById('resume-paper');
