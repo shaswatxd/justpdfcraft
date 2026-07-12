@@ -2,7 +2,7 @@
 // JustPDFCraft Service Worker v11
 // ════════════════════════════════════════════
 
-const CACHE_VERSION = 'v13';
+const CACHE_VERSION = 'v14';
 const STATIC_CACHE = `justpdfcraft-static-${CACHE_VERSION}`;
 const CDN_CACHE = `justpdfcraft-cdn-${CACHE_VERSION}`;
 const ALL_CACHES = [STATIC_CACHE, CDN_CACHE];
@@ -110,7 +110,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // ── CSS / JS / Images: Stale-While-Revalidate ──
+  // ── JS / CSS: Network-First (so code updates always show up immediately) ──
+  if (request.destination === 'script' || request.destination === 'style') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(STATIC_CACHE).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // ── Everything else (images, etc.): Stale-While-Revalidate ──
   event.respondWith(
     caches.open(STATIC_CACHE).then((cache) =>
       cache.match(request).then((cached) => {
