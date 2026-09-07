@@ -43,6 +43,45 @@ const state = {
     format: 'auto',
     resizeMode: 'none',
     maxDim: 1920
+  },
+  examResizer: {
+    file: null,
+    image: null,
+    width: 413,
+    height: 531,
+    unit: 'px',
+    minKb: 20,
+    maxKb: 50,
+    addMeta: false,
+    candName: '',
+    candDate: '',
+    outputBlob: null
+  },
+  organize: {
+    file: null,
+    pdfDoc: null,
+    totalPages: 0,
+    pages: [],
+    originalPages: []
+  },
+  pageNumbers: {
+    file: null,
+    totalPages: 0,
+    format: 'page_n_of_total',
+    position: 'bottom_center',
+    startPage: 1,
+    startNumber: 1,
+    fontSize: 11,
+    fontColor: 'black'
+  },
+  idCard: {
+    frontFile: null,
+    frontImg: null,
+    backFile: null,
+    backImg: null,
+    layout: 'vertical',
+    docType: 'id1',
+    cutlines: 'dashed'
   }
 };
 
@@ -4649,3 +4688,758 @@ function initResumeEnhancements() {
     });
   }
 }
+
+// ══════════════════════════════════════════════════════
+// GOVT EXAM RESIZER
+// ══════════════════════════════════════════════════════
+
+const EXAM_PRESETS = {
+  ssc_photo: { w: 413, h: 531, minKb: 20, maxKb: 50, label: '3.5 × 4.5 cm (413 × 531 px)' },
+  ssc_sig: { w: 472, h: 236, minKb: 10, maxKb: 20, label: '4.0 × 2.0 cm (472 × 236 px)' },
+  upsc_photo: { w: 350, h: 350, minKb: 20, maxKb: 300, label: '350 × 350 px (20 - 300 KB)' },
+  upsc_sig: { w: 350, h: 350, minKb: 20, maxKb: 300, label: '350 × 350 px (20 - 300 KB)' },
+  ibps_photo: { w: 531, h: 413, minKb: 20, maxKb: 50, label: '4.5 × 3.5 cm (531 × 413 px)' },
+  ibps_sig: { w: 140, h: 60, minKb: 10, maxKb: 20, label: '140 × 60 px (10 - 20 KB)' },
+  rrb_photo: { w: 413, h: 531, minKb: 30, maxKb: 70, label: '35 × 45 mm (413 × 531 px)' },
+  rrb_sig: { w: 590, h: 236, minKb: 30, maxKb: 70, label: '50 × 20 mm (590 × 236 px)' },
+  gate_photo: { w: 413, h: 531, minKb: 50, maxKb: 200, label: '3.5 × 4.5 cm (413 × 531 px)' },
+  custom: null
+};
+
+async function handleExamImageUpload(files) {
+  if (!files || files.length === 0) return;
+  const file = files[0];
+  if (!file.type.startsWith('image/')) {
+    toast('Please select a valid image file (JPG, PNG, WEBP)', '⚠️');
+    return;
+  }
+  try {
+    const img = await loadImageFromFile(file);
+    state.examResizer.file = file;
+    state.examResizer.image = img;
+    
+    document.getElementById('exam-dropzone').style.display = 'none';
+    const wb = document.getElementById('exam-workbench');
+    if (wb) wb.style.display = 'block';
+
+    applyExamPreset(document.getElementById('exam-preset-select').value);
+    toast('Image loaded! Adjust presets or download compliant photo.', '✅');
+  } catch (err) {
+    console.error(err);
+    toast('Failed to load image file.', '❌');
+  }
+}
+
+function applyExamPreset(key) {
+  const preset = EXAM_PRESETS[key];
+  if (!preset) return;
+  document.getElementById('exam-width').value = preset.w;
+  document.getElementById('exam-height').value = preset.h;
+  document.getElementById('exam-target-min-kb').value = preset.minKb;
+  document.getElementById('exam-target-max-kb').value = preset.maxKb;
+  document.getElementById('exam-info-dim').textContent = preset.label;
+  document.getElementById('exam-info-kb').textContent = `${preset.minKb} KB - ${preset.maxKb} KB`;
+  renderExamResizerPreview();
+}
+
+function updateExamDimensions() {
+  renderExamResizerPreview();
+}
+
+function updateExamTargetKB() {
+  const minKb = parseInt(document.getElementById('exam-target-min-kb').value) || 20;
+  const maxKb = parseInt(document.getElementById('exam-target-max-kb').value) || 50;
+  document.getElementById('exam-info-kb').textContent = `${minKb} KB - ${maxKb} KB`;
+  renderExamResizerPreview();
+}
+
+function toggleExamMetaFields(checked) {
+  const f = document.getElementById('exam-meta-fields');
+  if (f) f.style.display = checked ? 'grid' : 'none';
+  state.examResizer.addMeta = checked;
+}
+
+async function renderExamResizerPreview() {
+  const img = state.examResizer.image;
+  if (!img) return;
+
+  const targetW = parseInt(document.getElementById('exam-width').value) || 413;
+  const targetH = parseInt(document.getElementById('exam-height').value) || 531;
+  const minKb = parseInt(document.getElementById('exam-target-min-kb').value) || 20;
+  const maxKb = parseInt(document.getElementById('exam-target-max-kb').value) || 50;
+  const addMeta = document.getElementById('exam-add-meta')?.checked || false;
+  const candName = (document.getElementById('exam-cand-name')?.value || '').trim();
+  const candDate = (document.getElementById('exam-cand-date')?.value || '').trim();
+
+  const canvas = document.getElementById('exam-preview-canvas');
+  if (!canvas) return;
+  canvas.width = targetW;
+  canvas.height = targetH;
+  const ctx = canvas.getContext('2d');
+
+  // Fill white canvas background
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, targetW, targetH);
+
+  let photoH = targetH;
+  let metaH = 0;
+  if (addMeta && (candName || candDate)) {
+    metaH = Math.round(targetH * 0.18);
+    photoH = targetH - metaH;
+  }
+
+  // Draw image to photo area (aspect fill/cover)
+  const imgRatio = img.width / img.height;
+  const targetRatio = targetW / photoH;
+  let sW, sH, sX, sY;
+
+  if (imgRatio > targetRatio) {
+    sH = img.height;
+    sW = img.height * targetRatio;
+    sX = (img.width - sW) / 2;
+    sY = 0;
+  } else {
+    sW = img.width;
+    sH = img.width / targetRatio;
+    sX = 0;
+    sY = (img.height - sH) / 2;
+  }
+  ctx.drawImage(img, sX, sY, sW, sH, 0, 0, targetW, photoH);
+
+  // Draw white meta bar at bottom if enabled
+  if (addMeta && (candName || candDate)) {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, photoH, targetW, metaH);
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, photoH);
+    ctx.lineTo(targetW, photoH);
+    ctx.stroke();
+
+    ctx.fillStyle = '#000000';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const baseFontSize = Math.max(12, Math.round(metaH * 0.32));
+    if (candName && candDate) {
+      ctx.font = `bold ${baseFontSize}px Arial, sans-serif`;
+      ctx.fillText(candName.toUpperCase(), targetW / 2, photoH + metaH * 0.35);
+      ctx.font = `normal ${Math.round(baseFontSize * 0.85)}px Arial, sans-serif`;
+      ctx.fillText(`DOB/DOP: ${candDate}`, targetW / 2, photoH + metaH * 0.75);
+    } else if (candName) {
+      ctx.font = `bold ${Math.round(baseFontSize * 1.1)}px Arial, sans-serif`;
+      ctx.fillText(candName.toUpperCase(), targetW / 2, photoH + metaH * 0.5);
+    } else {
+      ctx.font = `normal ${baseFontSize}px Arial, sans-serif`;
+      ctx.fillText(candDate, targetW / 2, photoH + metaH * 0.5);
+    }
+  }
+
+  // Optimize JPEG size using binary search
+  let low = 0.05, high = 0.98, bestBlob = null;
+  for (let step = 0; step < 7; step++) {
+    const mid = (low + high) / 2;
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', mid));
+    const kb = blob.size / 1024;
+    bestBlob = blob;
+    if (kb > maxKb) {
+      high = mid;
+    } else if (kb < minKb) {
+      low = mid;
+    } else {
+      break;
+    }
+  }
+
+  if (!bestBlob) {
+    bestBlob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.85));
+  }
+  state.examResizer.outputBlob = bestBlob;
+
+  const actualKb = (bestBlob.size / 1024).toFixed(1);
+  const badge = document.getElementById('exam-actual-kb-badge');
+  if (badge) {
+    badge.textContent = `${actualKb} KB`;
+    if (actualKb >= minKb && actualKb <= maxKb) {
+      badge.style.background = '#10b981';
+    } else {
+      badge.style.background = '#f59e0b';
+    }
+  }
+
+  const metaEl = document.getElementById('exam-preview-meta');
+  if (metaEl) {
+    metaEl.textContent = `${targetW} × ${targetH} px | ${actualKb} KB`;
+  }
+}
+
+function downloadExamResizedImage() {
+  if (!state.examResizer.outputBlob) {
+    toast('No resized image ready to download.', '⚠️');
+    return;
+  }
+  const presetKey = document.getElementById('exam-preset-select')?.value || 'exam';
+  dlBlob(state.examResizer.outputBlob, `${presetKey}_resized_${Date.now()}.jpg`);
+  toast('Photo downloaded successfully! 100% compliant with exam portal.', '✅');
+}
+
+
+// ══════════════════════════════════════════════════════
+// ORGANIZE & DELETE PDF PAGES
+// ══════════════════════════════════════════════════════
+
+async function handleOrganizePDFUpload(files) {
+  if (!files || files.length === 0) return;
+  const file = files[0];
+  if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+    toast('Please select a valid PDF file.', '⚠️');
+    return;
+  }
+
+  try {
+    setProgress('organize', 10);
+    const ab = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+    state.organize.file = file;
+    state.organize.pdfDoc = pdf;
+    state.organize.totalPages = pdf.numPages;
+    state.organize.pages = [];
+
+    document.getElementById('organize-dropzone').style.display = 'none';
+    const wb = document.getElementById('organize-workbench');
+    if (wb) wb.style.display = 'block';
+
+    for (let i = 1; i <= pdf.numPages; i++) {
+      state.organize.pages.push({
+        origIndex: i - 1,
+        origPageNum: i,
+        rotation: 0,
+        thumbCanvas: null
+      });
+    }
+
+    state.organize.originalPages = JSON.parse(JSON.stringify(state.organize.pages.map(p => ({
+      origIndex: p.origIndex,
+      origPageNum: p.origPageNum,
+      rotation: p.rotation
+    }))));
+    await renderOrganizeThumbnails();
+    setProgress('organize', 100);
+    setTimeout(() => {
+      const p = document.getElementById('organize-progress');
+      if (p) p.classList.remove('show');
+    }, 400);
+    toast(`Loaded ${pdf.numPages} pages! You can now reorder, rotate, or delete pages.`, '✅');
+  } catch (err) {
+    console.error(err);
+    toast('Failed to load PDF document.', '❌');
+  }
+}
+
+async function renderOrganizeThumbnails() {
+  const grid = document.getElementById('organize-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  const badge = document.getElementById('organize-page-count-badge');
+  if (badge) badge.textContent = `${state.organize.pages.length} Pages`;
+
+  for (let idx = 0; idx < state.organize.pages.length; idx++) {
+    const pageItem = state.organize.pages[idx];
+    const card = document.createElement('div');
+    card.className = 'organize-card';
+
+    // Badge
+    const badgeEl = document.createElement('div');
+    badgeEl.className = 'organize-badge';
+    badgeEl.textContent = `P. ${idx + 1}`;
+    card.appendChild(badgeEl);
+
+    // Thumb wrap
+    const thumbWrap = document.createElement('div');
+    thumbWrap.className = 'organize-thumb-wrap';
+
+    const canvas = document.createElement('canvas');
+    canvas.className = 'organize-thumb';
+    canvas.style.transform = `rotate(${pageItem.rotation}deg)`;
+    thumbWrap.appendChild(canvas);
+    card.appendChild(thumbWrap);
+
+    // Render thumb
+    if (!pageItem.thumbCanvas) {
+      const page = await state.organize.pdfDoc.getPage(pageItem.origPageNum);
+      const viewport = page.getViewport({ scale: 0.28 });
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d');
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      pageItem.thumbCanvas = canvas;
+    } else {
+      canvas.width = pageItem.thumbCanvas.width;
+      canvas.height = pageItem.thumbCanvas.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(pageItem.thumbCanvas, 0, 0);
+    }
+
+    // Actions
+    const actions = document.createElement('div');
+    actions.className = 'organize-card-actions';
+
+    // Move left
+    const leftBtn = document.createElement('button');
+    leftBtn.className = 'organize-act-btn';
+    leftBtn.innerHTML = '←';
+    leftBtn.title = 'Move Left';
+    leftBtn.disabled = (idx === 0);
+    leftBtn.onclick = () => moveOrganizePage(idx, -1);
+
+    // Rotate
+    const rotBtn = document.createElement('button');
+    rotBtn.className = 'organize-act-btn';
+    rotBtn.innerHTML = '↻';
+    rotBtn.title = 'Rotate 90°';
+    rotBtn.onclick = () => rotateOrganizePage(idx);
+
+    // Move right
+    const rightBtn = document.createElement('button');
+    rightBtn.className = 'organize-act-btn';
+    rightBtn.innerHTML = '→';
+    rightBtn.title = 'Move Right';
+    rightBtn.disabled = (idx === state.organize.pages.length - 1);
+    rightBtn.onclick = () => moveOrganizePage(idx, 1);
+
+    // Delete
+    const delBtn = document.createElement('button');
+    delBtn.className = 'organize-act-btn delete-btn';
+    delBtn.innerHTML = '🗑️';
+    delBtn.title = 'Delete Page';
+    delBtn.onclick = () => deleteOrganizePage(idx);
+
+    actions.appendChild(leftBtn);
+    actions.appendChild(rotBtn);
+    actions.appendChild(rightBtn);
+    actions.appendChild(delBtn);
+
+    card.appendChild(actions);
+    grid.appendChild(card);
+  }
+}
+
+function moveOrganizePage(idx, dir) {
+  const target = idx + dir;
+  if (target < 0 || target >= state.organize.pages.length) return;
+  const temp = state.organize.pages[idx];
+  state.organize.pages[idx] = state.organize.pages[target];
+  state.organize.pages[target] = temp;
+  renderOrganizeThumbnails();
+}
+
+function rotateOrganizePage(idx) {
+  state.organize.pages[idx].rotation = (state.organize.pages[idx].rotation + 90) % 360;
+  const cards = document.querySelectorAll('.organize-card');
+  if (cards[idx]) {
+    const thumb = cards[idx].querySelector('.organize-thumb');
+    if (thumb) thumb.style.transform = `rotate(${state.organize.pages[idx].rotation}deg)`;
+  }
+}
+
+function rotateAllOrganizePages(angle = 90) {
+  state.organize.pages.forEach(p => {
+    p.rotation = (p.rotation + angle) % 360;
+  });
+  renderOrganizeThumbnails();
+}
+
+function deleteOrganizePage(idx) {
+  if (state.organize.pages.length <= 1) {
+    toast('PDF must have at least one page!', '⚠️');
+    return;
+  }
+  state.organize.pages.splice(idx, 1);
+  renderOrganizeThumbnails();
+  toast(`Page removed. ${state.organize.pages.length} pages remaining.`, 'ℹ️');
+}
+
+function resetOrganizePages() {
+  state.organize.pages = JSON.parse(JSON.stringify(state.organize.originalPages));
+  renderOrganizeThumbnails();
+  toast('Reset to original order and rotation.', 'ℹ️');
+}
+
+async function exportOrganizedPDF() {
+  if (!state.organize.file || state.organize.pages.length === 0) {
+    toast('No pages to export!', '⚠️');
+    return;
+  }
+
+  try {
+    setProgress('organize', 20);
+    const ab = await state.organize.file.arrayBuffer();
+    const srcDoc = await PDFLib.PDFDocument.load(ab);
+    const outDoc = await PDFLib.PDFDocument.create();
+
+    const origIndices = state.organize.pages.map(p => p.origIndex);
+    const copiedPages = await outDoc.copyPages(srcDoc, origIndices);
+
+    for (let i = 0; i < copiedPages.length; i++) {
+      const page = copiedPages[i];
+      const rot = state.organize.pages[i].rotation;
+      if (rot !== 0) {
+        const currentRot = page.getRotation().angle;
+        page.setRotation(PDFLib.degrees((currentRot + rot) % 360));
+      }
+      outDoc.addPage(page);
+      setProgress('organize', 20 + Math.round(((i + 1) / copiedPages.length) * 70));
+    }
+
+    const pdfBytes = await outDoc.save();
+    dlBlob(new Blob([pdfBytes], { type: 'application/pdf' }), `organized_${state.organize.file.name}`);
+    setProgress('organize', 100);
+    setTimeout(() => {
+      const p = document.getElementById('organize-progress');
+      if (p) p.classList.remove('show');
+    }, 400);
+    toast('Organized PDF exported and downloaded successfully!', '✅');
+  } catch (err) {
+    console.error(err);
+    toast('Failed to generate organized PDF.', '❌');
+  }
+}
+
+
+// ══════════════════════════════════════════════════════
+// ADD PAGE NUMBERS TO PDF
+// ══════════════════════════════════════════════════════
+
+async function handlePageNumbersUpload(files) {
+  if (!files || files.length === 0) return;
+  const file = files[0];
+  if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+    toast('Please select a valid PDF file.', '⚠️');
+    return;
+  }
+
+  try {
+    const ab = await file.arrayBuffer();
+    const doc = await PDFLib.PDFDocument.load(ab);
+    state.pageNumbers.file = file;
+    state.pageNumbers.totalPages = doc.getPageCount();
+
+    document.getElementById('pagenumbers-dropzone').style.display = 'none';
+    const wb = document.getElementById('pagenumbers-workbench');
+    if (wb) wb.style.display = 'block';
+
+    document.getElementById('pn-file-name').textContent = file.name;
+    document.getElementById('pn-file-meta').textContent = `${state.pageNumbers.totalPages} pages • ${fmtSize(file.size)}`;
+    toast(`Loaded ${file.name} (${state.pageNumbers.totalPages} pages). Configure numbering options below!`, '✅');
+  } catch (err) {
+    console.error(err);
+    toast('Failed to load PDF document.', '❌');
+  }
+}
+
+async function applyPageNumbersToPDF() {
+  if (!state.pageNumbers.file) {
+    toast('Please upload a PDF first!', '⚠️');
+    return;
+  }
+
+  try {
+    setProgress('pagenumbers', 15);
+    const ab = await state.pageNumbers.file.arrayBuffer();
+    const doc = await PDFLib.PDFDocument.load(ab);
+    const totalPages = doc.getPageCount();
+
+    const format = document.getElementById('pn-format').value;
+    const pos = document.getElementById('pn-position').value;
+    const startPage = Math.max(1, parseInt(document.getElementById('pn-start-page').value) || 1);
+    const startNum = parseInt(document.getElementById('pn-start-number').value) || 1;
+    const fontSize = parseInt(document.getElementById('pn-font-size').value) || 11;
+    const colorChoice = document.getElementById('pn-font-color').value;
+
+    let fontColor = PDFLib.rgb(0.1, 0.1, 0.1);
+    if (colorChoice === 'gray') fontColor = PDFLib.rgb(0.45, 0.45, 0.45);
+    if (colorChoice === 'navy') fontColor = PDFLib.rgb(0.05, 0.15, 0.35);
+
+    const font = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    const margin = 28;
+
+    for (let i = startPage - 1; i < totalPages; i++) {
+      const page = doc.getPage(i);
+      const { width, height } = page.getSize();
+      const currentNumber = startNum + (i - (startPage - 1));
+
+      let text = '';
+      if (format === 'page_n_of_total') text = `Page ${currentNumber} of ${totalPages}`;
+      else if (format === 'n_of_total') text = `${currentNumber} of ${totalPages}`;
+      else if (format === 'n_only') text = `${currentNumber}`;
+      else if (format === 'dash_n') text = `- ${currentNumber} -`;
+      else if (format === 'page_n') text = `Page ${currentNumber}`;
+
+      const textWidth = font.widthOfTextAtSize(text, fontSize);
+      let x = (width - textWidth) / 2;
+      let y = margin;
+
+      if (pos.includes('left')) x = margin;
+      else if (pos.includes('right')) x = width - textWidth - margin;
+
+      if (pos.startsWith('top')) y = height - margin - fontSize;
+
+      page.drawText(text, {
+        x,
+        y,
+        size: fontSize,
+        font,
+        color: fontColor
+      });
+
+      setProgress('pagenumbers', 15 + Math.round(((i + 1) / totalPages) * 75));
+    }
+
+    const pdfBytes = await doc.save();
+    dlBlob(new Blob([pdfBytes], { type: 'application/pdf' }), `numbered_${state.pageNumbers.file.name}`);
+    setProgress('pagenumbers', 100);
+    setTimeout(() => {
+      const p = document.getElementById('pagenumbers-progress');
+      if (p) p.classList.remove('show');
+    }, 400);
+    toast('Page numbers stamped and PDF downloaded successfully!', '✅');
+  } catch (err) {
+    console.error(err);
+    toast('Error stamping page numbers.', '❌');
+  }
+}
+
+
+// ══════════════════════════════════════════════════════
+// ID CARD FRONT & BACK JOINER (A4 PRINT READY)
+// ══════════════════════════════════════════════════════
+
+async function handleIdCardUpload(side, files) {
+  if (!files || files.length === 0) return;
+  const file = files[0];
+  if (!file.type.startsWith('image/')) {
+    toast('Please select an image file (JPG, PNG, etc.)', '⚠️');
+    return;
+  }
+
+  try {
+    const img = await loadImageFromFile(file);
+    state.idCard[side + 'File'] = file;
+    state.idCard[side + 'Img'] = img;
+
+    const dz = document.getElementById(`idcard-${side}-dz`);
+    if (dz) dz.classList.add('has-file');
+    const st = document.getElementById(`idcard-${side}-status`);
+    if (st) st.textContent = `✅ ${file.name} (${fmtSize(file.size)})`;
+
+    const wb = document.getElementById('idcard-workbench');
+    if (wb) wb.style.display = 'block';
+
+    renderIdCardPreview();
+    toast(`${side === 'front' ? 'Front' : 'Back'} photo uploaded!`, '✅');
+  } catch (err) {
+    console.error(err);
+    toast('Failed to load ID card image.', '❌');
+  }
+}
+
+function renderIdCardPreview() {
+  const canvas = document.getElementById('idcard-preview-canvas');
+  if (!canvas) return;
+
+  // A4 aspect ratio 595.28 x 841.89 pt
+  const pageW = 595;
+  const pageH = 842;
+  canvas.width = pageW;
+  canvas.height = pageH;
+  const ctx = canvas.getContext('2d');
+
+  // Clean A4 paper
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, pageW, pageH);
+
+  const layout = document.getElementById('idcard-layout')?.value || 'vertical';
+  const cutlines = document.getElementById('idcard-cutlines')?.value || 'dashed';
+
+  // Standard ID-1 dimensions at 72 pt/in (85.6mm x 54mm) -> 242.6 pt x 153.1 pt
+  const cardW = 242.6 * 1.15;
+  const cardH = 153.1 * 1.15;
+  const cornerR = 8;
+
+  let frontRect, backRect;
+
+  if (layout === 'vertical') {
+    const startY = 140;
+    const gap = 45;
+    const x = (pageW - cardW) / 2;
+    frontRect = { x, y: startY, w: cardW, h: cardH };
+    backRect = { x, y: startY + cardH + gap, w: cardW, h: cardH };
+  } else {
+    // horizontal
+    const startY = 260;
+    const gap = 30;
+    const totalW = cardW * 2 + gap;
+    const startX = (pageW - totalW) / 2;
+    frontRect = { x: startX, y: startY, w: cardW, h: cardH };
+    backRect = { x: startX + cardW + gap, y: startY, w: cardW, h: cardH };
+  }
+
+  function drawCardSlot(rect, img, title) {
+    ctx.save();
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(rect.x, rect.y, rect.w, rect.h, cornerR);
+    } else {
+      ctx.rect(rect.x, rect.y, rect.w, rect.h);
+    }
+
+    if (img) {
+      ctx.clip();
+      ctx.drawImage(img, rect.x, rect.y, rect.w, rect.h);
+      ctx.restore();
+    } else {
+      ctx.fillStyle = '#f8fafc';
+      ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '14px DM Sans, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`Drop or Select ${title}`, rect.x + rect.w / 2, rect.y + rect.h / 2);
+    }
+
+    // Border / Cut lines
+    if (cutlines !== 'none') {
+      ctx.save();
+      if (cutlines === 'dashed') {
+        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1.2;
+      } else {
+        ctx.setLineDash([]);
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1;
+      }
+
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(rect.x, rect.y, rect.w, rect.h, cornerR);
+      } else {
+        ctx.rect(rect.x, rect.y, rect.w, rect.h);
+      }
+      ctx.stroke();
+
+      if (cutlines === 'dashed') {
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '12px sans-serif';
+        ctx.fillText('✂️', rect.x - 14, rect.y + 4);
+      }
+      ctx.restore();
+    }
+  }
+
+  drawCardSlot(frontRect, state.idCard.frontImg, 'Front Side');
+  drawCardSlot(backRect, state.idCard.backImg, 'Back Side');
+
+  // Subtle header & watermark at top/bottom of A4
+  ctx.fillStyle = '#64748b';
+  ctx.font = '11px DM Sans, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('JustPDFCraft ID Card Joiner — 1:1 Scale Print Ready Sheet', pageW / 2, 60);
+  ctx.fillText('Print on A4 paper at 100% scale (Do Not Scale / Fit to printable area)', pageW / 2, pageH - 45);
+}
+
+async function generateIdCardPDF() {
+  if (!state.idCard.frontImg && !state.idCard.backImg) {
+    toast('Please upload at least the Front side of your ID card!', '⚠️');
+    return;
+  }
+
+  try {
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    // A4 dimensions: 595.28 x 841.89 points
+    const page = pdfDoc.addPage([595.28, 841.89]);
+    const { width, height } = page.getSize();
+
+    const layout = document.getElementById('idcard-layout')?.value || 'vertical';
+    const cutlines = document.getElementById('idcard-cutlines')?.value || 'dashed';
+
+    // Standard ID-1 card size: 85.6 mm x 54 mm = 242.6 pt x 153.1 pt
+    const cardW = 242.6;
+    const cardH = 153.1;
+
+    let frontX, frontY, backX, backY;
+
+    if (layout === 'vertical') {
+      const startY = height - 120 - cardH;
+      const gap = 45;
+      const x = (width - cardW) / 2;
+      frontX = x; frontY = startY;
+      backX = x; backY = startY - cardH - gap;
+    } else {
+      const gap = 30;
+      const totalW = cardW * 2 + gap;
+      const startX = (width - totalW) / 2;
+      const y = height / 2 - cardH / 2;
+      frontX = startX; frontY = y;
+      backX = startX + cardW + gap; backY = y;
+    }
+
+    // Helper to embed image
+    async function embedCard(img) {
+      if (!img) return null;
+      const c = document.createElement('canvas');
+      c.width = img.width;
+      c.height = img.height;
+      const cx = c.getContext('2d');
+      cx.drawImage(img, 0, 0);
+      const dataUrl = c.toDataURL('image/jpeg', 0.95);
+      return await pdfDoc.embedJpg(dataUrl);
+    }
+
+    const frontPdfImg = await embedCard(state.idCard.frontImg);
+    const backPdfImg = await embedCard(state.idCard.backImg);
+
+    if (frontPdfImg) {
+      page.drawImage(frontPdfImg, { x: frontX, y: frontY, width: cardW, height: cardH });
+    }
+    if (backPdfImg) {
+      page.drawImage(backPdfImg, { x: backX, y: backY, width: cardW, height: cardH });
+    }
+
+    // Cutlines
+    if (cutlines !== 'none') {
+      const borderConfig = {
+        borderColor: PDFLib.rgb(0.6, 0.65, 0.7),
+        borderWidth: 1,
+        borderDashArray: cutlines === 'dashed' ? [4, 4] : undefined
+      };
+      if (frontPdfImg) {
+        page.drawRectangle({ x: frontX, y: frontY, width: cardW, height: cardH, ...borderConfig });
+      }
+      if (backPdfImg) {
+        page.drawRectangle({ x: backX, y: backY, width: cardW, height: cardH, ...borderConfig });
+      }
+    }
+
+    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    page.drawText('Print at 100% Scale (Actual Size) on A4 Paper', {
+      x: width / 2 - 120,
+      y: 40,
+      size: 10,
+      font,
+      color: PDFLib.rgb(0.4, 0.45, 0.5)
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    dlBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'id_card_a4_print_ready.pdf');
+    toast('Print-Ready A4 PDF generated and downloaded!', '✅');
+  } catch (err) {
+    console.error(err);
+    toast('Error generating ID Card PDF.', '❌');
+  }
+}
+

@@ -30,7 +30,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700&family=Roboto+Slab:wght@400;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Homemade+Apple&family=Shadows+Into+Light&family=Patrick+Hand&family=Architects+Daughter&family=Gochi+Hand&family=Reenie+Beanie&family=Delius&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./style.css?v=21">
+<link rel="stylesheet" href="./style.css?v=22">
 
 </head>
 <body class="dashboard-body">
@@ -80,6 +80,10 @@
   <div class="mobile-sidebar-section">
     <div class="mobile-section-title">More Tools</div>
     <button class="mobile-tool-btn" onclick="showPanel('preview'); closeMobileMenu()"><span class="icon">&#128064;</span> Preview</button>
+    <button class="mobile-tool-btn" id="mbtn-examresizer" onclick="showPanel('examresizer'); closeMobileMenu()"><span class="icon">🎯</span> Govt Exam Resizer</button>
+    <button class="mobile-tool-btn" id="mbtn-organize" onclick="showPanel('organize'); closeMobileMenu()"><span class="icon">🗂️</span> Organize & Delete</button>
+    <button class="mobile-tool-btn" id="mbtn-pagenumbers" onclick="showPanel('pagenumbers'); closeMobileMenu()"><span class="icon">🔢</span> Add Page Numbers</button>
+    <button class="mobile-tool-btn" id="mbtn-idcard" onclick="showPanel('idcard'); closeMobileMenu()"><span class="icon">🪪</span> ID Card to A4</button>
     <button class="mobile-tool-btn" onclick="showPanel('word2pdf'); closeMobileMenu()"><span class="icon">&#128221;</span> Word &rarr; PDF</button>
 
     <button class="mobile-tool-btn" onclick="showPanel('img2pdf'); closeMobileMenu()"><span class="icon">&#128444;&#65039;</span> Image &rarr; PDF</button>
@@ -106,6 +110,8 @@
     <button class="tool-btn active" id="btn-home" onclick="showPanel('home')"><span class="icon">🏠</span> Home / All Tools</button>
     <div class="sidebar-divider"></div>
     <div class="sidebar-heading">Featured Tools</div>
+    <button class="tool-btn" id="btn-examresizer" onclick="showPanel('examresizer')"><span class="icon">🎯</span> Govt Exam Resizer</button>
+    <button class="tool-btn" id="btn-organize" onclick="showPanel('organize')"><span class="icon">🗂️</span> Organize & Delete</button>
     <button class="tool-btn" id="btn-merge" onclick="showPanel('merge')"><span class="icon">&#128279;</span> Merge PDF</button>
     <button class="tool-btn" id="btn-split" onclick="showPanel('split')"><span class="icon">&#9986;&#65039;</span> Split PDF</button>
     <button class="tool-btn" id="btn-compress" onclick="showPanel('compress')"><span class="icon">&#128476;&#65039;</span> Compress</button>
@@ -119,6 +125,8 @@
   <div class="sidebar-divider"></div>
   <div class="sidebar-section">
     <div class="sidebar-heading">More Tools</div>
+    <button class="tool-btn" id="btn-pagenumbers" onclick="showPanel('pagenumbers')"><span class="icon">🔢</span> Add Page Numbers</button>
+    <button class="tool-btn" id="btn-idcard" onclick="showPanel('idcard')"><span class="icon">🪪</span> ID Card to A4</button>
     <button class="tool-btn" id="btn-pdf2img" onclick="showPanel('pdf2img')"><span class="icon">&#128248;</span> PDF &rarr; Image</button>
     <button class="tool-btn" id="btn-percentage" onclick="showPanel('percentage')"><span class="icon">%</span> Percentage Calculator</button>
     <button class="tool-btn" id="btn-resume" onclick="showPanel('resume')"><span class="icon">&#128196;</span> Resume Builder</button>
@@ -201,19 +209,21 @@
 
     <!-- CATEGORY FILTER TABS -->
     <div class="category-filter-bar" id="cat-filter-bar">
-      <button class="cat-pill active" onclick="setCategoryFilter('all', this)">All Tools <span class="cat-count">17</span></button>
-      <button class="cat-pill" onclick="setCategoryFilter('featured', this)">🔥 Featured <span class="cat-count">6</span></button>
+      <button class="cat-pill active" onclick="setCategoryFilter('all', this)">All Tools <span class="cat-count">21</span></button>
+      <button class="cat-pill" onclick="setCategoryFilter('featured', this)">🔥 Featured <span class="cat-count">8</span></button>
       <button class="cat-pill" onclick="setCategoryFilter('convert', this)">🔄 Convert <span class="cat-count">4</span></button>
-      <button class="cat-pill" onclick="setCategoryFilter('edit', this)">📑 Edit & Organize <span class="cat-count">4</span></button>
-      <button class="cat-pill" onclick="setCategoryFilter('image', this)">🖼️ Image Tools <span class="cat-count">1</span></button>
-      <button class="cat-pill" onclick="setCategoryFilter('student', this)">🎓 Student & Utility <span class="cat-count">4</span></button>
+      <button class="cat-pill" onclick="setCategoryFilter('edit', this)">📑 Edit & Organize <span class="cat-count">6</span></button>
+      <button class="cat-pill" onclick="setCategoryFilter('image', this)">🖼️ Image Tools <span class="cat-count">2</span></button>
+      <button class="cat-pill" onclick="setCategoryFilter('student', this)">🎓 Student & Utility <span class="cat-count">7</span></button>
     </div>
   </div>
 
 <div class="tool-section-wrapper" id="sec-new">
   <div class="tool-section-title">🔥 Featured & Popular</div>
   <div class="tools-grid">
+    <div class="tool-card premium-card spotlight-card" data-category="featured,student,image" onclick="showPanel('examresizer')" style="border: 1px solid rgba(245, 158, 11, 0.4)"><div class="tool-badge" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">Hot</div><div class="tc-icon">🎯</div><div class="tc-name">Govt Exam Resizer</div><div class="tc-desc">Resize photo & sign to exact KB & size for SSC, UPSC, Bank</div></div>
     <div class="tool-card premium-card spotlight-card" data-category="featured,student" onclick="showPanel('handwriting')" style="border: 1px solid rgba(244, 63, 94, 0.35)"><div class="tool-badge" style="background:linear-gradient(135deg,#f43f5e,#fb923c)">Special</div><div class="tc-icon">✍️</div><div class="tc-name">Handwriting Gen</div><div class="tc-desc">Turn typed text into realistic handwritten assignments</div></div>
+    <div class="tool-card premium-card spotlight-card" data-category="featured,edit" onclick="showPanel('organize')"><div class="tool-badge" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">Popular</div><div class="tc-icon">🗂️</div><div class="tc-name">Organize & Delete</div><div class="tc-desc">Reorder, rotate, or remove unwanted PDF pages visually</div></div>
     <div class="tool-card premium-card spotlight-card" data-category="featured,convert" onclick="showPanel('pdf2word')"><div class="tool-badge" style="background:linear-gradient(135deg,#6366f1,#f43f5e)">New</div><div class="tc-icon">📝</div><div class="tc-name">PDF &rarr; Word</div><div class="tc-desc">Turn PDF text into an editable Word document</div></div>
     <div class="tool-card premium-card spotlight-card" data-category="featured" onclick="showPanel('merge')"><div class="tool-badge">Popular</div><div class="tc-icon">&#128279;</div><div class="tc-name">Merge PDF</div><div class="tc-desc">Combine multiple PDFs into one unified file</div></div>
     <div class="tool-card premium-card spotlight-card" data-category="featured" onclick="showPanel('split')"><div class="tool-badge">Popular</div><div class="tc-icon">&#9986;&#65039;</div><div class="tc-name">Split PDF</div><div class="tc-desc">Extract or split pages into separate documents</div></div>
@@ -234,6 +244,8 @@
 <div class="tool-section-wrapper" id="sec-edit">
   <div class="tool-section-title">📑 Edit & Organize</div>
   <div class="tools-grid">
+    <div class="tool-card spotlight-card" data-category="edit" onclick="showPanel('organize')"><div class="tool-badge">Organize</div><div class="tc-icon">🗂️</div><div class="tc-name">Organize & Delete</div><div class="tc-desc">Reorder, rotate, or remove unwanted PDF pages visually</div></div>
+    <div class="tool-card spotlight-card" data-category="edit" onclick="showPanel('pagenumbers')"><div class="tool-badge">Format</div><div class="tc-icon">🔢</div><div class="tc-name">Add Page Numbers</div><div class="tc-desc">Insert custom page numbers, position, and styling</div></div>
     <div class="tool-card spotlight-card" data-category="edit" onclick="showPanel('watermark')"><div class="tool-badge">PRO</div><div class="tc-icon">&#128167;</div><div class="tc-name">Watermark</div><div class="tc-desc">Add custom text watermark with live positioning</div></div>
     <div class="tool-card spotlight-card" data-category="edit" onclick="showPanel('rotate')"><div class="tool-badge">Edit</div><div class="tc-icon">&#128260;</div><div class="tc-name">Rotate PDF</div><div class="tc-desc">Rotate orientation of any or all pages</div></div>
     <div class="tool-card spotlight-card" data-category="edit" onclick="showPanel('preview')"><div class="tool-badge">View</div><div class="tc-icon">&#128064;</div><div class="tc-name">PDF Preview</div><div class="tc-desc">Fast private PDF viewer with page navigation</div></div>
@@ -245,12 +257,15 @@
   <div class="tool-section-title">🖼️ Image Tools</div>
   <div class="tools-grid">
     <div class="tool-card premium-card spotlight-card" data-category="image" onclick="showPanel('imgcompress')"><div class="tool-badge">Popular</div><div class="tc-icon">🗜️</div><div class="tc-name">Image Compressor</div><div class="tc-desc">Shrink JPG/PNG/WebP size in bulk with quality slider</div></div>
+    <div class="tool-card spotlight-card" data-category="image,student" onclick="showPanel('examresizer')"><div class="tool-badge">Hot</div><div class="tc-icon">🎯</div><div class="tc-name">Exam Photo Resizer</div><div class="tc-desc">Target 20-50 KB photo & sign resize for SSC/Govt forms</div></div>
   </div>
 </div>
 
 <div class="tool-section-wrapper" id="sec-student">
   <div class="tool-section-title">🎓 Student & Utility</div>
   <div class="tools-grid">
+    <div class="tool-card spotlight-card" data-category="student,image" onclick="showPanel('examresizer')" style="border: 1px solid rgba(245, 158, 11, 0.35)"><div class="tool-badge" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">Hot</div><div class="tc-icon">🎯</div><div class="tc-name">Govt Exam Resizer</div><div class="tc-desc">Exact photo (20-50KB) & sign (10-20KB) for SSC, UPSC, RRB</div></div>
+    <div class="tool-card spotlight-card" data-category="student" onclick="showPanel('idcard')"><div class="tool-badge">Print</div><div class="tc-icon">🪪</div><div class="tc-name">ID Card to A4</div><div class="tc-desc">Combine front & back of Aadhaar/PAN into print-ready A4 PDF</div></div>
     <div class="tool-card spotlight-card" data-category="student" onclick="showPanel('handwriting')" style="border: 1px solid rgba(244, 63, 94, 0.3)"><div class="tool-badge" style="background:linear-gradient(135deg,#f43f5e,#fb923c)">Special</div><div class="tc-icon">✍️</div><div class="tc-name">Handwriting Gen</div><div class="tc-desc">Turn typed text into realistic handwritten assignments</div></div>
     <div class="tool-card spotlight-card" data-category="student" onclick="showPanel('percentage')"><div class="tool-badge">Student</div><div class="tc-icon">%</div><div class="tc-name">Percentage Calculator</div><div class="tc-desc">Calculate percentage, remaining marks and grades</div></div>
     <div class="tool-card spotlight-card" data-category="student" onclick="showPanel('marks')"><div class="tool-badge">Student</div><div class="tc-icon">&#128202;</div><div class="tc-name">Marks Calculator</div><div class="tc-desc">Multi-subject total, average and percentage tracker</div></div>
@@ -1266,6 +1281,302 @@
   </div>
 </div>
 
+<!-- PANEL: GOVT EXAM RESIZER -->
+<div class="panel" id="panel-examresizer">
+  <div class="panel-header">
+    <div class="panel-badge">🇮🇳 Student & Govt Job Tools</div>
+    <h2>Govt Exam Photo & Signature Resizer</h2>
+    <p>Resize, crop, and compress photo & signature to exact dimension and KB size required by SSC, UPSC, IBPS, RRB, NTA, and State PCS. Add Name and Date on photo in 1-click!</p>
+  </div>
+
+  <div class="dropzone" id="exam-dropzone" onclick="document.getElementById('exam-file').click()">
+    <div class="dz-icon">🎯</div>
+    <h3>Drop your photo or signature here</h3>
+    <p>JPG, PNG, WEBP up to 25MB • 100% processed privately in your browser</p>
+    <button class="btn btn-primary" style="margin-top:1rem" onclick="event.stopPropagation(); document.getElementById('exam-file').click()">Browse Image</button>
+    <input type="file" id="exam-file" accept="image/*" style="display:none" onchange="handleExamImageUpload(this.files)">
+  </div>
+
+  <div id="exam-workbench" style="display:none; margin-top:1.5rem">
+    <div class="settings-card" style="margin-bottom:1.5rem">
+      <h3 style="margin-bottom:1rem; font-size:1.05rem; display:flex; align-items:center; gap:0.5rem">
+        <span>⚙️</span> Preset & Dimensions
+      </h3>
+      <div class="form-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem">
+        <div>
+          <label class="form-label" for="exam-preset-select">Exam Preset</label>
+          <select id="exam-preset-select" class="form-select" onchange="applyExamPreset(this.value)">
+            <option value="ssc_photo">SSC CGL / CHSL - Photo (3.5 × 4.5 cm, 20-50 KB)</option>
+            <option value="ssc_sig">SSC CGL / CHSL - Signature (4.0 × 2.0 cm, 10-20 KB)</option>
+            <option value="upsc_photo">UPSC CSE / CDS - Photo (350 × 350 px, 20-300 KB)</option>
+            <option value="upsc_sig">UPSC CSE / CDS - Signature (350 × 350 px, 20-300 KB)</option>
+            <option value="ibps_photo">IBPS / SBI PO - Photo (4.5 × 3.5 cm, 20-50 KB)</option>
+            <option value="ibps_sig">IBPS / SBI PO - Signature (140 × 60 px, 10-20 KB)</option>
+            <option value="rrb_photo">Railway RRB - Photo (35 × 45 mm, 30-70 KB)</option>
+            <option value="rrb_sig">Railway RRB - Signature (50 × 20 mm, 30-70 KB)</option>
+            <option value="gate_photo">GATE / JEE / NEET - Photo (3.5 × 4.5 cm, 50-200 KB)</option>
+            <option value="custom">Custom Dimensions & KB Size</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="exam-unit">Unit</label>
+          <select id="exam-unit" class="form-select" onchange="updateExamDimensions()">
+            <option value="px" selected>Pixels (px)</option>
+            <option value="cm">Centimeters (cm @ 300 DPI)</option>
+            <option value="mm">Millimeters (mm @ 300 DPI)</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="exam-width">Width</label>
+          <input type="number" id="exam-width" class="form-input" value="413" min="50" max="4000" oninput="renderExamResizerPreview()">
+        </div>
+        <div>
+          <label class="form-label" for="exam-height">Height</label>
+          <input type="number" id="exam-height" class="form-input" value="531" min="50" max="4000" oninput="renderExamResizerPreview()">
+        </div>
+        <div>
+          <label class="form-label" for="exam-target-min-kb">Min Size (KB)</label>
+          <input type="number" id="exam-target-min-kb" class="form-input" value="20" min="1" max="10000" oninput="updateExamTargetKB()">
+        </div>
+        <div>
+          <label class="form-label" for="exam-target-max-kb">Max Size (KB)</label>
+          <input type="number" id="exam-target-max-kb" class="form-input" value="50" min="5" max="10000" oninput="updateExamTargetKB()">
+        </div>
+      </div>
+
+      <!-- Candidate Name & Date on Photo -->
+      <div style="margin-top:1.25rem; padding-top:1.25rem; border-top:1px solid var(--border)">
+        <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.75rem">
+          <input type="checkbox" id="exam-add-meta" onchange="toggleExamMetaFields(this.checked); renderExamResizerPreview()">
+          <label for="exam-add-meta" style="font-weight:600; cursor:pointer; font-size:0.95rem">Add Candidate Name & Date on Photo (Bottom White Strip)</label>
+        </div>
+        <div id="exam-meta-fields" style="display:none; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem">
+          <div>
+            <label class="form-label" for="exam-cand-name">Candidate Name</label>
+            <input type="text" id="exam-cand-name" class="form-input" placeholder="e.g. RAHUL KUMAR" oninput="renderExamResizerPreview()">
+          </div>
+          <div>
+            <label class="form-label" for="exam-cand-date">Date of Photo (DOP)</label>
+            <input type="text" id="exam-cand-date" class="form-input" placeholder="e.g. 15-08-2024" oninput="renderExamResizerPreview()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Preview & Result Info -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; align-items:start">
+      <div class="settings-card" style="text-align:center">
+        <h4 style="margin-bottom:0.75rem; color:var(--text-muted); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.5px">Live Preview</h4>
+        <div class="exam-preview-box" style="display:flex; justify-content:center; align-items:center; min-height:220px; background:rgba(0,0,0,0.2); border-radius:12px; padding:1rem; overflow:hidden">
+          <canvas id="exam-preview-canvas" style="max-width:100%; max-height:300px; border-radius:6px; box-shadow:0 8px 24px rgba(0,0,0,0.3)"></canvas>
+        </div>
+        <div id="exam-preview-meta" style="margin-top:0.75rem; font-size:0.85rem; color:var(--text-muted)"></div>
+      </div>
+
+      <div class="settings-card">
+        <h4 style="margin-bottom:0.75rem; font-size:1rem">Output Verification</h4>
+        <div class="info-box" style="margin-bottom:1rem; font-size:0.88rem; line-height:1.6; background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:0.9rem; border-radius:10px">
+          <div>📐 Target Dimension: <strong id="exam-info-dim">3.5 × 4.5 cm (413 × 531 px)</strong></div>
+          <div>⚖️ Target Weight: <strong id="exam-info-kb">20 KB - 50 KB</strong></div>
+          <div id="exam-info-actual" style="margin-top:0.35rem">📦 Generated Size: <span class="badge" id="exam-actual-kb-badge" style="background:var(--accent); color:#fff">Calculating...</span></div>
+        </div>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.25rem">Our intelligent optimizer dynamically tests exact JPEG quality factors so your photo is guaranteed compliant with official portal upload restrictions.</p>
+        <button class="btn btn-primary" id="exam-download-btn" onclick="downloadExamResizedImage()" style="width:100%; justify-content:center">
+          ⬇️ Download Exam Compliant Photo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL: ORGANIZE & DELETE PDF PAGES -->
+<div class="panel" id="panel-organize">
+  <div class="panel-header">
+    <div class="panel-badge">🗂️ Edit & Organize</div>
+    <h2>Organize & Delete PDF Pages</h2>
+    <p>Rearrange page order, rotate individual pages 90°, delete unwanted pages, or duplicate pages visually before saving your new PDF.</p>
+  </div>
+
+  <div class="dropzone" id="organize-dropzone" onclick="document.getElementById('organize-file').click()">
+    <div class="dz-icon">🗂️</div>
+    <h3>Drop your PDF file here</h3>
+    <p>Interactive visual page sorter • 100% in-browser • Instant preview</p>
+    <button class="btn btn-primary" style="margin-top:1rem" onclick="event.stopPropagation(); document.getElementById('organize-file').click()">Select PDF</button>
+    <input type="file" id="organize-file" accept=".pdf,application/pdf" style="display:none" onchange="handleOrganizePDFUpload(this.files)">
+  </div>
+
+  <div id="organize-workbench" style="display:none; margin-top:1.5rem">
+    <div class="organize-toolbar">
+      <div class="organize-toolbar-left">
+        <span class="badge" id="organize-page-count-badge" style="font-size:0.85rem; padding:0.4rem 0.8rem">0 Pages</span>
+        <button class="btn btn-secondary btn-sm" onclick="rotateAllOrganizePages(90)">↻ Rotate All</button>
+        <button class="btn btn-secondary btn-sm" onclick="resetOrganizePages()">↺ Reset Order</button>
+      </div>
+      <div class="organize-toolbar-right">
+        <button class="btn btn-primary" onclick="exportOrganizedPDF()">⬇️ Save & Download PDF</button>
+      </div>
+    </div>
+
+    <div id="organize-grid" class="organize-grid"></div>
+
+    <div class="progress-wrap" id="organize-progress"><div class="progress-bar"><div class="progress-fill" id="organize-fill"></div></div></div>
+  </div>
+</div>
+
+<!-- PANEL: ADD PAGE NUMBERS -->
+<div class="panel" id="panel-pagenumbers">
+  <div class="panel-header">
+    <div class="panel-badge">🔢 Document Formatting</div>
+    <h2>Add Page Numbers to PDF</h2>
+    <p>Stamp customized page numbering onto your document. Choose position, numbering style, font size, and starting page index.</p>
+  </div>
+
+  <div class="dropzone" id="pagenumbers-dropzone" onclick="document.getElementById('pagenumbers-file').click()">
+    <div class="dz-icon">🔢</div>
+    <h3>Drop your PDF here to number pages</h3>
+    <p>Supports multi-page documents • Clean typography • Fast stamping</p>
+    <button class="btn btn-primary" style="margin-top:1rem" onclick="event.stopPropagation(); document.getElementById('pagenumbers-file').click()">Choose PDF</button>
+    <input type="file" id="pagenumbers-file" accept=".pdf,application/pdf" style="display:none" onchange="handlePageNumbersUpload(this.files)">
+  </div>
+
+  <div id="pagenumbers-workbench" style="display:none; margin-top:1.5rem">
+    <div class="settings-card" style="margin-bottom:1.5rem">
+      <div class="form-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem">
+        <div>
+          <label class="form-label" for="pn-format">Number Format</label>
+          <select id="pn-format" class="form-select">
+            <option value="page_n_of_total" selected>Page {n} of {total}</option>
+            <option value="n_of_total">{n} of {total}</option>
+            <option value="n_only">{n}</option>
+            <option value="dash_n">- {n} -</option>
+            <option value="page_n">Page {n}</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="pn-position">Position</label>
+          <select id="pn-position" class="form-select">
+            <option value="bottom_center" selected>Bottom Center</option>
+            <option value="bottom_right">Bottom Right</option>
+            <option value="bottom_left">Bottom Left</option>
+            <option value="top_center">Top Center</option>
+            <option value="top_right">Top Right</option>
+            <option value="top_left">Top Left</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="pn-start-page">Start Numbering From Page</label>
+          <input type="number" id="pn-start-page" class="form-input" value="1" min="1">
+          <span style="font-size:0.75rem; color:var(--text-muted)">e.g. 2 to skip cover page</span>
+        </div>
+        <div>
+          <label class="form-label" for="pn-start-number">First Number Value</label>
+          <input type="number" id="pn-start-number" class="form-input" value="1" min="1">
+        </div>
+        <div>
+          <label class="form-label" for="pn-font-size">Font Size (pt)</label>
+          <select id="pn-font-size" class="form-select">
+            <option value="9">Small (9 pt)</option>
+            <option value="11" selected>Medium (11 pt)</option>
+            <option value="13">Large (13 pt)</option>
+            <option value="15">Extra Large (15 pt)</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="pn-font-color">Font Color</label>
+          <select id="pn-font-color" class="form-select">
+            <option value="black" selected>Dark Charcoal / Black</option>
+            <option value="gray">Subtle Gray</option>
+            <option value="navy">Navy Blue</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="file-item" id="pagenumbers-file-info" style="margin-bottom:1.5rem">
+      <div class="file-icon">📄</div>
+      <div class="file-info"><h4 id="pn-file-name">document.pdf</h4><p id="pn-file-meta">0 pages • 0 KB</p></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="applyPageNumbersToPDF()">🔢 Stamp Page Numbers & Download</button>
+    </div>
+
+    <div class="progress-wrap" id="pagenumbers-progress"><div class="progress-bar"><div class="progress-fill" id="pagenumbers-fill"></div></div></div>
+  </div>
+</div>
+
+<!-- PANEL: ID CARD JOINER (AADHAAR/PAN) -->
+<div class="panel" id="panel-idcard">
+  <div class="panel-header">
+    <div class="panel-badge">🪪 Smart Document Tool</div>
+    <h2>ID Card Front & Back Joiner to A4 PDF</h2>
+    <p>Merge Front and Back photos of Aadhaar Card, PAN Card, Driving License, or Voter ID onto a single standard A4 page with printable card dimensions and cut guidelines.</p>
+  </div>
+
+  <div class="idcard-dz-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.25rem; margin-bottom:1.5rem">
+    <div class="dropzone idcard-dropzone" id="idcard-front-dz" onclick="document.getElementById('idcard-front-file').click()">
+      <div class="dz-icon">🪪</div>
+      <h3>Front Side of ID Card</h3>
+      <p id="idcard-front-status">Click or drop front photo here</p>
+      <input type="file" id="idcard-front-file" accept="image/*" style="display:none" onchange="handleIdCardUpload('front', this.files)">
+    </div>
+    <div class="dropzone idcard-dropzone" id="idcard-back-dz" onclick="document.getElementById('idcard-back-file').click()">
+      <div class="dz-icon">🔄</div>
+      <h3>Back Side of ID Card</h3>
+      <p id="idcard-back-status">Click or drop back photo here</p>
+      <input type="file" id="idcard-back-file" accept="image/*" style="display:none" onchange="handleIdCardUpload('back', this.files)">
+    </div>
+  </div>
+
+  <div id="idcard-workbench" style="display:none; margin-top:1.5rem">
+    <div class="settings-card" style="margin-bottom:1.5rem">
+      <div class="form-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem">
+        <div>
+          <label class="form-label" for="idcard-layout">Arrangement on A4</label>
+          <select id="idcard-layout" class="form-select" onchange="renderIdCardPreview()">
+            <option value="vertical" selected>Vertical (Stacked Front above Back)</option>
+            <option value="horizontal">Horizontal (Side-by-Side)</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="idcard-doc-type">Card Preset / Dimensions</label>
+          <select id="idcard-doc-type" class="form-select" onchange="renderIdCardPreview()">
+            <option value="id1" selected>Standard ID-1 (Aadhaar / PAN / DL / 85.6 × 54 mm)</option>
+            <option value="custom">Fill & Fit Proportional</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="idcard-cutlines">Cut Guides / Border</label>
+          <select id="idcard-cutlines" class="form-select" onchange="renderIdCardPreview()">
+            <option value="dashed" selected>Dashed Cut Lines (✂️)</option>
+            <option value="solid">Thin Solid Border</option>
+            <option value="none">No Border / Borderless</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; align-items:start">
+      <div class="settings-card" style="text-align:center">
+        <h4 style="margin-bottom:0.75rem; color:var(--text-muted); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.5px">A4 Sheet Preview</h4>
+        <div style="display:flex; justify-content:center; align-items:center; background:rgba(0,0,0,0.25); border-radius:12px; padding:1.25rem; min-height:280px">
+          <canvas id="idcard-preview-canvas" style="max-width:100%; max-height:360px; background:#fff; border-radius:4px; box-shadow:0 10px 30px rgba(0,0,0,0.4)"></canvas>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h4 style="margin-bottom:0.75rem; font-size:1rem">Print-Ready Output</h4>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem; line-height:1.5">
+          Generates a pristine 300 DPI high-resolution A4 PDF ready for standard printers, cyber cafes, and official submissions.
+        </p>
+        <button class="btn btn-primary" onclick="generateIdCardPDF()" style="width:100%; justify-content:center">
+          ⬇️ Download Print-Ready A4 PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer class="site-footer">
   <div class="footer-grid">
@@ -1336,6 +1647,6 @@
   <div class="spinner"></div>
   <div class="processing-text" id="global-processing-text">Processing...</div>
 </div>
-<script src="./script.js?v=19"></script>
+<script src="./script.js?v=20"></script>
 </body>
 </html>
