@@ -30,7 +30,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700&family=Roboto+Slab:wght@400;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Homemade+Apple&family=Shadows+Into+Light&family=Patrick+Hand&family=Architects+Daughter&family=Gochi+Hand&family=Reenie+Beanie&family=Delius&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./style.css?v=22">
+<link rel="stylesheet" href="./style.css?v=23">
 
 </head>
 <body class="dashboard-body">
@@ -84,12 +84,15 @@
     <button class="mobile-tool-btn" id="mbtn-organize" onclick="showPanel('organize'); closeMobileMenu()"><span class="icon">🗂️</span> Organize & Delete</button>
     <button class="mobile-tool-btn" id="mbtn-pagenumbers" onclick="showPanel('pagenumbers'); closeMobileMenu()"><span class="icon">🔢</span> Add Page Numbers</button>
     <button class="mobile-tool-btn" id="mbtn-idcard" onclick="showPanel('idcard'); closeMobileMenu()"><span class="icon">🪪</span> ID Card to A4</button>
+    <button class="mobile-tool-btn" id="mbtn-cgpa" onclick="showPanel('cgpa'); closeMobileMenu()"><span class="icon">🎓</span> CGPA & SGPA</button>
+    <button class="mobile-tool-btn" id="mbtn-bgremove" onclick="showPanel('bgremove'); closeMobileMenu()"><span class="icon">🖼️</span> Remove BG</button>
+    <button class="mobile-tool-btn" id="mbtn-annotate" onclick="showPanel('annotate'); closeMobileMenu()"><span class="icon">📝</span> Form Filler</button>
     <button class="mobile-tool-btn" onclick="showPanel('word2pdf'); closeMobileMenu()"><span class="icon">&#128221;</span> Word &rarr; PDF</button>
-
     <button class="mobile-tool-btn" onclick="showPanel('img2pdf'); closeMobileMenu()"><span class="icon">&#128444;&#65039;</span> Image &rarr; PDF</button>
-
     <button class="mobile-tool-btn" onclick="showPanel('pdf2img'); closeMobileMenu()"><span class="icon">&#128248;</span> PDF &rarr; Image</button>
     <button class="mobile-tool-btn" id="mbtn-pdf2txt" onclick="showPanel('pdf2txt'); closeMobileMenu()"><span class="icon">📄</span> PDF &rarr; Text</button>
+    <button class="mobile-tool-btn" id="mbtn-protect" onclick="showPanel('protect'); closeMobileMenu()"><span class="icon">🔒</span> Protect PDF</button>
+    <button class="mobile-tool-btn" id="mbtn-unlock" onclick="showPanel('unlock'); closeMobileMenu()"><span class="icon">🔓</span> Unlock PDF</button>
   </div>
 
   <div class="mobile-sidebar-section">
@@ -127,6 +130,9 @@
     <div class="sidebar-heading">More Tools</div>
     <button class="tool-btn" id="btn-pagenumbers" onclick="showPanel('pagenumbers')"><span class="icon">🔢</span> Add Page Numbers</button>
     <button class="tool-btn" id="btn-idcard" onclick="showPanel('idcard')"><span class="icon">🪪</span> ID Card to A4</button>
+    <button class="tool-btn" id="btn-cgpa" onclick="showPanel('cgpa')"><span class="icon">🎓</span> CGPA Calculator</button>
+    <button class="tool-btn" id="btn-bgremove" onclick="showPanel('bgremove')"><span class="icon">🖼️</span> Background Remover</button>
+    <button class="tool-btn" id="btn-annotate" onclick="showPanel('annotate')"><span class="icon">📝</span> Form Filler</button>
     <button class="tool-btn" id="btn-pdf2img" onclick="showPanel('pdf2img')"><span class="icon">&#128248;</span> PDF &rarr; Image</button>
     <button class="tool-btn" id="btn-percentage" onclick="showPanel('percentage')"><span class="icon">%</span> Percentage Calculator</button>
     <button class="tool-btn" id="btn-resume" onclick="showPanel('resume')"><span class="icon">&#128196;</span> Resume Builder</button>
@@ -194,7 +200,7 @@
         <p class="home-top-subtitle">All your PDF & student tools in one place. No uploads, no waiting, 100% private.</p>
       </div>
       <div class="home-top-badges">
-        <span class="trust-badge">⚡ 17+ Tools</span>
+        <span class="trust-badge">⚡ 24+ Tools</span>
         <span class="trust-badge">🛡️ Client-Side</span>
         <span class="trust-badge">✨ Free Forever</span>
       </div>
@@ -209,12 +215,12 @@
 
     <!-- CATEGORY FILTER TABS -->
     <div class="category-filter-bar" id="cat-filter-bar">
-      <button class="cat-pill active" onclick="setCategoryFilter('all', this)">All Tools <span class="cat-count">21</span></button>
-      <button class="cat-pill" onclick="setCategoryFilter('featured', this)">🔥 Featured <span class="cat-count">8</span></button>
+      <button class="cat-pill active" onclick="setCategoryFilter('all', this)">All Tools <span class="cat-count">24</span></button>
+      <button class="cat-pill" onclick="setCategoryFilter('featured', this)">🔥 Featured <span class="cat-count">10</span></button>
       <button class="cat-pill" onclick="setCategoryFilter('convert', this)">🔄 Convert <span class="cat-count">4</span></button>
-      <button class="cat-pill" onclick="setCategoryFilter('edit', this)">📑 Edit & Organize <span class="cat-count">6</span></button>
-      <button class="cat-pill" onclick="setCategoryFilter('image', this)">🖼️ Image Tools <span class="cat-count">2</span></button>
-      <button class="cat-pill" onclick="setCategoryFilter('student', this)">🎓 Student & Utility <span class="cat-count">7</span></button>
+      <button class="cat-pill" onclick="setCategoryFilter('edit', this)">📑 Edit & Organize <span class="cat-count">9</span></button>
+      <button class="cat-pill" onclick="setCategoryFilter('image', this)">🖼️ Image Tools <span class="cat-count">3</span></button>
+      <button class="cat-pill" onclick="setCategoryFilter('student', this)">🎓 Student & Utility <span class="cat-count">8</span></button>
     </div>
   </div>
 
@@ -224,6 +230,8 @@
     <div class="tool-card premium-card spotlight-card" data-category="featured,student,image" onclick="showPanel('examresizer')" style="border: 1px solid rgba(245, 158, 11, 0.4)"><div class="tool-badge" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">Hot</div><div class="tc-icon">🎯</div><div class="tc-name">Govt Exam Resizer</div><div class="tc-desc">Resize photo & sign to exact KB & size for SSC, UPSC, Bank</div></div>
     <div class="tool-card premium-card spotlight-card" data-category="featured,student" onclick="showPanel('handwriting')" style="border: 1px solid rgba(244, 63, 94, 0.35)"><div class="tool-badge" style="background:linear-gradient(135deg,#f43f5e,#fb923c)">Special</div><div class="tc-icon">✍️</div><div class="tc-name">Handwriting Gen</div><div class="tc-desc">Turn typed text into realistic handwritten assignments</div></div>
     <div class="tool-card premium-card spotlight-card" data-category="featured,edit" onclick="showPanel('organize')"><div class="tool-badge" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">Popular</div><div class="tc-icon">🗂️</div><div class="tc-name">Organize & Delete</div><div class="tc-desc">Reorder, rotate, or remove unwanted PDF pages visually</div></div>
+    <div class="tool-card premium-card spotlight-card" data-category="featured,student" onclick="showPanel('cgpa')"><div class="tool-badge" style="background:linear-gradient(135deg,#10b981,#06b6d4)">New</div><div class="tc-icon">🎓</div><div class="tc-name">CGPA Calculator</div><div class="tc-desc">Calculate SGPA/CGPA with credits & convert to %</div></div>
+    <div class="tool-card premium-card spotlight-card" data-category="featured,image,student" onclick="showPanel('bgremove')"><div class="tool-badge" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)">Hot</div><div class="tc-icon">🖼️</div><div class="tc-name">Background Remover</div><div class="tc-desc">Remove photo background, replace with white or blue</div></div>
     <div class="tool-card premium-card spotlight-card" data-category="featured,convert" onclick="showPanel('pdf2word')"><div class="tool-badge" style="background:linear-gradient(135deg,#6366f1,#f43f5e)">New</div><div class="tc-icon">📝</div><div class="tc-name">PDF &rarr; Word</div><div class="tc-desc">Turn PDF text into an editable Word document</div></div>
     <div class="tool-card premium-card spotlight-card" data-category="featured" onclick="showPanel('merge')"><div class="tool-badge">Popular</div><div class="tc-icon">&#128279;</div><div class="tc-name">Merge PDF</div><div class="tc-desc">Combine multiple PDFs into one unified file</div></div>
     <div class="tool-card premium-card spotlight-card" data-category="featured" onclick="showPanel('split')"><div class="tool-badge">Popular</div><div class="tc-icon">&#9986;&#65039;</div><div class="tc-name">Split PDF</div><div class="tc-desc">Extract or split pages into separate documents</div></div>
@@ -245,11 +253,14 @@
   <div class="tool-section-title">📑 Edit & Organize</div>
   <div class="tools-grid">
     <div class="tool-card spotlight-card" data-category="edit" onclick="showPanel('organize')"><div class="tool-badge">Organize</div><div class="tc-icon">🗂️</div><div class="tc-name">Organize & Delete</div><div class="tc-desc">Reorder, rotate, or remove unwanted PDF pages visually</div></div>
+    <div class="tool-card spotlight-card" data-category="edit" onclick="showPanel('annotate')"><div class="tool-badge">Edit</div><div class="tc-icon">📝</div><div class="tc-name">Form Filler & Annotate</div><div class="tc-desc">Type text, fill form fields & add notes on PDF</div></div>
     <div class="tool-card spotlight-card" data-category="edit" onclick="showPanel('pagenumbers')"><div class="tool-badge">Format</div><div class="tc-icon">🔢</div><div class="tc-name">Add Page Numbers</div><div class="tc-desc">Insert custom page numbers, position, and styling</div></div>
     <div class="tool-card spotlight-card" data-category="edit" onclick="showPanel('watermark')"><div class="tool-badge">PRO</div><div class="tc-icon">&#128167;</div><div class="tc-name">Watermark</div><div class="tc-desc">Add custom text watermark with live positioning</div></div>
     <div class="tool-card spotlight-card" data-category="edit" onclick="showPanel('rotate')"><div class="tool-badge">Edit</div><div class="tc-icon">&#128260;</div><div class="tc-name">Rotate PDF</div><div class="tc-desc">Rotate orientation of any or all pages</div></div>
     <div class="tool-card spotlight-card" data-category="edit" onclick="showPanel('preview')"><div class="tool-badge">View</div><div class="tc-icon">&#128064;</div><div class="tc-name">PDF Preview</div><div class="tc-desc">Fast private PDF viewer with page navigation</div></div>
     <div class="tool-card spotlight-card" data-category="edit" onclick="showPanel('pdf2txt')"><div class="tool-badge">Popular</div><div class="tc-icon">📄</div><div class="tc-name">PDF &rarr; Text</div><div class="tc-desc">Extract all raw text content from PDF</div></div>
+    <div class="tool-card spotlight-card" data-category="edit" onclick="showPanel('protect')"><div class="tool-badge">Security</div><div class="tc-icon">🔒</div><div class="tc-name">Protect PDF</div><div class="tc-desc">Add password security to your PDF</div></div>
+    <div class="tool-card spotlight-card" data-category="edit" onclick="showPanel('unlock')"><div class="tool-badge">Security</div><div class="tc-icon">🔓</div><div class="tc-name">Unlock PDF</div><div class="tc-desc">Remove password restrictions from PDF</div></div>
   </div>
 </div>
 
@@ -258,12 +269,14 @@
   <div class="tools-grid">
     <div class="tool-card premium-card spotlight-card" data-category="image" onclick="showPanel('imgcompress')"><div class="tool-badge">Popular</div><div class="tc-icon">🗜️</div><div class="tc-name">Image Compressor</div><div class="tc-desc">Shrink JPG/PNG/WebP size in bulk with quality slider</div></div>
     <div class="tool-card spotlight-card" data-category="image,student" onclick="showPanel('examresizer')"><div class="tool-badge">Hot</div><div class="tc-icon">🎯</div><div class="tc-name">Exam Photo Resizer</div><div class="tc-desc">Target 20-50 KB photo & sign resize for SSC/Govt forms</div></div>
+    <div class="tool-card spotlight-card" data-category="image,student" onclick="showPanel('bgremove')"><div class="tool-badge">New</div><div class="tc-icon">🖼️</div><div class="tc-name">Background Remover</div><div class="tc-desc">Auto-remove background & replace with white or blue</div></div>
   </div>
 </div>
 
 <div class="tool-section-wrapper" id="sec-student">
   <div class="tool-section-title">🎓 Student & Utility</div>
   <div class="tools-grid">
+    <div class="tool-card spotlight-card" data-category="student" onclick="showPanel('cgpa')"><div class="tool-badge">Student</div><div class="tc-icon">🎓</div><div class="tc-name">CGPA & SGPA Calculator</div><div class="tc-desc">Calculate cumulative CGPA, semester SGPA & convert to %</div></div>
     <div class="tool-card spotlight-card" data-category="student,image" onclick="showPanel('examresizer')" style="border: 1px solid rgba(245, 158, 11, 0.35)"><div class="tool-badge" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">Hot</div><div class="tc-icon">🎯</div><div class="tc-name">Govt Exam Resizer</div><div class="tc-desc">Exact photo (20-50KB) & sign (10-20KB) for SSC, UPSC, RRB</div></div>
     <div class="tool-card spotlight-card" data-category="student" onclick="showPanel('idcard')"><div class="tool-badge">Print</div><div class="tc-icon">🪪</div><div class="tc-name">ID Card to A4</div><div class="tc-desc">Combine front & back of Aadhaar/PAN into print-ready A4 PDF</div></div>
     <div class="tool-card spotlight-card" data-category="student" onclick="showPanel('handwriting')" style="border: 1px solid rgba(244, 63, 94, 0.3)"><div class="tool-badge" style="background:linear-gradient(135deg,#f43f5e,#fb923c)">Special</div><div class="tc-icon">✍️</div><div class="tc-name">Handwriting Gen</div><div class="tc-desc">Turn typed text into realistic handwritten assignments</div></div>
@@ -340,8 +353,11 @@
 </div>
 
 <div class="panel" id="panel-merge">
-  <h2 class="panel-title">&#128279; Merge PDF</h2>
-  <p class="panel-desc">Combine multiple PDF files into one single PDF. Upload your files and click "Merge PDFs".</p>
+  <div class="panel-header">
+    <div class="panel-badge">🔗 Core PDF Tools</div>
+    <h2>Merge PDF</h2>
+    <p>Combine multiple PDF files into a single unified document. Drag-and-drop your files, reorder them, and merge instantly — 100% in your browser.</p>
+  </div>
   <div class="dropzone" id="merge-dz">
     <input type="file" id="merge-input" multiple accept=".pdf" onchange="handleMergeFiles(this.files)">
     <div class="dz-icon">&#128194;</div>
@@ -364,8 +380,11 @@
 </div>
 <!-- SPLIT -->
 <div class="panel" id="panel-split">
-  <h2 class="panel-title">&#9986;&#65039; Split PDF</h2>
-  <p class="panel-desc">Split a PDF into multiple files — separate every page, or choose custom page ranges.</p>
+  <div class="panel-header">
+    <div class="panel-badge">✂️ Core PDF Tools</div>
+    <h2>Split PDF</h2>
+    <p>Split a PDF into multiple files — separate every page, or choose custom page ranges to extract.</p>
+  </div>
   <div class="dropzone">
     <input type="file" id="split-input" accept=".pdf" onchange="handleSingleFile(this,'split')">
     <div class="dz-icon">&#128196;</div><h3>Drop your PDF here</h3><p>Choose one PDF file</p>
@@ -401,8 +420,11 @@
 
 <!--  COMPRESS  -->
 <div class="panel" id="panel-compress">
-  <h2 class="panel-title">Compress PDF</h2>
-  <p class="panel-desc">Shrink your PDF's file size by removing metadata and optimizing its content.</p>
+  <div class="panel-header">
+    <div class="panel-badge">🗜️ Core PDF Tools</div>
+    <h2>Compress PDF</h2>
+    <p>Shrink your PDF's file size by removing metadata and optimizing content. Choose from Light, Medium, or High compression modes.</p>
+  </div>
   <div class="dropzone">
     <input type="file" id="compress-input" accept=".pdf" onchange="handleSingleFile(this,'compress')">
     <div class="dz-icon">&#128196;</div><h3>Drop your PDF here</h3><p>Any size PDF supported</p>
@@ -429,8 +451,11 @@
 
 <!--  ROTATE  -->
 <div class="panel" id="panel-rotate">
-  <h2 class="panel-title">Rotate PDF</h2>
-  <p class="panel-desc">Rotate PDF pages — all pages or just specific ones, at any angle.</p>
+  <div class="panel-header">
+    <div class="panel-badge">🔄 Edit & Organize</div>
+    <h2>Rotate PDF</h2>
+    <p>Rotate PDF pages — all pages or just specific ones, at 90°, 180°, or 270° angles.</p>
+  </div>
   <div class="dropzone">
     <input type="file" id="rotate-input" accept=".pdf" onchange="handleSingleFile(this,'rotate')">
     <div class="dz-icon">&#128196;</div><h3>Drop your PDF here</h3>
@@ -468,8 +493,11 @@
 
 <!--  WATERMARK  -->
 <div class="panel" id="panel-watermark">
-  <h2 class="panel-title">Watermark PDF</h2>
-  <p class="panel-desc">Add a custom text or logo watermark to your PDF — control its position, size and color.</p>
+  <div class="panel-header">
+    <div class="panel-badge">💧 Edit & Organize</div>
+    <h2>Watermark PDF</h2>
+    <p>Add a custom text or logo watermark to your PDF — control position, size, opacity, color, and rotation with live preview.</p>
+  </div>
   <div class="dropzone">
     <input type="file" id="wm-input" accept=".pdf" onchange="handleSingleFile(this,'watermark')">
     <div class="dz-icon">&#128196;</div><h3>Drop your PDF here</h3>
@@ -555,8 +583,11 @@
 
 <!--  IMAGE TO PDF  -->
 <div class="panel" id="panel-img2pdf">
-  <h2 class="panel-title">Image to PDF</h2>
-  <p class="panel-desc">Convert JPG, PNG, WebP or GIF images into a PDF. Combine multiple images into one PDF.</p>
+  <div class="panel-header">
+    <div class="panel-badge">🖼️ Convert Tools</div>
+    <h2>Image to PDF</h2>
+    <p>Convert JPG, PNG, WebP or GIF images into a PDF. Combine multiple images into one document with custom page size and layout.</p>
+  </div>
   <div class="dropzone">
     <input type="file" id="img2pdf-input" multiple accept="image/*" onchange="handleImageFiles(this.files)">
     <div class="dz-icon">🖼️</div><h3>Upload your images</h3><p>Choose multiple images to build one PDF</p>
@@ -587,8 +618,11 @@
 
 
 <div class="panel" id="panel-word2pdf">
-  <h2 class="panel-title">Word to PDF</h2>
-  <p class="panel-desc">Extract text from a DOCX file and turn it into a structured PDF. Works best with modern .docx files.</p>
+  <div class="panel-header">
+    <div class="panel-badge">📄 Convert Tools</div>
+    <h2>Word to PDF</h2>
+    <p>Extract text from a DOCX file and turn it into a structured PDF. Works best with modern .docx files.</p>
+  </div>
   <div class="dropzone">
     <input type="file" id="word2pdf-input" accept=".docx" onchange="convertWordToPDF(this)">
     <div class="dz-icon"></div><h3>Drop your DOCX file here</h3><p>Convert a Word document into PDF</p>
@@ -608,8 +642,11 @@
 
 <!--  PDF TO IMAGE  -->
 <div class="panel" id="panel-pdf2img">
-  <h2 class="panel-title">PDF to Image</h2>
-  <p class="panel-desc">Convert PDF pages into high-quality PNG or JPEG images.</p>
+  <div class="panel-header">
+    <div class="panel-badge">📸 Convert Tools</div>
+    <h2>PDF to Image</h2>
+    <p>Convert PDF pages into high-quality PNG or JPEG images. Export at up to 4x resolution for print-ready output.</p>
+  </div>
   <div class="dropzone">
     <input type="file" id="pdf2img-input" accept=".pdf" onchange="handleSingleFile(this,'pdf2img')">
     <div class="dz-icon">&#128196;</div><h3>Drop your PDF here</h3>
@@ -652,8 +689,11 @@
 
 <!--  PROTECT  -->
 <div class="panel" id="panel-protect">
-  <h2 class="panel-title">Protect PDF</h2>
-  <p class="panel-desc">Add a password to your PDF, with basic protection powered by pdf-lib.</p>
+  <div class="panel-header">
+    <div class="panel-badge">🔐 Security Tools</div>
+    <h2>Protect PDF</h2>
+    <p>Add basic metadata-level protection to your PDF. For strong encryption, use a dedicated desktop tool.</p>
+  </div>
   <div class="dropzone">
     <input type="file" id="protect-input" accept=".pdf" onchange="handleSingleFile(this,'protect')">
     <div class="dz-icon">&#128196;</div><h3>Drop your PDF here</h3>
@@ -672,8 +712,11 @@
 
 <!--  UNLOCK  -->
 <div class="panel" id="panel-unlock">
-  <h2 class="panel-title">Unlock PDF</h2>
-  <p class="panel-desc">Unlock a password-protected PDF and download an unencrypted version.</p>
+  <div class="panel-header">
+    <div class="panel-badge">🔓 Security Tools</div>
+    <h2>Unlock PDF</h2>
+    <p>Attempt to unlock a password-protected PDF and download an unencrypted version.</p>
+  </div>
   <div class="dropzone">
     <input type="file" id="unlock-input" accept=".pdf" onchange="handleSingleFile(this,'unlock')">
     <div class="dz-icon">&#128196;</div><h3>Drop your protected PDF here</h3>
@@ -690,8 +733,11 @@
 
 <!--  SIGN  -->
 <div class="panel" id="panel-sign">
-  <h2 class="panel-title">Sign PDF</h2>
-  <p class="panel-desc">Add a signature to your PDF — draw it, type it, or upload an image of it.</p>
+  <div class="panel-header">
+    <div class="panel-badge">✍️ Edit & Organize</div>
+    <h2>Sign PDF</h2>
+    <p>Add a signature to your PDF — draw it freehand, type your name in a signature font, or upload an image of your signature.</p>
+  </div>
   <div class="dropzone">
     <input type="file" id="sign-input" accept=".pdf" onchange="handleSingleFile(this,'sign')">
     <div class="dz-icon">&#128196;</div><h3>Drop your PDF here</h3>
@@ -757,8 +803,11 @@
 
 <!--  PREVIEW  -->
 <div class="panel" id="panel-preview">
-  <h2 class="panel-title">PDF Preview</h2>
-  <p class="panel-desc">View your PDF right in the browser, with page-by-page navigation.</p>
+  <div class="panel-header">
+    <div class="panel-badge">👁️ Viewer</div>
+    <h2>PDF Preview</h2>
+    <p>View your PDF right in the browser with page-by-page navigation. Fast, private, and no upload required.</p>
+  </div>
   <div class="dropzone">
     <input type="file" id="preview-input" accept=".pdf" onchange="previewPDF(this)">
     <div class="dz-icon">&#128196;</div><h3>Drop your PDF here</h3>
@@ -779,8 +828,11 @@
 
 
 <div class="panel" id="panel-percentage">
-  <h2 class="panel-title">Percentage Calculator</h2>
-  <p class="panel-desc">Enter marks obtained and total marks to get your percentage instantly.</p>
+  <div class="panel-header">
+    <div class="panel-badge">🎓 Student & Utility</div>
+    <h2>Percentage Calculator</h2>
+    <p>Enter marks obtained and total marks to get your percentage instantly. Quick and simple for students.</p>
+  </div>
   <div class="two-col">
     <div class="form-group">
       <label class="form-label">Obtained Marks</label>
@@ -804,8 +856,11 @@
 
 
 <div class="panel" id="panel-marks">
-  <h2 class="panel-title">Marks Calculator</h2>
-  <p class="panel-desc">Enter subject-wise marks to get total, average, highest, lowest and percentage.</p>
+  <div class="panel-header">
+    <div class="panel-badge">📊 Student & Utility</div>
+    <h2>Marks Calculator</h2>
+    <p>Enter subject-wise marks to calculate total, average, highest, lowest, and percentage with live statistics.</p>
+  </div>
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.25rem">
     <div class="btn-row" style="justify-content:space-between;align-items:center">
       <h3 style="font-family:'Syne',sans-serif;font-size:1rem">Marks Entries</h3>
@@ -827,8 +882,11 @@
 </div>
 
 <div class="panel" id="panel-resume">
-  <h2 class="panel-title">Resume Builder</h2>
-    <p class="panel-desc">Build a strong resume with professional, ATS-friendly and modern templates.</p>
+  <div class="panel-header">
+    <div class="panel-badge">📄 Professional Tools</div>
+    <h2>Resume Builder</h2>
+    <p>Build a strong ATS-friendly resume with 11 professional templates, real-time live preview editing, and ATS scoring.</p>
+  </div>
 
   <div class="two-col">
     <div>
@@ -1028,8 +1086,11 @@
 <!-- PDF TO WORD PANEL -->
 <!-- ═══════════════════════════════════════════ -->
 <div class="panel" id="panel-pdf2word">
-  <h2 class="panel-title">📝 PDF &rarr; Word</h2>
-  <p class="panel-desc">Extract text from a PDF and turn it into an editable .docx file. Paragraphs and structure are preserved.</p>
+  <div class="panel-header">
+    <div class="panel-badge">📝 Convert Tools</div>
+    <h2>PDF → Word</h2>
+    <p>Extract text from a PDF and turn it into an editable .docx file. Paragraphs, layout, and document structure are preserved.</p>
+  </div>
   <div class="dropzone">
     <input type="file" id="pdf2word-input" accept=".pdf" onchange="handlePdf2Word(this)">
     <div class="dz-icon">📄</div><h3>Drop your PDF here</h3><p>Choose one PDF file</p>
@@ -1055,8 +1116,11 @@
 <!-- HANDWRITING GENERATOR PANEL -->
 <!-- ═══════════════════════════════════════════ -->
 <div class="panel" id="panel-handwriting">
-  <h2 class="panel-title">✍️ Handwriting Generator</h2>
-  <p class="panel-desc">Paste assignment text, customize fonts, paper style and apply scanner camera shadow filters to generate organic handwritten sheets.</p>
+  <div class="panel-header">
+    <div class="panel-badge">✍️ Student & Special</div>
+    <h2>Handwriting Generator</h2>
+    <p>Paste assignment text, customize handwriting fonts, paper style, and scanner shadow filters to generate realistic handwritten sheets.</p>
+  </div>
   
   <div class="two-col handwriting-layout">
     <!-- Left Column: Controls -->
@@ -1577,6 +1641,180 @@
   </div>
 </div>
 
+<!-- PANEL: CGPA / SGPA CALCULATOR -->
+<div class="panel" id="panel-cgpa">
+  <div class="panel-header">
+    <div class="panel-badge">🎓 Student & Utility</div>
+    <h2>CGPA & SGPA Calculator</h2>
+    <p>Calculate cumulative CGPA with credit weighting across all semesters, or convert between CGPA and Percentage using official university conversion formulas (CBSE, VTU, AKTU, Anna Univ, Mumbai Univ, 4.0 US scale).</p>
+  </div>
+
+  <!-- Direct Conversion Card -->
+  <div class="settings-card" style="margin-bottom:1.5rem">
+    <h3 style="margin-bottom:1rem; font-size:1.05rem; display:flex; align-items:center; gap:0.5rem">
+      <span>🔄</span> Quick CGPA ↔ Percentage Converter
+    </h3>
+    <div class="form-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:1rem">
+      <div>
+        <label class="form-label" for="cgpa-scale-select">University / Grading Scale</label>
+        <select id="cgpa-scale-select" class="form-select" onchange="convertCgpaToPercentage(); convertPercentageToCgpa();">
+          <option value="10-cbse" selected>CBSE / AICTE (Formula: (CGPA - 0.75) × 10)</option>
+          <option value="10-vtu">VTU Karnataka (Formula: (CGPA - 0.75) × 10)</option>
+          <option value="10-aktu">AKTU Uttar Pradesh (Formula: (CGPA - 0.75) × 10)</option>
+          <option value="10-anna">Anna University Tamil Nadu (Formula: CGPA × 10)</option>
+          <option value="10-mumbai">Mumbai University (Formula: 7.1 × CGPA + 11)</option>
+          <option value="10">Generic 10-Point Scale (Formula: CGPA × 10)</option>
+          <option value="4">4.0 US Scale (Formula: CGPA × 25)</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label" for="cgpa-direct-input">Enter CGPA</label>
+        <input type="number" id="cgpa-direct-input" class="form-input" placeholder="e.g. 8.50" step="0.01" min="0" max="10" oninput="convertCgpaToPercentage()">
+        <div id="cgpa-direct-result" style="margin-top:0.5rem; font-weight:700; color:var(--accent-light); font-size:0.95rem"></div>
+      </div>
+      <div>
+        <label class="form-label" for="pct-to-cgpa-input">Or Enter Percentage (%)</label>
+        <input type="number" id="pct-to-cgpa-input" class="form-input" placeholder="e.g. 77.50" step="0.01" min="0" max="100" oninput="convertPercentageToCgpa()">
+        <div id="pct-to-cgpa-result" style="margin-top:0.5rem; font-weight:700; color:var(--accent-light); font-size:0.95rem"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi-Semester SGPA / CGPA Calculator -->
+  <div class="settings-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem">
+      <h3 style="font-size:1.05rem; display:flex; align-items:center; gap:0.5rem">
+        <span>📚</span> Semester-wise SGPA & Credit Calculator
+      </h3>
+      <button class="btn btn-secondary btn-sm" onclick="addCgpaSemester()">➕ Add Semester</button>
+    </div>
+    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem">Enter each semester's SGPA along with the total credits registered to get the exact weighted cumulative CGPA.</p>
+    
+    <div id="cgpa-semester-rows" style="display:grid; gap:0.75rem; margin-bottom:1.25rem"></div>
+
+    <div class="btn-row" style="margin-bottom:1.5rem">
+      <button class="btn btn-primary" onclick="calculateCGPA()">📊 Calculate Cumulative CGPA</button>
+      <button class="btn btn-secondary" onclick="state.cgpa.semesters=[]; renderCgpaSemesters(); document.getElementById('cgpa-result-value').textContent=''">↺ Clear All</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card" style="flex:1; min-width:200px">
+        <div class="st-label">Cumulative Result</div>
+        <div class="st-val" id="cgpa-result-value" style="font-size:1.35rem; margin-top:0.35rem">CGPA: 0.00</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL: IMAGE BACKGROUND REMOVER -->
+<div class="panel" id="panel-bgremove">
+  <div class="panel-header">
+    <div class="panel-badge">🖼️ Image & Exam Photo Tools</div>
+    <h2>Image Background Remover</h2>
+    <p>Remove backgrounds from student & exam passport photos in 1-click. Replace with official white or passport blue required for SSC, UPSC, and State PCS application portals.</p>
+  </div>
+
+  <div class="dropzone" id="bgremove-dropzone" onclick="document.getElementById('bgremove-file').click()">
+    <div class="dz-icon">🖼️</div>
+    <h3>Drop your photo here</h3>
+    <p>Works best with solid, plain, or studio-lit backgrounds • 100% in-browser</p>
+    <button class="btn btn-primary" style="margin-top:1rem" onclick="event.stopPropagation(); document.getElementById('bgremove-file').click()">Select Photo</button>
+    <input type="file" id="bgremove-file" accept="image/*" style="display:none" onchange="handleBgRemoveUpload(this.files)">
+  </div>
+
+  <div id="bgremove-workbench" style="display:none; margin-top:1.5rem">
+    <div class="settings-card" style="margin-bottom:1.5rem">
+      <h3 style="margin-bottom:0.75rem; font-size:1rem">Select Replacement Background</h3>
+      <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" onclick="changeBgColor('#ffffff')">⬜ Pure White (Govt Standard)</button>
+        <button class="btn btn-secondary btn-sm" onclick="changeBgColor('#0284c7')">🟦 Passport Blue</button>
+        <button class="btn btn-secondary btn-sm" onclick="changeBgColor('#1e3a8a')">🔵 Navy Blue</button>
+        <button class="btn btn-secondary btn-sm" onclick="changeBgColor('#f1f5f9')">🔘 Light Gray</button>
+        <button class="btn btn-secondary btn-sm" onclick="changeBgColor('transparent')">🏁 Transparent PNG</button>
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-left:auto">
+          <label class="form-label" style="margin:0" for="bgremove-custom-color">Custom:</label>
+          <input type="color" id="bgremove-custom-color" value="#ffffff" onchange="changeBgColor(this.value)" style="width:36px; height:36px; padding:0; border:none; border-radius:6px; cursor:pointer">
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; align-items:start">
+      <div class="settings-card" style="text-align:center">
+        <h4 style="margin-bottom:0.75rem; color:var(--text-muted); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.5px">Before / After Preview</h4>
+        <div style="display:flex; justify-content:center; align-items:center; background:rgba(0,0,0,0.25); border-radius:12px; padding:1rem; min-height:260px; overflow:hidden">
+          <canvas id="bgremove-preview-canvas" style="max-width:100%; max-height:340px; border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.35)"></canvas>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h4 style="margin-bottom:0.75rem; font-size:1rem">Export Options</h4>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.25rem; line-height:1.5">
+          Download as clean high-resolution JPEG with your selected background color for exam submissions, or transparent PNG.
+        </p>
+        <div style="display:flex; flex-direction:column; gap:0.75rem">
+          <button class="btn btn-primary" onclick="downloadBgRemovedImage('jpg')">⬇️ Download JPG (with Selected Background)</button>
+          <button class="btn btn-secondary" onclick="downloadBgRemovedImage('png')">⬇️ Download PNG (Transparent)</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('bgremove-file').click()" style="margin-top:0.5rem">🔄 Choose Another Photo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL: PDF FORM FILLER & ANNOTATOR -->
+<div class="panel" id="panel-annotate">
+  <div class="panel-header">
+    <div class="panel-badge">📝 Edit & Document Tools</div>
+    <h2>PDF Form Filler & Annotator</h2>
+    <p>Click anywhere on your PDF pages to type text, fill out application forms, add notes, and export a clean stamped PDF document directly from your browser.</p>
+  </div>
+
+  <div class="dropzone" id="annotate-dropzone" onclick="document.getElementById('annotate-file').click()">
+    <div class="dz-icon">📝</div>
+    <h3>Drop your PDF form here</h3>
+    <p>Add text, fill form fields, annotate pages • 100% private in-browser</p>
+    <button class="btn btn-primary" style="margin-top:1rem" onclick="event.stopPropagation(); document.getElementById('annotate-file').click()">Choose PDF</button>
+    <input type="file" id="annotate-file" accept=".pdf,application/pdf" style="display:none" onchange="handleAnnotateUpload(this.files)">
+  </div>
+
+  <div id="annotate-workbench" style="display:none; margin-top:1.5rem">
+    <div class="organize-toolbar" style="margin-bottom:1rem">
+      <div class="organize-toolbar-left">
+        <button class="btn btn-secondary btn-sm" onclick="prevAnnotatePage()">← Prev Page</button>
+        <span class="badge" style="font-size:0.85rem; padding:0.4rem 0.8rem">
+          Page <span id="annotate-page-cur">1</span> of <span id="annotate-page-total">1</span>
+        </span>
+        <button class="btn btn-secondary btn-sm" onclick="nextAnnotatePage()">Next Page →</button>
+      </div>
+      <div class="organize-toolbar-right" style="gap:0.75rem; align-items:center">
+        <div style="display:flex; align-items:center; gap:0.4rem">
+          <label style="font-size:0.82rem; color:var(--text-muted)">Size:</label>
+          <select id="annotate-font-size" class="form-select" style="padding:0.3rem 0.6rem; font-size:0.85rem; width:auto" onchange="state.annotate.fontSize = parseInt(this.value)">
+            <option value="12">12 pt</option>
+            <option value="14" selected>14 pt</option>
+            <option value="16">16 pt</option>
+            <option value="20">20 pt</option>
+            <option value="24">24 pt</option>
+          </select>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.4rem">
+          <label style="font-size:0.82rem; color:var(--text-muted)">Color:</label>
+          <input type="color" id="annotate-font-color" value="#000000" onchange="state.annotate.fontColor = this.value" style="width:32px; height:32px; padding:0; border:none; border-radius:4px; cursor:pointer">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="exportAnnotatedPDF()">⬇️ Save & Download PDF</button>
+      </div>
+    </div>
+
+    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem">💡 <strong>How to use:</strong> Click anywhere on the PDF page below to place a text box, type your text, and click outside to save it.</p>
+
+    <div style="display:flex; justify-content:center; background:rgba(0,0,0,0.3); border-radius:12px; padding:1.25rem; overflow:auto">
+      <div id="annotate-stage" style="position:relative; display:inline-block; box-shadow:0 10px 30px rgba(0,0,0,0.5); background:#ffffff; border-radius:4px">
+        <canvas id="annotate-canvas" style="display:block"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer class="site-footer">
   <div class="footer-grid">
@@ -1647,6 +1885,6 @@
   <div class="spinner"></div>
   <div class="processing-text" id="global-processing-text">Processing...</div>
 </div>
-<script src="./script.js?v=20"></script>
+<script src="./script.js?v=21"></script>
 </body>
 </html>

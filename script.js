@@ -82,6 +82,28 @@ const state = {
     layout: 'vertical',
     docType: 'id1',
     cutlines: 'dashed'
+  },
+  cgpa: {
+    semesters: [],
+    scale: '10-cbse',
+    university: 'cbse'
+  },
+  bgRemove: {
+    file: null,
+    image: null,
+    outputCanvas: null,
+    bgColor: '#ffffff'
+  },
+  annotate: {
+    file: null,
+    pdfDoc: null,
+    currentPage: 1,
+    totalPages: 0,
+    annotations: [],
+    activeAnnotation: null,
+    fontSize: 14,
+    fontColor: '#000000',
+    tool: 'text'
   }
 };
 
@@ -5440,6 +5462,579 @@ async function generateIdCardPDF() {
   } catch (err) {
     console.error(err);
     toast('Error generating ID Card PDF.', '❌');
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// TOOL: CGPA / SGPA CALCULATOR
+// ══════════════════════════════════════════════════════
+
+function addCgpaSemester() {
+  state.cgpa.semesters.push({ sgpa: '', credits: '' });
+  renderCgpaSemesters();
+}
+
+function removeCgpaSemester(idx) {
+  state.cgpa.semesters.splice(idx, 1);
+  renderCgpaSemesters();
+}
+
+function renderCgpaSemesters() {
+  const container = document.getElementById('cgpa-semester-rows');
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (state.cgpa.semesters.length === 0) {
+    container.innerHTML = '<div style="color:var(--text-muted); font-size:0.88rem; padding:0.5rem 0">No semesters added yet. Click "+ Add Semester" to get started.</div>';
+    return;
+  }
+
+  state.cgpa.semesters.forEach((sem, idx) => {
+    const row = document.createElement('div');
+    row.className = 'cgpa-row';
+    row.innerHTML = `
+      <span>Semester ${idx + 1}</span>
+      <input type="number" step="0.01" min="0" max="10" placeholder="SGPA (e.g. 8.45)" value="${sem.sgpa !== '' ? sem.sgpa : ''}" oninput="state.cgpa.semesters[${idx}].sgpa = this.value; calculateCGPA(false);" />
+      <input type="number" step="0.5" min="1" max="50" placeholder="Credits (e.g. 24)" value="${sem.credits !== '' ? sem.credits : ''}" oninput="state.cgpa.semesters[${idx}].credits = this.value; calculateCGPA(false);" />
+      <button type="button" onclick="removeCgpaSemester(${idx})">✕ Delete</button>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function calculateCGPA(showFeedback = true) {
+  try {
+    let totalCredits = 0;
+    let totalPoints = 0;
+    let validCount = 0;
+
+    state.cgpa.semesters.forEach(sem => {
+      const sgpa = parseFloat(sem.sgpa);
+      const credits = parseFloat(sem.credits);
+      if (!isNaN(sgpa) && !isNaN(credits) && credits > 0) {
+        totalCredits += credits;
+        totalPoints += (sgpa * credits);
+        validCount++;
+      }
+    });
+
+    const resultEl = document.getElementById('cgpa-result-value');
+    if (!resultEl) return;
+
+    if (validCount === 0 || totalCredits === 0) {
+      resultEl.textContent = 'CGPA: 0.00';
+      if (showFeedback) toast('Please enter valid SGPA and Credits values', '⚠️');
+      return;
+    }
+
+    const cgpa = totalPoints / totalCredits;
+    const scaleSelect = document.getElementById('cgpa-scale-select')?.value || '10-cbse';
+    
+    let percentage = 0;
+    if (scaleSelect === '10-cbse' || scaleSelect === '10-vtu' || scaleSelect === '10-aktu') {
+      percentage = Math.max(0, (cgpa - 0.75) * 10);
+    } else if (scaleSelect === '10-anna') {
+      percentage = cgpa * 10;
+    } else if (scaleSelect === '10-mumbai') {
+      percentage = 7.1 * cgpa + 11;
+    } else if (scaleSelect === '4') {
+      percentage = cgpa * 25;
+    } else {
+      percentage = cgpa * 10;
+    }
+
+    resultEl.innerHTML = `<strong>${cgpa.toFixed(2)}</strong> <span style="font-size:0.9rem; font-weight:400; opacity:0.8">(≈ ${percentage.toFixed(2)}%)</span>`;
+    if (showFeedback) toast(`Calculated CGPA: ${cgpa.toFixed(2)} (${percentage.toFixed(2)}%)`, '✅');
+  } catch (err) {
+    console.error(err);
+    if (showFeedback) toast('Error calculating CGPA', '❌');
+  }
+}
+
+function convertCgpaToPercentage() {
+  try {
+    const cgpaInput = document.getElementById('cgpa-direct-input');
+    const scaleSelect = document.getElementById('cgpa-scale-select');
+    const resultEl = document.getElementById('cgpa-direct-result');
+    if (!cgpaInput || !scaleSelect || !resultEl) return;
+
+    const cgpa = parseFloat(cgpaInput.value);
+    if (isNaN(cgpa)) {
+      resultEl.textContent = '';
+      return;
+    }
+
+    const scale = scaleSelect.value;
+    let percentage = 0;
+    if (scale === '10-cbse' || scale === '10-vtu' || scale === '10-aktu') {
+      percentage = Math.max(0, (cgpa - 0.75) * 10);
+    } else if (scale === '10-anna') {
+      percentage = cgpa * 10;
+    } else if (scale === '10-mumbai') {
+      percentage = 7.1 * cgpa + 11;
+    } else if (scale === '4') {
+      percentage = cgpa * 25;
+    } else {
+      percentage = cgpa * 10;
+    }
+
+    resultEl.textContent = `Equivalent: ${percentage.toFixed(2)}%`;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function convertPercentageToCgpa() {
+  try {
+    const pctInput = document.getElementById('pct-to-cgpa-input');
+    const scaleSelect = document.getElementById('cgpa-scale-select');
+    const resultEl = document.getElementById('pct-to-cgpa-result');
+    if (!pctInput || !scaleSelect || !resultEl) return;
+
+    const pct = parseFloat(pctInput.value);
+    if (isNaN(pct)) {
+      resultEl.textContent = '';
+      return;
+    }
+
+    const scale = scaleSelect.value;
+    let cgpa = 0;
+    if (scale === '10-cbse' || scale === '10-vtu' || scale === '10-aktu') {
+      cgpa = (pct / 10) + 0.75;
+    } else if (scale === '10-anna') {
+      cgpa = pct / 10;
+    } else if (scale === '10-mumbai') {
+      cgpa = (pct - 11) / 7.1;
+    } else if (scale === '4') {
+      cgpa = pct / 25;
+    } else {
+      cgpa = pct / 10;
+    }
+
+    resultEl.textContent = `Equivalent: ${Math.max(0, cgpa).toFixed(2)} CGPA`;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+
+// ══════════════════════════════════════════════════════
+// TOOL: IMAGE BACKGROUND REMOVER
+// ══════════════════════════════════════════════════════
+
+async function handleBgRemoveUpload(files) {
+  if (!files || files.length === 0) return;
+  try {
+    const file = files[0];
+    if (!file.type.startsWith('image/')) {
+      toast('Please upload an image file (JPG, PNG, WebP)', '⚠️');
+      return;
+    }
+    state.bgRemove.file = file;
+    state.bgRemove.image = await loadImageFromFile(file);
+    
+    const dropzone = document.getElementById('bgremove-dropzone');
+    const workbench = document.getElementById('bgremove-workbench');
+    if (dropzone) dropzone.style.display = 'none';
+    if (workbench) workbench.style.display = 'block';
+
+    processBgRemoval();
+    toast('Image loaded! Background removed automatically.', '✅');
+  } catch (err) {
+    console.error(err);
+    toast('Error loading image', '❌');
+  }
+}
+
+function processBgRemoval() {
+  try {
+    const img = state.bgRemove.image;
+    if (!img) return;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imgData.data;
+    const width = canvas.width;
+    const height = canvas.height;
+
+    const tolerance = 36;
+
+    function getPixel(x, y) {
+      const i = (y * width + x) * 4;
+      return [data[i], data[i+1], data[i+2], data[i+3]];
+    }
+
+    function colorMatch(c1, c2) {
+      return Math.abs(c1[0] - c2[0]) <= tolerance &&
+             Math.abs(c1[1] - c2[1]) <= tolerance &&
+             Math.abs(c1[2] - c2[2]) <= tolerance;
+    }
+
+    const corners = [
+      {x: 0, y: 0},
+      {x: width - 1, y: 0},
+      {x: 0, y: height - 1},
+      {x: width - 1, y: height - 1},
+      {x: Math.floor(width / 2), y: 0}
+    ];
+
+    const visited = new Uint8Array(width * height);
+
+    corners.forEach(corner => {
+      const targetColor = getPixel(corner.x, corner.y);
+      if (targetColor[3] === 0) return;
+      
+      const stack = [corner];
+      
+      while (stack.length > 0) {
+        const p = stack.pop();
+        const x = p.x;
+        const y = p.y;
+        const idx = y * width + x;
+        
+        if (visited[idx]) continue;
+        
+        const currentColor = getPixel(x, y);
+        if (colorMatch(targetColor, currentColor)) {
+          visited[idx] = 1;
+          const dataIdx = idx * 4;
+          data[dataIdx + 3] = 0;
+          
+          if (x > 0) stack.push({x: x-1, y: y});
+          if (x < width - 1) stack.push({x: x+1, y: y});
+          if (y > 0) stack.push({x: x, y: y-1});
+          if (y < height - 1) stack.push({x: x, y: y+1});
+        }
+      }
+    });
+
+    ctx.putImageData(imgData, 0, 0);
+    state.bgRemove.outputCanvas = canvas;
+    
+    changeBgColor(state.bgRemove.bgColor || '#ffffff');
+  } catch (err) {
+    console.error(err);
+    toast('Error processing background removal', '❌');
+  }
+}
+
+function changeBgColor(color) {
+  try {
+    state.bgRemove.bgColor = color;
+    const previewCanvas = document.getElementById('bgremove-preview-canvas');
+    if (!previewCanvas || !state.bgRemove.outputCanvas || !state.bgRemove.image) return;
+
+    const ctx = previewCanvas.getContext('2d');
+    const outCanvas = state.bgRemove.outputCanvas;
+    
+    previewCanvas.width = outCanvas.width;
+    previewCanvas.height = outCanvas.height;
+
+    ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+    
+    if (color !== 'transparent') {
+      ctx.fillStyle = color;
+      ctx.fillRect(previewCanvas.width / 2, 0, previewCanvas.width / 2, previewCanvas.height);
+    }
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, previewCanvas.width / 2, previewCanvas.height);
+    ctx.clip();
+    ctx.drawImage(state.bgRemove.image, 0, 0);
+    ctx.restore();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(previewCanvas.width / 2, 0, previewCanvas.width / 2, previewCanvas.height);
+    ctx.clip();
+    ctx.drawImage(outCanvas, 0, 0);
+    ctx.restore();
+
+    ctx.beginPath();
+    ctx.moveTo(previewCanvas.width / 2, 0);
+    ctx.lineTo(previewCanvas.width / 2, previewCanvas.height);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#ffffff';
+    ctx.stroke();
+
+  } catch (err) {
+    console.error(err);
+    toast('Error updating preview', '❌');
+  }
+}
+
+async function downloadBgRemovedImage(format) {
+  try {
+    if (!state.bgRemove.outputCanvas) {
+      toast('No image processed yet!', '⚠️');
+      return;
+    }
+    const canvas = state.bgRemove.outputCanvas;
+    const exportCanvas = document.createElement('canvas');
+    exportCanvas.width = canvas.width;
+    exportCanvas.height = canvas.height;
+    const ctx = exportCanvas.getContext('2d');
+
+    if (format === 'jpg') {
+      const fillCol = (state.bgRemove.bgColor === 'transparent') ? '#ffffff' : state.bgRemove.bgColor;
+      ctx.fillStyle = fillCol;
+      ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+      ctx.drawImage(canvas, 0, 0);
+      exportCanvas.toBlob(blob => {
+        dlBlob(blob, 'bg_removed_photo.jpg');
+        toast('Downloaded JPEG photo!', '✅');
+      }, 'image/jpeg', 0.95);
+    } else {
+      ctx.drawImage(canvas, 0, 0);
+      exportCanvas.toBlob(blob => {
+        dlBlob(blob, 'bg_removed_photo.png');
+        toast('Downloaded transparent PNG!', '✅');
+      }, 'image/png');
+    }
+  } catch (err) {
+    console.error(err);
+    toast('Error downloading image', '❌');
+  }
+}
+
+
+// ══════════════════════════════════════════════════════
+// TOOL: PDF FORM FILLER & ANNOTATOR
+// ══════════════════════════════════════════════════════
+
+async function handleAnnotateUpload(files) {
+  if (!files || files.length === 0) return;
+  try {
+    const file = files[0];
+    if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+      toast('Please select a valid PDF file.', '⚠️');
+      return;
+    }
+    state.annotate.file = file;
+    const arrayBuffer = await file.arrayBuffer();
+    
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    state.annotate.pdfDoc = pdf;
+    state.annotate.totalPages = pdf.numPages;
+    state.annotate.currentPage = 1;
+    state.annotate.annotations = [];
+
+    const dropzone = document.getElementById('annotate-dropzone');
+    const workbench = document.getElementById('annotate-workbench');
+    if (dropzone) dropzone.style.display = 'none';
+    if (workbench) workbench.style.display = 'block';
+
+    const pageTotalEl = document.getElementById('annotate-page-total');
+    if (pageTotalEl) pageTotalEl.textContent = pdf.numPages;
+
+    setupAnnotateClickHandler();
+    await renderAnnotatePage(1);
+    toast(`Loaded ${pdf.numPages} pages! Click on the document to add text.`, '✅');
+  } catch (err) {
+    console.error(err);
+    toast('Error loading PDF document', '❌');
+  }
+}
+
+async function renderAnnotatePage(pageNum) {
+  try {
+    const pdf = state.annotate.pdfDoc;
+    if (!pdf) return;
+
+    state.annotate.currentPage = pageNum;
+    const pageCurEl = document.getElementById('annotate-page-cur');
+    if (pageCurEl) pageCurEl.textContent = pageNum;
+
+    const page = await pdf.getPage(pageNum);
+    const viewport = page.getViewport({ scale: 1.35 });
+
+    const canvas = document.getElementById('annotate-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+
+    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+    const stage = document.getElementById('annotate-stage');
+    if (stage) {
+      stage.style.width = `${viewport.width}px`;
+      stage.style.height = `${viewport.height}px`;
+      
+      Array.from(stage.children).forEach(child => {
+        if (child.id !== 'annotate-canvas') {
+          stage.removeChild(child);
+        }
+      });
+
+      state.annotate.annotations.forEach((ann, idx) => {
+        if (ann.page !== pageNum) return;
+        const div = document.createElement('div');
+        div.style.position = 'absolute';
+        div.style.left = `${ann.x * 100}%`;
+        div.style.top = `${ann.y * 100}%`;
+        div.style.fontSize = `${ann.fontSize}px`;
+        div.style.color = ann.color;
+        div.style.fontFamily = 'Helvetica, Arial, sans-serif';
+        div.style.whiteSpace = 'pre-wrap';
+        div.style.background = 'rgba(255,255,255,0.75)';
+        div.style.padding = '2px 4px';
+        div.style.borderRadius = '3px';
+        div.textContent = ann.text;
+        
+        const delBtn = document.createElement('button');
+        delBtn.textContent = '×';
+        delBtn.style.position = 'absolute';
+        delBtn.style.top = '-10px';
+        delBtn.style.right = '-10px';
+        delBtn.style.background = '#ef4444';
+        delBtn.style.color = 'white';
+        delBtn.style.border = 'none';
+        delBtn.style.borderRadius = '50%';
+        delBtn.style.width = '18px';
+        delBtn.style.height = '18px';
+        delBtn.style.fontSize = '12px';
+        delBtn.style.lineHeight = '1';
+        delBtn.style.cursor = 'pointer';
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteAnnotation(idx);
+        };
+        div.appendChild(delBtn);
+        
+        stage.appendChild(div);
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    toast('Error rendering page', '❌');
+  }
+}
+
+async function prevAnnotatePage() {
+  if (state.annotate.currentPage > 1) {
+    await renderAnnotatePage(state.annotate.currentPage - 1);
+  }
+}
+
+async function nextAnnotatePage() {
+  if (state.annotate.currentPage < state.annotate.totalPages) {
+    await renderAnnotatePage(state.annotate.currentPage + 1);
+  }
+}
+
+function setupAnnotateClickHandler() {
+  const stage = document.getElementById('annotate-stage');
+  if (!stage || stage._hasClickHandler) return;
+  stage._hasClickHandler = true;
+
+  stage.addEventListener('click', (e) => {
+    if (e.target !== stage && e.target.id !== 'annotate-canvas') return;
+
+    const rect = stage.getBoundingClientRect();
+    const xRatio = (e.clientX - rect.left) / rect.width;
+    const yRatio = (e.clientY - rect.top) / rect.height;
+
+    const fontSize = state.annotate.fontSize || 14;
+    const fontColor = state.annotate.fontColor || '#000000';
+
+    const ann = {
+      type: 'text',
+      page: state.annotate.currentPage,
+      x: xRatio,
+      y: yRatio,
+      text: '',
+      fontSize: fontSize,
+      color: fontColor
+    };
+    
+    state.annotate.annotations.push(ann);
+    const annIdx = state.annotate.annotations.length - 1;
+
+    const inputDiv = document.createElement('div');
+    inputDiv.contentEditable = true;
+    inputDiv.style.position = 'absolute';
+    inputDiv.style.left = `${xRatio * 100}%`;
+    inputDiv.style.top = `${yRatio * 100}%`;
+    inputDiv.style.fontSize = `${fontSize}px`;
+    inputDiv.style.color = fontColor;
+    inputDiv.style.border = '1px dashed var(--accent)';
+    inputDiv.style.minWidth = '60px';
+    inputDiv.style.minHeight = '22px';
+    inputDiv.style.background = 'rgba(255,255,255,0.9)';
+    inputDiv.style.borderRadius = '3px';
+    inputDiv.style.padding = '2px 4px';
+    inputDiv.style.outline = 'none';
+    
+    stage.appendChild(inputDiv);
+    inputDiv.focus();
+
+    inputDiv.addEventListener('blur', () => {
+      ann.text = inputDiv.innerText.trim();
+      if (!ann.text) {
+        state.annotate.annotations.splice(annIdx, 1);
+      }
+      renderAnnotatePage(state.annotate.currentPage);
+    });
+  });
+}
+
+function deleteAnnotation(idx) {
+  state.annotate.annotations.splice(idx, 1);
+  renderAnnotatePage(state.annotate.currentPage);
+}
+
+async function exportAnnotatedPDF() {
+  try {
+    if (!state.annotate.file) {
+      toast('Please upload a PDF first!', '⚠️');
+      return;
+    }
+    const arrayBuffer = await state.annotate.file.arrayBuffer();
+    const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+    const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    const pages = pdfDoc.getPages();
+    
+    for (const ann of state.annotate.annotations) {
+      if (ann.type === 'text' && ann.text) {
+        const pageIdx = ann.page - 1;
+        if (pageIdx >= 0 && pageIdx < pages.length) {
+          const page = pages[pageIdx];
+          const { width, height } = page.getSize();
+          
+          const absX = ann.x * width;
+          const absY = height - (ann.y * height) - ann.fontSize;
+          
+          let r = 0, g = 0, b = 0;
+          if (ann.color && ann.color.startsWith('#') && ann.color.length === 7) {
+            r = parseInt(ann.color.substring(1, 3), 16) / 255;
+            g = parseInt(ann.color.substring(3, 5), 16) / 255;
+            b = parseInt(ann.color.substring(5, 7), 16) / 255;
+          }
+
+          page.drawText(ann.text, {
+            x: absX,
+            y: absY,
+            size: parseInt(ann.fontSize, 10),
+            font: helveticaFont,
+            color: PDFLib.rgb(r, g, b)
+          });
+        }
+      }
+    }
+
+    const pdfBytes = await pdfDoc.save();
+    dlBlob(new Blob([pdfBytes], { type: 'application/pdf' }), `annotated_${state.annotate.file.name}`);
+    toast('Annotated PDF exported and downloaded successfully!', '✅');
+  } catch (err) {
+    console.error(err);
+    toast('Error exporting annotated PDF', '❌');
   }
 }
 
