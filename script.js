@@ -92,6 +92,7 @@ const state = {
     file: null,
     image: null,
     outputCanvas: null,
+    cutoutCanvas: null,
     bgColor: '#ffffff'
   },
   annotate: {
@@ -5622,6 +5623,35 @@ function convertPercentageToCgpa() {
 // TOOL: IMAGE BACKGROUND REMOVER
 // ══════════════════════════════════════════════════════
 
+let selfieSegmenterInstance = null;
+
+async function getSelfieSegmenter() {
+  if (selfieSegmenterInstance) return selfieSegmenterInstance;
+
+  if (typeof SelfieSegmentation === 'undefined') {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/selfie_segmentation.js';
+      script.crossOrigin = 'anonymous';
+      script.onload = resolve;
+      script.onerror = () => reject(new Error('Failed to load MediaPipe library'));
+      document.head.appendChild(script);
+    });
+  }
+
+  const segmenter = new SelfieSegmentation({
+    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/${file}`
+  });
+
+  segmenter.setOptions({
+    modelSelection: 1
+  });
+
+  await segmenter.initialize();
+  selfieSegmenterInstance = segmenter;
+  return segmenter;
+}
+
 async function handleBgRemoveUpload(files) {
   if (!files || files.length === 0) return;
   try {
@@ -5635,133 +5665,214 @@ async function handleBgRemoveUpload(files) {
     
     const dropzone = document.getElementById('bgremove-dropzone');
     const workbench = document.getElementById('bgremove-workbench');
+    const statusEl = document.getElementById('bgremove-status');
+
     if (dropzone) dropzone.style.display = 'none';
     if (workbench) workbench.style.display = 'block';
+    if (statusEl) {
+      statusEl.style.display = 'flex';
+      statusEl.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;margin-right:8px"></div> <span>🤖 AI is isolating subject from background...</span>';
+    }
 
-    processBgRemoval();
-    toast('Image loaded! Background removed automatically.', '✅');
+    await processBgRemoval();
   } catch (err) {
     console.error(err);
     toast('Error loading image', '❌');
   }
 }
 
-function processBgRemoval() {
+async function processBgRemoval() {
+  const statusEl = document.getElementById('bgremove-status');
   try {
     const img = state.bgRemove.image;
     if (!img) return;
 
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = img.width;
-    canvas.height = img.height;
-    ctx.drawImage(img, 0, 0);
-
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imgData.data;
-    const width = canvas.width;
-    const height = canvas.height;
-
-    const tolerance = 36;
-
-    function getPixel(x, y) {
-      const i = (y * width + x) * 4;
-      return [data[i], data[i+1], data[i+2], data[i+3]];
+    if (statusEl) {
+      statusEl.style.display = 'flex';
+      statusEl.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;margin-right:8px"></div> <span>🤖 AI is isolating subject from background...</span>';
     }
 
-    function colorMatch(c1, c2) {
-      return Math.abs(c1[0] - c2[0]) <= tolerance &&
-             Math.abs(c1[1] - c2[1]) <= tolerance &&
-             Math.abs(c1[2] - c2[2]) <= tolerance;
-    }
+    const origW = img.naturalWidth || img.width;
+    const origH = img.naturalHeight || img.height;
 
-    const corners = [
-      {x: 0, y: 0},
-      {x: width - 1, y: 0},
-      {x: 0, y: height - 1},
-      {x: width - 1, y: height - 1},
-      {x: Math.floor(width / 2), y: 0}
-    ];
-
-    const visited = new Uint8Array(width * height);
-
-    corners.forEach(corner => {
-      const targetColor = getPixel(corner.x, corner.y);
-      if (targetColor[3] === 0) return;
-      
-      const stack = [corner];
-      
-      while (stack.length > 0) {
-        const p = stack.pop();
-        const x = p.x;
-        const y = p.y;
-        const idx = y * width + x;
-        
-        if (visited[idx]) continue;
-        
-        const currentColor = getPixel(x, y);
-        if (colorMatch(targetColor, currentColor)) {
-          visited[idx] = 1;
-          const dataIdx = idx * 4;
-          data[dataIdx + 3] = 0;
-          
-          if (x > 0) stack.push({x: x-1, y: y});
-          if (x < width - 1) stack.push({x: x+1, y: y});
-          if (y > 0) stack.push({x: x, y: y-1});
-          if (y < height - 1) stack.push({x: x, y: y+1});
-        }
+    // Scale to max 1280px for neural network inference to ensure speed and low memory
+    const maxInferenceDim = 1280;
+    let infW = origW;
+    let infH = origH;
+    if (infW > maxInferenceDim || infH > maxInferenceDim) {
+      if (infW > infH) {
+        infH = Math.round((infH * maxInferenceDim) / infW);
+        infW = maxInferenceDim;
+      } else {
+        infW = Math.round((infW * maxInferenceDim) / infH);
+        infH = maxInferenceDim;
       }
+    }
+
+    const inputCanvas = document.createElement('canvas');
+    inputCanvas.width = infW;
+    inputCanvas.height = infH;
+    const ictx = inputCanvas.getContext('2d');
+    ictx.drawImage(img, 0, 0, infW, infH);
+
+    const segmenter = await getSelfieSegmenter();
+
+    await new Promise((resolve, reject) => {
+      let resolved = false;
+      segmenter.onResults((results) => {
+        try {
+          if (resolved) return;
+          resolved = true;
+
+          const cutoutCanvas = document.createElement('canvas');
+          cutoutCanvas.width = origW;
+          cutoutCanvas.height = origH;
+          const cctx = cutoutCanvas.getContext('2d');
+
+          // 1. Draw segmentation mask scaled up to original dimensions
+          cctx.drawImage(results.segmentationMask, 0, 0, origW, origH);
+
+          // 2. Keep only where the mask is visible (the person)
+          cctx.globalCompositeOperation = 'source-in';
+          cctx.drawImage(img, 0, 0, origW, origH);
+
+          state.bgRemove.cutoutCanvas = cutoutCanvas;
+          state.bgRemove.outputCanvas = cutoutCanvas;
+
+          resolve();
+        } catch (e) {
+          reject(e);
+        }
+      });
+
+      segmenter.send({ image: inputCanvas }).catch(reject);
     });
 
-    ctx.putImageData(imgData, 0, 0);
-    state.bgRemove.outputCanvas = canvas;
-    
+    if (statusEl) statusEl.style.display = 'none';
     changeBgColor(state.bgRemove.bgColor || '#ffffff');
+    toast('Background removed with on-device AI!', '✅');
   } catch (err) {
-    console.error(err);
-    toast('Error processing background removal', '❌');
+    console.error('AI segmentation failed, using enhanced color fallback:', err);
+    if (statusEl) statusEl.style.display = 'none';
+    fallbackColorBgRemoval();
+    changeBgColor(state.bgRemove.bgColor || '#ffffff');
+    toast('Processed using color detection', 'ℹ️');
   }
+}
+
+function fallbackColorBgRemoval() {
+  const img = state.bgRemove.image;
+  if (!img) return;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth || img.width;
+  canvas.height = img.naturalHeight || img.height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imgData.data;
+  const width = canvas.width;
+  const height = canvas.height;
+
+  const samplePoints = [
+    { x: 5, y: 5 },
+    { x: width - 5, y: 5 },
+    { x: Math.floor(width / 2), y: 5 }
+  ];
+
+  let totalR = 0, totalG = 0, totalB = 0;
+  samplePoints.forEach(p => {
+    const idx = (p.y * width + p.x) * 4;
+    totalR += data[idx];
+    totalG += data[idx + 1];
+    totalB += data[idx + 2];
+  });
+  const bgR = totalR / samplePoints.length;
+  const bgG = totalG / samplePoints.length;
+  const bgB = totalB / samplePoints.length;
+
+  const tolerance = 55;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+    const dist = Math.sqrt((r - bgR) ** 2 + (g - bgG) ** 2 + (b - bgB) ** 2);
+    if (dist < tolerance) {
+      data[i + 3] = 0;
+    }
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+  state.bgRemove.cutoutCanvas = canvas;
+  state.bgRemove.outputCanvas = canvas;
+}
+
+function drawCheckerboardPattern(ctx, x, y, w, h) {
+  const size = 16;
+  ctx.save();
+  for (let cy = y; cy < y + h; cy += size) {
+    for (let cx = x; cx < x + w; cx += size) {
+      const isEven = ((Math.floor((cx - x) / size) + Math.floor((cy - y) / size)) % 2 === 0);
+      ctx.fillStyle = isEven ? '#f1f5f9' : '#cbd5e1';
+      ctx.fillRect(cx, cy, Math.min(size, x + w - cx), Math.min(size, y + h - cy));
+    }
+  }
+  ctx.restore();
 }
 
 function changeBgColor(color) {
   try {
     state.bgRemove.bgColor = color;
     const previewCanvas = document.getElementById('bgremove-preview-canvas');
-    if (!previewCanvas || !state.bgRemove.outputCanvas || !state.bgRemove.image) return;
+    if (!previewCanvas || !state.bgRemove.cutoutCanvas || !state.bgRemove.image) return;
 
+    const width = state.bgRemove.image.naturalWidth || state.bgRemove.image.width;
+    const height = state.bgRemove.image.naturalHeight || state.bgRemove.image.height;
+
+    previewCanvas.width = width;
+    previewCanvas.height = height;
     const ctx = previewCanvas.getContext('2d');
-    const outCanvas = state.bgRemove.outputCanvas;
-    
-    previewCanvas.width = outCanvas.width;
-    previewCanvas.height = outCanvas.height;
+    ctx.clearRect(0, 0, width, height);
 
-    ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-    
-    if (color !== 'transparent') {
-      ctx.fillStyle = color;
-      ctx.fillRect(previewCanvas.width / 2, 0, previewCanvas.width / 2, previewCanvas.height);
-    }
+    const halfW = Math.floor(width / 2);
 
+    // Left half: Original input photo
     ctx.save();
     ctx.beginPath();
-    ctx.rect(0, 0, previewCanvas.width / 2, previewCanvas.height);
+    ctx.rect(0, 0, halfW, height);
     ctx.clip();
     ctx.drawImage(state.bgRemove.image, 0, 0);
     ctx.restore();
 
+    // Right half: Replacement background + Isolated subject
     ctx.save();
     ctx.beginPath();
-    ctx.rect(previewCanvas.width / 2, 0, previewCanvas.width / 2, previewCanvas.height);
+    ctx.rect(halfW, 0, width - halfW, height);
     ctx.clip();
-    ctx.drawImage(outCanvas, 0, 0);
+
+    if (color === 'transparent') {
+      drawCheckerboardPattern(ctx, halfW, 0, width - halfW, height);
+    } else {
+      ctx.fillStyle = color;
+      ctx.fillRect(halfW, 0, width - halfW, height);
+    }
+
+    ctx.drawImage(state.bgRemove.cutoutCanvas, 0, 0);
     ctx.restore();
 
+    // Center divider bar with subtle shadow
+    ctx.save();
     ctx.beginPath();
-    ctx.moveTo(previewCanvas.width / 2, 0);
-    ctx.lineTo(previewCanvas.width / 2, previewCanvas.height);
-    ctx.lineWidth = 3;
+    ctx.moveTo(halfW, 0);
+    ctx.lineTo(halfW, height);
+    ctx.lineWidth = Math.max(3, Math.round(width / 300));
     ctx.strokeStyle = '#ffffff';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+    ctx.shadowBlur = 8;
     ctx.stroke();
+    ctx.restore();
 
   } catch (err) {
     console.error(err);
@@ -5771,30 +5882,39 @@ function changeBgColor(color) {
 
 async function downloadBgRemovedImage(format) {
   try {
-    if (!state.bgRemove.outputCanvas) {
+    if (!state.bgRemove.cutoutCanvas || !state.bgRemove.image) {
       toast('No image processed yet!', '⚠️');
       return;
     }
-    const canvas = state.bgRemove.outputCanvas;
+    const cutout = state.bgRemove.cutoutCanvas;
+    const width = cutout.width;
+    const height = cutout.height;
+
     const exportCanvas = document.createElement('canvas');
-    exportCanvas.width = canvas.width;
-    exportCanvas.height = canvas.height;
+    exportCanvas.width = width;
+    exportCanvas.height = height;
     const ctx = exportCanvas.getContext('2d');
 
+    const color = state.bgRemove.bgColor || '#ffffff';
+
     if (format === 'jpg') {
-      const fillCol = (state.bgRemove.bgColor === 'transparent') ? '#ffffff' : state.bgRemove.bgColor;
+      const fillCol = (color === 'transparent') ? '#ffffff' : color;
       ctx.fillStyle = fillCol;
-      ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
-      ctx.drawImage(canvas, 0, 0);
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(cutout, 0, 0);
       exportCanvas.toBlob(blob => {
         dlBlob(blob, 'bg_removed_photo.jpg');
-        toast('Downloaded JPEG photo!', '✅');
+        toast('Downloaded JPEG photo with new background!', '✅');
       }, 'image/jpeg', 0.95);
     } else {
-      ctx.drawImage(canvas, 0, 0);
+      if (color !== 'transparent') {
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, width, height);
+      }
+      ctx.drawImage(cutout, 0, 0);
       exportCanvas.toBlob(blob => {
         dlBlob(blob, 'bg_removed_photo.png');
-        toast('Downloaded transparent PNG!', '✅');
+        toast('Downloaded PNG photo!', '✅');
       }, 'image/png');
     }
   } catch (err) {

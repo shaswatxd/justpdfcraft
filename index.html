@@ -27,10 +27,11 @@
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/selfie_segmentation.js" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700&family=Roboto+Slab:wght@400;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Homemade+Apple&family=Shadows+Into+Light&family=Patrick+Hand&family=Architects+Daughter&family=Gochi+Hand&family=Reenie+Beanie&family=Delius&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./style.css?v=23">
+<link rel="stylesheet" href="./style.css?v=24">
 
 </head>
 <body class="dashboard-body">
@@ -1723,6 +1724,11 @@
   </div>
 
   <div id="bgremove-workbench" style="display:none; margin-top:1.5rem">
+    <div id="bgremove-status" style="display:none; align-items:center; justify-content:center; gap:0.75rem; background:rgba(99,102,241,0.15); border:1px solid rgba(99,102,241,0.3); padding:0.85rem 1.25rem; border-radius:12px; margin-bottom:1.5rem; font-weight:600; color:var(--accent-light)">
+      <div class="spinner" style="width:20px; height:20px; border-width:2px"></div>
+      <span>🤖 AI is isolating subject from background...</span>
+    </div>
+
     <div class="settings-card" style="margin-bottom:1.5rem">
       <h3 style="margin-bottom:0.75rem; font-size:1rem">Select Replacement Background</h3>
       <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap">
@@ -1885,6 +1891,6 @@
   <div class="spinner"></div>
   <div class="processing-text" id="global-processing-text">Processing...</div>
 </div>
-<script src="./script.js?v=21"></script>
+<script src="./script.js?v=22"></script>
 </body>
 </html>
