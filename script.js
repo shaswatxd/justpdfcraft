@@ -4979,6 +4979,17 @@ async function renderOrganizeThumbnails() {
     badgeEl.textContent = `P. ${idx + 1}`;
     card.appendChild(badgeEl);
 
+    // Top-right Delete Button (quick X)
+    const topDelBtn = document.createElement('button');
+    topDelBtn.className = 'organize-top-delete';
+    topDelBtn.title = 'Delete this page';
+    topDelBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+    topDelBtn.onclick = (e) => {
+      e.stopPropagation();
+      deleteOrganizePage(idx);
+    };
+    card.appendChild(topDelBtn);
+
     // Thumb wrap
     const thumbWrap = document.createElement('div');
     thumbWrap.className = 'organize-thumb-wrap';
@@ -5012,7 +5023,7 @@ async function renderOrganizeThumbnails() {
     // Move left
     const leftBtn = document.createElement('button');
     leftBtn.className = 'organize-act-btn';
-    leftBtn.innerHTML = '←';
+    leftBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>';
     leftBtn.title = 'Move Left';
     leftBtn.disabled = (idx === 0);
     leftBtn.onclick = () => moveOrganizePage(idx, -1);
@@ -5020,14 +5031,14 @@ async function renderOrganizeThumbnails() {
     // Rotate
     const rotBtn = document.createElement('button');
     rotBtn.className = 'organize-act-btn';
-    rotBtn.innerHTML = '↻';
+    rotBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>';
     rotBtn.title = 'Rotate 90°';
     rotBtn.onclick = () => rotateOrganizePage(idx);
 
     // Move right
     const rightBtn = document.createElement('button');
     rightBtn.className = 'organize-act-btn';
-    rightBtn.innerHTML = '→';
+    rightBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
     rightBtn.title = 'Move Right';
     rightBtn.disabled = (idx === state.organize.pages.length - 1);
     rightBtn.onclick = () => moveOrganizePage(idx, 1);
@@ -5035,7 +5046,7 @@ async function renderOrganizeThumbnails() {
     // Delete
     const delBtn = document.createElement('button');
     delBtn.className = 'organize-act-btn delete-btn';
-    delBtn.innerHTML = '🗑️';
+    delBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
     delBtn.title = 'Delete Page';
     delBtn.onclick = () => deleteOrganizePage(idx);
 
