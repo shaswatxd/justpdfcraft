@@ -1,3 +1,4 @@
+# JustPDFCraft robots.txt
 User-agent: *
 Allow: /
 

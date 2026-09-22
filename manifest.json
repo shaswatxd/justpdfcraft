@@ -1,103 +1,17 @@
 {
-  "name": "JustPDFCraft - Free PDF Editor",
+  "name": "JustPDFCraft — All-in-One PDF, Image & Student Toolkit",
   "short_name": "JustPDFCraft",
-  "description": "Complete free PDF editor - merge, split, compress, sign, watermark, annotate, and convert PDFs online",
+  "description": "Fast, 100% private, in-browser PDF editor, handwritten assignment generator, target KB image resizer, and student toolkit.",
   "start_url": "/",
-  "scope": "/",
   "display": "standalone",
-  "orientation": "any",
-  "background_color": "#08080f",
-  "theme_color": "#6c63ff",
-  "prefer_related_applications": false,
+  "background_color": "#0f172a",
+  "theme_color": "#0284c7",
   "icons": [
     {
-      "src": "favicon.svg",
-      "sizes": "any",
+      "src": "/logo.svg",
+      "sizes": "192x192 512x512",
       "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "categories": ["productivity", "utilities"],
-  "screenshots": [
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "form_factor": "wide"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Merge PDFs",
-      "short_name": "Merge",
-      "description": "Quickly merge multiple PDFs",
-      "url": "/?tool=merge",
-      "icons": [
-        {
-          "src": "icon-512.png",
-          "sizes": "96x96",
-          "type": "image/png",
-          "purpose": "any"
-        }
-      ]
-    },
-    {
-      "name": "OCR Extract",
-      "short_name": "OCR",
-      "description": "Extract text from PDFs",
-      "url": "/?tool=ocr",
-      "icons": [
-        {
-          "src": "icon-512.png",
-          "sizes": "96x96",
-          "type": "image/png",
-          "purpose": "any"
-        }
-      ]
-    },
-    {
-      "name": "Compress PDF",
-      "short_name": "Compress",
-      "description": "Reduce PDF file size",
-      "url": "/?tool=compress",
-      "icons": [
-        {
-          "src": "icon-512.png",
-          "sizes": "96x96",
-          "type": "image/png",
-          "purpose": "any"
-        }
-      ]
+      "purpose": "any maskable"
     }
   ]
 }
