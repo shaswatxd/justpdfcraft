@@ -1,0 +1,58 @@
+SwiftPDF — Third-Party Software Notices and Information
+========================================================================
+
+SwiftPDF incorporates components from the following open-source software:
+
+------------------------------------------------------------------------
+1. pdf-lib
+License: MIT
+Copyright (c) 2019 Andrew Dillon
+https://github.com/Hopding/pdf-lib
+
+------------------------------------------------------------------------
+2. pdfjs-dist (PDF.js)
+License: Apache License 2.0
+Copyright (c) 2012 Mozilla Foundation
+https://github.com/mozilla/pdf.js
+
+------------------------------------------------------------------------
+3. React & React-DOM
+License: MIT
+Copyright (c) Meta Platforms, Inc. and affiliates.
+https://react.dev/
+
+------------------------------------------------------------------------
+4. Zustand
+License: MIT
+Copyright (c) 2019 Paul Henschel
+https://github.com/pmndrs/zustand
+
+------------------------------------------------------------------------
+5. Lucide React
+License: ISC
+Copyright (c) 2022 Lucide Contributors
+https://lucide.dev/
+
+------------------------------------------------------------------------
+6. Tesseract.js
+License: Apache License 2.0
+Copyright (c) Jerome Wu
+https://github.com/naptha/tesseract.js
+
+------------------------------------------------------------------------
+7. sql.js
+License: MIT
+Copyright (c) 2021 sql.js
+https://github.com/sql-js/sql.js
+
+------------------------------------------------------------------------
+8. Fuse.js
+License: Apache License 2.0
+Copyright (c) 2023 Kiro Risk
+https://fusejs.io/
+
+------------------------------------------------------------------------
+9. Tailwind CSS
+License: MIT
+Copyright (c) Tailwind Labs, Inc.
+https://tailwindcss.com/

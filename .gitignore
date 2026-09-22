@@ -1,2 +1,12 @@
 node_modules/
-package-lock.json
+dist/
+target/
+.DS_Store
+*.tmp
+*.log
+.env
+.env.local
+.vscode/
+release/
+
+.vercel

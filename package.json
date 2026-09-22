@@ -1,0 +1,53 @@
+{
+  "name": "justpdfcraft",
+  "version": "1.0.0",
+  "description": "JustPDFCraft — Ultimate PDF, Photo & Student Suite. Fast, local-first, privacy-focused PDF editor, handwriting assignment generator, and exam admission toolkit.",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "pdf",
+    "editor",
+    "web",
+    "local-first",
+    "ocr",
+    "annotation",
+    "students",
+    "handwriting"
+  ],
+  "author": "JustPDFCraft Team",
+  "license": "MIT",
+  "dependencies": {
+    "canvas-confetti": "^1.9.4",
+    "clsx": "^2.1.1",
+    "fuse.js": "^7.5.0",
+    "lucide-react": "^1.47.0",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^4.10.38",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sql.js": "^1.14.2",
+    "tailwind-merge": "^3.7.0",
+    "tesseract.js": "^7.0.0",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^26.6.1",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@types/sql.js": "^1.4.11",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3",
+    "vite": "^6.2.0",
+    "vitest": "^2.1.8"
+  }
+}
