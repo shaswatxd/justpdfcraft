@@ -3,7 +3,7 @@ import { ShieldCheck, Zap, Laptop, GraduationCap, Check } from 'lucide-react';
 
 export const FeatureHighlights: React.FC = () => {
   return (
-    <section className="w-full max-w-5xl mx-auto px-4 py-8">
+    <section className="w-full max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="text-center max-w-2xl mx-auto mb-8 space-y-2">
         <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
           Why Students & Professionals Choose <span className="text-swift-400">JustPDFCraft</span>

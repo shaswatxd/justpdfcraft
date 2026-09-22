@@ -172,7 +172,7 @@ export const HomeDashboard: React.FC = () => {
       />
 
       {/* Main Container */}
-      <div className="w-full max-w-5xl px-4 space-y-8 my-6">
+      <div className="w-full max-w-6xl xl:max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12 my-8">
         {/* Universal Drag & Drop Upload Zone */}
         <div
           onDragOver={(e) => {
@@ -182,22 +182,22 @@ export const HomeDashboard: React.FC = () => {
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`group relative cursor-pointer border-2 border-dashed rounded-2xl p-6 sm:p-10 text-center transition-all duration-200 ${
+          className={`group relative cursor-pointer border-2 border-dashed rounded-3xl p-8 sm:p-12 text-center transition-all duration-300 ${
             isDragging
               ? 'border-swift-400 bg-swift-500/10 scale-[1.01]'
-              : 'border-slate-700/80 hover:border-swift-500/60 bg-slate-800/40 hover:bg-slate-800/70 shadow-xl'
+              : 'border-slate-800 hover:border-swift-500/50 bg-slate-900/40 hover:bg-slate-900/70 shadow-md hover:shadow-2xl hover:shadow-black/30'
           }`}
         >
-          <div className="flex flex-col items-center space-y-3">
-            <div className="w-14 h-14 rounded-2xl bg-swift-600/20 text-swift-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-swift-500/10 border border-swift-500/20 text-swift-400 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
               <FolderOpen className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-base sm:text-lg font-semibold text-slate-100">
+              <p className="text-base sm:text-lg font-semibold text-slate-100 tracking-tight">
                 Drop your PDF or image here, or{' '}
-                <span className="text-swift-400 underline underline-offset-4">browse files</span>
+                <span className="text-swift-400 underline underline-offset-4 hover:text-swift-300 transition-colors">browse files</span>
               </p>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 mt-1.5 font-normal">
                 Fast & private in-browser document editor • Zero cloud uploads
               </p>
             </div>
@@ -208,7 +208,7 @@ export const HomeDashboard: React.FC = () => {
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
-                className="px-5 py-2 bg-swift-600 hover:bg-swift-500 text-white font-medium rounded-xl shadow-lg shadow-swift-900/40 flex items-center gap-2 text-xs transition-all"
+                className="px-5 py-2.5 bg-swift-600 hover:bg-swift-500 text-white font-medium rounded-xl shadow-md shadow-swift-900/30 flex items-center gap-2 text-xs transition-all hover:-translate-y-0.5"
               >
                 <FolderOpen className="w-3.5 h-3.5" />
                 Browse Document
@@ -219,7 +219,7 @@ export const HomeDashboard: React.FC = () => {
                   e.stopPropagation();
                   createBlankDocument();
                 }}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium rounded-xl flex items-center gap-2 text-xs transition-all"
+                className="px-4 py-2.5 bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/80 font-medium rounded-xl flex items-center gap-2 text-xs transition-all hover:-translate-y-0.5"
               >
                 <FilePlus className="w-3.5 h-3.5" />
                 New Blank PDF
@@ -231,29 +231,29 @@ export const HomeDashboard: React.FC = () => {
         {/* Student & Exam Admission Suite Banner */}
         <div
           onClick={() => setActiveModal('student-resizer')}
-          className="relative overflow-hidden cursor-pointer rounded-2xl bg-gradient-to-r from-indigo-950/70 via-purple-950/50 to-slate-900 border border-indigo-500/40 hover:border-indigo-400 p-5 shadow-xl transition-all group hover:scale-[1.005]"
+          className="relative overflow-hidden cursor-pointer rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/30 hover:border-indigo-500/50 p-6 shadow-md transition-all group hover:-translate-y-0.5"
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-swift-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-950/50 group-hover:scale-105 transition-transform shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-swift-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-950/50 group-hover:scale-105 transition-transform shrink-0">
                 <GraduationCap className="w-6 h-6" />
               </div>
               <div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="text-base font-bold text-white tracking-tight">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <h3 className="text-base font-semibold text-white tracking-tight">
                     Student & Exam Admission Suite
                   </h3>
-                  <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full">
+                  <span className="px-2.5 py-0.5 text-[10px] font-medium tracking-wide bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 rounded-full">
                     SSC • UPSC • NEET • JEE • IBPS
                   </span>
                 </div>
-                <p className="text-xs text-slate-300 mt-1">
+                <p className="text-xs text-slate-300/90 mt-1 leading-relaxed">
                   Exact Target KB Resizer (20–50 KB), Paper Signature Cleaner, Photo+Sign Combiner, and Name & Date (DOP) Strip.
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <span className="px-4 py-2 bg-swift-600 group-hover:bg-swift-500 text-white font-semibold rounded-xl text-xs shadow-md transition-all flex items-center gap-1.5">
+              <span className="px-4 py-2 bg-swift-600 group-hover:bg-swift-500 text-white font-medium rounded-xl text-xs shadow-sm transition-all flex items-center gap-1.5">
                 Open Exam Suite →
               </span>
             </div>

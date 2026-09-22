@@ -127,7 +127,7 @@ export const AppHeader: React.FC = () => {
   };
 
   return (
-    <header className="h-12 bg-slate-900 border-b border-slate-800 px-3 flex items-center justify-between text-slate-200 select-none z-30 gap-2">
+    <header className="h-14 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/80 px-4 sm:px-6 flex items-center justify-between text-slate-200 select-none z-30 gap-3 sticky top-0">
       {/* ======================================================== */}
       {/* Left: Home / Back, Brand Logo & Undo/Redo */}
       {/* ======================================================== */}

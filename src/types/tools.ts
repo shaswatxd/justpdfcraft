@@ -3,7 +3,7 @@ import { ToolMode } from '@/stores/toolStore';
 
 export type ToolCategory = 'pdf' | 'image' | 'student' | 'ai';
 
-export type ToolBadge = 'popular' | 'recommended' | 'new';
+export type ToolBadge = 'popular' | 'recommended' | 'new' | 'ai' | 'special';
 
 export type ToolActionType = 
   | { type: 'modal'; modal: ModalType; initialTab?: string }
