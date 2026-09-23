@@ -22,7 +22,7 @@ export const getAIConfig = (): AIConfig => {
     return { provider: 'gemini', geminiApiKey: '', openaiApiKey: '' };
   }
   try {
-    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('swifteditoo_ai_config');
+    const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
   } catch {}
   return { provider: 'gemini', geminiApiKey: '', openaiApiKey: '' };

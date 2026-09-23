@@ -200,4 +200,18 @@ describe('FallbackPDFEngine Core Operations', () => {
     expect(removed).toContain(1); // Second page was blank
     expect(engine.getPageCount(documentId)).toBe(1);
   });
+
+  it('should legitimately encrypt PDF with AES-256 password protection', async () => {
+    const pdfBytes = await createSamplePdf(1);
+    const { documentId } = await engine.openDocument(pdfBytes);
+    await engine.encryptDocument(documentId, 'SecurePass123!');
+    const encryptedBytes = await engine.saveDocument(documentId);
+
+    // Standard PDFDocument.load without ignoreEncryption throws password error on genuine encrypted PDF
+    await expect(PDFDocument.load(encryptedBytes)).rejects.toThrow();
+
+    // Loading with ignoreEncryption works for inspection
+    const loadedEncrypted = await PDFDocument.load(encryptedBytes, { ignoreEncryption: true });
+    expect(loadedEncrypted.getPageCount()).toBe(1);
+  });
 });

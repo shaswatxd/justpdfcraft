@@ -6,8 +6,12 @@ import {
   PDFName,
   PDFDict,
   PDFArray,
+  PDFNumber,
+  PDFRawStream,
+  decodePDFRawStream,
 } from 'pdf-lib';
 import * as pdfjsLib from 'pdfjs-dist';
+import { encryptPDF, EncryptPDFOptions } from '@pdfsmaller/pdf-encrypt';
 import {
   PDFEngine,
   DocumentMetadata,
@@ -59,10 +63,12 @@ interface LoadedDocRecord {
   baseBytes: Uint8Array;
   metadata: DocumentMetadata;
   annotations: Map<string, AnnotationObject>;
+  pendingPassword?: string;
+  pendingEncryptionOptions?: EncryptPDFOptions;
 }
 
 export class FallbackPDFEngine implements PDFEngine {
-  readonly engineName = 'SwiftPDF Native Open-Source Engine (pdf-lib + PDF.js)';
+  readonly engineName = 'JustPDFCraft Native Open-Source Engine (pdf-lib + PDF.js)';
   readonly isCommercial = false;
 
   private activeDocuments: Map<string, LoadedDocRecord> = new Map();
@@ -102,7 +108,7 @@ export class FallbackPDFEngine implements PDFEngine {
     const author = pdfLibDoc.getAuthor() || undefined;
     const subject = pdfLibDoc.getSubject() || undefined;
     const creator = pdfLibDoc.getCreator() || undefined;
-    const producer = pdfLibDoc.getProducer() || 'SwiftPDF Engine';
+    const producer = pdfLibDoc.getProducer() || 'JustPDFCraft Engine';
     const creationDate = pdfLibDoc.getCreationDate() || undefined;
     const modificationDate = pdfLibDoc.getModificationDate() || undefined;
     const pageCount = pdfLibDoc.getPageCount();
@@ -148,7 +154,13 @@ export class FallbackPDFEngine implements PDFEngine {
 
   async saveDocument(documentId: string): Promise<Uint8Array> {
     const doc = this.getDoc(documentId);
-    const bytes = await doc.pdfLibDoc.save({ useObjectStreams: true });
+    let bytes = await doc.pdfLibDoc.save({ useObjectStreams: true });
+    if (doc.pendingPassword) {
+      bytes = await encryptPDF(bytes, doc.pendingPassword, {
+        algorithm: 'AES-256',
+        ...doc.pendingEncryptionOptions,
+      });
+    }
     doc.rawBytes = bytes;
     doc.metadata.fileSizeBytes = bytes.byteLength;
     return bytes;
@@ -983,6 +995,64 @@ export class FallbackPDFEngine implements PDFEngine {
             }
           }
         }
+
+        // True Redaction: Purge underlying text operators from content streams
+        try {
+          const contents = page.node.Contents();
+          const streams = contents instanceof PDFArray ? contents.asArray() : (contents ? [contents] : []);
+          for (const s of streams) {
+            const obj = doc.pdfLibDoc.context.lookup(s);
+            if (!obj) continue;
+            const rawStreamBytes = (obj as any).getContents ? (obj as any).getContents() : (obj as any).contents;
+            if (!rawStreamBytes || rawStreamBytes.length === 0) continue;
+            try {
+              const decodedStream = decodePDFRawStream({ dict: (obj as any).dict, contents: rawStreamBytes } as any);
+              const decodedBytes = decodedStream.decode();
+              let streamText = '';
+              for (let i = 0; i < decodedBytes.length; i++) {
+                streamText += String.fromCharCode(decodedBytes[i]);
+              }
+
+              // Purge BT...ET text blocks whose position coordinates overlap [x, y, w, h]
+              let modified = false;
+              const btRegex = /BT[\s\S]*?ET/g;
+              const updatedText = streamText.replace(btRegex, (btBlock) => {
+                const tmMatch = btBlock.match(/([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+Tm/);
+                const tdMatch = btBlock.match(/([-\d.]+)\s+([-\d.]+)\s+Td/);
+                let tx = NaN;
+                let ty = NaN;
+                if (tmMatch) {
+                  tx = parseFloat(tmMatch[5]);
+                  ty = parseFloat(tmMatch[6]);
+                } else if (tdMatch) {
+                  tx = parseFloat(tdMatch[1]);
+                  ty = parseFloat(tdMatch[2]);
+                }
+                if (!isNaN(tx) && !isNaN(ty)) {
+                  if (tx >= x - 5 && tx <= x + w + 5 && ty >= y - 5 && ty <= y + h + 5) {
+                    modified = true;
+                    return 'BT ET';
+                  }
+                }
+                return btBlock;
+              });
+
+              if (modified) {
+                const newBytes = new Uint8Array(updatedText.length);
+                for (let i = 0; i < updatedText.length; i++) {
+                  newBytes[i] = updatedText.charCodeAt(i) & 0xff;
+                }
+                (obj as any).contents = newBytes;
+                (obj as any).dict.set(PDFName.of('Length'), PDFNumber.of(newBytes.length));
+                (obj as any).dict.delete(PDFName.of('Filter'));
+              }
+            } catch {
+              // Ignore non-standard stream decompression errors
+            }
+          }
+        } catch {
+          // Ignore content stream retrieval errors
+        }
       }
     }
 
@@ -990,17 +1060,28 @@ export class FallbackPDFEngine implements PDFEngine {
   }
 
   async encryptDocument(
-    _documentId: string,
-    _userPassword: string,
-    _ownerPassword?: string
+    documentId: string,
+    userPassword: string,
+    ownerPassword?: string
   ): Promise<void> {
-    // pdf-lib doesn't natively write encrypted xref tables; we mark metadata and can pipe through WebCrypto AES
-    const doc = this.getDoc(_documentId);
+    const doc = this.getDoc(documentId);
+    doc.pendingPassword = userPassword;
+    doc.pendingEncryptionOptions = {
+      algorithm: 'AES-256',
+      ownerPassword: ownerPassword || userPassword,
+      allowPrinting: true,
+      allowCopying: false,
+      allowModifying: false,
+      allowAnnotating: true,
+      allowFillingForms: true,
+    };
     doc.metadata.isEncrypted = true;
   }
 
   async removePassword(documentId: string): Promise<void> {
     const doc = this.getDoc(documentId);
+    doc.pendingPassword = undefined;
+    doc.pendingEncryptionOptions = undefined;
     doc.metadata.isEncrypted = false;
   }
 
@@ -1186,6 +1267,89 @@ export class FallbackPDFEngine implements PDFEngine {
     await this.refreshInternalPdfjs(documentId);
   }
 
+  private async downsampleJpegInBrowser(
+    jpegBytes: Uint8Array,
+    maxDimension: number,
+    quality: number
+  ): Promise<Uint8Array | null> {
+    if (typeof document === 'undefined' && typeof OffscreenCanvas === 'undefined') {
+      return null;
+    }
+    try {
+      const blob = new Blob([jpegBytes as unknown as BlobPart], { type: 'image/jpeg' });
+      let originalWidth = 0;
+      let originalHeight = 0;
+      let source: CanvasImageSource | null = null;
+
+      if (typeof createImageBitmap === 'function') {
+        const bmp = await createImageBitmap(blob);
+        originalWidth = bmp.width;
+        originalHeight = bmp.height;
+        source = bmp;
+      } else if (typeof Image !== 'undefined') {
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.src = url;
+        await new Promise<void>((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = reject;
+        });
+        URL.revokeObjectURL(url);
+        originalWidth = img.naturalWidth || img.width;
+        originalHeight = img.naturalHeight || img.height;
+        source = img;
+      }
+
+      if (!source || originalWidth <= 0 || originalHeight <= 0) return null;
+
+      const maxDim = Math.max(originalWidth, originalHeight);
+      const scale = maxDim > maxDimension ? maxDimension / maxDim : 1.0;
+      const targetW = Math.max(1, Math.round(originalWidth * scale));
+      const targetH = Math.max(1, Math.round(originalHeight * scale));
+
+      if (scale >= 1.0 && jpegBytes.byteLength < 50000) {
+        if ('close' in source && typeof (source as any).close === 'function') {
+          (source as any).close();
+        }
+        return null;
+      }
+
+      let compressedBlob: Blob | null = null;
+      if (typeof OffscreenCanvas !== 'undefined') {
+        const canvas = new OffscreenCanvas(targetW, targetH);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return null;
+        ctx.drawImage(source, 0, 0, targetW, targetH);
+        compressedBlob = await canvas.convertToBlob({ type: 'image/jpeg', quality });
+      } else if (typeof document !== 'undefined') {
+        const canvas = document.createElement('canvas');
+        canvas.width = targetW;
+        canvas.height = targetH;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return null;
+        ctx.drawImage(source, 0, 0, targetW, targetH);
+        compressedBlob = await new Promise<Blob | null>((resolve) =>
+          canvas.toBlob(resolve, 'image/jpeg', quality)
+        );
+      }
+
+      if ('close' in source && typeof (source as any).close === 'function') {
+        (source as any).close();
+      }
+
+      if (compressedBlob) {
+        const buffer = await compressedBlob.arrayBuffer();
+        const resBytes = new Uint8Array(buffer);
+        if (resBytes.byteLength < jpegBytes.byteLength) {
+          return resBytes;
+        }
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
   async compressDocument(
     documentId: string,
     options: CompressOptions,
@@ -1194,7 +1358,7 @@ export class FallbackPDFEngine implements PDFEngine {
     const doc = this.getDoc(documentId);
     const originalBytes = doc.rawBytes.byteLength;
 
-    if (onProgress) onProgress(20);
+    if (onProgress) onProgress(15);
 
     // Strip metadata if requested
     if (options.stripMetadata) {
@@ -1202,11 +1366,56 @@ export class FallbackPDFEngine implements PDFEngine {
       doc.pdfLibDoc.setAuthor('');
       doc.pdfLibDoc.setSubject('');
       doc.pdfLibDoc.setKeywords([]);
-      doc.pdfLibDoc.setProducer('SwiftPDF Compressor');
+      doc.pdfLibDoc.setProducer('JustPDFCraft Compressor');
       doc.pdfLibDoc.setCreator('');
     }
 
-    if (onProgress) onProgress(60);
+    // Downsample embedded raster images for scanned / image-heavy PDFs
+    try {
+      const imagePresets: Record<string, { maxDim: number; quality: number }> = {
+        max_quality: { maxDim: 1920, quality: 0.82 },
+        balanced: { maxDim: 1280, quality: 0.70 },
+        small_file: { maxDim: 960, quality: 0.55 },
+        extreme: { maxDim: 640, quality: 0.40 },
+      };
+      const presetConfig = imagePresets[options.preset] || imagePresets.balanced;
+      const indirectObjects = doc.pdfLibDoc.context.enumerateIndirectObjects();
+      const totalObjs = indirectObjects.length;
+      let processedCount = 0;
+
+      for (const [, obj] of indirectObjects) {
+        processedCount++;
+        if (onProgress && totalObjs > 0 && processedCount % 5 === 0) {
+          onProgress(20 + Math.round((processedCount / totalObjs) * 45));
+        }
+
+        if (obj instanceof PDFRawStream || (obj as any).contents) {
+          const dict = (obj as any).dict || obj;
+          const subtype = dict?.get?.(PDFName.of('Subtype'))?.toString();
+          if (subtype === '/Image') {
+            const filter = dict?.get?.(PDFName.of('Filter'))?.toString() || '';
+            const rawBytes = (obj as any).getContents?.() || (obj as any).contents;
+            if (rawBytes && rawBytes.byteLength > 2048) {
+              if (filter === '/DCTDecode') {
+                const optimized = await this.downsampleJpegInBrowser(
+                  rawBytes,
+                  presetConfig.maxDim,
+                  presetConfig.quality
+                );
+                if (optimized && optimized.byteLength < rawBytes.byteLength) {
+                  (obj as any).contents = optimized;
+                  dict.set(PDFName.of('Length'), PDFNumber.of(optimized.byteLength));
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch {
+      // Continue gracefully if image downsampling is not supported in current environment
+    }
+
+    if (onProgress) onProgress(75);
 
     // Recompress object streams and clean unused references
     const compressedData = await doc.pdfLibDoc.save({
@@ -1772,8 +1981,11 @@ export class FallbackPDFEngine implements PDFEngine {
     });
 
     // Update current doc's encrypted state
+    doc.pendingPassword = undefined;
+    doc.pendingEncryptionOptions = undefined;
     doc.metadata.isEncrypted = false;
     doc.rawBytes = unlockedBytes;
+    doc.pdfLibDoc = unlockedDoc;
 
     await this.refreshInternalPdfjs(documentId);
     return unlockedBytes;

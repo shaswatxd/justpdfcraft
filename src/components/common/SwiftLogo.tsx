@@ -1,10 +1,10 @@
 import React from 'react';
 
-interface SwiftLogoProps {
+export interface LogoProps {
   className?: string;
 }
 
-export const SwiftLogo: React.FC<SwiftLogoProps> = ({ className = 'w-6 h-6' }) => {
+export const JustPDFCraftLogo: React.FC<LogoProps> = ({ className = 'w-6 h-6' }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -49,3 +49,5 @@ export const SwiftLogo: React.FC<SwiftLogoProps> = ({ className = 'w-6 h-6' }) =
     </svg>
   );
 };
+
+export const SwiftLogo = JustPDFCraftLogo;

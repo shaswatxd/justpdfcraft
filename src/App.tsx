@@ -10,38 +10,40 @@ import { PDFViewer } from '@/components/viewer/PDFViewer';
 import { PageOrganizer } from '@/components/organizer/PageOrganizer';
 import { Sidebar } from '@/components/sidebar/Sidebar';
 import { CommandPalette } from '@/components/command-palette/CommandPalette';
-import { CompressDialog } from '@/components/dialogs/CompressDialog';
-import { OCRDialog } from '@/components/dialogs/OCRDialog';
-import { PrintDialog } from '@/components/dialogs/PrintDialog';
-import { ProtectDialog } from '@/components/dialogs/ProtectDialog';
-import { CompareDialog } from '@/components/dialogs/CompareDialog';
-import { MergeDialog } from '@/components/dialogs/MergeDialog';
-import { SplitDialog } from '@/components/dialogs/SplitDialog';
-import { SettingsDialog } from '@/components/dialogs/SettingsDialog';
-import { SignDialog } from '@/components/dialogs/SignDialog';
-import { ConvertDialog } from '@/components/dialogs/ConvertDialog';
-import { WatermarkDialog } from '@/components/dialogs/WatermarkDialog';
-import { ScanDialog } from '@/components/dialogs/ScanDialog';
-import { BatesNumberingDialog } from '@/components/dialogs/BatesNumberingDialog';
-import { SanitizeDialog } from '@/components/dialogs/SanitizeDialog';
-import { BatchDialog } from '@/components/dialogs/BatchDialog';
-import { CropDialog } from '@/components/dialogs/CropDialog';
-import { TableExtractDialog } from '@/components/dialogs/TableExtractDialog';
-import { ExtractImagesDialog } from '@/components/dialogs/ExtractImagesDialog';
-import { PhotoEditorDialog } from '@/components/dialogs/PhotoEditorDialog';
-import { StudentToolsDialog } from '@/components/dialogs/StudentToolsDialog';
-import { StudentCalculatorsDialog } from '@/components/dialogs/StudentCalculatorsDialog';
-import { HandwritingDialog } from '@/components/dialogs/HandwritingDialog';
-import { ImageToolsDialog } from '@/components/dialogs/ImageToolsDialog';
-import { AIToolsDialog } from '@/components/dialogs/AIToolsDialog';
-import { LegalDialog } from '@/components/dialogs/LegalDialog';
-import { PricingDialog } from '@/components/dialogs/PricingDialog';
-import { ShortcutsDialog } from '@/components/dialogs/ShortcutsDialog';
 import { DocumentTabBar } from '@/components/app-shell/DocumentTabBar';
 import { ToastContainer } from '@/components/common/ToastContainer';
 import { TTSPlayerHUD } from '@/components/viewer/TTSPlayerHUD';
 import { useTTSStore } from '@/stores/ttsStore';
 import { ChevronLeft, ChevronRight, Minimize2, Crosshair, Focus, FileText } from 'lucide-react';
+
+// Lazy-loaded dialogs for high-speed bundle loading
+const CompressDialog = React.lazy(() => import('@/components/dialogs/CompressDialog').then(m => ({ default: m.CompressDialog })));
+const OCRDialog = React.lazy(() => import('@/components/dialogs/OCRDialog').then(m => ({ default: m.OCRDialog })));
+const PrintDialog = React.lazy(() => import('@/components/dialogs/PrintDialog').then(m => ({ default: m.PrintDialog })));
+const ProtectDialog = React.lazy(() => import('@/components/dialogs/ProtectDialog').then(m => ({ default: m.ProtectDialog })));
+const CompareDialog = React.lazy(() => import('@/components/dialogs/CompareDialog').then(m => ({ default: m.CompareDialog })));
+const MergeDialog = React.lazy(() => import('@/components/dialogs/MergeDialog').then(m => ({ default: m.MergeDialog })));
+const SplitDialog = React.lazy(() => import('@/components/dialogs/SplitDialog').then(m => ({ default: m.SplitDialog })));
+const SettingsDialog = React.lazy(() => import('@/components/dialogs/SettingsDialog').then(m => ({ default: m.SettingsDialog })));
+const SignDialog = React.lazy(() => import('@/components/dialogs/SignDialog').then(m => ({ default: m.SignDialog })));
+const ConvertDialog = React.lazy(() => import('@/components/dialogs/ConvertDialog').then(m => ({ default: m.ConvertDialog })));
+const WatermarkDialog = React.lazy(() => import('@/components/dialogs/WatermarkDialog').then(m => ({ default: m.WatermarkDialog })));
+const ScanDialog = React.lazy(() => import('@/components/dialogs/ScanDialog').then(m => ({ default: m.ScanDialog })));
+const BatesNumberingDialog = React.lazy(() => import('@/components/dialogs/BatesNumberingDialog').then(m => ({ default: m.BatesNumberingDialog })));
+const SanitizeDialog = React.lazy(() => import('@/components/dialogs/SanitizeDialog').then(m => ({ default: m.SanitizeDialog })));
+const BatchDialog = React.lazy(() => import('@/components/dialogs/BatchDialog').then(m => ({ default: m.BatchDialog })));
+const CropDialog = React.lazy(() => import('@/components/dialogs/CropDialog').then(m => ({ default: m.CropDialog })));
+const TableExtractDialog = React.lazy(() => import('@/components/dialogs/TableExtractDialog').then(m => ({ default: m.TableExtractDialog })));
+const ExtractImagesDialog = React.lazy(() => import('@/components/dialogs/ExtractImagesDialog').then(m => ({ default: m.ExtractImagesDialog })));
+const PhotoEditorDialog = React.lazy(() => import('@/components/dialogs/PhotoEditorDialog').then(m => ({ default: m.PhotoEditorDialog })));
+const StudentToolsDialog = React.lazy(() => import('@/components/dialogs/StudentToolsDialog').then(m => ({ default: m.StudentToolsDialog })));
+const StudentCalculatorsDialog = React.lazy(() => import('@/components/dialogs/StudentCalculatorsDialog').then(m => ({ default: m.StudentCalculatorsDialog })));
+const HandwritingDialog = React.lazy(() => import('@/components/dialogs/HandwritingDialog').then(m => ({ default: m.HandwritingDialog })));
+const ImageToolsDialog = React.lazy(() => import('@/components/dialogs/ImageToolsDialog').then(m => ({ default: m.ImageToolsDialog })));
+const AIToolsDialog = React.lazy(() => import('@/components/dialogs/AIToolsDialog').then(m => ({ default: m.AIToolsDialog })));
+const LegalDialog = React.lazy(() => import('@/components/dialogs/LegalDialog').then(m => ({ default: m.LegalDialog })));
+const PricingDialog = React.lazy(() => import('@/components/dialogs/PricingDialog').then(m => ({ default: m.PricingDialog })));
+const ShortcutsDialog = React.lazy(() => import('@/components/dialogs/ShortcutsDialog').then(m => ({ default: m.ShortcutsDialog })));
 
 export const App: React.FC = () => {
   const {
@@ -60,6 +62,7 @@ export const App: React.FC = () => {
   } = useDocumentStore();
 
   const {
+    activeModal,
     setActiveModal,
     setActivePhotoUrl,
     setSidebarTab,
@@ -402,34 +405,36 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* Modals & Dialogs */}
-      <CompressDialog />
-      <OCRDialog />
-      <PrintDialog />
-      <ProtectDialog />
-      <CompareDialog />
-      <MergeDialog />
-      <SplitDialog />
-      <SignDialog />
-      <ConvertDialog />
-      <WatermarkDialog />
-      <ScanDialog />
-      <BatesNumberingDialog />
-      <SanitizeDialog />
-      <BatchDialog />
-      <CropDialog />
-      <TableExtractDialog />
-      <ExtractImagesDialog />
-      <PhotoEditorDialog />
-      <StudentToolsDialog />
-      <StudentCalculatorsDialog />
-      <HandwritingDialog />
-      <ImageToolsDialog />
-      <AIToolsDialog />
-      <LegalDialog />
-      <PricingDialog />
-      <SettingsDialog />
-      <ShortcutsDialog />
+      {/* Modals & Dialogs (Lazy loaded on demand) */}
+      <React.Suspense fallback={null}>
+        {activeModal === 'compress' && <CompressDialog />}
+        {activeModal === 'ocr' && <OCRDialog />}
+        {activeModal === 'print' && <PrintDialog />}
+        {activeModal === 'protect' && <ProtectDialog />}
+        {activeModal === 'compare' && <CompareDialog />}
+        {activeModal === 'merge' && <MergeDialog />}
+        {activeModal === 'split' && <SplitDialog />}
+        {activeModal === 'sign' && <SignDialog />}
+        {activeModal === 'convert' && <ConvertDialog />}
+        {activeModal === 'watermark' && <WatermarkDialog />}
+        {activeModal === 'scan' && <ScanDialog />}
+        {activeModal === 'bates' && <BatesNumberingDialog />}
+        {activeModal === 'sanitize' && <SanitizeDialog />}
+        {activeModal === 'batch' && <BatchDialog />}
+        {activeModal === 'crop' && <CropDialog />}
+        {activeModal === 'extract-table' && <TableExtractDialog />}
+        {activeModal === 'extract-images' && <ExtractImagesDialog />}
+        {activeModal === 'photo-editor' && <PhotoEditorDialog />}
+        {activeModal === 'student-resizer' && <StudentToolsDialog />}
+        {activeModal === 'student-calculators' && <StudentCalculatorsDialog />}
+        {activeModal === 'handwriting' && <HandwritingDialog />}
+        {activeModal === 'image-tools' && <ImageToolsDialog />}
+        {activeModal === 'ai-tools' && <AIToolsDialog />}
+        {activeModal === 'legal' && <LegalDialog />}
+        {activeModal === 'pricing' && <PricingDialog />}
+        {activeModal === 'settings' && <SettingsDialog />}
+        {activeModal === 'shortcuts' && <ShortcutsDialog />}
+      </React.Suspense>
 
       {/* Overlays */}
       <CommandPalette />

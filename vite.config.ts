@@ -25,6 +25,17 @@ export default defineConfig({
     minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
     // Produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
+    chunkSizeWarningLimit: 1200,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'pdf-engine': ['pdf-lib', '@pdfsmaller/pdf-encrypt'],
+          'pdf-viewer': ['pdfjs-dist'],
+          'icons': ['lucide-react'],
+          'vendor': ['react', 'react-dom', 'zustand', 'clsx', 'tailwind-merge'],
+        },
+      },
+    },
   },
   optimizeDeps: {
     esbuildOptions: {

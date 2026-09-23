@@ -23,6 +23,7 @@
   "author": "JustPDFCraft Team",
   "license": "MIT",
   "dependencies": {
+    "@pdfsmaller/pdf-encrypt": "^1.2.0",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "fuse.js": "^7.5.0",
