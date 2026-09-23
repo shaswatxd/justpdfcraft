@@ -27,7 +27,15 @@ import {
 type StudentTab = 'resizer' | 'combiner' | 'clean-sign' | 'dop-banner';
 
 export const StudentToolsDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast, activeStudentTab, setActiveStudentTab } = useUIStore();
+  const {
+    activeModal,
+    setActiveModal,
+    addToast,
+    activeStudentTab,
+    setActiveStudentTab,
+    activePhotoUrl,
+    setActivePhotoUrl,
+  } = useUIStore();
   const isOpen = activeModal === 'student-resizer';
 
   const [activeTab, setActiveTab] = useState<StudentTab>('resizer');
@@ -37,6 +45,24 @@ export const StudentToolsDialog: React.FC = () => {
       setActiveTab(activeStudentTab as StudentTab);
     }
   }, [activeStudentTab]);
+
+  useEffect(() => {
+    if (activePhotoUrl && isOpen) {
+      const img = new Image();
+      img.onload = () => {
+        setResizerImage(img);
+        setCombinerPhoto(img);
+        setDopPhoto(img);
+        URL.revokeObjectURL(activePhotoUrl);
+        setActivePhotoUrl(null);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(activePhotoUrl);
+        setActivePhotoUrl(null);
+      };
+      img.src = activePhotoUrl;
+    }
+  }, [activePhotoUrl, isOpen, setActivePhotoUrl]);
 
   // ==================== TAB 1: RESIZER & COMPRESSOR ====================
   const [resizerImage, setResizerImage] = useState<HTMLImageElement | null>(null);
@@ -105,7 +131,11 @@ export const StudentToolsDialog: React.FC = () => {
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.onload = () => {
+      URL.revokeObjectURL(url);
       callback(img);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
     };
     img.src = url;
   };

@@ -12,6 +12,7 @@ import { Sidebar } from '@/components/sidebar/Sidebar';
 import { CommandPalette } from '@/components/command-palette/CommandPalette';
 import { DocumentTabBar } from '@/components/app-shell/DocumentTabBar';
 import { ToastContainer } from '@/components/common/ToastContainer';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { TTSPlayerHUD } from '@/components/viewer/TTSPlayerHUD';
 import { useTTSStore } from '@/stores/ttsStore';
 import { ChevronLeft, ChevronRight, Minimize2, Crosshair, Focus, FileText } from 'lucide-react';
@@ -405,36 +406,38 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* Modals & Dialogs (Lazy loaded on demand) */}
-      <React.Suspense fallback={null}>
-        {activeModal === 'compress' && <CompressDialog />}
-        {activeModal === 'ocr' && <OCRDialog />}
-        {activeModal === 'print' && <PrintDialog />}
-        {activeModal === 'protect' && <ProtectDialog />}
-        {activeModal === 'compare' && <CompareDialog />}
-        {activeModal === 'merge' && <MergeDialog />}
-        {activeModal === 'split' && <SplitDialog />}
-        {activeModal === 'sign' && <SignDialog />}
-        {activeModal === 'convert' && <ConvertDialog />}
-        {activeModal === 'watermark' && <WatermarkDialog />}
-        {activeModal === 'scan' && <ScanDialog />}
-        {activeModal === 'bates' && <BatesNumberingDialog />}
-        {activeModal === 'sanitize' && <SanitizeDialog />}
-        {activeModal === 'batch' && <BatchDialog />}
-        {activeModal === 'crop' && <CropDialog />}
-        {activeModal === 'extract-table' && <TableExtractDialog />}
-        {activeModal === 'extract-images' && <ExtractImagesDialog />}
-        {activeModal === 'photo-editor' && <PhotoEditorDialog />}
-        {activeModal === 'student-resizer' && <StudentToolsDialog />}
-        {activeModal === 'student-calculators' && <StudentCalculatorsDialog />}
-        {activeModal === 'handwriting' && <HandwritingDialog />}
-        {activeModal === 'image-tools' && <ImageToolsDialog />}
-        {activeModal === 'ai-tools' && <AIToolsDialog />}
-        {activeModal === 'legal' && <LegalDialog />}
-        {activeModal === 'pricing' && <PricingDialog />}
-        {activeModal === 'settings' && <SettingsDialog />}
-        {activeModal === 'shortcuts' && <ShortcutsDialog />}
-      </React.Suspense>
+      {/* Modals & Dialogs (Lazy loaded on demand with ErrorBoundary protection) */}
+      <ErrorBoundary onReset={() => setActiveModal(null)}>
+        <React.Suspense fallback={null}>
+          {activeModal === 'compress' && <CompressDialog />}
+          {activeModal === 'ocr' && <OCRDialog />}
+          {activeModal === 'print' && <PrintDialog />}
+          {activeModal === 'protect' && <ProtectDialog />}
+          {activeModal === 'compare' && <CompareDialog />}
+          {activeModal === 'merge' && <MergeDialog />}
+          {activeModal === 'split' && <SplitDialog />}
+          {activeModal === 'sign' && <SignDialog />}
+          {activeModal === 'convert' && <ConvertDialog />}
+          {activeModal === 'watermark' && <WatermarkDialog />}
+          {activeModal === 'scan' && <ScanDialog />}
+          {activeModal === 'bates' && <BatesNumberingDialog />}
+          {activeModal === 'sanitize' && <SanitizeDialog />}
+          {activeModal === 'batch' && <BatchDialog />}
+          {activeModal === 'crop' && <CropDialog />}
+          {activeModal === 'extract-table' && <TableExtractDialog />}
+          {activeModal === 'extract-images' && <ExtractImagesDialog />}
+          {activeModal === 'photo-editor' && <PhotoEditorDialog />}
+          {activeModal === 'student-resizer' && <StudentToolsDialog />}
+          {activeModal === 'student-calculators' && <StudentCalculatorsDialog />}
+          {activeModal === 'handwriting' && <HandwritingDialog />}
+          {activeModal === 'image-tools' && <ImageToolsDialog />}
+          {activeModal === 'ai-tools' && <AIToolsDialog />}
+          {activeModal === 'legal' && <LegalDialog />}
+          {activeModal === 'pricing' && <PricingDialog />}
+          {activeModal === 'settings' && <SettingsDialog />}
+          {activeModal === 'shortcuts' && <ShortcutsDialog />}
+        </React.Suspense>
+      </ErrorBoundary>
 
       {/* Overlays */}
       <CommandPalette />

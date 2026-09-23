@@ -115,7 +115,7 @@ interface DocumentState {
   errorMessage: string | null;
 
   // Actions
-  loadDocument: (bytes: Uint8Array, fileName: string, filePath?: string) => Promise<void>;
+  loadDocument: (bytes: Uint8Array, fileName: string, filePath?: string, password?: string) => Promise<void>;
   closeCurrentDocument: () => Promise<void>;
   switchTab: (tabId: string) => void;
   closeTab: (tabId: string) => Promise<void>;
@@ -195,11 +195,11 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   isLoading: false,
   errorMessage: null,
 
-  loadDocument: async (bytes: Uint8Array, fileName: string, filePath?: string) => {
+  loadDocument: async (bytes: Uint8Array, fileName: string, filePath?: string, password?: string) => {
     set({ isLoading: true, errorMessage: null });
     try {
       const engine = getPDFEngine();
-      const { documentId, metadata } = await engine.openDocument(bytes);
+      const { documentId, metadata } = await engine.openDocument(bytes, password);
       const pageCount = engine.getPageCount(documentId);
 
       const dimensions: PageDimensions[] = [];

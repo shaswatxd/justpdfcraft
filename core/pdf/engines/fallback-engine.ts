@@ -160,6 +160,8 @@ export class FallbackPDFEngine implements PDFEngine {
         algorithm: 'AES-256',
         ...doc.pendingEncryptionOptions,
       });
+      doc.pendingPassword = undefined;
+      doc.pendingEncryptionOptions = undefined;
     }
     doc.rawBytes = bytes;
     doc.metadata.fileSizeBytes = bytes.byteLength;
@@ -984,13 +986,30 @@ export class FallbackPDFEngine implements PDFEngine {
         const pageDict = page.node;
         const annots = pageDict.lookupMaybe(PDFName.of('Annots'), PDFArray);
         if (annots) {
-          // Remove any annotation overlapping this rect
+          // Remove only annotations actually overlapping this redaction rect
           for (let i = annots.size() - 1; i >= 0; i--) {
             const annotDict = annots.lookupMaybe(i, PDFDict);
             if (annotDict) {
               const rectArr = annotDict.lookupMaybe(PDFName.of('Rect'), PDFArray);
               if (rectArr && rectArr.size() === 4) {
-                annots.remove(i);
+                const getCoord = (idx: number): number => {
+                  const item = rectArr.get(idx);
+                  return typeof (item as any)?.asNumber === 'function' ? (item as any).asNumber() : Number(item) || 0;
+                };
+                const ax1 = getCoord(0);
+                const ay1 = getCoord(1);
+                const ax2 = getCoord(2);
+                const ay2 = getCoord(3);
+
+                const aMinX = Math.min(ax1, ax2);
+                const aMaxX = Math.max(ax1, ax2);
+                const aMinY = Math.min(ay1, ay2);
+                const aMaxY = Math.max(ay1, ay2);
+
+                const overlaps = !(aMaxX < x || aMinX > x + w || aMaxY < y || aMinY > y + h);
+                if (overlaps) {
+                  annots.remove(i);
+                }
               }
             }
           }
@@ -1062,16 +1081,17 @@ export class FallbackPDFEngine implements PDFEngine {
   async encryptDocument(
     documentId: string,
     userPassword: string,
-    ownerPassword?: string
+    ownerPassword?: string,
+    permissions?: { allowPrinting?: boolean; allowModifying?: boolean; allowCopying?: boolean }
   ): Promise<void> {
     const doc = this.getDoc(documentId);
     doc.pendingPassword = userPassword;
     doc.pendingEncryptionOptions = {
       algorithm: 'AES-256',
       ownerPassword: ownerPassword || userPassword,
-      allowPrinting: true,
-      allowCopying: false,
-      allowModifying: false,
+      allowPrinting: permissions?.allowPrinting !== undefined ? permissions.allowPrinting : true,
+      allowCopying: permissions?.allowCopying !== undefined ? permissions.allowCopying : false,
+      allowModifying: permissions?.allowModifying !== undefined ? permissions.allowModifying : false,
       allowAnnotating: true,
       allowFillingForms: true,
     };
@@ -1271,15 +1291,15 @@ export class FallbackPDFEngine implements PDFEngine {
     jpegBytes: Uint8Array,
     maxDimension: number,
     quality: number
-  ): Promise<Uint8Array | null> {
+  ): Promise<{ bytes: Uint8Array; width: number; height: number } | null> {
     if (typeof document === 'undefined' && typeof OffscreenCanvas === 'undefined') {
       return null;
     }
+    let source: CanvasImageSource | null = null;
     try {
       const blob = new Blob([jpegBytes as unknown as BlobPart], { type: 'image/jpeg' });
       let originalWidth = 0;
       let originalHeight = 0;
-      let source: CanvasImageSource | null = null;
 
       if (typeof createImageBitmap === 'function') {
         const bmp = await createImageBitmap(blob);
@@ -1308,9 +1328,6 @@ export class FallbackPDFEngine implements PDFEngine {
       const targetH = Math.max(1, Math.round(originalHeight * scale));
 
       if (scale >= 1.0 && jpegBytes.byteLength < 50000) {
-        if ('close' in source && typeof (source as any).close === 'function') {
-          (source as any).close();
-        }
         return null;
       }
 
@@ -1333,20 +1350,20 @@ export class FallbackPDFEngine implements PDFEngine {
         );
       }
 
-      if ('close' in source && typeof (source as any).close === 'function') {
-        (source as any).close();
-      }
-
       if (compressedBlob) {
         const buffer = await compressedBlob.arrayBuffer();
         const resBytes = new Uint8Array(buffer);
         if (resBytes.byteLength < jpegBytes.byteLength) {
-          return resBytes;
+          return { bytes: resBytes, width: targetW, height: targetH };
         }
       }
       return null;
     } catch {
       return null;
+    } finally {
+      if (source && 'close' in source && typeof (source as any).close === 'function') {
+        (source as any).close();
+      }
     }
   }
 
@@ -1402,9 +1419,11 @@ export class FallbackPDFEngine implements PDFEngine {
                   presetConfig.maxDim,
                   presetConfig.quality
                 );
-                if (optimized && optimized.byteLength < rawBytes.byteLength) {
-                  (obj as any).contents = optimized;
-                  dict.set(PDFName.of('Length'), PDFNumber.of(optimized.byteLength));
+                if (optimized && optimized.bytes.byteLength < rawBytes.byteLength) {
+                  (obj as any).contents = optimized.bytes;
+                  dict.set(PDFName.of('Length'), PDFNumber.of(optimized.bytes.byteLength));
+                  dict.set(PDFName.of('Width'), PDFNumber.of(optimized.width));
+                  dict.set(PDFName.of('Height'), PDFNumber.of(optimized.height));
                 }
               }
             }

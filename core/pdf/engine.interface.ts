@@ -208,7 +208,12 @@ export interface PDFEngine {
   applyRedactions(documentId: string, redactions: RedactionArea[]): Promise<void>;
 
   // Security & Encryption
-  encryptDocument(documentId: string, userPassword: string, ownerPassword?: string): Promise<void>;
+  encryptDocument(
+    documentId: string,
+    userPassword: string,
+    ownerPassword?: string,
+    permissions?: { allowPrinting?: boolean; allowModifying?: boolean; allowCopying?: boolean }
+  ): Promise<void>;
   removePassword(documentId: string): Promise<void>;
 
   // Form Handling

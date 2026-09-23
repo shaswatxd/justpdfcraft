@@ -56,11 +56,14 @@ export const ProtectDialog: React.FC = () => {
       setIsProcessing(true);
       await pushHistory('Protect document with password');
       const engine = getPDFEngine();
-      await engine.encryptDocument(documentId, userPassword);
+      await engine.encryptDocument(documentId, userPassword, undefined, {
+        allowPrinting: !restrictPrinting,
+        allowModifying: !restrictEditing,
+      });
       const savedBytes = await engine.saveDocument(documentId);
 
       if (fileName) {
-        await loadDocument(savedBytes, fileName, filePath || undefined);
+        await loadDocument(savedBytes, fileName, filePath || undefined, userPassword);
       }
 
       setActiveModal(null);
