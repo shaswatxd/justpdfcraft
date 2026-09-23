@@ -10,17 +10,40 @@ interface FavoritesState {
 
 const STORAGE_KEY = 'justpdfcraft_favorites';
 
+const OLD_DEFAULT_SEEDS = [
+  'handwriting-generator',
+  'compress-pdf',
+  'merge-pdf',
+  'target-kb-resizer',
+  'cgpa-calculator',
+  'attendance-calculator',
+];
+
 const getInitialFavorites = (): string[] => {
   if (typeof window === 'undefined') return [];
   try {
-    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('swifteditoo_favorites');
+    // Clean up legacy storage key
+    localStorage.removeItem('swifteditoo_favorites');
+
+    const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed)) {
+        // If stored favorites match old hardcoded defaults, reset to empty
+        const isOldDefaultList =
+          parsed.length === OLD_DEFAULT_SEEDS.length &&
+          parsed.every((id) => OLD_DEFAULT_SEEDS.includes(id));
+
+        if (isOldDefaultList) {
+          localStorage.removeItem(STORAGE_KEY);
+          return [];
+        }
+        return parsed;
+      }
     }
   } catch {}
-  // Default popular favorites for fresh users
-  return ['handwriting-generator', 'compress-pdf', 'merge-pdf', 'target-kb-resizer', 'cgpa-calculator', 'attendance-calculator'];
+  // Default to empty array: no tools are pre-favorited
+  return [];
 };
 
 export const useFavoritesStore = create<FavoritesState>((set, get) => ({

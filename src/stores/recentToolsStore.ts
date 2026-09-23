@@ -9,16 +9,34 @@ interface RecentToolsState {
 const STORAGE_KEY = 'justpdfcraft_recent_tools';
 const MAX_RECENTS = 8;
 
+const OLD_RECENTS_SEEDS = [
+  'handwriting-generator',
+  'compress-pdf',
+  'target-kb-resizer',
+  'cgpa-calculator',
+  'merge-pdf',
+];
+
 const getInitialRecents = (): string[] => {
   if (typeof window === 'undefined') return [];
   try {
-    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('swifteditoo_recent_tools');
+    localStorage.removeItem('swifteditoo_recent_tools');
+    const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed)) {
+        const isOldSeed =
+          parsed.length === OLD_RECENTS_SEEDS.length &&
+          parsed.every((id) => OLD_RECENTS_SEEDS.includes(id));
+        if (isOldSeed) {
+          localStorage.removeItem(STORAGE_KEY);
+          return [];
+        }
+        return parsed;
+      }
     }
   } catch {}
-  return ['handwriting-generator', 'compress-pdf', 'target-kb-resizer', 'cgpa-calculator', 'merge-pdf'];
+  return [];
 };
 
 export const useRecentToolsStore = create<RecentToolsState>((set) => ({
