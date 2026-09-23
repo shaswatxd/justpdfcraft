@@ -18,7 +18,6 @@ import {
   Sun,
   AlignJustify,
   FileText,
-  Sparkles,
   GraduationCap,
   Sliders,
   Menu,
@@ -338,13 +337,6 @@ export const AppHeader: React.FC = () => {
             <GraduationCap className="w-3.5 h-3.5 text-amber-400" />
             Student Tools
           </button>
-          <button
-            onClick={() => setActiveModal('ai-tools')}
-            className="px-2.5 py-1.5 rounded-lg text-indigo-400 hover:text-indigo-300 hover:bg-slate-800 transition-colors flex items-center gap-1"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            AI Suite
-          </button>
         </nav>
       )}
 
@@ -473,18 +465,6 @@ export const AppHeader: React.FC = () => {
           <Settings className="w-4 h-4" />
         </button>
 
-        {/* Pricing Plan Trigger (when on Home) */}
-        {!documentId && (
-          <button
-            onClick={() => setActiveModal('pricing')}
-            className="hidden sm:flex items-center gap-1 px-2.5 py-1 bg-swift-500/10 hover:bg-swift-500/20 text-swift-400 border border-swift-500/30 rounded-lg text-xs font-semibold transition-colors"
-            title="JustPDFCraft Plans"
-          >
-            <Sparkles className="w-3 h-3" />
-            <span>Pricing</span>
-          </button>
-        )}
-
         {/* Mobile Navigation Menu Toggle */}
         {!documentId && (
           <button
@@ -529,25 +509,6 @@ export const AppHeader: React.FC = () => {
           >
             <GraduationCap className="w-3.5 h-3.5" />
             Student Calculators (CGPA, Attendance, Age)
-          </button>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setActiveModal('ai-tools');
-            }}
-            className="w-full py-2 px-3 text-left rounded-lg text-xs font-semibold text-indigo-400 hover:bg-slate-800 flex items-center gap-2"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            AI Study Suite (Ask PDF, Summarizer, Notes)
-          </button>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setActiveModal('pricing');
-            }}
-            className="w-full py-2 px-3 text-left rounded-lg text-xs font-semibold text-swift-400 hover:bg-slate-800"
-          >
-            Plans & Pricing
           </button>
         </div>
       )}

@@ -5,7 +5,6 @@ import {
   FileText,
   Image as ImageIcon,
   GraduationCap,
-  Sparkles,
   LayoutGrid,
   Heart,
   Clock,
@@ -61,7 +60,6 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
             { id: 'pdf' as const, label: 'PDF Tools', icon: FileText },
             { id: 'image' as const, label: 'Image Tools', icon: ImageIcon },
             { id: 'student' as const, label: 'Student Tools', icon: GraduationCap },
-            { id: 'ai' as const, label: 'AI Tools', icon: Sparkles },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeCategory === tab.id && !showOnlyFavorites;
@@ -103,7 +101,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search all 45+ tools... (e.g. handwriting, compress)"
+            placeholder="Search all 40+ tools... (e.g. handwriting, compress)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-slate-950/70 border border-slate-800 hover:border-slate-700 focus:border-swift-500 rounded-xl pl-9 pr-8 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-swift-500 transition-all font-sans"

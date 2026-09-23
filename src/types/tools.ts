@@ -1,9 +1,9 @@
 import { ModalType } from '@/stores/uiStore';
 import { ToolMode } from '@/stores/toolStore';
 
-export type ToolCategory = 'pdf' | 'image' | 'student' | 'ai';
+export type ToolCategory = 'pdf' | 'image' | 'student';
 
-export type ToolBadge = 'popular' | 'recommended' | 'new' | 'ai' | 'special';
+export type ToolBadge = 'popular' | 'recommended' | 'new' | 'special';
 
 export type ToolActionType = 
   | { type: 'modal'; modal: ModalType; initialTab?: string }

@@ -174,7 +174,7 @@ interface ToolCardProps {
 export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }) => {
   const { isFavorite, toggleFavorite } = useFavoritesStore();
   const { trackTool } = useRecentToolsStore();
-  const { setActiveModal, setActiveStudentTab, setActiveAITab, setActiveImageTab } = useUIStore();
+  const { setActiveModal, setActiveStudentTab, setActiveImageTab } = useUIStore();
   const { setViewMode } = useDocumentStore();
   const { setTool } = useToolStore();
 
@@ -199,8 +199,6 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
     if (act.type === 'modal') {
       if ((act.modal === 'student-calculators' || act.modal === 'student-resizer') && act.initialTab) {
         setActiveStudentTab(act.initialTab);
-      } else if (act.modal === 'ai-tools' && act.initialTab) {
-        setActiveAITab(act.initialTab);
       } else if (act.modal === 'image-tools' && act.initialTab) {
         setActiveImageTab(act.initialTab);
       }
@@ -249,8 +247,6 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
               className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${
                 tool.badge === 'new'
                   ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25'
-                  : tool.badge === 'ai'
-                  ? 'bg-purple-500/10 text-purple-300 border border-purple-500/25'
                   : 'bg-amber-500/10 text-amber-300 border border-amber-500/25'
               }`}
             >

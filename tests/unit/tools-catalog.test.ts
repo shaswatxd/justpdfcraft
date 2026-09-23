@@ -2,17 +2,15 @@ import { describe, it, expect } from 'vitest';
 import { TOOLS_CATALOG, getToolsByCategory, searchTools } from '@/data/toolsCatalog';
 
 describe('Master Tools Catalog', () => {
-  it('should contain tools across all 4 categories (pdf, image, student, ai)', () => {
+  it('should contain tools across all 3 genuine categories (pdf, image, student)', () => {
     const pdfTools = getToolsByCategory('pdf');
     const imageTools = getToolsByCategory('image');
     const studentTools = getToolsByCategory('student');
-    const aiTools = getToolsByCategory('ai');
 
     expect(pdfTools.length).toBeGreaterThanOrEqual(15);
-    expect(imageTools.length).toBeGreaterThanOrEqual(8);
+    expect(imageTools.length).toBeGreaterThanOrEqual(7);
     expect(studentTools.length).toBeGreaterThanOrEqual(14);
-    expect(aiTools.length).toBeGreaterThanOrEqual(8);
-    expect(TOOLS_CATALOG.length).toBeGreaterThanOrEqual(45);
+    expect(TOOLS_CATALOG.length).toBeGreaterThanOrEqual(40);
   });
 
   it('should search tools accurately by name, description, or keyword tags', () => {

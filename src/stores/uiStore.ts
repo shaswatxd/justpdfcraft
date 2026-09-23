@@ -30,9 +30,7 @@ export type ModalType =
   | 'student-resizer'
   | 'student-calculators'
   | 'image-tools'
-  | 'ai-tools'
   | 'handwriting'
-  | 'pricing'
   | 'legal'
   | null;
 
@@ -66,8 +64,6 @@ interface UIState {
   setActiveStudentTab: (tab: string | null) => void;
   activeLegalTab: string | null;
   setActiveLegalTab: (tab: string | null) => void;
-  activeAITab: string | null;
-  setActiveAITab: (tab: string | null) => void;
   activeImageTab: string | null;
   setActiveImageTab: (tab: string | null) => void;
 
@@ -146,8 +142,6 @@ export const useUIStore = create<UIState>((set) => ({
   setActiveStudentTab: (activeStudentTab) => set({ activeStudentTab }),
   activeLegalTab: null,
   setActiveLegalTab: (activeLegalTab) => set({ activeLegalTab }),
-  activeAITab: null,
-  setActiveAITab: (activeAITab) => set({ activeAITab }),
   activeImageTab: null,
   setActiveImageTab: (activeImageTab) => set({ activeImageTab }),
 

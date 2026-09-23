@@ -3,7 +3,6 @@ import {
   FileText,
   Image as ImageIcon,
   GraduationCap,
-  Sparkles,
   Zap,
   ShieldCheck,
   CheckCircle2,
@@ -93,7 +92,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       </div>
 
       {/* Category Visual Cards */}
-      <div className="mt-10 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+      <div className="mt-10 w-full grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
         {[
           {
             category: 'pdf' as const,
@@ -124,16 +123,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             bg: 'from-amber-500/10 via-amber-500/5 to-transparent',
             border: 'border-amber-500/20 hover:border-amber-500/40',
             iconBg: 'bg-amber-500/10 border-amber-500/25',
-          },
-          {
-            category: 'ai' as const,
-            title: 'AI Study Suite',
-            desc: 'Ask PDF, Summarizer, Formula Sheets, MCQs & Flashcards',
-            icon: Sparkles,
-            color: 'text-indigo-400',
-            bg: 'from-indigo-500/10 via-indigo-500/5 to-transparent',
-            border: 'border-indigo-500/20 hover:border-indigo-500/40',
-            iconBg: 'bg-indigo-500/10 border-indigo-500/25',
           },
         ].map((item) => {
           const Icon = item.icon;

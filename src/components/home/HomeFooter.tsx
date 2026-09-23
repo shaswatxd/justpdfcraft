@@ -2,7 +2,7 @@ import React from 'react';
 import { SwiftLogo } from '@/components/common/SwiftLogo';
 import { useUIStore } from '@/stores/uiStore';
 import { ToolCategory } from '@/types/tools';
-import { ShieldCheck, Heart, Sparkles } from 'lucide-react';
+import { ShieldCheck, Heart } from 'lucide-react';
 
 interface HomeFooterProps {
   onSelectCategory: (category: ToolCategory | 'all') => void;
@@ -208,15 +208,6 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
             <li>
               <button onClick={() => openLegal('contact')} className="hover:text-swift-400 transition-colors">
                 Contact Us
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveModal('pricing')}
-                className="text-swift-400 hover:underline font-semibold flex items-center gap-1 mt-1"
-              >
-                <Sparkles className="w-3 h-3" />
-                Pricing / Pro Plans
               </button>
             </li>
           </ul>

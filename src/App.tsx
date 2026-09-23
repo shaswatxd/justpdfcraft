@@ -41,9 +41,7 @@ const StudentToolsDialog = React.lazy(() => import('@/components/dialogs/Student
 const StudentCalculatorsDialog = React.lazy(() => import('@/components/dialogs/StudentCalculatorsDialog').then(m => ({ default: m.StudentCalculatorsDialog })));
 const HandwritingDialog = React.lazy(() => import('@/components/dialogs/HandwritingDialog').then(m => ({ default: m.HandwritingDialog })));
 const ImageToolsDialog = React.lazy(() => import('@/components/dialogs/ImageToolsDialog').then(m => ({ default: m.ImageToolsDialog })));
-const AIToolsDialog = React.lazy(() => import('@/components/dialogs/AIToolsDialog').then(m => ({ default: m.AIToolsDialog })));
 const LegalDialog = React.lazy(() => import('@/components/dialogs/LegalDialog').then(m => ({ default: m.LegalDialog })));
-const PricingDialog = React.lazy(() => import('@/components/dialogs/PricingDialog').then(m => ({ default: m.PricingDialog })));
 const ShortcutsDialog = React.lazy(() => import('@/components/dialogs/ShortcutsDialog').then(m => ({ default: m.ShortcutsDialog })));
 
 export const App: React.FC = () => {
@@ -431,9 +429,7 @@ export const App: React.FC = () => {
           {activeModal === 'student-calculators' && <StudentCalculatorsDialog />}
           {activeModal === 'handwriting' && <HandwritingDialog />}
           {activeModal === 'image-tools' && <ImageToolsDialog />}
-          {activeModal === 'ai-tools' && <AIToolsDialog />}
           {activeModal === 'legal' && <LegalDialog />}
-          {activeModal === 'pricing' && <PricingDialog />}
           {activeModal === 'settings' && <SettingsDialog />}
           {activeModal === 'shortcuts' && <ShortcutsDialog />}
         </React.Suspense>
