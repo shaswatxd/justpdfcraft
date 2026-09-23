@@ -1,4 +1,4 @@
-const CACHE_NAME = 'justpdfcraft-v1';
+const CACHE_NAME = 'justpdfcraft-v2';
 
 const STATIC_ASSETS = [
   '/',
@@ -45,7 +45,29 @@ self.addEventListener('fetch', (event) => {
   // Skip non-http(s) schemes or cross-origin chrome-extension / analytics
   if (!url.protocol.startsWith('http')) return;
 
-  // Stale-while-revalidate for local assets and CDN fonts
+  // 1. Navigation requests (HTML documents): NETWORK FIRST
+  // Always fetch the freshest index.html when online so new chunk hashes load after deployments.
+  // Fall back to cached index.html only when fully offline.
+  if (event.request.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('.html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match('/index.html') || caches.match('/');
+        })
+    );
+    return;
+  }
+
+  // 2. Hashed static assets & fonts: Stale-While-Revalidate
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request)
@@ -63,10 +85,6 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(() => {
-          // If offline and request is HTML document navigation, fallback to root cached index
-          if (event.request.mode === 'navigate') {
-            return caches.match('/index.html') || caches.match('/');
-          }
           return cachedResponse;
         });
 
