@@ -39,6 +39,9 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
+  // NEVER intercept or cache localhost development server
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') return;
+
   // Skip non-http(s) schemes or cross-origin chrome-extension / analytics
   if (!url.protocol.startsWith('http')) return;
 

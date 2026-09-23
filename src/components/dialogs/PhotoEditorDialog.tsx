@@ -81,15 +81,26 @@ export const PhotoEditorDialog: React.FC = () => {
   // Load image when activePhotoUrl changes
   useEffect(() => {
     if (activePhotoUrl) {
+      const urlToClean = activePhotoUrl;
       const img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = () => {
         setSourceImage(img);
         resetAdjustments();
+        if (urlToClean.startsWith('blob:')) {
+          URL.revokeObjectURL(urlToClean);
+        }
+        setActivePhotoUrl(null);
       };
-      img.src = activePhotoUrl;
+      img.onerror = () => {
+        if (urlToClean.startsWith('blob:')) {
+          URL.revokeObjectURL(urlToClean);
+        }
+        setActivePhotoUrl(null);
+      };
+      img.src = urlToClean;
     }
-  }, [activePhotoUrl]);
+  }, [activePhotoUrl, setActivePhotoUrl]);
 
   useEffect(() => {
     if (currentPage) {

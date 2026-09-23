@@ -127,7 +127,9 @@ export async function extractImagesFromDocument(
     for (let p = 0; p < pageCount; p++) {
       try {
         const renderRes = await engine.renderPage(documentId, p, 2.0);
-        const effectiveDataUrl = renderRes.imageDataUrl || `data:image/png;base64,${DEFAULT_FALLBACK_PNG}`;
+        const effectiveDataUrl =
+          renderRes.imageDataUrl ||
+          (renderRes.canvas ? renderRes.canvas.toDataURL('image/png') : `data:image/png;base64,${DEFAULT_FALLBACK_PNG}`);
         const base64Data = effectiveDataUrl.includes(',')
           ? effectiveDataUrl.split(',')[1]
           : effectiveDataUrl;

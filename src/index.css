@@ -19,17 +19,61 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: #000000;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: #242428;
     border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: #3a3a42;
   }
+}
+
+/* ==========================================================================
+   PDF TEXT LAYER SELECTION STYLING
+   Eliminates ghost/duplicate white text during mouse drag selection.
+   The underlying canvas renders the crisp vector text while this layer provides
+   transparent text nodes for clipboard copying & native highlight rectangles.
+   ========================================================================== */
+[data-text-layer] {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  line-height: 1;
+  text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+  forced-color-adjust: none;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+[data-text-layer] span,
+[data-text-layer] [data-text-span] {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+[data-text-layer] ::selection,
+[data-text-layer] span::selection,
+[data-text-layer] *::selection {
+  background: rgba(59, 130, 246, 0.38) !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+[data-text-layer] ::-moz-selection,
+[data-text-layer] span::-moz-selection,
+[data-text-layer] *::-moz-selection {
+  background: rgba(59, 130, 246, 0.38) !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
 }
 
 /* Print CSS Media Rules */
@@ -104,28 +148,134 @@
 }
 
 /* ==========================================================================
-   THEME 1: OLED PURE BLACK (DEEP BATTERY-SAVER & CONTRAST)
+   THEME 1: PURE AMOLED BLACK (#000000 TRUE PITCH BLACK & HIGH CONTRAST)
    ========================================================================== */
-html.oled body,
-html.oled [class*="bg-slate-900"],
-html.oled [class*="bg-slate-950"],
-html.oled header,
-html.oled aside {
+html,
+html.dark,
+html.oled,
+body,
+#root {
+  background-color: #000000 !important;
+  color: #f1f5f9;
+}
+
+/* Gradients with slate backgrounds turn to pure black */
+html.dark [class*="bg-gradient-to-b from-slate-"],
+html.oled [class*="bg-gradient-to-b from-slate-"],
+[class*="bg-gradient-to-b from-slate-"] {
+  background-image: none !important;
   background-color: #000000 !important;
 }
 
+/* True Pitch Black Surfaces */
+header,
+aside,
+nav,
+footer,
+.MainToolbar,
+[class*="MainToolbar"],
+.DocumentTabBar,
+[class*="DocumentTabBar"],
+[class*="ContextPropertiesBar"],
+html.dark [class*="bg-slate-900"],
+html.dark [class*="bg-slate-950"],
+html.oled [class*="bg-slate-900"],
+html.oled [class*="bg-slate-950"] {
+  background-color: #000000 !important;
+}
+
+/* Elevated sleek dark surfaces & cards */
+html.dark [class*="bg-slate-800"],
+html.dark [class*="bg-slate-850"],
 html.oled [class*="bg-slate-800"],
 html.oled [class*="bg-slate-850"] {
-  background-color: #080808 !important;
+  background-color: #070708 !important;
 }
 
+/* Crisp high-contrast AMOLED borders */
+html.dark [class*="border-slate-"],
 html.oled [class*="border-slate-"] {
-  border-color: #1a1a1a !important;
+  border-color: #1c1c1f !important;
 }
 
-html.oled .PDFViewerDesk,
-html.oled #pdf-viewer-viewport {
+/* Interactive hover surfaces */
+html.dark [class*="hover:bg-slate-800"]:hover,
+html.dark [class*="hover:bg-slate-700"]:hover,
+html.oled [class*="hover:bg-slate-800"]:hover,
+html.oled [class*="hover:bg-slate-700"]:hover {
+  background-color: #141416 !important;
+}
+
+/* Form Inputs, Dropdowns & Textareas */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+select,
+textarea {
+  background-color: #080808 !important;
+  border-color: #242428 !important;
+  color: #f8fafc !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Dialogs & Modals */
+[role="dialog"],
+.fixed > [class*="bg-slate-900"],
+.fixed > [class*="bg-slate-950"],
+[class*="rounded-2xl"][class*="bg-slate-900"],
+[class*="rounded-3xl"][class*="bg-slate-900"],
+[class*="rounded-2xl"][class*="bg-slate-800"],
+[class*="rounded-3xl"][class*="bg-slate-800"] {
+  background-color: #050505 !important;
+  border-color: #222226 !important;
+}
+
+/* Modal Backdrops - Deep blur & rich dark shade */
+[class*="bg-black/"],
+[class*="bg-slate-950/"] {
+  background-color: rgba(0, 0, 0, 0.88) !important;
+}
+
+/* PDF Viewer Canvas Desk & Organizer Viewport */
+.PDFViewerDesk,
+#pdf-viewer-viewport,
+.pdf-desk-bg {
   background-color: #000000 !important;
+}
+
+/* Tool cards styling for deep AMOLED contrast */
+.group[role="button"],
+.group.relative.flex.flex-col {
+  background-color: #050507 !important;
+  border-color: #18181b !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.group[role="button"]:hover,
+.group.relative.flex.flex-col:hover {
+  background-color: #0c0c0f !important;
+  border-color: #27272a !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Animated AMOLED Dropzone Glow */
+@keyframes amoledPulse {
+  0%, 100% {
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 30px -5px rgba(56, 189, 248, 0.12);
+  }
+  50% {
+    border-color: rgba(56, 189, 248, 0.8);
+    box-shadow: 0 0 45px 0px rgba(56, 189, 248, 0.22);
+  }
+}
+.dropzone-dragging {
+  animation: amoledPulse 2s infinite ease-in-out;
 }
 
 /* ==========================================================================

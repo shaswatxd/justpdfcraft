@@ -2,7 +2,7 @@ import React from 'react';
 import { SwiftLogo } from '@/components/common/SwiftLogo';
 import { useUIStore } from '@/stores/uiStore';
 import { ToolCategory } from '@/types/tools';
-import { ShieldCheck, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
 
 interface HomeFooterProps {
   onSelectCategory: (category: ToolCategory | 'all') => void;
@@ -31,12 +31,6 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
             All-in-One PDF, Image & Student Toolkit. Free, ultra-fast, and 100% private.
             Documents and photos are processed strictly inside your browser.
           </p>
-          <div className="flex items-center gap-2 pt-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-semibold">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              100% Client-Side Privacy
-            </span>
-          </div>
         </div>
 
         {/* Column 2: PDF Tools */}

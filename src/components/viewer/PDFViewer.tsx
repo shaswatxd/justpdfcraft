@@ -185,6 +185,9 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
         if (ctx && res.canvas) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(res.canvas, 0, 0);
+          // Zero offscreen canvas dimensions to immediately free GPU texture
+          res.canvas.width = 0;
+          res.canvas.height = 0;
         }
       } catch (e) {
         console.warn('Page render error:', e);
@@ -194,6 +197,10 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
     render();
     return () => {
       isCancelled = true;
+      if (canvasRef.current) {
+        canvasRef.current.width = 0;
+        canvasRef.current.height = 0;
+      }
     };
   }, [documentId, pageIndex, scale, dimensions, renderVersion, externalRenderVersion]);
 
@@ -1125,7 +1132,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
 
       {/* Selectable Text Layer for HUD & Text Markup Tools */}
       {['select', 'highlight', 'underline', 'strikethrough'].includes(currentTool) && pageTextItems.length > 0 && (
-        <div data-text-layer="true" className="absolute inset-0 z-10 pointer-events-auto select-text font-mono text-transparent cursor-text overflow-hidden">
+        <div data-text-layer="true" className="absolute inset-0 z-10 pointer-events-auto select-text font-sans text-transparent cursor-text overflow-hidden">
           {pageTextItems.map((item, idx) => (
             <span
               key={`text_layer_${idx}`}
@@ -1134,10 +1141,12 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
                 position: 'absolute',
                 left: `${(item.x / dimensions.width) * width}px`,
                 top: `${height - ((item.y + (item.height || 12)) / dimensions.height) * height}px`,
-                fontSize: `${Math.max(10, ((item.height || 12) / dimensions.height) * height)}px`,
+                fontSize: `${Math.max(1, ((item.height || 12) / dimensions.height) * height)}px`,
+                fontFamily: 'sans-serif',
                 lineHeight: 1,
                 userSelect: 'text',
                 whiteSpace: 'pre',
+                transformOrigin: '0% 0%',
               }}
             >
               {item.str}
@@ -1926,15 +1935,17 @@ const VirtualPageWrapper: React.FC<{
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setIsVisible(true);
+          } else if (!isActive) {
+            setIsVisible(false);
           }
         });
       },
-      { rootMargin: '450px 0px 450px 0px' }
+      { rootMargin: '600px 0px 600px 0px' }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [isActive]);
 
   return (
     <div
@@ -2501,7 +2512,7 @@ export const PDFViewer: React.FC = () => {
         onPointerDown={handleContainerPointerDown}
         onPointerMove={handleContainerPointerMove}
         onPointerUp={handleContainerPointerUp}
-        className={`flex-1 overflow-auto bg-slate-950 flex flex-col items-center p-6 select-none relative pdf-desk-bg ${
+        className={`flex-1 overflow-auto bg-black flex flex-col items-center p-6 select-none relative pdf-desk-bg ${
           isPanning ? 'cursor-grabbing' : (isSpacePressed || currentTool === 'hand') ? 'cursor-grab' : ''
         }`}
       >

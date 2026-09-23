@@ -59,6 +59,10 @@ interface UIState {
   activePhotoUrl: string | null;
   setActivePhotoUrl: (url: string | null) => void;
 
+  // Dropped image file for modal consumption (e.g. Convert img-to-pdf, Image Tools)
+  pendingImageFile: File | null;
+  setPendingImageFile: (file: File | null) => void;
+
   // Sub-tabs for modal hubs
   activeStudentTab: string | null;
   setActiveStudentTab: (tab: string | null) => void;
@@ -66,6 +70,8 @@ interface UIState {
   setActiveLegalTab: (tab: string | null) => void;
   activeImageTab: string | null;
   setActiveImageTab: (tab: string | null) => void;
+  activeConvertTab: string | null;
+  setActiveConvertTab: (tab: string | null) => void;
 
   setTheme: (theme: ThemeMode) => void;
   setPaperTone: (tone: PaperTone) => void;
@@ -86,30 +92,30 @@ interface UIState {
   removeToast: (id: string) => void;
 }
 
-const applyThemeToDOM = (theme: ThemeMode) => {
+const applyThemeToDOM = (theme: ThemeMode = 'oled') => {
   if (typeof document === 'undefined') return;
   const root = document.documentElement;
-  root.classList.remove('dark', 'light', 'oled');
-  if (theme === 'oled') {
-    root.classList.add('dark', 'oled');
+  root.classList.remove('light', 'dark', 'oled');
+  if (theme === 'light') {
+    root.classList.add('light');
   } else if (theme === 'dark') {
     root.classList.add('dark');
   } else {
-    root.classList.add('light');
+    root.classList.add('dark', 'oled');
   }
 };
 
 const getInitialTheme = (): ThemeMode => {
-  if (typeof window === 'undefined') return 'dark';
+  if (typeof window === 'undefined') return 'oled';
   try {
-    const saved = (localStorage.getItem('justpdfcraft_theme') || localStorage.getItem('swifteditoo_theme') || localStorage.getItem('swiftpdf_theme')) as ThemeMode;
-    if (saved === 'dark' || saved === 'light' || saved === 'oled') {
+    const saved = localStorage.getItem('justpdfcraft_theme') as ThemeMode;
+    if (['dark', 'light', 'oled'].includes(saved)) {
       applyThemeToDOM(saved);
       return saved;
     }
   } catch {}
-  applyThemeToDOM('dark');
-  return 'dark';
+  applyThemeToDOM('oled');
+  return 'oled';
 };
 
 const getInitialPaperTone = (): PaperTone => {
@@ -137,6 +143,8 @@ export const useUIStore = create<UIState>((set) => ({
   isSpotlightActive: false,
   activePhotoUrl: null,
   setActivePhotoUrl: (activePhotoUrl) => set({ activePhotoUrl }),
+  pendingImageFile: null,
+  setPendingImageFile: (pendingImageFile) => set({ pendingImageFile }),
 
   activeStudentTab: null,
   setActiveStudentTab: (activeStudentTab) => set({ activeStudentTab }),
@@ -144,6 +152,8 @@ export const useUIStore = create<UIState>((set) => ({
   setActiveLegalTab: (activeLegalTab) => set({ activeLegalTab }),
   activeImageTab: null,
   setActiveImageTab: (activeImageTab) => set({ activeImageTab }),
+  activeConvertTab: null,
+  setActiveConvertTab: (activeConvertTab) => set({ activeConvertTab }),
 
   setTheme: (theme: ThemeMode) => {
     try {

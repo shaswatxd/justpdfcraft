@@ -7,7 +7,15 @@ import { PDFDocument } from 'pdf-lib';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const ConvertDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
+  const {
+    activeModal,
+    setActiveModal,
+    addToast,
+    activeConvertTab,
+    setActiveConvertTab,
+    pendingImageFile,
+    setPendingImageFile,
+  } = useUIStore();
   const { documentId, pageCount, currentPage, fileName, loadDocument } = useDocumentStore();
 
   const [mode, setMode] = useState<'pdf-to-img' | 'pdf-to-txt' | 'img-to-pdf'>('pdf-to-img');
@@ -18,8 +26,47 @@ export const ConvertDialog: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Sync mode with activeConvertTab when opened from a tool action
+  React.useEffect(() => {
+    if (activeConvertTab && ['pdf-to-img', 'pdf-to-txt', 'img-to-pdf'].includes(activeConvertTab)) {
+      setMode(activeConvertTab as any);
+    }
+  }, [activeConvertTab]);
+
   // Images to PDF state
   const [imageFiles, setImageFiles] = useState<Array<{ name: string; buffer: Uint8Array; mime: string; previewUrl?: string }>>([]);
+
+  const handleClose = () => {
+    imageFiles.forEach((img) => {
+      if (img.previewUrl) URL.revokeObjectURL(img.previewUrl);
+    });
+    setActiveModal(null);
+    setActiveConvertTab(null);
+  };
+
+  // Consume any pending image file dropped on home dashboard
+  React.useEffect(() => {
+    if (pendingImageFile && activeModal === 'convert') {
+      setMode('img-to-pdf');
+      const fileToProcess = pendingImageFile;
+      setPendingImageFile(null);
+      (async () => {
+        try {
+          const buffer = await fileToProcess.arrayBuffer();
+          const previewUrl = URL.createObjectURL(fileToProcess);
+          setImageFiles((prev) => [
+            ...prev,
+            {
+              name: fileToProcess.name,
+              buffer: new Uint8Array(buffer),
+              mime: fileToProcess.type || 'image/png',
+              previewUrl,
+            },
+          ]);
+        } catch {}
+      })();
+    }
+  }, [pendingImageFile, activeModal, setPendingImageFile]);
 
   if (activeModal !== 'convert') return null;
 
@@ -56,7 +103,7 @@ export const ConvertDialog: React.FC = () => {
         title: 'Conversion Complete',
         message: `Exported ${targetIndices.length} page(s) as ${imageFormat.toUpperCase()} image(s).`,
       });
-      setActiveModal(null);
+      handleClose();
     } catch (err: any) {
       addToast({ type: 'error', title: 'Export Failed', message: err?.message });
     } finally {
@@ -110,7 +157,7 @@ export const ConvertDialog: React.FC = () => {
           title: 'Text Exported',
           message: `Saved ${textFormat.toUpperCase()} file to downloads.`,
         });
-        setActiveModal(null);
+        handleClose();
       } else {
         await navigator.clipboard.writeText(cleanText);
         setCopied(true);
@@ -128,12 +175,14 @@ export const ConvertDialog: React.FC = () => {
     }
   };
 
-  const handleSelectImages = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
+  const addFiles = async (files: FileList | File[]) => {
     const items: Array<{ name: string; buffer: Uint8Array; mime: string; previewUrl?: string }> = [];
 
-    for (let i = 0; i < e.target.files.length; i++) {
-      const f = e.target.files[i];
+    for (let i = 0; i < files.length; i++) {
+      const f = files[i];
+      if (!f.type.startsWith('image/') && !/\.(jpe?g|png|webp|gif|bmp)$/i.test(f.name)) {
+        continue;
+      }
       const buffer = await f.arrayBuffer();
       const previewUrl = URL.createObjectURL(f);
       items.push({
@@ -144,7 +193,14 @@ export const ConvertDialog: React.FC = () => {
       });
     }
 
-    setImageFiles((prev) => [...prev, ...items]);
+    if (items.length > 0) {
+      setImageFiles((prev) => [...prev, ...items]);
+    }
+  };
+
+  const handleSelectImages = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    await addFiles(e.target.files);
   };
 
   const transcodeToPngBuffer = async (buffer: Uint8Array, mime: string): Promise<Uint8Array> => {
@@ -235,7 +291,7 @@ export const ConvertDialog: React.FC = () => {
       const pdfBytes = await doc.save();
       await loadDocument(pdfBytes, 'Converted_Images.pdf');
 
-      setActiveModal(null);
+      handleClose();
       addToast({
         type: 'success',
         title: 'PDF Created from Images',
@@ -263,7 +319,7 @@ export const ConvertDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={handleClose}
             className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
           >
             <X className="w-4 h-4" />
@@ -450,9 +506,22 @@ export const ConvertDialog: React.FC = () => {
 
           {mode === 'img-to-pdf' && (
             <div className="space-y-4">
-              <label className="border-2 border-dashed border-slate-700 hover:border-teal-500/50 bg-slate-800/40 p-4 rounded-xl flex items-center justify-center gap-2 cursor-pointer text-xs font-semibold text-slate-300 transition-all">
+              <label
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    addFiles(e.dataTransfer.files);
+                  }
+                }}
+                className="border-2 border-dashed border-slate-700 hover:border-teal-500/50 bg-slate-800/40 p-4 rounded-xl flex items-center justify-center gap-2 cursor-pointer text-xs font-semibold text-slate-300 transition-all"
+              >
                 <Plus className="w-4 h-4 text-teal-400" />
-                <span>Select Images (JPG, PNG, WEBP, BMP, GIF)...</span>
+                <span>Select or Drop Images (JPG, PNG, WEBP, BMP, GIF)...</span>
                 <input
                   type="file"
                   accept="image/png, image/jpeg, image/jpg, image/webp, image/bmp, image/gif"
@@ -479,7 +548,10 @@ export const ConvertDialog: React.FC = () => {
                       </div>
                       <button
                         type="button"
-                        onClick={() => setImageFiles((prev) => prev.filter((_, i) => i !== idx))}
+                        onClick={() => {
+                          if (img.previewUrl) URL.revokeObjectURL(img.previewUrl);
+                          setImageFiles((prev) => prev.filter((_, i) => i !== idx));
+                        }}
                         className="text-slate-500 hover:text-rose-400"
                         title="Remove image"
                       >
@@ -496,7 +568,7 @@ export const ConvertDialog: React.FC = () => {
         {/* Footer */}
         <div className="px-6 py-4 border-t border-slate-800 bg-slate-900/60 flex justify-end gap-2">
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={handleClose}
             className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
           >
             Cancel

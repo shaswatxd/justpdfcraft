@@ -297,7 +297,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'FilePlus',
     color: 'text-indigo-400',
     tags: ['image to pdf', 'jpg to pdf', 'png to pdf', 'photos to pdf'],
-    action: { type: 'workflow', modal: 'convert', label: 'Images to PDF' },
+    action: { type: 'modal', modal: 'convert', initialTab: 'img-to-pdf' },
   },
   {
     id: 'bulk-image-compressor',

@@ -396,8 +396,10 @@ export function cleanPaperSignature(
   // Auto crop bounding box with padding
   const cropX = Math.max(0, minX - autoCropPadding);
   const cropY = Math.max(0, minY - autoCropPadding);
-  const cropW = Math.min(w - cropX, maxX - minX + autoCropPadding * 2);
-  const cropH = Math.min(h - cropY, maxY - minY + autoCropPadding * 2);
+  const right = Math.min(w, maxX + autoCropPadding);
+  const bottom = Math.min(h, maxY + autoCropPadding);
+  const cropW = Math.max(1, right - cropX);
+  const cropH = Math.max(1, bottom - cropY);
 
   const croppedCanvas = document.createElement('canvas');
   croppedCanvas.width = cropW;
@@ -479,23 +481,25 @@ export function addNameAndDateBanner(
   const nameText = uppercase ? candidateName.trim().toUpperCase() : candidateName.trim();
   const dateFormatted = dateOfPhoto.trim() ? `${datePrefix}${dateOfPhoto.trim()}` : '';
 
+  const maxTextWidth = Math.max(20, w - 12);
+
   if (nameText && dateFormatted) {
     // 2 lines: Name on top, Date below
     const fontSizeName = Math.max(12, Math.round(bannerHeight * 0.32));
     const fontSizeDate = Math.max(11, Math.round(bannerHeight * 0.28));
 
     ctx.font = `bold ${fontSizeName}px ${fontFamily}`;
-    ctx.fillText(nameText, w / 2, bannerY + bannerHeight * 0.32);
+    ctx.fillText(nameText, w / 2, bannerY + bannerHeight * 0.32, maxTextWidth);
 
     ctx.font = `600 ${fontSizeDate}px ${fontFamily}`;
     ctx.fillStyle = '#334155';
-    ctx.fillText(dateFormatted, w / 2, bannerY + bannerHeight * 0.72);
+    ctx.fillText(dateFormatted, w / 2, bannerY + bannerHeight * 0.72, maxTextWidth);
   } else {
     // Single line centered
     const singleText = nameText || dateFormatted;
     const fontSize = Math.max(13, Math.round(bannerHeight * 0.44));
     ctx.font = `bold ${fontSize}px ${fontFamily}`;
-    ctx.fillText(singleText, w / 2, bannerY + bannerHeight / 2);
+    ctx.fillText(singleText, w / 2, bannerY + bannerHeight / 2, maxTextWidth);
   }
 
   return resultCanvas;

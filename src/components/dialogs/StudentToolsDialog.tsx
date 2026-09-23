@@ -48,21 +48,32 @@ export const StudentToolsDialog: React.FC = () => {
 
   useEffect(() => {
     if (activePhotoUrl && isOpen) {
+      const urlToClean = activePhotoUrl;
       const img = new Image();
       img.onload = () => {
-        setResizerImage(img);
-        setCombinerPhoto(img);
-        setDopPhoto(img);
-        URL.revokeObjectURL(activePhotoUrl);
+        if (activeTab === 'clean-sign') {
+          setCleanSignImage(img);
+        } else if (activeTab === 'combiner') {
+          setCombinerPhoto(img);
+        } else if (activeTab === 'dop-banner') {
+          setDopPhoto(img);
+        } else {
+          setResizerImage(img);
+        }
+        if (urlToClean.startsWith('blob:')) {
+          URL.revokeObjectURL(urlToClean);
+        }
         setActivePhotoUrl(null);
       };
       img.onerror = () => {
-        URL.revokeObjectURL(activePhotoUrl);
+        if (urlToClean.startsWith('blob:')) {
+          URL.revokeObjectURL(urlToClean);
+        }
         setActivePhotoUrl(null);
       };
-      img.src = activePhotoUrl;
+      img.src = urlToClean;
     }
-  }, [activePhotoUrl, isOpen, setActivePhotoUrl]);
+  }, [activePhotoUrl, isOpen, activeTab, setActivePhotoUrl]);
 
   // ==================== TAB 1: RESIZER & COMPRESSOR ====================
   const [resizerImage, setResizerImage] = useState<HTMLImageElement | null>(null);
@@ -97,6 +108,7 @@ export const StudentToolsDialog: React.FC = () => {
   const [transparentBg, setTransparentBg] = useState<boolean>(false);
   const [inkColor, setInkColor] = useState<'black' | 'blue' | 'preserve'>('black');
   const [autoCrop, setAutoCrop] = useState<boolean>(true);
+  const [cleanSignDataUrl, setCleanSignDataUrl] = useState<string | null>(null);
 
   const cleanSignCanvasRef = useRef<HTMLCanvasElement>(null);
   const cleanSignInputRef = useRef<HTMLInputElement>(null);
@@ -165,22 +177,9 @@ export const StudentToolsDialog: React.FC = () => {
         ctx.drawImage(resizerImage, 0, 0, customWidthPx, customHeightPx);
 
         const result = await compressToTargetKb(cvs, targetMinKb, targetMaxKb, 'image/jpeg');
+        cvs.width = 0;
+        cvs.height = 0;
         setResizerResult(result);
-
-        // Also draw onto the visible preview canvas
-        const previewCvs = resizerCanvasRef.current;
-        if (previewCvs) {
-          previewCvs.width = result.width;
-          previewCvs.height = result.height;
-          const pCtx = previewCvs.getContext('2d');
-          if (pCtx) {
-            const previewImg = new Image();
-            previewImg.onload = () => {
-              pCtx.drawImage(previewImg, 0, 0);
-            };
-            previewImg.src = result.dataUrl;
-          }
-        }
       }
     } catch (err: any) {
       console.error(err);
@@ -191,7 +190,10 @@ export const StudentToolsDialog: React.FC = () => {
 
   useEffect(() => {
     if (resizerImage) {
-      processResizer();
+      const timer = setTimeout(() => {
+        processResizer();
+      }, 150);
+      return () => clearTimeout(timer);
     }
   }, [resizerImage, processResizer]);
 
@@ -237,7 +239,10 @@ export const StudentToolsDialog: React.FC = () => {
 
   useEffect(() => {
     if (combinerPhoto && combinerSign) {
-      processCombiner();
+      const timer = setTimeout(() => {
+        processCombiner();
+      }, 150);
+      return () => clearTimeout(timer);
     }
   }, [combinerPhoto, combinerSign, processCombiner]);
 
@@ -245,35 +250,44 @@ export const StudentToolsDialog: React.FC = () => {
   const processCleanSignature = useCallback(() => {
     if (!cleanSignImage) return;
 
-    const srcCvs = document.createElement('canvas');
-    srcCvs.width = cleanSignImage.naturalWidth || cleanSignImage.width;
-    srcCvs.height = cleanSignImage.naturalHeight || cleanSignImage.height;
-    const sCtx = srcCvs.getContext('2d');
-    if (!sCtx) return;
-    sCtx.drawImage(cleanSignImage, 0, 0);
+    try {
+      const srcCvs = document.createElement('canvas');
+      srcCvs.width = cleanSignImage.naturalWidth || cleanSignImage.width;
+      srcCvs.height = cleanSignImage.naturalHeight || cleanSignImage.height;
+      const sCtx = srcCvs.getContext('2d');
+      if (!sCtx) return;
+      sCtx.drawImage(cleanSignImage, 0, 0);
 
-    const cleanedCvs = cleanPaperSignature(srcCvs, {
-      threshold,
-      transparentBg,
-      inkEnhance: inkColor,
-      autoCropPadding: autoCrop ? 16 : 0,
-    });
+      const cleanedCvs = cleanPaperSignature(srcCvs, {
+        threshold,
+        transparentBg,
+        inkEnhance: inkColor,
+        autoCropPadding: autoCrop ? 16 : 0,
+      });
 
-    const previewCvs = cleanSignCanvasRef.current;
-    if (previewCvs) {
-      previewCvs.width = cleanedCvs.width;
-      previewCvs.height = cleanedCvs.height;
-      const pCtx = previewCvs.getContext('2d');
-      if (pCtx) {
-        pCtx.clearRect(0, 0, cleanedCvs.width, cleanedCvs.height);
-        pCtx.drawImage(cleanedCvs, 0, 0);
+      const previewCvs = cleanSignCanvasRef.current;
+      if (previewCvs) {
+        previewCvs.width = cleanedCvs.width;
+        previewCvs.height = cleanedCvs.height;
+        const pCtx = previewCvs.getContext('2d');
+        if (pCtx) {
+          pCtx.clearRect(0, 0, cleanedCvs.width, cleanedCvs.height);
+          pCtx.drawImage(cleanedCvs, 0, 0);
+        }
       }
+      const dataUrl = cleanedCvs.toDataURL(transparentBg ? 'image/png' : 'image/jpeg', 0.95);
+      setCleanSignDataUrl(dataUrl);
+    } catch (err) {
+      console.error('Error cleaning signature:', err);
     }
   }, [cleanSignImage, threshold, transparentBg, inkColor, autoCrop]);
 
   useEffect(() => {
     if (cleanSignImage) {
-      processCleanSignature();
+      const timer = setTimeout(() => {
+        processCleanSignature();
+      }, 60);
+      return () => clearTimeout(timer);
     }
   }, [cleanSignImage, processCleanSignature]);
 
@@ -281,36 +295,43 @@ export const StudentToolsDialog: React.FC = () => {
   const processDopBanner = useCallback(async () => {
     if (!dopPhoto) return;
 
-    const srcCvs = document.createElement('canvas');
-    srcCvs.width = dopPhoto.naturalWidth || dopPhoto.width;
-    srcCvs.height = dopPhoto.naturalHeight || dopPhoto.height;
-    const sCtx = srcCvs.getContext('2d');
-    if (!sCtx) return;
-    sCtx.drawImage(dopPhoto, 0, 0);
+    try {
+      const srcCvs = document.createElement('canvas');
+      srcCvs.width = dopPhoto.naturalWidth || dopPhoto.width;
+      srcCvs.height = dopPhoto.naturalHeight || dopPhoto.height;
+      const sCtx = srcCvs.getContext('2d');
+      if (!sCtx) return;
+      sCtx.drawImage(dopPhoto, 0, 0);
 
-    const bannerCvs = addNameAndDateBanner(srcCvs, {
-      candidateName,
-      dateOfPhoto,
-      datePrefix: dopPrefix,
-    });
+      const bannerCvs = addNameAndDateBanner(srcCvs, {
+        candidateName,
+        dateOfPhoto,
+        datePrefix: dopPrefix,
+      });
 
-    const result = await compressToTargetKb(bannerCvs, 20, dopTargetMaxKb, 'image/jpeg');
-    setDopResult(result);
+      const result = await compressToTargetKb(bannerCvs, 20, dopTargetMaxKb, 'image/jpeg');
+      setDopResult(result);
 
-    const previewCvs = dopCanvasRef.current;
-    if (previewCvs) {
-      previewCvs.width = bannerCvs.width;
-      previewCvs.height = bannerCvs.height;
-      const pCtx = previewCvs.getContext('2d');
-      if (pCtx) {
-        pCtx.drawImage(bannerCvs, 0, 0);
+      const previewCvs = dopCanvasRef.current;
+      if (previewCvs) {
+        previewCvs.width = bannerCvs.width;
+        previewCvs.height = bannerCvs.height;
+        const pCtx = previewCvs.getContext('2d');
+        if (pCtx) {
+          pCtx.drawImage(bannerCvs, 0, 0);
+        }
       }
+    } catch (err) {
+      console.error('Error generating DOP banner:', err);
     }
   }, [dopPhoto, candidateName, dateOfPhoto, dopPrefix, dopTargetMaxKb]);
 
   useEffect(() => {
     if (dopPhoto) {
-      processDopBanner();
+      const timer = setTimeout(() => {
+        processDopBanner();
+      }, 150);
+      return () => clearTimeout(timer);
     }
   }, [dopPhoto, processDopBanner]);
 
@@ -584,9 +605,17 @@ export const StudentToolsDialog: React.FC = () => {
                       </div>
                     )}
 
-                    {/* Canvas Preview */}
+                    {/* Preview (Persistent img prevents black box on tab switch) */}
                     <div className="max-h-[380px] p-2 bg-slate-950 border border-slate-800 rounded-xl overflow-auto shadow-inner flex items-center justify-center">
-                      <canvas ref={resizerCanvasRef} className="max-h-[340px] w-auto rounded shadow-lg object-contain" />
+                      {resizerResult?.dataUrl ? (
+                        <img
+                          src={resizerResult.dataUrl}
+                          alt="Resized Preview"
+                          className="max-h-[340px] w-auto rounded shadow-lg object-contain"
+                        />
+                      ) : (
+                        <canvas ref={resizerCanvasRef} className="max-h-[340px] w-auto rounded shadow-lg object-contain" />
+                      )}
                     </div>
 
                     {/* Actions */}
@@ -785,7 +814,15 @@ export const StudentToolsDialog: React.FC = () => {
                     </div>
 
                     <div className="max-h-[380px] p-2 bg-slate-950 border border-slate-800 rounded-xl overflow-auto shadow-inner flex items-center justify-center">
-                      <canvas ref={combinerCanvasRef} className="max-h-[340px] w-auto rounded shadow-lg object-contain bg-white" />
+                      {combinerResult?.dataUrl ? (
+                        <img
+                          src={combinerResult.dataUrl}
+                          alt="Combined Preview"
+                          className="max-h-[340px] w-auto rounded shadow-lg object-contain bg-white"
+                        />
+                      ) : (
+                        <canvas ref={combinerCanvasRef} className="max-h-[340px] w-auto rounded shadow-lg object-contain bg-white" />
+                      )}
                     </div>
 
                     <div className="w-full max-w-sm pt-2">
@@ -942,20 +979,29 @@ export const StudentToolsDialog: React.FC = () => {
                     </div>
 
                     <div className="max-h-[380px] p-4 bg-slate-950 border border-slate-800 rounded-xl overflow-auto shadow-inner flex items-center justify-center">
-                      <canvas
-                        ref={cleanSignCanvasRef}
-                        className={`max-h-[300px] w-auto rounded border border-slate-800 shadow-md ${
-                          transparentBg ? 'bg-[radial-gradient(#475569_1px,transparent_1px)] [background-size:16px_16px]' : 'bg-white'
-                        }`}
-                      />
+                      {cleanSignDataUrl ? (
+                        <img
+                          src={cleanSignDataUrl}
+                          alt="Clean Signature Preview"
+                          className={`max-h-[300px] w-auto rounded border border-slate-800 shadow-md ${
+                            transparentBg ? 'bg-[radial-gradient(#475569_1px,transparent_1px)] [background-size:16px_16px]' : 'bg-white'
+                          }`}
+                        />
+                      ) : (
+                        <canvas
+                          ref={cleanSignCanvasRef}
+                          className={`max-h-[300px] w-auto rounded border border-slate-800 shadow-md ${
+                            transparentBg ? 'bg-[radial-gradient(#475569_1px,transparent_1px)] [background-size:16px_16px]' : 'bg-white'
+                          }`}
+                        />
+                      )}
                     </div>
 
                     <div className="flex items-center gap-3 w-full max-w-sm pt-2">
                       <button
                         onClick={() => {
-                          const cvs = cleanSignCanvasRef.current;
-                          if (cvs) {
-                            const dataUrl = cvs.toDataURL(transparentBg ? 'image/png' : 'image/jpeg', 0.95);
+                          const dataUrl = cleanSignDataUrl || cleanSignCanvasRef.current?.toDataURL(transparentBg ? 'image/png' : 'image/jpeg', 0.95);
+                          if (dataUrl) {
                             triggerDownload(dataUrl, `JustPDFCraft_CleanSign_${Date.now()}.${transparentBg ? 'png' : 'jpg'}`);
                           }
                         }}
@@ -1091,7 +1137,15 @@ export const StudentToolsDialog: React.FC = () => {
                     </div>
 
                     <div className="max-h-[380px] p-2 bg-slate-950 border border-slate-800 rounded-xl overflow-auto shadow-inner flex items-center justify-center">
-                      <canvas ref={dopCanvasRef} className="max-h-[340px] w-auto rounded shadow-lg object-contain bg-white" />
+                      {dopResult?.dataUrl ? (
+                        <img
+                          src={dopResult.dataUrl}
+                          alt="DOP Photo Preview"
+                          className="max-h-[340px] w-auto rounded shadow-lg object-contain bg-white"
+                        />
+                      ) : (
+                        <canvas ref={dopCanvasRef} className="max-h-[340px] w-auto rounded shadow-lg object-contain bg-white" />
+                      )}
                     </div>
 
                     <div className="w-full max-w-sm pt-2">

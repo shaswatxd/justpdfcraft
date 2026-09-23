@@ -174,7 +174,13 @@ interface ToolCardProps {
 export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }) => {
   const { isFavorite, toggleFavorite } = useFavoritesStore();
   const { trackTool } = useRecentToolsStore();
-  const { setActiveModal, setActiveStudentTab, setActiveImageTab } = useUIStore();
+  const {
+    setActiveModal,
+    setActiveStudentTab,
+    setActiveImageTab,
+    setActiveLegalTab,
+    setActiveConvertTab,
+  } = useUIStore();
   const { setViewMode } = useDocumentStore();
   const { setTool } = useToolStore();
 
@@ -201,6 +207,10 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
         setActiveStudentTab(act.initialTab);
       } else if (act.modal === 'image-tools' && act.initialTab) {
         setActiveImageTab(act.initialTab);
+      } else if (act.modal === 'legal' && act.initialTab) {
+        setActiveLegalTab(act.initialTab);
+      } else if (act.modal === 'convert' && act.initialTab) {
+        setActiveConvertTab(act.initialTab);
       }
       setActiveModal(act.modal);
     } else if (act.type === 'workflow') {
@@ -231,12 +241,12 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
           handleClick(e as any);
         }
       }}
-      className="group relative flex flex-col justify-between p-5 rounded-2xl bg-slate-900/40 hover:bg-slate-800/60 border border-slate-800/80 hover:border-slate-700 shadow-sm hover:shadow-xl hover:shadow-black/25 hover:-translate-y-1 transition-all duration-200 cursor-pointer select-none text-left"
+      className="group relative flex flex-col justify-between p-5 rounded-2xl bg-zinc-950 hover:bg-zinc-900/60 border border-zinc-900 hover:border-zinc-800 shadow-sm hover:shadow-xl hover:shadow-black/25 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer select-none text-left"
     >
       {/* Top row: Icon, Badge (if any), Favorite */}
       <div className="flex items-center justify-between gap-3 mb-3.5">
         <div
-          className={`w-11 h-11 rounded-xl ${theme.bg} ${theme.border} border flex items-center justify-center transition-all duration-200 group-hover:scale-105 shadow-xs`}
+          className="w-10 h-10 rounded-xl bg-zinc-900/90 group-hover:bg-zinc-800 border border-zinc-800/80 group-hover:border-zinc-700 flex items-center justify-center transition-all duration-200 shadow-xs"
         >
           <IconComponent className={`w-5 h-5 ${theme.text}`} />
         </div>
@@ -244,11 +254,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
         <div className="flex items-center gap-1.5">
           {tool.badge && (
             <span
-              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${
-                tool.badge === 'new'
-                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25'
-                  : 'bg-amber-500/10 text-amber-300 border border-amber-500/25'
-              }`}
+              className="px-2 py-0.5 rounded-md text-[10px] font-mono font-medium uppercase tracking-wider bg-zinc-900 border border-zinc-800 text-zinc-400"
             >
               {tool.badge}
             </span>
@@ -260,7 +266,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
             className={`fav-btn p-1.5 rounded-lg transition-all ${
               isFav
                 ? 'opacity-100 text-rose-500 bg-rose-500/10'
-                : 'opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 hover:bg-slate-800'
+                : 'opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-rose-400 hover:bg-zinc-800'
             }`}
             title={isFav ? 'Remove from favorites' : 'Add to favorites'}
             aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
@@ -272,17 +278,17 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
 
       {/* Title & Description */}
       <div className="space-y-1.5">
-        <h3 className="text-[15px] font-semibold text-slate-100 group-hover:text-white transition-colors leading-snug">
+        <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-white transition-colors leading-snug">
           {tool.name}
         </h3>
-        <p className="text-xs text-slate-400/90 leading-relaxed line-clamp-2 min-h-[34px]">
+        <p className="text-xs text-zinc-400/90 leading-relaxed line-clamp-2 min-h-[34px]">
           {tool.shortDesc}
         </p>
       </div>
 
       {/* Bottom Footer: Category & Open Action */}
-      <div className="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-500">
-        <span className="text-[11px] font-medium capitalize text-slate-500 group-hover:text-slate-400 transition-colors">
+      <div className="mt-4 pt-3 border-t border-zinc-900 flex items-center justify-between text-xs text-zinc-500">
+        <span className="text-[11px] font-medium capitalize text-zinc-500 group-hover:text-zinc-400 transition-colors">
           {tool.category} Tool
         </span>
         <span className="text-xs font-semibold text-swift-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all flex items-center gap-1">

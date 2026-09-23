@@ -11,6 +11,7 @@ import { PageOrganizer } from '@/components/organizer/PageOrganizer';
 import { Sidebar } from '@/components/sidebar/Sidebar';
 import { CommandPalette } from '@/components/command-palette/CommandPalette';
 import { DocumentTabBar } from '@/components/app-shell/DocumentTabBar';
+import { MobileBottomBar } from '@/components/app-shell/MobileBottomBar';
 import { ToastContainer } from '@/components/common/ToastContainer';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { TTSPlayerHUD } from '@/components/viewer/TTSPlayerHUD';
@@ -326,10 +327,11 @@ export const App: React.FC = () => {
       const buffer = await file.arrayBuffer();
       await loadDocument(new Uint8Array(buffer), file.name, (file as any).path);
     }
+    e.target.value = '';
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-slate-900 text-slate-100 font-sans overflow-hidden relative">
+    <div className="h-screen w-screen flex flex-col bg-black text-slate-100 font-sans overflow-hidden relative">
       {/* Global Window File Drop Overlay */}
       {isWindowDragging && (
         <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex flex-col items-center justify-center pointer-events-none p-6 animate-fade-in select-none">
@@ -475,6 +477,9 @@ export const App: React.FC = () => {
       <CommandPalette />
       <TTSPlayerHUD />
       <ToastContainer />
+
+      {/* Mobile Floating Bottom Navigation */}
+      <MobileBottomBar onOpenFilePicker={() => hiddenFileInputRef.current?.click()} />
     </div>
   );
 };

@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en" class="dark oled">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="apple-touch-icon" href="./icon-512.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#0f172a" />
+    <meta name="theme-color" content="#000000" />
 
     <title>JustPDFCraft — All-in-One PDF, Image & Student Toolkit</title>
     <meta name="description" content="JustPDFCraft: 100% private, client-side PDF editor, handwritten assignment generator, target KB image resizer (20–50 KB), CGPA & attendance calculators, and AI study tools." />
@@ -49,18 +49,33 @@
     <!-- Handwriting Fonts for Realistic Assignment Generation -->
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Homemade+Apple&family=Shadows+Into+Light&family=Patrick+Hand&family=Architects+Daughter&family=Gochi+Hand&family=Reenie+Beanie&family=Delius&display=swap" rel="stylesheet">
   </head>
-  <body class="bg-slate-900 text-slate-100 antialiased select-none overflow-hidden h-screen w-screen">
+  <body class="bg-black text-slate-100 antialiased select-none overflow-hidden h-screen w-screen">
     <div id="root" class="h-full w-full flex flex-col"></div>
     <script type="module" src="/src/main.tsx"></script>
 
-    <!-- Production PWA Offline Service Worker Registration -->
+    <!-- Service Worker: Auto-unregister and purge cache on localhost; register only on production https -->
     <script>
-      if ('serviceWorker' in navigator && window.location.protocol === 'https:' || window.location.hostname === 'localhost') {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/sw.js').catch(function(err) {
-            console.warn('SW registration skipped:', err);
+      if ('serviceWorker' in navigator) {
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for (let reg of registrations) {
+              reg.unregister();
+            }
           });
-        });
+          if ('caches' in window) {
+            caches.keys().then(function(names) {
+              for (let name of names) {
+                caches.delete(name);
+              }
+            });
+          }
+        } else if (window.location.protocol === 'https:') {
+          window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/sw.js').catch(function(err) {
+              console.warn('SW registration skipped:', err);
+            });
+          });
+        }
       }
     </script>
   </body>

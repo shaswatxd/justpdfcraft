@@ -236,7 +236,7 @@ export class FallbackPDFEngine implements PDFEngine {
         return {
           pageIndex,
           canvas,
-          imageDataUrl: canvas.toDataURL('image/png'),
+          imageDataUrl: '',
           width: canvas.width,
           height: canvas.height,
           scale,
@@ -293,11 +293,13 @@ export class FallbackPDFEngine implements PDFEngine {
         for (const item of textContent.items as any[]) {
           if (typeof item.str === 'string') {
             fullText += item.str + ' ';
+            const scaleY = item.transform ? Math.hypot(item.transform[2], item.transform[3]) : 0;
+            const fontHeight = item.height || scaleY || 12;
             items.push({
               str: item.str,
               dir: item.dir || 'ltr',
               width: item.width || 0,
-              height: item.height || 0,
+              height: fontHeight,
               transform: item.transform || [1, 0, 0, 1, 0, 0],
               x: item.transform ? item.transform[4] : 0,
               y: item.transform ? item.transform[5] : 0,

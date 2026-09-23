@@ -7,7 +7,6 @@ import {
   ZoomOut,
   Maximize2,
   Grid,
-  Search,
   Settings,
   BookOpen,
   Volume2,
@@ -27,7 +26,6 @@ import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useTTSStore } from '@/stores/ttsStore';
 import { SwiftLogo } from '@/components/common/SwiftLogo';
-import { ThemeToggle } from '@/components/common/ThemeToggle';
 
 export const AppHeader: React.FC = () => {
   const {
@@ -91,7 +89,6 @@ export const AppHeader: React.FC = () => {
   };
 
   const {
-    setCommandPaletteOpen,
     setActiveModal,
     addToast,
     paperTone,
@@ -465,20 +462,6 @@ export const AppHeader: React.FC = () => {
           </div>
         )}
 
-        {/* Theme Switcher */}
-        <ThemeToggle />
-
-        {/* Command Palette Trigger */}
-        <button
-          onClick={() => setCommandPaletteOpen(true)}
-          className="flex items-center gap-1.5 px-2 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 rounded-lg text-xs text-slate-300 transition-colors"
-          title="Command Palette (Ctrl+K)"
-        >
-          <Search className="w-3.5 h-3.5 text-swift-400" />
-          <kbd className="bg-slate-900 px-1.5 py-0.5 rounded text-[10px] font-mono text-slate-400 border border-slate-700 hidden sm:inline">
-            Ctrl+K
-          </kbd>
-        </button>
 
         {/* Settings */}
         <button
