@@ -197,7 +197,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
 
     const act = tool.action;
     if (act.type === 'modal') {
-      if (act.modal === 'student-calculators' && act.initialTab) {
+      if ((act.modal === 'student-calculators' || act.modal === 'student-resizer') && act.initialTab) {
         setActiveStudentTab(act.initialTab);
       } else if (act.modal === 'ai-tools' && act.initialTab) {
         setActiveAITab(act.initialTab);

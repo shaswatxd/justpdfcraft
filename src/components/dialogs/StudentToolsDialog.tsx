@@ -27,10 +27,16 @@ import {
 type StudentTab = 'resizer' | 'combiner' | 'clean-sign' | 'dop-banner';
 
 export const StudentToolsDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
+  const { activeModal, setActiveModal, addToast, activeStudentTab, setActiveStudentTab } = useUIStore();
   const isOpen = activeModal === 'student-resizer';
 
   const [activeTab, setActiveTab] = useState<StudentTab>('resizer');
+
+  useEffect(() => {
+    if (activeStudentTab && ['resizer', 'combiner', 'clean-sign', 'dop-banner'].includes(activeStudentTab)) {
+      setActiveTab(activeStudentTab as StudentTab);
+    }
+  }, [activeStudentTab]);
 
   // ==================== TAB 1: RESIZER & COMPRESSOR ====================
   const [resizerImage, setResizerImage] = useState<HTMLImageElement | null>(null);
@@ -315,7 +321,10 @@ export const StudentToolsDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={() => {
+              setActiveModal(null);
+              setActiveStudentTab(null);
+            }}
             className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
