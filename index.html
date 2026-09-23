@@ -53,13 +53,13 @@
     <div id="root" class="h-full w-full flex flex-col"></div>
     <script type="module" src="/src/main.tsx"></script>
 
-    <!-- Clean up any legacy service workers -->
+    <!-- Production PWA Offline Service Worker Registration -->
     <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          for (var i = 0; i < registrations.length; i++) {
-            registrations[i].unregister();
-          }
+      if ('serviceWorker' in navigator && window.location.protocol === 'https:' || window.location.hostname === 'localhost') {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js').catch(function(err) {
+            console.warn('SW registration skipped:', err);
+          });
         });
       }
     </script>

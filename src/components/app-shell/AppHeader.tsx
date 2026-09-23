@@ -50,7 +50,19 @@ export const AppHeader: React.FC = () => {
   const [pageInput, setPageInput] = useState<string>(String(currentPage));
   const [toneOpen, setToneOpen] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [isOffline, setIsOffline] = useState<boolean>(typeof navigator !== 'undefined' ? !navigator.onLine : false);
   const toneDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     setPageInput(String(currentPage));
@@ -439,6 +451,18 @@ export const AppHeader: React.FC = () => {
               <Expand className="w-4 h-4" />
             </button>
           </>
+        )}
+
+        {/* Offline local-mode pill */}
+        {isOffline && (
+          <div
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-lg text-[11px] font-medium animate-fade-in"
+            title="All tools run 100% locally in your browser. No internet needed!"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            <span className="hidden sm:inline">Offline Mode</span>
+            <span className="sm:hidden">Offline</span>
+          </div>
         )}
 
         {/* Theme Switcher */}

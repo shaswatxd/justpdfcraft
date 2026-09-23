@@ -284,6 +284,42 @@ export const App: React.FC = () => {
     };
   }, [loadDocument, addToast, setActiveModal, setActivePhotoUrl]);
 
+  // Global Error & Promise Rejection Trap
+  useEffect(() => {
+    const handleRejection = (event: PromiseRejectionEvent) => {
+      console.error('Unhandled Promise Rejection caught:', event.reason);
+      const msg = typeof event.reason === 'string'
+        ? event.reason
+        : event.reason?.message || 'An unexpected async operation failed.';
+      if (msg.includes('AbortError') || msg.includes('canceled') || msg.includes('cancelled')) {
+        return;
+      }
+      addToast({
+        type: 'error',
+        title: 'Operation Error',
+        message: msg.slice(0, 150),
+      });
+    };
+
+    const handleWindowError = (event: ErrorEvent) => {
+      console.error('Global Error caught:', event.error || event.message);
+      if (event.filename && event.filename.includes('pdf.worker')) {
+        addToast({
+          type: 'warning',
+          title: 'PDF Worker Warning',
+          message: 'A minor PDF rendering anomaly occurred, but the document remains safe.',
+        });
+      }
+    };
+
+    window.addEventListener('unhandledrejection', handleRejection);
+    window.addEventListener('error', handleWindowError);
+    return () => {
+      window.removeEventListener('unhandledrejection', handleRejection);
+      window.removeEventListener('error', handleWindowError);
+    };
+  }, [addToast]);
+
   const handleGlobalFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
