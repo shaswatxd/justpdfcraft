@@ -1033,7 +1033,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
       {/* Direct In-Place Text Editor Popup */}
       {editingItem && (
         <div
-          className="absolute z-40 bg-slate-900 border border-swift-500 p-2 rounded-xl shadow-2xl flex items-center gap-2 animate-scale-in"
+          className="absolute z-40 bg-black border border-swift-500 p-2 rounded-xl shadow-2xl flex items-center gap-2 animate-scale-in"
           style={{
             left: `${Math.max(4, Math.min(width - 270, editingItem.screenRect.x))}px`,
             top: `${Math.max(4, editingItem.screenRect.y - 44)}px`,
@@ -1076,7 +1076,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
       {/* AcroForm Field Builder Popup */}
       {newFieldModal && (
         <div
-          className="absolute z-40 bg-slate-900 border border-swift-500 p-3 rounded-xl shadow-2xl flex flex-col gap-2 animate-scale-in text-xs w-64"
+          className="absolute z-40 bg-black border border-swift-500 p-3 rounded-xl shadow-2xl flex flex-col gap-2 animate-scale-in text-xs w-64"
           style={{
             left: `${Math.max(10, Math.min(width - 270, (newFieldModal.rect[0] / dimensions.width) * width))}px`,
             top: `${Math.max(10, height - ((newFieldModal.rect[1] + newFieldModal.rect[3]) / dimensions.height) * height - 80)}px`,
@@ -1766,7 +1766,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
       {/* Inline Text Input Placement Box */}
       {textInputPos && (
         <div
-          className="absolute z-30 bg-slate-900/95 border border-swift-500 p-2 rounded-lg shadow-xl flex items-center gap-2"
+          className="absolute z-30 bg-black/95 border border-swift-500 p-2 rounded-lg shadow-xl flex items-center gap-2"
           style={{
             left: `${Math.max(8, Math.min(width - 270, textInputPos.x))}px`,
             top: `${Math.max(8, Math.min(height - 50, textInputPos.y))}px`,
@@ -1804,7 +1804,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
       {/* Inline Sticky Note Placement Card */}
       {pendingNote && (
         <div
-          className="absolute z-40 bg-slate-900/95 border border-amber-400/80 p-3 rounded-xl shadow-2xl flex flex-col gap-2.5 animate-scale-in text-xs w-64 backdrop-blur-md"
+          className="absolute z-40 bg-black/95 border border-amber-400/80 p-3 rounded-xl shadow-2xl flex flex-col gap-2.5 animate-scale-in text-xs w-64 backdrop-blur-md"
           style={{
             left: `${Math.max(8, Math.min(width - 264, pendingNote.clientX - 12))}px`,
             top: `${Math.max(8, Math.min(height - 180, pendingNote.clientY + 14))}px`,
@@ -1968,7 +1968,7 @@ const VirtualPageWrapper: React.FC<{
         />
       ) : (
         <div
-          className="bg-slate-900/40 border border-slate-800/70 rounded-lg shadow-lg flex flex-col items-center justify-center text-slate-500 font-mono text-xs transition-colors"
+          className="bg-black/40 border border-slate-800/70 rounded-lg shadow-lg flex flex-col items-center justify-center text-slate-500 font-mono text-xs transition-colors"
           style={{ width: `${width}px`, height: `${height}px` }}
         >
           <div className="w-6 h-6 border-2 border-swift-500/40 border-t-swift-400 rounded-full animate-spin mb-2" />
@@ -2459,7 +2459,7 @@ export const PDFViewer: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-slate-950 text-slate-400 gap-3">
+      <div className="flex-1 flex flex-col items-center justify-center bg-black text-slate-400 gap-3">
         <div className="w-8 h-8 border-2 border-swift-500 border-t-transparent rounded-full animate-spin" />
         <p className="text-xs font-medium">Rendering PDF pages...</p>
       </div>
@@ -2468,7 +2468,7 @@ export const PDFViewer: React.FC = () => {
 
   if (errorMessage) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-slate-950 text-rose-400 p-6 text-center">
+      <div className="flex-1 flex flex-col items-center justify-center bg-black text-rose-400 p-6 text-center">
         <AlertCircle className="w-10 h-10 mb-2" />
         <h3 className="font-bold text-base">Error Loading PDF</h3>
         <p className="text-xs text-slate-400 mt-1 max-w-md">{errorMessage}</p>

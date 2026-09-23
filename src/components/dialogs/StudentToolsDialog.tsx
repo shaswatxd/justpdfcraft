@@ -385,10 +385,10 @@ export const StudentToolsDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-150" role="dialog" aria-modal="true" aria-label="Student Tools Dialog">
-      <div className="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-5xl h-[92vh] max-h-[850px] shadow-2xl flex flex-col overflow-hidden text-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-in fade-in duration-150" role="dialog" aria-modal="true" aria-label="Student Tools Dialog">
+      <div className="bg-black border border-slate-700/80 rounded-2xl w-full max-w-5xl h-[92vh] max-h-[850px] shadow-2xl flex flex-col overflow-hidden text-slate-100">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-black/90">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-swift-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-swift-900/30">
               <GraduationCap className="w-5 h-5" />
@@ -417,7 +417,7 @@ export const StudentToolsDialog: React.FC = () => {
         </div>
 
         {/* Tab Bar */}
-        <div className="flex items-center gap-1 px-6 border-b border-slate-800 bg-slate-900/50">
+        <div className="flex items-center gap-1 px-6 border-b border-slate-800 bg-black/50">
           {[
             { id: 'resizer' as const, label: 'Target KB & Dimensions Resizer', icon: Sliders },
             { id: 'combiner' as const, label: 'Photo + Sign Combiner', icon: Layers },
@@ -444,7 +444,7 @@ export const StudentToolsDialog: React.FC = () => {
         </div>
 
         {/* Main Workspace Body */}
-        <div className="flex-1 overflow-y-auto p-6 bg-slate-950/40">
+        <div className="flex-1 overflow-y-auto p-6 bg-black/40">
           {/* ======================================================== */}
           {/* TAB 1: RESIZER & COMPRESSOR */}
           {/* ======================================================== */}
@@ -479,7 +479,7 @@ export const StudentToolsDialog: React.FC = () => {
                 </div>
 
                 {/* 2. Target KB Limits */}
-                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3">
+                <div className="bg-black/90 border border-slate-800 rounded-xl p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-slate-200">Target File Size (KB)</span>
                     <span className="text-xs font-mono text-swift-400 bg-swift-950/60 px-2 py-0.5 rounded border border-swift-800">
@@ -513,7 +513,7 @@ export const StudentToolsDialog: React.FC = () => {
                 </div>
 
                 {/* 3. Dimensions Controls */}
-                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3">
+                <div className="bg-black/90 border border-slate-800 rounded-xl p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-slate-200">Dimensions (Pixels)</span>
                     <label className="flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer">
@@ -574,7 +574,7 @@ export const StudentToolsDialog: React.FC = () => {
               </div>
 
               {/* Right Preview & Export (7 cols) */}
-              <div className="lg:col-span-7 flex flex-col items-center justify-center bg-slate-900/60 border border-slate-800 rounded-2xl p-6 relative overflow-hidden">
+              <div className="lg:col-span-7 flex flex-col items-center justify-center bg-black/60 border border-slate-800 rounded-2xl p-6 relative overflow-hidden">
                 {!resizerImage ? (
                   <div
                     onClick={() => resizerInputRef.current?.click()}
@@ -589,7 +589,7 @@ export const StudentToolsDialog: React.FC = () => {
                         loadImageFromFile(e.dataTransfer.files[0], setResizerImage);
                       }
                     }}
-                    className="w-full h-80 border-2 border-dashed border-slate-700 hover:border-swift-500 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all group bg-slate-900/40 hover:bg-slate-900/80 p-6 text-center"
+                    className="w-full h-80 border-2 border-dashed border-slate-700 hover:border-swift-500 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all group bg-black/40 hover:bg-black/80 p-6 text-center"
                   >
                     <div className="w-14 h-14 rounded-2xl bg-swift-500/10 text-swift-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                       <Upload className="w-6 h-6" />
@@ -640,7 +640,7 @@ export const StudentToolsDialog: React.FC = () => {
                     )}
 
                     {/* Preview (Persistent img prevents black box on tab switch) */}
-                    <div className="max-h-[380px] p-2 bg-slate-950 border border-slate-800 rounded-xl overflow-auto shadow-inner flex items-center justify-center">
+                    <div className="max-h-[380px] p-2 bg-black border border-slate-800 rounded-xl overflow-auto shadow-inner flex items-center justify-center">
                       {resizerResult?.dataUrl ? (
                         <img
                           src={resizerResult.dataUrl}
@@ -687,7 +687,7 @@ export const StudentToolsDialog: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
               {/* Left Settings (5 cols) */}
               <div className="lg:col-span-5 space-y-4">
-                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3">
+                <div className="bg-black/90 border border-slate-800 rounded-xl p-4 space-y-3">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
                     1. Upload Photo & Signature
                   </span>
@@ -769,7 +769,7 @@ export const StudentToolsDialog: React.FC = () => {
                 </div>
 
                 {/* Layout Selector */}
-                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-2">
+                <div className="bg-black/90 border border-slate-800 rounded-xl p-4 space-y-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
                     2. Layout Style
                   </span>
@@ -795,7 +795,7 @@ export const StudentToolsDialog: React.FC = () => {
                 </div>
 
                 {/* Candidate Information on Photo */}
-                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3">
+                <div className="bg-black/90 border border-slate-800 rounded-xl p-4 space-y-3">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
                     3. Candidate Details (Optional)
                   </span>
@@ -832,7 +832,7 @@ export const StudentToolsDialog: React.FC = () => {
               </div>
 
               {/* Right Preview (7 cols) */}
-              <div className="lg:col-span-7 flex flex-col items-center justify-center bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+              <div className="lg:col-span-7 flex flex-col items-center justify-center bg-black/60 border border-slate-800 rounded-2xl p-6">
                 {!combinerPhoto || !combinerSign ? (
                   <div className="text-center text-slate-400 space-y-2">
                     <Layers className="w-12 h-12 text-slate-600 mx-auto" />
@@ -847,7 +847,7 @@ export const StudentToolsDialog: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="max-h-[380px] p-2 bg-slate-950 border border-slate-800 rounded-xl overflow-auto shadow-inner flex items-center justify-center">
+                    <div className="max-h-[380px] p-2 bg-black border border-slate-800 rounded-xl overflow-auto shadow-inner flex items-center justify-center">
                       {combinerResult?.dataUrl ? (
                         <img
                           src={combinerResult.dataUrl}
@@ -886,7 +886,7 @@ export const StudentToolsDialog: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
               {/* Left Controls */}
               <div className="lg:col-span-5 space-y-4">
-                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3">
+                <div className="bg-black/90 border border-slate-800 rounded-xl p-4 space-y-3">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
                     1. Upload Mobile Photo of Signature
                   </span>
@@ -932,7 +932,7 @@ export const StudentToolsDialog: React.FC = () => {
                 </div>
 
                 {/* Cleaner Sliders & Settings */}
-                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-4">
+                <div className="bg-black/90 border border-slate-800 rounded-xl p-4 space-y-4">
                   <div>
                     <div className="flex items-center justify-between text-xs mb-1">
                       <span className="text-slate-300 font-medium">Paper Whitening Sensitivity</span>
@@ -997,7 +997,7 @@ export const StudentToolsDialog: React.FC = () => {
               </div>
 
               {/* Right Preview */}
-              <div className="lg:col-span-7 flex flex-col items-center justify-center bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+              <div className="lg:col-span-7 flex flex-col items-center justify-center bg-black/60 border border-slate-800 rounded-2xl p-6">
                 {!cleanSignImage ? (
                   <div className="text-center text-slate-400 space-y-2">
                     <Eraser className="w-12 h-12 text-slate-600 mx-auto" />
@@ -1012,7 +1012,7 @@ export const StudentToolsDialog: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="max-h-[380px] p-4 bg-slate-950 border border-slate-800 rounded-xl overflow-auto shadow-inner flex items-center justify-center">
+                    <div className="max-h-[380px] p-4 bg-black border border-slate-800 rounded-xl overflow-auto shadow-inner flex items-center justify-center">
                       {cleanSignDataUrl ? (
                         <img
                           src={cleanSignDataUrl}
@@ -1058,7 +1058,7 @@ export const StudentToolsDialog: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
               {/* Left Controls */}
               <div className="lg:col-span-5 space-y-4">
-                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3">
+                <div className="bg-black/90 border border-slate-800 rounded-xl p-4 space-y-3">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
                     1. Upload Passport Photo
                   </span>
@@ -1104,7 +1104,7 @@ export const StudentToolsDialog: React.FC = () => {
                 </div>
 
                 {/* Form Fields */}
-                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3">
+                <div className="bg-black/90 border border-slate-800 rounded-xl p-4 space-y-3">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
                     2. Candidate Details on Banner
                   </span>
@@ -1155,7 +1155,7 @@ export const StudentToolsDialog: React.FC = () => {
               </div>
 
               {/* Right Preview */}
-              <div className="lg:col-span-7 flex flex-col items-center justify-center bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+              <div className="lg:col-span-7 flex flex-col items-center justify-center bg-black/60 border border-slate-800 rounded-2xl p-6">
                 {!dopPhoto ? (
                   <div className="text-center text-slate-400 space-y-2">
                     <Tag className="w-12 h-12 text-slate-600 mx-auto" />
@@ -1170,7 +1170,7 @@ export const StudentToolsDialog: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="max-h-[380px] p-2 bg-slate-950 border border-slate-800 rounded-xl overflow-auto shadow-inner flex items-center justify-center">
+                    <div className="max-h-[380px] p-2 bg-black border border-slate-800 rounded-xl overflow-auto shadow-inner flex items-center justify-center">
                       {dopResult?.dataUrl ? (
                         <img
                           src={dopResult.dataUrl}

@@ -103,7 +103,7 @@ export const SelectionHUD: React.FC<SelectionHUDProps> = ({
         top: `${position.y}px`,
         transform: 'translate(-50%, -100%) translateY(-10px)',
       }}
-      className="z-50 flex items-center gap-1 bg-slate-900/95 backdrop-blur-md border border-slate-700/80 px-2 py-1.5 rounded-xl shadow-2xl animate-scale-in text-slate-200 select-none"
+      className="z-50 flex items-center gap-1 bg-black/95 backdrop-blur-md border border-slate-700/80 px-2 py-1.5 rounded-xl shadow-2xl animate-scale-in text-slate-200 select-none"
       onClick={(e) => e.stopPropagation()}
     >
       {/* Quick Color Highlighting */}

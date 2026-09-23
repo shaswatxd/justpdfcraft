@@ -21,7 +21,8 @@ export const ConvertDialog: React.FC = () => {
   const [mode, setMode] = useState<'pdf-to-img' | 'pdf-to-txt' | 'img-to-pdf'>('pdf-to-img');
   const [imageFormat, setImageFormat] = useState<'png' | 'jpeg' | 'webp'>('png');
   const [textFormat, setTextFormat] = useState<'txt' | 'md'>('txt');
-  const [resolutionScale, setResolutionScale] = useState<number>(2.0); // 2x for sharp export
+  const [resolutionScale, setResolutionScale] = useState<number>(2.0);
+  const [imageQuality, setImageQuality] = useState<number>(0.92); // 2x for sharp export
   const [scope, setScope] = useState<'current' | 'all'>('current');
   const [isProcessing, setIsProcessing] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -87,7 +88,7 @@ export const ConvertDialog: React.FC = () => {
         const pIdx = targetIndices[i];
         const renderRes = await engine.renderPage(documentId, pIdx, resolutionScale);
         if (renderRes.canvas) {
-          const dataUrl = renderRes.canvas.toDataURL(mimeType, 0.92);
+          const dataUrl = renderRes.canvas.toDataURL(mimeType, imageQuality);
           const a = document.createElement('a');
           a.href = dataUrl;
           a.download = `JustPDFCraft_${fileName ? fileName.replace(/\.pdf$/i, '') : 'Page'}_Page_${pIdx + 1}.${ext}`;
@@ -306,7 +307,7 @@ export const ConvertDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Convert Dialog">
-      <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+      <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -327,7 +328,7 @@ export const ConvertDialog: React.FC = () => {
         </div>
 
         {/* Mode Switcher */}
-        <div className="flex border-b border-slate-800 bg-slate-950/40 px-6 pt-2 gap-2 text-xs">
+        <div className="flex border-b border-slate-800 bg-[#000000]/40 px-6 pt-2 gap-2 text-xs">
           <button
             onClick={() => setMode('pdf-to-img')}
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
@@ -400,6 +401,20 @@ export const ConvertDialog: React.FC = () => {
                         <option value="2.0">High-Res 144 DPI (2x)</option>
                         <option value="3.0">Ultra-Sharp 216 DPI (3x)</option>
                       </select>
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-300 block mb-1">Quality</label>
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="1.0"
+                        step="0.1"
+                        value={imageQuality}
+                        onChange={(e) => setImageQuality(parseFloat(e.target.value))}
+                        className="w-full accent-teal-500"
+                        disabled={imageFormat === 'png'}
+                      />
+                      <div className="text-right text-[10px] text-slate-400">{Math.round(imageQuality * 100)}%</div>
                     </div>
                   </div>
 
@@ -487,7 +502,7 @@ export const ConvertDialog: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="p-3.5 bg-slate-950/60 border border-slate-800 rounded-xl text-xs text-slate-400 flex items-center justify-between">
+                  <div className="p-3.5 bg-[#000000]/60 border border-slate-800 rounded-xl text-xs text-slate-400 flex items-center justify-between">
                     <span>Extracts text coordinates without uploading any file to external servers.</span>
                     <button
                       type="button"
@@ -566,7 +581,7 @@ export const ConvertDialog: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-800 bg-slate-900/60 flex justify-end gap-2">
+        <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
           <button
             onClick={handleClose}
             className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"

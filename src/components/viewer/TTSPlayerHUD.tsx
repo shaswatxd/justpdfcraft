@@ -117,7 +117,7 @@ export const TTSPlayerHUD: React.FC = () => {
 
   return (
     <div className="fixed bottom-6 right-8 z-50 animate-slide-up select-none">
-      <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl shadow-2xl p-4 w-96 flex flex-col gap-3 text-slate-200">
+      <div className="bg-black/95 backdrop-blur-md border border-slate-700/80 rounded-2xl shadow-2xl p-4 w-96 flex flex-col gap-3 text-slate-200">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-800 pb-2">
           <div className="flex items-center gap-2">
@@ -152,7 +152,7 @@ export const TTSPlayerHUD: React.FC = () => {
 
         {/* Live Reading Sentence Snippet */}
         {isPlaying && activeSnippet && (
-          <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl px-2.5 py-1.5 text-[11px] text-slate-300 italic line-clamp-2 leading-relaxed">
+          <div className="bg-black/70 border border-slate-800/80 rounded-xl px-2.5 py-1.5 text-[11px] text-slate-300 italic line-clamp-2 leading-relaxed">
             "{activeSnippet}"
           </div>
         )}
@@ -217,11 +217,11 @@ export const TTSPlayerHUD: React.FC = () => {
                 onChange={(e) => setSpeechRate(Number(e.target.value))}
                 className="bg-transparent text-slate-200 outline-none font-mono text-[11px] cursor-pointer"
               >
-                <option value={0.75} className="bg-slate-900">0.75x</option>
-                <option value={1.0} className="bg-slate-900">1.0x</option>
-                <option value={1.25} className="bg-slate-900">1.25x</option>
-                <option value={1.5} className="bg-slate-900">1.5x</option>
-                <option value={2.0} className="bg-slate-900">2.0x</option>
+                <option value={0.75} className="bg-black">0.75x</option>
+                <option value={1.0} className="bg-black">1.0x</option>
+                <option value={1.25} className="bg-black">1.25x</option>
+                <option value={1.5} className="bg-black">1.5x</option>
+                <option value={2.0} className="bg-black">2.0x</option>
               </select>
             </div>
           </div>
@@ -237,7 +237,7 @@ export const TTSPlayerHUD: React.FC = () => {
               className="bg-transparent text-slate-300 outline-none w-full truncate cursor-pointer"
             >
               {availableVoices.map((v) => (
-                <option key={v.voiceURI} value={v.voiceURI} className="bg-slate-900">
+                <option key={v.voiceURI} value={v.voiceURI} className="bg-black">
                   {v.name} ({v.lang})
                 </option>
               ))}

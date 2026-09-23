@@ -295,7 +295,7 @@ export const SignDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Sign Dialog">
-      <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+      <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -339,7 +339,7 @@ export const SignDialog: React.FC = () => {
         ) : (
           <>
             {/* Tab Switcher */}
-            <div className="flex border-b border-slate-800 bg-slate-950/40 px-6 pt-2 gap-2 text-xs">
+            <div className="flex border-b border-slate-800 bg-[#000000]/40 px-6 pt-2 gap-2 text-xs">
               {[
                 { id: 'draw', label: 'Draw', icon: PenTool },
                 { id: 'type', label: 'Type', icon: Type },
@@ -370,7 +370,7 @@ export const SignDialog: React.FC = () => {
               {/* Draw Tab */}
               {activeTab === 'draw' && (
                 <div className="space-y-3">
-                  <div className="border border-slate-700 rounded-xl bg-slate-950 overflow-hidden relative shadow-inner">
+                  <div className="border border-slate-700 rounded-xl bg-[#000000] overflow-hidden relative shadow-inner">
                     <canvas
                       ref={canvasRef}
                       width={460}
@@ -463,7 +463,7 @@ export const SignDialog: React.FC = () => {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <div className="border border-slate-700 rounded-xl bg-slate-950 p-4 flex items-center justify-center min-h-[120px] relative">
+                      <div className="border border-slate-700 rounded-xl bg-[#000000] p-4 flex items-center justify-center min-h-[120px] relative">
                         <img
                           src={uploadDataUrl}
                           alt="Uploaded Signature"
@@ -570,7 +570,7 @@ export const SignDialog: React.FC = () => {
 
             {/* Footer */}
             {activeTab !== 'saved' && (
-              <div className="px-6 py-4 border-t border-slate-800 bg-slate-900/60 flex justify-end gap-2">
+              <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
                 <button
                   onClick={() => setActiveModal(null)}
                   className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"

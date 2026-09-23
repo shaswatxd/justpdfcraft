@@ -178,8 +178,8 @@ export const ImageToolsDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 select-none" role="dialog" aria-modal="true" aria-label="Image Tools Dialog">
-      <div className="w-full max-w-3xl h-[85vh] max-h-[760px] bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden text-slate-100">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 select-none" role="dialog" aria-modal="true" aria-label="Image Tools Dialog">
+      <div className="w-full max-w-3xl h-[85vh] max-h-[760px] bg-black border border-slate-700/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden text-slate-100">
         {/* Header */}
         <div className="h-14 px-4 sm:px-6 bg-slate-800/80 border-b border-slate-700/80 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
@@ -201,7 +201,7 @@ export const ImageToolsDialog: React.FC = () => {
         </div>
 
         {/* Quick Launchers to specialized image suites */}
-        <div className="bg-slate-950/80 border-b border-slate-800 px-4 py-2 flex items-center gap-2 overflow-x-auto text-xs shrink-0">
+        <div className="bg-black/80 border-b border-slate-800 px-4 py-2 flex items-center gap-2 overflow-x-auto text-xs shrink-0">
           <span className="text-slate-500 font-bold uppercase tracking-wider text-[10px]">Jump to:</span>
           <button
             onClick={() => setActiveModal('student-resizer')}
@@ -220,7 +220,7 @@ export const ImageToolsDialog: React.FC = () => {
         </div>
 
         {/* Tab Selection */}
-        <div className="flex border-b border-slate-800 bg-slate-900/60 px-4 pt-2 shrink-0">
+        <div className="flex border-b border-slate-800 bg-black/60 px-4 pt-2 shrink-0">
           <button
             onClick={() => setActiveTab('converter')}
             className={`px-4 py-2 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${
@@ -264,7 +264,7 @@ export const ImageToolsDialog: React.FC = () => {
                 <select
                   value={targetFormat}
                   onChange={(e) => setTargetFormat(e.target.value as any)}
-                  className="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white"
+                  className="bg-black border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white"
                 >
                   <option value="png">PNG (Lossless)</option>
                   <option value="jpeg">JPG / JPEG</option>
@@ -317,7 +317,7 @@ export const ImageToolsDialog: React.FC = () => {
           {images.length === 0 ? (
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-slate-700 hover:border-pink-500/50 rounded-2xl p-10 text-center cursor-pointer bg-slate-900/40 hover:bg-slate-800/40 transition-colors space-y-3"
+              className="border-2 border-dashed border-slate-700 hover:border-pink-500/50 rounded-2xl p-10 text-center cursor-pointer bg-black/40 hover:bg-slate-800/40 transition-colors space-y-3"
             >
               <div className="w-12 h-12 rounded-2xl bg-pink-500/10 text-pink-400 mx-auto flex items-center justify-center">
                 <Upload className="w-6 h-6" />
@@ -338,7 +338,7 @@ export const ImageToolsDialog: React.FC = () => {
                 </button>
               </div>
 
-              <div className="divide-y divide-slate-800 bg-slate-950/60 rounded-xl border border-slate-800 max-h-[300px] overflow-y-auto">
+              <div className="divide-y divide-slate-800 bg-black/60 rounded-xl border border-slate-800 max-h-[300px] overflow-y-auto">
                 {images.map((img) => (
                   <div key={img.id} className="p-2.5 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 overflow-hidden">

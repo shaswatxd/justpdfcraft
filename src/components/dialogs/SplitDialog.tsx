@@ -31,7 +31,11 @@ export const SplitDialog: React.FC = () => {
           if (p.includes('-')) {
             const [s, e] = p.split('-').map((v) => parseInt(v.trim(), 10));
             if (!isNaN(s) && !isNaN(e)) {
-              ranges.push([Math.max(0, s - 1), Math.min(pageCount - 1, e - 1)]);
+              const startIdx = Math.max(0, Math.min(s - 1, e - 1));
+              const endIdx = Math.min(pageCount - 1, Math.max(s - 1, e - 1));
+              if (startIdx <= endIdx) {
+                ranges.push([startIdx, endIdx]);
+              }
             }
           } else {
             const n = parseInt(p, 10);
@@ -99,7 +103,7 @@ export const SplitDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Split Dialog">
-      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+      <div className="w-full max-w-md bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -176,7 +180,7 @@ export const SplitDialog: React.FC = () => {
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-slate-800 bg-slate-900/60 flex justify-end gap-2">
+            <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
               <button
                 onClick={() => setActiveModal(null)}
                 className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"

@@ -205,7 +205,7 @@ export const CompareDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Compare Dialog">
-      <div className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
+      <div className="w-full max-w-4xl bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -360,7 +360,7 @@ export const CompareDialog: React.FC = () => {
                       </div>
 
                       {/* Interactive Visual Swipe Viewport */}
-                      <div className="bg-slate-950/80 rounded-2xl p-4 border border-slate-800 flex flex-col items-center justify-center min-h-[380px] overflow-auto">
+                      <div className="bg-[#000000]/80 rounded-2xl p-4 border border-slate-800 flex flex-col items-center justify-center min-h-[380px] overflow-auto">
                         {isRenderingPages && (
                           <div className="py-12 flex items-center gap-2 text-slate-400 text-xs">
                             <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
@@ -388,7 +388,7 @@ export const CompareDialog: React.FC = () => {
                             }}
                           >
                             <canvas ref={canvasRefA} className="w-full h-full block object-contain" />
-                            <div className="absolute top-2.5 left-2.5 bg-slate-900/90 backdrop-blur text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-cyan-500/40 shadow-lg select-none pointer-events-none">
+                            <div className="absolute top-2.5 left-2.5 bg-[#000000]/90 backdrop-blur text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-cyan-500/40 shadow-lg select-none pointer-events-none">
                               Version A (Original)
                             </div>
                           </div>
@@ -401,7 +401,7 @@ export const CompareDialog: React.FC = () => {
                             }}
                           >
                             <canvas ref={canvasRefB} className="w-full h-full block object-contain" />
-                            <div className="absolute top-2.5 right-2.5 bg-slate-900/90 backdrop-blur text-purple-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-purple-500/40 shadow-lg select-none pointer-events-none">
+                            <div className="absolute top-2.5 right-2.5 bg-[#000000]/90 backdrop-blur text-purple-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-purple-500/40 shadow-lg select-none pointer-events-none">
                               Version B (Revision)
                             </div>
                           </div>
@@ -411,7 +411,7 @@ export const CompareDialog: React.FC = () => {
                             className="absolute top-0 bottom-0 w-[2px] bg-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.9)] z-20 pointer-events-none"
                             style={{ left: `${sliderPos}%` }}
                           >
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-slate-900 border-2 border-purple-400 flex items-center justify-center text-purple-300 shadow-2xl text-[10px] font-bold select-none">
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-[#000000] border-2 border-purple-400 flex items-center justify-center text-purple-300 shadow-2xl text-[10px] font-bold select-none">
                               ◀▶
                             </div>
                           </div>
@@ -490,7 +490,7 @@ export const CompareDialog: React.FC = () => {
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-3.5 border-t border-slate-800 bg-slate-900/60 flex items-center justify-between text-xs">
+            <div className="px-6 py-3.5 border-t border-slate-800 bg-[#000000]/60 flex items-center justify-between text-xs">
               <span className="text-slate-500 text-[11px]">
                 {compareResult ? 'Comparison engine: 100% offline vector layout & pixel alignment' : ''}
               </span>

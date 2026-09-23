@@ -15,6 +15,8 @@ import {
   Crop,
   Grid,
   Eye,
+  Undo2,
+  Redo2
 } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore } from '@/stores/uiStore';
@@ -145,6 +147,10 @@ export const PageOrganizer: React.FC = () => {
     currentPage,
     setCurrentPage,
     setViewMode,
+    undo,
+    redo,
+    undoStack,
+    redoStack
   } = useDocumentStore();
 
   const { addToast, setActiveModal } = useUIStore();
@@ -330,7 +336,13 @@ export const PageOrganizer: React.FC = () => {
 
       const ctrl = e.ctrlKey || e.metaKey;
 
-      if (ctrl && e.key.toLowerCase() === 'a') {
+      if (ctrl && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) { redo(); } else { undo(); }
+      } else if (ctrl && e.key.toLowerCase() === 'y') {
+        e.preventDefault();
+        redo();
+      } else if (ctrl && e.key.toLowerCase() === 'a') {
         e.preventDefault();
         selectAllPages();
       } else if (e.key === 'Escape') {
@@ -350,9 +362,9 @@ export const PageOrganizer: React.FC = () => {
   }, [selectedPageIndices, pageCount]);
 
   return (
-    <div className="flex-1 flex flex-col bg-slate-950 text-slate-200 overflow-hidden">
+    <div className="flex-1 flex flex-col bg-black text-slate-200 overflow-hidden">
       {/* Top Action Ribbon */}
-      <div className="h-12 bg-slate-900 border-b border-slate-800 px-4 flex items-center justify-between gap-4">
+      <div className="h-12 bg-black border-b border-slate-800 px-4 flex items-center justify-between gap-4">
         {/* Selection summary & toggles */}
         <div className="flex items-center gap-3">
           <span className="text-xs font-semibold text-slate-300">
@@ -456,7 +468,7 @@ export const PageOrganizer: React.FC = () => {
             <span className="hidden sm:inline">Crop</span>
           </button>
           <button
-            onClick={handleDelete}
+            onClick={() => undo()} disabled={undoStack.length === 0} className="p-1.5 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs flex items-center gap-1 transition-colors" title="Undo"><Undo2 className="w-3.5 h-3.5" /></button><button onClick={() => redo()} disabled={redoStack.length === 0} className="p-1.5 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs flex items-center gap-1 transition-colors" title="Redo"><Redo2 className="w-3.5 h-3.5" /></button><div className="w-[1px] h-5 bg-slate-800 mx-1" /><button onClick={handleDelete}
             disabled={selectedPageIndices.length === 0}
             className="p-1.5 rounded bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 disabled:opacity-40 text-xs flex items-center gap-1 transition-colors"
             title="Delete Selected Pages"
@@ -532,7 +544,7 @@ export const PageOrganizer: React.FC = () => {
                       ? 'bg-swift-500/10 border-swift-500 shadow-lg ring-2 ring-swift-500/40'
                       : isCurrent
                       ? 'bg-slate-850 border-swift-500/60 ring-1 ring-swift-500/30'
-                      : 'bg-slate-900 border-slate-800 hover:border-slate-700 hover:bg-slate-850'
+                      : 'bg-black border-slate-800 hover:border-slate-700 hover:bg-slate-850'
                   }`}
                 >
                   {/* Page Number & Checkbox */}
@@ -624,3 +636,7 @@ export const PageOrganizer: React.FC = () => {
     </div>
   );
 };
+
+
+
+

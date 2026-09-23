@@ -80,7 +80,7 @@ export const SanitizeDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Sanitize Dialog">
-      <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+      <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -163,7 +163,7 @@ export const SanitizeDialog: React.FC = () => {
             <label className="font-semibold text-slate-300 block mb-1.5">
               Metadata & Device Inspection
             </label>
-            <div className="bg-slate-950/60 rounded-xl border border-slate-800 divide-y divide-slate-800/60 overflow-hidden">
+            <div className="bg-[#000000]/60 rounded-xl border border-slate-800 divide-y divide-slate-800/60 overflow-hidden">
               {leaks.map((item) => (
                 <div key={item.label} className="flex items-center justify-between px-3.5 py-2">
                   <span className="text-slate-400 font-medium">{item.label}</span>
@@ -207,7 +207,7 @@ export const SanitizeDialog: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3.5 bg-slate-950/60 border-t border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-3.5 bg-[#000000]/60 border-t border-slate-800 flex items-center justify-between">
           <span className="text-[11px] text-slate-500">
             {sanitizedReport ? 'Ready for distribution' : 'Action is undoable via Ctrl+Z'}
           </span>

@@ -17,12 +17,13 @@ import {
   Tag,
   LayoutGrid,
   List,
+  MessageSquare,
 } from 'lucide-react';
 import { useUIStore, SidebarTab } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
 import { FormFieldsTab } from './tabs/FormFieldsTab';
 import { getPDFEngine } from '@core/pdf/engine.factory';
-import { PageDimensions, DocumentOutlineItem } from '@core/pdf/engine.interface';
+import { PageDimensions, DocumentOutlineItem, AnnotationObject } from '@core/pdf/engine.interface';
 
 interface SidebarPageThumbnailProps {
   pageIndex: number;
@@ -138,7 +139,7 @@ const SidebarPageThumbnail: React.FC<SidebarPageThumbnailProps> = ({
         } ${
           isCurrent
             ? 'bg-swift-600/20 border-2 border-swift-500 shadow-md ring-2 ring-swift-500/30'
-            : 'bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 shadow-sm'
+            : 'bg-black/80 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 shadow-sm'
         }`}
       >
         {/* Crisp Page Preview Canvas */}
@@ -388,10 +389,27 @@ export const Sidebar: React.FC = () => {
 
   const totalBookmarks = (documentOutline?.length || 0) + (userBookmarks?.length || 0);
 
+  const [docAnnotations, setDocAnnotations] = useState<AnnotationObject[]>([]);
+  const [loadingAnnots, setLoadingAnnots] = useState(false);
+
+  useEffect(() => {
+    if (activeSidebarTab === 'annotations' && documentId) {
+      setLoadingAnnots(true);
+      getPDFEngine().getAnnotations(documentId).then(a => {
+        setDocAnnotations(a || []);
+        setLoadingAnnots(false);
+      }).catch(err => {
+        console.warn(err);
+        setLoadingAnnots(false);
+      });
+    }
+  }, [activeSidebarTab, documentId]);
+
   const tabs: Array<{ id: SidebarTab; label: string; icon: any; badge?: number }> = [
     { id: 'thumbnails', label: 'Pages', icon: Image },
     { id: 'bookmarks', label: 'Outline', icon: Bookmark, badge: totalBookmarks || undefined },
     { id: 'forms', label: 'Forms', icon: FileText, badge: formFields.length },
+    { id: 'annotations', label: 'Annotations', icon: MessageSquare },
     { id: 'search', label: 'Search', icon: Search },
   ];
 
@@ -421,9 +439,9 @@ export const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col select-none z-10">
+    <aside className="w-64 bg-black border-r border-slate-800 flex flex-col select-none z-10">
       {/* Tab Switcher */}
-      <div className="h-10 border-b border-slate-800 flex items-center px-2 gap-1 bg-slate-900/60">
+      <div className="h-10 border-b border-slate-800 flex items-center px-2 gap-1 bg-black/60">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeSidebarTab === tab.id;
@@ -453,6 +471,37 @@ export const Sidebar: React.FC = () => {
       <div className="flex-1 overflow-y-auto p-3 text-slate-300 text-xs">
         {/* Forms View */}
         {activeSidebarTab === 'forms' && <FormFieldsTab />}
+
+        {/* Annotations View */}
+        {activeSidebarTab === 'annotations' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <MessageSquare className="w-3.5 h-3.5 text-swift-400" />
+                <span>Annotations</span>
+              </h3>
+              <span className="text-[10px] font-mono text-slate-500">
+                {docAnnotations.length} {docAnnotations.length === 1 ? 'annot' : 'annots'}
+              </span>
+            </div>
+            {loadingAnnots ? (
+              <div className="flex justify-center p-4"><div className="w-5 h-5 border-2 border-swift-500 border-t-transparent rounded-full animate-spin" /></div>
+            ) : docAnnotations.length > 0 ? (
+              <div className="space-y-2">
+                {docAnnotations.map(ann => (
+                  <div key={ann.id} onClick={() => setCurrentPage(ann.pageIndex + 1)} className="p-2 bg-slate-800/40 hover:bg-slate-800/80 rounded-xl border border-slate-800 cursor-pointer transition-colors">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-200 capitalize">{ann.type}</span>
+                      <span className="text-[10px] font-mono text-slate-500">Page {ann.pageIndex + 1}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[11px] text-slate-500 italic px-1">No annotations found in document.</p>
+            )}
+          </div>
+        )}
 
         {/* Thumbnails View */}
         {activeSidebarTab === 'thumbnails' && (
@@ -666,7 +715,7 @@ export const Sidebar: React.FC = () => {
                       }
                     }}
                     autoFocus
-                    className="w-full px-2.5 py-1 text-xs bg-slate-900 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-swift-500"
+                    className="w-full px-2.5 py-1 text-xs bg-black border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-swift-500"
                   />
                   <div className="flex items-center justify-end gap-1.5">
                     <button
@@ -707,7 +756,7 @@ export const Sidebar: React.FC = () => {
 
               {/* User bookmarks list */}
               {userBookmarks.length > 0 ? (
-                <div className="space-y-1 bg-slate-900/60 p-2 rounded-xl border border-slate-800">
+                <div className="space-y-1 bg-black/60 p-2 rounded-xl border border-slate-800">
                   {userBookmarks.map((bm) => (
                     <div
                       key={bm.id}
@@ -775,7 +824,7 @@ export const Sidebar: React.FC = () => {
               </div>
 
               {documentOutline && documentOutline.length > 0 ? (
-                <div className="space-y-1 bg-slate-900/60 p-2 rounded-xl border border-slate-800">
+                <div className="space-y-1 bg-black/60 p-2 rounded-xl border border-slate-800">
                   {documentOutline.map((item, idx) => (
                     <OutlineNode
                       key={`${item.title}_${idx}`}
@@ -861,7 +910,7 @@ export const Sidebar: React.FC = () => {
       {/* Thumbnail Right-Click Context Menu */}
       {contextMenu && (
         <div
-          className="fixed z-50 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-1 w-44 animate-scale-in text-xs"
+          className="fixed z-50 bg-black border border-slate-700 rounded-xl shadow-2xl p-1 w-44 animate-scale-in text-xs"
           style={{
             left: `${Math.min(window.innerWidth - 180, contextMenu.x)}px`,
             top: `${Math.min(window.innerHeight - 200, contextMenu.y)}px`,
@@ -919,3 +968,5 @@ export const Sidebar: React.FC = () => {
     </aside>
   );
 };
+
+

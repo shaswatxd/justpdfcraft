@@ -218,14 +218,14 @@ export async function compressToTargetKb(
   let curW = canvas.width;
   let curH = canvas.height;
 
-  // 1. Binary search on quality between 0.05 and 0.98
+  // 1. Binary search on quality between 0.05 and 1.0
   let lowQ = 0.05;
-  let highQ = 0.98;
+  let highQ = 1.0;
   let bestBlob: Blob | null = null;
   let bestQuality = 0.85;
   let bestKb = 0;
 
-  for (let iter = 0; iter < 9; iter++) {
+  for (let iter = 0; iter < 10; iter++) {
     const midQ = (lowQ + highQ) / 2;
     const blob = await getBlob(currentCanvas, midQ);
     const kb = blob.size / 1024;
@@ -247,7 +247,45 @@ export async function compressToTargetKb(
   // If even at low quality the image is still above maxKb, scale down dimensions
   if (bestKb > maxKb && (curW > 100 && curH > 100)) {
     let scale = 0.9;
-    while (bestKb > maxKb && scale >= 0.4) {
+    while (bestKb > maxKb && scale >= 0.2) {
+      const scaledCanvas = document.createElement('canvas');
+      scaledCanvas.width = Math.max(10, Math.round(curW * scale));
+      scaledCanvas.height = Math.max(10, Math.round(curH * scale));
+      const ctx = scaledCanvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, scaledCanvas.width, scaledCanvas.height);
+        ctx.drawImage(canvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
+        
+        // Use binary search again for the scaled canvas
+        let sqLow = 0.05, sqHigh = 0.85, sqBestBlob = null, sqBestKb = 0;
+        for (let j = 0; j < 5; j++) {
+            const sqMid = (sqLow + sqHigh) / 2;
+            const testBlob = await getBlob(scaledCanvas, sqMid);
+            const testKb = testBlob.size / 1024;
+            sqBestBlob = testBlob;
+            sqBestKb = testKb;
+            if (testKb > maxKb) sqHigh = sqMid;
+            else if (testKb < minKb) sqLow = sqMid;
+            else break;
+        }
+
+        bestBlob = sqBestBlob!;
+        bestKb = sqBestKb;
+        currentCanvas = scaledCanvas;
+        curW = scaledCanvas.width;
+        curH = scaledCanvas.height;
+        if (sqBestKb <= maxKb) break;
+      }
+      scale -= 0.15;
+    }
+  }
+
+  // If it's too small even at max quality, we pad it with metadata or scale up. 
+  // We'll scale it up slightly.
+  if (bestKb < minKb) {
+    let scale = 1.1;
+    while (bestKb < minKb && scale <= 2.0) {
       const scaledCanvas = document.createElement('canvas');
       scaledCanvas.width = Math.round(curW * scale);
       scaledCanvas.height = Math.round(curH * scale);
@@ -256,16 +294,16 @@ export async function compressToTargetKb(
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, scaledCanvas.width, scaledCanvas.height);
         ctx.drawImage(canvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
-        const testBlob = await getBlob(scaledCanvas, 0.75);
+        const testBlob = await getBlob(scaledCanvas, 1.0);
         const testKb = testBlob.size / 1024;
         bestBlob = testBlob;
         bestKb = testKb;
         currentCanvas = scaledCanvas;
         curW = scaledCanvas.width;
         curH = scaledCanvas.height;
-        if (testKb <= maxKb) break;
+        if (testKb >= minKb) break;
       }
-      scale -= 0.15;
+      scale += 0.2;
     }
   }
 
@@ -489,7 +527,16 @@ export function addNameAndDateBanner(
     const fontSizeDate = Math.max(11, Math.round(bannerHeight * 0.28));
 
     ctx.font = `bold ${fontSizeName}px ${fontFamily}`;
-    ctx.fillText(nameText, w / 2, bannerY + bannerHeight * 0.32, maxTextWidth);
+    // const nameLines = wrapText(ctx, nameText, maxTextWidth);
+    
+    // If name wraps to multiple lines, we might need to adjust y positions, but for simplicity we can just scale font or draw them tighter.
+    // Let's just draw the first line for now if it wraps, or draw multiple lines. Actually, it's better to scale the font size down.
+    let adjustedNameFontSize = fontSizeName;
+    while (ctx.measureText(nameText).width > maxTextWidth && adjustedNameFontSize > 8) {
+      adjustedNameFontSize -= 1;
+      ctx.font = `bold ${adjustedNameFontSize}px ${fontFamily}`;
+    }
+    ctx.fillText(nameText, w / 2, bannerY + bannerHeight * 0.32);
 
     ctx.font = `600 ${fontSizeDate}px ${fontFamily}`;
     ctx.fillStyle = '#334155';
@@ -497,9 +544,14 @@ export function addNameAndDateBanner(
   } else {
     // Single line centered
     const singleText = nameText || dateFormatted;
-    const fontSize = Math.max(13, Math.round(bannerHeight * 0.44));
+    let fontSize = Math.max(13, Math.round(bannerHeight * 0.44));
     ctx.font = `bold ${fontSize}px ${fontFamily}`;
-    ctx.fillText(singleText, w / 2, bannerY + bannerHeight / 2, maxTextWidth);
+    
+    while (ctx.measureText(singleText).width > maxTextWidth && fontSize > 8) {
+      fontSize -= 1;
+      ctx.font = `bold ${fontSize}px ${fontFamily}`;
+    }
+    ctx.fillText(singleText, w / 2, bannerY + bannerHeight / 2);
   }
 
   return resultCanvas;

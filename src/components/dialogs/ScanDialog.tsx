@@ -195,7 +195,7 @@ export const ScanDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Scan Dialog">
-      <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+      <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -219,7 +219,7 @@ export const ScanDialog: React.FC = () => {
         </div>
 
         {/* Mode Switcher */}
-        <div className="flex border-b border-slate-800 bg-slate-950/40 px-6 pt-2 gap-2 text-xs">
+        <div className="flex border-b border-slate-800 bg-[#000000]/40 px-6 pt-2 gap-2 text-xs">
           <button
             type="button"
             onClick={() => {
@@ -326,7 +326,7 @@ export const ScanDialog: React.FC = () => {
           ) : (
             /* Snapshot Preview with Filter */
             <div className="space-y-4">
-              <div className="border border-slate-800 rounded-xl bg-slate-950 p-2 flex items-center justify-center max-h-60 overflow-hidden relative">
+              <div className="border border-slate-800 rounded-xl bg-[#000000] p-2 flex items-center justify-center max-h-60 overflow-hidden relative">
                 <img
                   src={currentSnapshot}
                   alt="Scan Preview"
@@ -399,7 +399,7 @@ export const ScanDialog: React.FC = () => {
               </label>
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {scannedPages.map((pg, idx) => (
-                  <div key={idx} className="relative shrink-0 border border-slate-700 rounded-lg p-1 bg-slate-950">
+                  <div key={idx} className="relative shrink-0 border border-slate-700 rounded-lg p-1 bg-[#000000]">
                     <img src={pg} alt={`Page ${idx + 1}`} className="w-14 h-18 object-cover rounded" />
                     <button
                       type="button"
@@ -418,7 +418,7 @@ export const ScanDialog: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-800 bg-slate-900/60 flex justify-end gap-2">
+        <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
           <button
             onClick={() => {
               stopCameraStream();

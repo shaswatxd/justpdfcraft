@@ -86,9 +86,9 @@ export const TableExtractDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in" role="dialog" aria-modal="true" aria-label="Table Extract Dialog">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-[#000000] border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/80">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-[#000000]/80">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-swift-500/10 rounded-xl text-swift-400 border border-swift-500/20">
               <Table className="w-5 h-5" />
@@ -121,7 +121,7 @@ export const TableExtractDialog: React.FC = () => {
         ) : (
           <>
             {/* Page Selector & Toolbar */}
-            <div className="flex items-center justify-between px-6 py-3 bg-slate-950/40 border-b border-slate-800 gap-4 flex-wrap">
+            <div className="flex items-center justify-between px-6 py-3 bg-[#000000]/40 border-b border-slate-800 gap-4 flex-wrap">
           <div className="flex items-center gap-3">
             {/* Scope Mode Segmented Button */}
             <div className="flex items-center bg-slate-800/80 p-0.5 rounded-lg border border-slate-700/60 text-xs">
@@ -190,7 +190,7 @@ export const TableExtractDialog: React.FC = () => {
         </div>
 
         {/* Table Content Preview */}
-        <div className="flex-1 overflow-auto p-6 bg-slate-950/70">
+        <div className="flex-1 overflow-auto p-6 bg-[#000000]/70">
           {isLoading ? (
             <div className="h-64 flex flex-col items-center justify-center text-slate-400 gap-3">
               <div className="w-8 h-8 border-2 border-swift-500 border-t-transparent rounded-full animate-spin" />
@@ -222,13 +222,13 @@ export const TableExtractDialog: React.FC = () => {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 bg-slate-900/40">
+                <tbody className="divide-y divide-slate-800/60 bg-[#000000]/40">
                   {tableData.rows.map((row, rIdx) => (
                     <tr
                       key={rIdx}
                       className={rIdx === 0 ? 'bg-slate-800/30 font-semibold text-slate-200' : 'hover:bg-slate-800/20 text-slate-300'}
                     >
-                      <td className="p-2 text-center text-slate-500 border-r border-slate-800 bg-slate-900/60">
+                      <td className="p-2 text-center text-slate-500 border-r border-slate-800 bg-[#000000]/60">
                         {rIdx + 1}
                       </td>
                       {row.map((cell, cIdx) => (
@@ -245,7 +245,7 @@ export const TableExtractDialog: React.FC = () => {
         </div>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-800 bg-slate-900/80">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-800 bg-[#000000]/80">
           <button
             onClick={() => {
               setTableData(null);

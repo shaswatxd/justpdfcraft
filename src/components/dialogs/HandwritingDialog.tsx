@@ -490,10 +490,10 @@ export const HandwritingDialog: React.FC = () => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Handwriting Dialog">
-      <div className="relative w-full max-w-6xl max-h-[92vh] flex flex-col bg-slate-900 border border-slate-700/70 rounded-2xl shadow-2xl overflow-hidden text-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Handwriting Dialog">
+      <div className="relative w-full max-w-6xl max-h-[92vh] flex flex-col bg-black border border-slate-700/70 rounded-2xl shadow-2xl overflow-hidden text-slate-100">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-black/90 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
               <PenTool className="w-5 h-5" />
@@ -552,7 +552,7 @@ export const HandwritingDialog: React.FC = () => {
                 onChange={(e) => setText(e.target.value)}
                 rows={9}
                 placeholder="Paste or type your assignment text, lab report, experiment, or essay here..."
-                className="w-full px-3.5 py-2.5 bg-slate-950/70 border border-slate-700/80 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-amber-500 transition-colors placeholder:text-slate-500 font-mono resize-none"
+                className="w-full px-3.5 py-2.5 bg-black/70 border border-slate-700/80 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-amber-500 transition-colors placeholder:text-slate-500 font-mono resize-none"
               />
             </div>
 
@@ -567,7 +567,7 @@ export const HandwritingDialog: React.FC = () => {
                 <select
                   value={selectedFont}
                   onChange={(e) => setSelectedFont(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-950/70 border border-slate-700/80 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-amber-500 cursor-pointer"
+                  className="w-full px-3 py-2 bg-black/70 border border-slate-700/80 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-amber-500 cursor-pointer"
                 >
                   {FONTS.map((f) => (
                     <option key={f.id} value={f.family}>
@@ -583,7 +583,7 @@ export const HandwritingDialog: React.FC = () => {
                   <Layers className="w-3.5 h-3.5 text-teal-400" />
                   Paper Style
                 </label>
-                <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-950/70 border border-slate-700/80 rounded-xl">
+                <div className="grid grid-cols-3 gap-1.5 p-1 bg-black/70 border border-slate-700/80 rounded-xl">
                   {(['ruled', 'plain', 'grid'] as const).map((type) => (
                     <button
                       key={type}
@@ -603,7 +603,7 @@ export const HandwritingDialog: React.FC = () => {
             </div>
 
             {/* Ink Color Picker */}
-            <div className="flex flex-col gap-2 p-3 bg-slate-950/40 border border-slate-800 rounded-xl">
+            <div className="flex flex-col gap-2 p-3 bg-black/40 border border-slate-800 rounded-xl">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
                   <Palette className="w-3.5 h-3.5 text-sky-400" />
@@ -641,7 +641,7 @@ export const HandwritingDialog: React.FC = () => {
             {/* Sliders: Size, Spacing, Scanner */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* Font Size */}
-              <div className="flex flex-col gap-1.5 p-2.5 bg-slate-950/40 border border-slate-800 rounded-xl">
+              <div className="flex flex-col gap-1.5 p-2.5 bg-black/40 border border-slate-800 rounded-xl">
                 <div className="flex justify-between text-xs text-slate-300">
                   <span>Font Size</span>
                   <span className="font-mono text-amber-400">{fontSize}px</span>
@@ -657,7 +657,7 @@ export const HandwritingDialog: React.FC = () => {
               </div>
 
               {/* Line Spacing */}
-              <div className="flex flex-col gap-1.5 p-2.5 bg-slate-950/40 border border-slate-800 rounded-xl">
+              <div className="flex flex-col gap-1.5 p-2.5 bg-black/40 border border-slate-800 rounded-xl">
                 <div className="flex justify-between text-xs text-slate-300">
                   <span>Line Height</span>
                   <span className="font-mono text-amber-400">{lineHeight}px</span>
@@ -673,7 +673,7 @@ export const HandwritingDialog: React.FC = () => {
               </div>
 
               {/* Scanner Shadow */}
-              <div className="flex flex-col gap-1.5 p-2.5 bg-slate-950/40 border border-slate-800 rounded-xl">
+              <div className="flex flex-col gap-1.5 p-2.5 bg-black/40 border border-slate-800 rounded-xl">
                 <div className="flex justify-between text-xs text-slate-300">
                   <span>Scan Shadow</span>
                   <span className="font-mono text-amber-400">{scannerEffect}%</span>
@@ -745,7 +745,7 @@ export const HandwritingDialog: React.FC = () => {
 
           {/* Right Column: Live Responsive Canvas Preview */}
           <div className="lg:col-span-6 flex flex-col gap-3">
-            <div className="flex items-center justify-between bg-slate-950/40 px-3 py-2 rounded-xl border border-slate-800">
+            <div className="flex items-center justify-between bg-black/40 px-3 py-2 rounded-xl border border-slate-800">
               <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 Live Page Preview
@@ -776,7 +776,7 @@ export const HandwritingDialog: React.FC = () => {
             </div>
 
             {/* Canvas Page Container */}
-            <div className="relative w-full max-h-[520px] bg-slate-950/80 border border-slate-800 rounded-2xl p-4 flex items-center justify-center overflow-auto shadow-inner">
+            <div className="relative w-full max-h-[520px] bg-black/80 border border-slate-800 rounded-2xl p-4 flex items-center justify-center overflow-auto shadow-inner">
               <div className="max-w-[360px] sm:max-w-[420px] w-full rounded-xl overflow-hidden shadow-2xl border border-slate-700/50 bg-[#faf9f5]">
                 <canvas
                   ref={canvasRef}

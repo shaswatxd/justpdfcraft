@@ -214,7 +214,7 @@ export const MainToolbar: React.FC = () => {
   ];
 
   return (
-    <div className="h-11 bg-slate-900/95 border-b border-slate-800 px-3 flex items-center justify-between z-20 gap-2 select-none overflow-x-auto no-scrollbar overflow-y-visible">
+    <div className="h-11 bg-black/95 border-b border-slate-800 px-3 flex items-center justify-between z-20 gap-2 select-none overflow-x-auto no-scrollbar overflow-y-visible">
       {/* Left: Sidebar toggle + Main Edit Tools */}
       <div className="flex items-center gap-1 shrink-0">
         <button
@@ -342,7 +342,7 @@ export const MainToolbar: React.FC = () => {
             </button>
 
             {shapesOpen && (
-              <div className="absolute left-0 top-full mt-1.5 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-1 z-50 w-44 flex flex-col gap-0.5 animate-scale-in">
+              <div className="absolute left-0 top-full mt-1.5 bg-black border border-slate-800 rounded-xl shadow-2xl p-1 z-50 w-44 flex flex-col gap-0.5 animate-scale-in">
                 <span className="text-[10px] font-semibold text-slate-400 px-2 py-1 uppercase tracking-wider">
                   Geometric Shapes
                 </span>
@@ -542,7 +542,7 @@ export const MainToolbar: React.FC = () => {
           </button>
 
           {moreToolsOpen && (
-            <div className="absolute right-0 top-full mt-1.5 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-1.5 z-50 w-72 flex flex-col gap-1 animate-scale-in">
+            <div className="absolute right-0 top-full mt-1.5 bg-black border border-slate-800 rounded-2xl shadow-2xl p-1.5 z-50 w-72 flex flex-col gap-1 animate-scale-in">
               <span className="text-[10px] font-bold text-slate-400 px-3 py-1.5 uppercase tracking-wider border-b border-slate-800/80">
                 Advanced PDF Utilities
               </span>

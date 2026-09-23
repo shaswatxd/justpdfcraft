@@ -154,9 +154,9 @@ export const CropDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Crop Dialog">
-      <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-[#000000] border border-slate-800 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-[#000000]/60">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
               <Crop className="w-5 h-5" />
@@ -194,7 +194,7 @@ export const CropDialog: React.FC = () => {
             {/* Content Body */}
             <div className="p-6 overflow-y-auto space-y-6 flex-1">
           {/* Visual Preview & Coordinate Simulation */}
-          <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="bg-[#000000]/60 border border-slate-800 rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-6">
             {/* Visual Mini Page Box */}
             <div className="relative w-36 h-48 bg-slate-800/80 border-2 border-slate-700 rounded-lg p-2 flex flex-col justify-between overflow-hidden shadow-inner shrink-0">
               {/* Dummy page content lines */}
@@ -215,7 +215,7 @@ export const CropDialog: React.FC = () => {
                   right: `${Math.min(45, (trimRight / origWidth) * 100)}%`,
                 }}
               >
-                <span className="text-[9px] font-mono font-bold text-cyan-300 bg-slate-900/90 px-1 py-0.5 rounded shadow">
+                <span className="text-[9px] font-mono font-bold text-cyan-300 bg-[#000000]/90 px-1 py-0.5 rounded shadow">
                   {croppedWidth} × {croppedHeight}
                 </span>
               </div>
@@ -315,7 +315,7 @@ export const CropDialog: React.FC = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950/40 p-4 rounded-xl border border-slate-800">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#000000]/40 p-4 rounded-xl border border-slate-800">
               <div>
                 <label className="text-[11px] font-semibold text-slate-300 block mb-1">
                   Top Trim (pt)
@@ -326,7 +326,7 @@ export const CropDialog: React.FC = () => {
                   max={Math.floor(origHeight / 2 - 10)}
                   value={trimTop}
                   onChange={(e) => setTrimTop(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 font-mono"
+                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 font-mono"
                 />
               </div>
 
@@ -340,7 +340,7 @@ export const CropDialog: React.FC = () => {
                   max={Math.floor(origHeight / 2 - 10)}
                   value={trimBottom}
                   onChange={(e) => setTrimBottom(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 font-mono"
+                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 font-mono"
                 />
               </div>
 
@@ -354,7 +354,7 @@ export const CropDialog: React.FC = () => {
                   max={Math.floor(origWidth / 2 - 10)}
                   value={trimLeft}
                   onChange={(e) => setTrimLeft(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 font-mono"
+                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 font-mono"
                 />
               </div>
 
@@ -368,7 +368,7 @@ export const CropDialog: React.FC = () => {
                   max={Math.floor(origWidth / 2 - 10)}
                   value={trimRight}
                   onChange={(e) => setTrimRight(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 font-mono"
+                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 font-mono"
                 />
               </div>
             </div>
@@ -436,7 +436,7 @@ export const CropDialog: React.FC = () => {
                   value={customRange}
                   onChange={(e) => setCustomRange(e.target.value)}
                   placeholder={`Enter page numbers (1 to ${pageCount}), e.g. 1-3, 5`}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 font-mono"
+                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 font-mono"
                 />
               </div>
             )}
@@ -444,7 +444,7 @@ export const CropDialog: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-slate-950/70 border-t border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-[#000000]/70 border-t border-slate-800 flex items-center justify-between">
           <span className="text-[11px] text-slate-400">
             Action is reversible via <kbd className="bg-slate-800 px-1 py-0.5 rounded font-mono text-[10px]">Ctrl+Z</kbd>
           </span>

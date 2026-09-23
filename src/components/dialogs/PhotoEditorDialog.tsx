@@ -509,7 +509,7 @@ export const PhotoEditorDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Photo Editor Dialog">
-      <div className="bg-slate-900 border border-slate-800 w-full max-w-6xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+      <div className="bg-black border border-slate-800 w-full max-w-6xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
         <input
           ref={fileInputRef}
           type="file"
@@ -519,7 +519,7 @@ export const PhotoEditorDialog: React.FC = () => {
         />
 
         {/* Modal Header */}
-        <div className="px-6 py-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
+        <div className="px-6 py-3.5 border-b border-slate-800 flex items-center justify-between bg-black/80">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
               <Sparkles className="w-5 h-5" />
@@ -570,10 +570,10 @@ export const PhotoEditorDialog: React.FC = () => {
           {/* Left Canvas Preview Area (8 Cols) */}
           <div
             ref={containerRef}
-            className="lg:col-span-8 bg-slate-950/90 flex flex-col items-center justify-center p-4 border-b lg:border-b-0 lg:border-r border-slate-800 relative overflow-hidden select-none"
+            className="lg:col-span-8 bg-black/90 flex flex-col items-center justify-center p-4 border-b lg:border-b-0 lg:border-r border-slate-800 relative overflow-hidden select-none"
           >
             {sourceImage ? (
-              <div className="relative max-w-full max-h-full flex items-center justify-center shadow-2xl rounded-lg overflow-hidden border border-slate-800 bg-slate-900/40">
+              <div className="relative max-w-full max-h-full flex items-center justify-center shadow-2xl rounded-lg overflow-hidden border border-slate-800 bg-black/40">
                 <canvas
                   ref={canvasRef}
                   className="max-w-[70vw] max-h-[58vh] object-contain block"
@@ -610,7 +610,7 @@ export const PhotoEditorDialog: React.FC = () => {
                     }
                   }
                 }}
-                className="w-full max-w-md border-2 border-dashed border-slate-700 hover:border-purple-500/60 bg-slate-900/40 rounded-3xl p-8 flex flex-col items-center justify-center py-16 text-center space-y-3 cursor-pointer transition-all"
+                className="w-full max-w-md border-2 border-dashed border-slate-700 hover:border-purple-500/60 bg-black/40 rounded-3xl p-8 flex flex-col items-center justify-center py-16 text-center space-y-3 cursor-pointer transition-all"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <div className="w-16 h-16 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center border border-purple-500/20">
@@ -636,7 +636,7 @@ export const PhotoEditorDialog: React.FC = () => {
 
             {/* Quick Canvas Floating Controls (Rotate & Reset) */}
             {sourceImage && (
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-slate-900/95 border border-slate-700/80 rounded-full px-3 py-1.5 shadow-xl backdrop-blur-md text-xs">
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/95 border border-slate-700/80 rounded-full px-3 py-1.5 shadow-xl backdrop-blur-md text-xs">
                 <button
                   onClick={() => setRotation((r) => (r - 90) % 360)}
                   className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded-full transition-colors"
@@ -684,7 +684,7 @@ export const PhotoEditorDialog: React.FC = () => {
           </div>
 
           {/* Right Tools & Properties Panel (4 Cols) */}
-          <div className="lg:col-span-4 bg-slate-900 flex flex-col justify-between overflow-y-auto p-5 space-y-6">
+          <div className="lg:col-span-4 bg-black flex flex-col justify-between overflow-y-auto p-5 space-y-6">
             <div className="space-y-5">
               {/* Tool Section: Aspect Ratio & Crop */}
               <div className="space-y-2.5">
@@ -816,7 +816,7 @@ export const PhotoEditorDialog: React.FC = () => {
               </div>
 
               {/* Tool Section: Precision Sliders */}
-              <div className="space-y-3 bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
+              <div className="space-y-3 bg-black/60 p-3.5 rounded-xl border border-slate-800">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
                     <Sliders className="w-3.5 h-3.5 text-amber-400" />

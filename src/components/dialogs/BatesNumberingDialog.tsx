@@ -94,7 +94,7 @@ export const BatesNumberingDialog: React.FC = () => {
         const start = parseInt(startStr, 10);
         const end = parseInt(endStr, 10);
         if (!isNaN(start) && !isNaN(end)) {
-          for (let p = Math.min(start, end); p <= Math.max(start, end); p++) {
+          const low = Math.min(start, end); const high = Math.max(start, end); for (let p = low; p <= high; p++) {
             if (p >= 1 && p <= pageCount) indices.push(p - 1);
           }
         }
@@ -167,7 +167,7 @@ export const BatesNumberingDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Bates Numbering Dialog">
-      <div className="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+      <div className="w-full max-w-xl bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -199,7 +199,7 @@ export const BatesNumberingDialog: React.FC = () => {
         ) : (
           <>
             {/* Tab Selection */}
-            <div className="flex border-b border-slate-800 bg-slate-950/40 px-6">
+            <div className="flex border-b border-slate-800 bg-[#000000]/40 px-6">
           <button
             type="button"
             onClick={() => {
@@ -244,7 +244,7 @@ export const BatesNumberingDialog: React.FC = () => {
                   value={prefix}
                   onChange={(e) => setPrefix(e.target.value)}
                   placeholder="e.g. CASE-, EXHIBIT-"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
+                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
                 />
               </div>
               <div>
@@ -254,7 +254,7 @@ export const BatesNumberingDialog: React.FC = () => {
                   value={suffix}
                   onChange={(e) => setSuffix(e.target.value)}
                   placeholder="e.g. -CONF, -PROD"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
+                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
                 />
               </div>
               <div>
@@ -264,7 +264,7 @@ export const BatesNumberingDialog: React.FC = () => {
                   min={1}
                   value={startNumber}
                   onChange={(e) => setStartNumber(Math.max(1, parseInt(e.target.value, 10) || 1))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
+                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
                 />
               </div>
               <div>
@@ -275,7 +275,7 @@ export const BatesNumberingDialog: React.FC = () => {
                   max={12}
                   value={digitsCount}
                   onChange={(e) => setDigitsCount(Math.max(1, parseInt(e.target.value, 10) || 6))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
+                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
                 />
               </div>
             </div>
@@ -288,7 +288,7 @@ export const BatesNumberingDialog: React.FC = () => {
                   value={hfTemplate}
                   onChange={(e) => setHfTemplate(e.target.value)}
                   placeholder="e.g. Page {page} of {totalPages}"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
+                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
                 />
               </div>
 
@@ -332,7 +332,7 @@ export const BatesNumberingDialog: React.FC = () => {
                       className={`px-2 py-1 rounded border text-[11px] font-medium transition-colors ${
                         hfTemplate === p
                           ? 'bg-swift-600/30 border-swift-500 text-swift-300'
-                          : 'bg-slate-900/60 border-slate-700 text-slate-400 hover:text-slate-200'
+                          : 'bg-[#000000]/60 border-slate-700 text-slate-400 hover:text-slate-200'
                       }`}
                     >
                       {p}
@@ -348,7 +348,7 @@ export const BatesNumberingDialog: React.FC = () => {
             <label className="font-semibold text-slate-300 block mb-1.5">
               Placement Position (6 Quadrants)
             </label>
-            <div className="grid grid-cols-3 gap-2 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+            <div className="grid grid-cols-3 gap-2 bg-[#000000]/60 p-3 rounded-xl border border-slate-800">
               {positions.map((pos) => {
                 const isSelected = position === pos.id;
                 return (
@@ -359,7 +359,7 @@ export const BatesNumberingDialog: React.FC = () => {
                     className={`py-2 px-2.5 rounded-lg border text-center font-medium text-[11px] transition-all flex items-center justify-center gap-1.5 ${
                       isSelected
                         ? 'bg-swift-600 text-white border-swift-500 shadow-md ring-1 ring-swift-400'
-                        : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                        : 'bg-[#000000] border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
                     }`}
                   >
                     {isSelected && <Check className="w-3 h-3" />}
@@ -481,13 +481,13 @@ export const BatesNumberingDialog: React.FC = () => {
                 value={customRange}
                 onChange={(e) => setCustomRange(e.target.value)}
                 placeholder="e.g. 1-3, 5, 8"
-                className="w-full mt-2 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs outline-none"
+                className="w-full mt-2 bg-[#000000] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs outline-none"
               />
             )}
           </div>
 
           {/* Live Preview Card */}
-          <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+          <div className="bg-[#000000] p-3 rounded-xl border border-slate-800 flex items-center justify-between">
             <div>
               <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">
                 Sample Stamp Output
@@ -506,7 +506,7 @@ export const BatesNumberingDialog: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3.5 bg-slate-950/60 border-t border-slate-800 flex items-center justify-end gap-2.5">
+        <div className="px-6 py-3.5 bg-[#000000]/60 border-t border-slate-800 flex items-center justify-end gap-2.5">
           <button
             type="button"
             onClick={() => setActiveModal(null)}

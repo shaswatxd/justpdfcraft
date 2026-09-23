@@ -211,9 +211,9 @@ export const BatchDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Batch Dialog">
-      <div className="bg-slate-900 border border-slate-800 w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-[#000000] border border-slate-800 w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-[#000000]/60">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
               <Layers className="w-5 h-5" />
@@ -328,7 +328,7 @@ export const BatchDialog: React.FC = () => {
           </div>
 
           {/* Operation Configuration Options */}
-          <div className="bg-slate-950/40 border border-slate-800/80 rounded-xl p-4">
+          <div className="bg-[#000000]/40 border border-slate-800/80 rounded-xl p-4">
             {operation === 'compress' && (
               <div>
                 <label className="text-xs font-semibold text-slate-300 block mb-2">
@@ -350,7 +350,7 @@ export const BatchDialog: React.FC = () => {
                       className={`p-2.5 rounded-lg border text-left transition-colors ${
                         compressPreset === opt.id
                           ? 'bg-slate-800 border-purple-500/60 text-purple-300'
-                          : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:text-slate-200'
+                          : 'bg-[#000000]/50 border-slate-800 text-slate-400 hover:text-slate-200'
                       }`}
                     >
                       <span className="text-xs font-bold block">{opt.label}</span>
@@ -373,7 +373,7 @@ export const BatchDialog: React.FC = () => {
                     onChange={(e) => setWatermarkText(e.target.value)}
                     disabled={isProcessing}
                     placeholder="e.g. CONFIDENTIAL"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-purple-500"
+                    className="w-full bg-[#000000] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-purple-500"
                   />
                 </div>
                 <div>
@@ -402,7 +402,7 @@ export const BatchDialog: React.FC = () => {
                     value={watermarkFontSize}
                     onChange={(e) => setWatermarkFontSize(parseInt(e.target.value) || 36)}
                     disabled={isProcessing}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-purple-500"
+                    className="w-full bg-[#000000] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-purple-500"
                   />
                 </div>
                 <div>
@@ -413,7 +413,7 @@ export const BatchDialog: React.FC = () => {
                     value={watermarkRotation}
                     onChange={(e) => setWatermarkRotation(parseInt(e.target.value) || 0)}
                     disabled={isProcessing}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-purple-500"
+                    className="w-full bg-[#000000] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-purple-500"
                   >
                     <option value={45}>45° Diagonal</option>
                     <option value={0}>0° Horizontal</option>
@@ -490,7 +490,7 @@ export const BatchDialog: React.FC = () => {
                 className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
                   isDragging
                     ? 'border-purple-500 bg-purple-500/10'
-                    : 'border-slate-800 hover:border-slate-700 bg-slate-950/40'
+                    : 'border-slate-800 hover:border-slate-700 bg-[#000000]/40'
                 }`}
               >
                 <div className="flex flex-col items-center justify-center space-y-2.5">
@@ -508,7 +508,7 @@ export const BatchDialog: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="bg-slate-950/60 border border-slate-800 rounded-xl divide-y divide-slate-800/60 max-h-60 overflow-y-auto">
+              <div className="bg-[#000000]/60 border border-slate-800 rounded-xl divide-y divide-slate-800/60 max-h-60 overflow-y-auto">
                 {items.map((item) => (
                   <div key={item.id} className="p-3 flex items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -603,7 +603,7 @@ export const BatchDialog: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-slate-950/70 border-t border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-[#000000]/70 border-t border-slate-800 flex items-center justify-between">
           <div className="text-xs text-slate-400 flex items-center gap-2">
             {completedCount > 0 && (
               <span className="text-emerald-400 font-medium">
