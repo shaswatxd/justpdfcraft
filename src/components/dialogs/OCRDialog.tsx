@@ -376,7 +376,7 @@ export const OCRDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="OCR Dialog">
       <div className="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">

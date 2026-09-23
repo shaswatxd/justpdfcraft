@@ -88,26 +88,47 @@ export const ExtractImagesDialog: React.FC = () => {
     addToast({
       type: 'info',
       title: 'Downloading All Images',
-      message: `Saving ${images.length} photos sequentially...`,
+      message: `Preparing ${images.length} photos...`,
     });
 
-    for (let i = 0; i < images.length; i++) {
-      const img = images[i];
+    try {
+      const { createZip } = await import('@/utils/zip');
+      const filesToZip = await Promise.all(
+        images.map(async (img, i) => {
+          const res = await fetch(img.dataUrl);
+          const buf = await res.arrayBuffer();
+          const ext = img.mimeType.includes('png') ? 'png' : 'jpg';
+          const name = img.name || `Extracted_Photo_${i + 1}_Page${img.pageIndex + 1}.${ext}`;
+          return {
+            name,
+            data: new Uint8Array(buf),
+          };
+        })
+      );
+
+      const zipBytes = createZip(filesToZip);
+      const blob = new Blob([zipBytes as unknown as BlobPart], { type: 'application/zip' });
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = img.dataUrl;
-      const ext = img.mimeType.includes('png') ? 'png' : 'jpg';
-      a.download = img.name || `Extracted_Photo_${i + 1}_Page${img.pageIndex + 1}.${ext}`;
+      a.href = url;
+      a.download = `Extracted_Photos.zip`;
       a.click();
-      // Small delay between programmatic downloads to avoid browser block
-      await new Promise((resolve) => setTimeout(resolve, 300));
-    }
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-    setIsDownloadingAll(false);
-    addToast({
-      type: 'success',
-      title: 'Download Complete',
-      message: `All ${images.length} photos have been downloaded.`,
-    });
+      addToast({
+        type: 'success',
+        title: 'Download Complete',
+        message: `All ${images.length} photos have been downloaded as a ZIP.`,
+      });
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Download Failed',
+        message: 'Failed to create ZIP file.',
+      });
+    } finally {
+      setIsDownloadingAll(false);
+    }
   };
 
   const handleCopy = async (img: ExtractedImageItem) => {
@@ -163,7 +184,7 @@ export const ExtractImagesDialog: React.FC = () => {
       : `${Math.round(totalSize / 1024)} KB`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Extract Images Dialog">
       <div className="bg-slate-900 border border-slate-800 w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Hidden file input for external photo upload */}
         <input
@@ -195,7 +216,15 @@ export const ExtractImagesDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={() => {
+              images.forEach(img => {
+                if (img.dataUrl.startsWith('blob:')) {
+                  URL.revokeObjectURL(img.dataUrl);
+                }
+              });
+              setImages([]);
+              setActiveModal(null);
+            }}
             className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
@@ -435,7 +464,15 @@ export const ExtractImagesDialog: React.FC = () => {
           </div>
 
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={() => {
+              images.forEach(img => {
+                if (img.dataUrl.startsWith('blob:')) {
+                  URL.revokeObjectURL(img.dataUrl);
+                }
+              });
+              setImages([]);
+              setActiveModal(null);
+            }}
             className="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium transition-colors"
           >
             Close

@@ -204,7 +204,7 @@ export const CompareDialog: React.FC = () => {
   );
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Compare Dialog">
       <div className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
@@ -220,7 +220,17 @@ export const CompareDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={() => {
+              if (docBId) {
+                try {
+                  getPDFEngine().closeDocument(docBId);
+                } catch {}
+              }
+              setCompareResult(null);
+              setDocBName('');
+              setDocBId(null);
+              setActiveModal(null);
+            }}
             className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
           >
             <X className="w-4 h-4" />
@@ -485,7 +495,17 @@ export const CompareDialog: React.FC = () => {
                 {compareResult ? 'Comparison engine: 100% offline vector layout & pixel alignment' : ''}
               </span>
               <button
-                onClick={() => setActiveModal(null)}
+                onClick={() => {
+                  if (docBId) {
+                    try {
+                      getPDFEngine().closeDocument(docBId);
+                    } catch {}
+                  }
+                  setCompareResult(null);
+                  setDocBName('');
+                  setDocBId(null);
+                  setActiveModal(null);
+                }}
                 className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition-colors"
               >
                 Close

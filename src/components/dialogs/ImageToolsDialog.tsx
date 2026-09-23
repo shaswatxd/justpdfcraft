@@ -51,6 +51,11 @@ export const ImageToolsDialog: React.FC = () => {
   if (!isOpen) return null;
 
   const handleClose = () => {
+    images.forEach(img => {
+      if (img.previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(img.previewUrl);
+      }
+    });
     setActiveModal(null);
     setActiveImageTab(null);
   };
@@ -85,10 +90,21 @@ export const ImageToolsDialog: React.FC = () => {
   };
 
   const removeImage = (id: string) => {
-    setImages((prev) => prev.filter((img) => img.id !== id));
+    setImages((prev) => {
+      const img = prev.find(i => i.id === id);
+      if (img && img.previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(img.previewUrl);
+      }
+      return prev.filter((img) => img.id !== id);
+    });
   };
 
   const clearAll = () => {
+    images.forEach(img => {
+      if (img.previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(img.previewUrl);
+      }
+    });
     setImages([]);
   };
 
@@ -162,7 +178,7 @@ export const ImageToolsDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 select-none">
+    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 select-none" role="dialog" aria-modal="true" aria-label="Image Tools Dialog">
       <div className="w-full max-w-3xl h-[85vh] max-h-[760px] bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden text-slate-100">
         {/* Header */}
         <div className="h-14 px-4 sm:px-6 bg-slate-800/80 border-b border-slate-700/80 flex items-center justify-between shrink-0">

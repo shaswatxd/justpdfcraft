@@ -18,7 +18,7 @@ import {
 
 export const PrintDialog: React.FC = () => {
   const { activeModal, setActiveModal, addToast } = useUIStore();
-  const { documentId, pageCount, currentPage, pageDimensions, viewMode, setViewMode } = useDocumentStore();
+  const { documentId, pageCount, currentPage, pageDimensions, viewMode, setViewMode, fileBytes } = useDocumentStore();
 
   const [settings, setSettings] = useState<PrintSettings>({
     copies: 1,
@@ -44,23 +44,61 @@ export const PrintDialog: React.FC = () => {
   const safeCheck = printLayoutEngine.runPrinterSafeCheck(pageDimensions, settings);
 
   const handleExecutePrint = () => {
+    if (!fileBytes) {
+      addToast({
+        type: 'error',
+        title: 'Print Error',
+        message: 'No document loaded to print.',
+      });
+      return;
+    }
+
     setActiveModal(null);
     if (settings.rangeOption !== 'current' && viewMode === 'single') {
       setViewMode('continuous');
     }
+    
     addToast({
       type: 'info',
       title: 'Preparing Print Job',
       message: `Sending ${pageIndices.length} page(s) to system printer dialog.`,
     });
-    // Brief timeout so React commits modal close and viewMode change before print dialog opens
-    setTimeout(() => {
-      window.print();
-    }, 150);
+
+    try {
+      const blob = new Blob([fileBytes as any], { type: 'application/pdf' });
+      const blobUrl = URL.createObjectURL(blob);
+
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = blobUrl;
+      
+      iframe.onload = () => {
+        setTimeout(() => {
+          if (iframe.contentWindow) {
+            iframe.contentWindow.print();
+          }
+          // Cleanup after print dialog
+          setTimeout(() => {
+            if (document.body.contains(iframe)) {
+              document.body.removeChild(iframe);
+            }
+            URL.revokeObjectURL(blobUrl);
+          }, 300000); // 5 minute cleanup timeout
+        }, 150);
+      };
+
+      document.body.appendChild(iframe);
+    } catch (e) {
+      addToast({
+        type: 'error',
+        title: 'Print Failed',
+        message: 'Failed to prepare the print job.',
+      });
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Print Dialog">
       <div className="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">

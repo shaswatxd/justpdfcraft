@@ -455,6 +455,9 @@ export const CommandPalette: React.FC = () => {
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Command Palette"
       className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center pt-24 p-4"
       onClick={() => setCommandPaletteOpen(false)}
     >
@@ -475,6 +478,7 @@ export const CommandPalette: React.FC = () => {
             }}
             onKeyDown={handleKeyDown}
             placeholder="Type a command or search action (e.g. compress, rotate, ocr)..."
+            aria-label="Search commands"
             className="flex-1 bg-transparent border-none text-slate-100 placeholder-slate-500 text-sm focus:outline-none"
           />
           <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] text-slate-400 font-mono">

@@ -87,6 +87,7 @@ export const MergeDialog: React.FC = () => {
 
       // Load directly into editor
       await loadDocument(mergedBytes, `Merged_${files[0].name}`);
+      setFiles([]);
       setActiveModal(null);
 
       addToast({
@@ -106,7 +107,7 @@ export const MergeDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Merge Dialog">
       <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
@@ -120,7 +121,10 @@ export const MergeDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={() => {
+              setFiles([]);
+              setActiveModal(null);
+            }}
             className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
           >
             <X className="w-4 h-4" />
@@ -229,7 +233,10 @@ export const MergeDialog: React.FC = () => {
           <span className="text-xs text-slate-400">{files.length} document(s)</span>
           <div className="flex gap-2">
             <button
-              onClick={() => setActiveModal(null)}
+              onClick={() => {
+                setFiles([]);
+                setActiveModal(null);
+              }}
               className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
             >
               Cancel

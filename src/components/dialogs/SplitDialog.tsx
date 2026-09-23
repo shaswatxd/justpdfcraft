@@ -48,20 +48,36 @@ export const SplitDialog: React.FC = () => {
 
       const results = await engine.splitDocument(documentId, ranges);
 
-      // Trigger sequential downloads for split parts with safe delay to prevent browser download blocker
-      for (let idx = 0; idx < results.length; idx++) {
-        const bytes = results[idx];
+      if (results.length === 1) {
+        // Single file download
+        const bytes = results[0];
         const blob = new Blob([bytes as unknown as BlobPart], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        const [start, end] = ranges[idx];
-        a.download = `JustPDFCraft_Part_${idx + 1}_Pages_${start + 1}_to_${end + 1}.pdf`;
+        const [start, end] = ranges[0];
+        a.download = `JustPDFCraft_Part_1_Pages_${start + 1}_to_${end + 1}.pdf`;
         a.click();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
-        if (idx < results.length - 1) {
-          await new Promise((resolve) => setTimeout(resolve, 250));
-        }
+      } else {
+        // Create ZIP for multiple files
+        const { createZip } = await import('@/utils/zip');
+        const filesToZip = results.map((bytes, idx) => {
+          const [start, end] = ranges[idx];
+          return {
+            name: `JustPDFCraft_Part_${idx + 1}_Pages_${start + 1}_to_${end + 1}.pdf`,
+            data: bytes,
+          };
+        });
+        
+        const zipBytes = createZip(filesToZip);
+        const blob = new Blob([zipBytes as unknown as BlobPart], { type: 'application/zip' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `JustPDFCraft_Split_${results.length}_Parts.zip`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
 
       setActiveModal(null);
@@ -82,7 +98,7 @@ export const SplitDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Split Dialog">
       <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">

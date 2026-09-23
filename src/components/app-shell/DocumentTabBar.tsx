@@ -66,7 +66,7 @@ export const DocumentTabBar: React.FC<DocumentTabBarProps> = ({ onOpenNewFile })
                 e.stopPropagation();
                 closeTab(tab.id);
               }}
-              className="p-0.5 rounded opacity-0 group-hover:opacity-100 hover:bg-slate-800 text-slate-400 hover:text-white transition-opacity"
+              className="p-0.5 rounded opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-slate-800 text-slate-400 hover:text-white transition-opacity"
               title="Close Tab (Ctrl+W)"
             >
               <X className="w-3 h-3" />

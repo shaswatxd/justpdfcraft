@@ -183,6 +183,11 @@ export const StudentToolsDialog: React.FC = () => {
       }
     } catch (err: any) {
       console.error(err);
+      addToast({
+        type: 'error',
+        title: 'Processing Failed',
+        message: err?.message || 'An unexpected error occurred while processing the image.',
+      });
     } finally {
       setIsCompressing(false);
     }
@@ -220,6 +225,12 @@ export const StudentToolsDialog: React.FC = () => {
         dateOfPhoto: combinerDOP,
       });
 
+      // Cleanup temp canvases
+      pCvs.width = 0;
+      pCvs.height = 0;
+      sCvs.width = 0;
+      sCvs.height = 0;
+
       const result = await compressToTargetKb(combinedCvs, 20, combinerTargetMaxKb, 'image/jpeg');
       setCombinerResult(result);
 
@@ -232,8 +243,13 @@ export const StudentToolsDialog: React.FC = () => {
           cCtx.drawImage(combinedCvs, 0, 0);
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      addToast({
+        type: 'error',
+        title: 'Processing Failed',
+        message: err?.message || 'An unexpected error occurred while processing the image.',
+      });
     }
   }, [combinerPhoto, combinerSign, combinerLayout, combinerName, combinerDOP, combinerTargetMaxKb]);
 
@@ -265,6 +281,10 @@ export const StudentToolsDialog: React.FC = () => {
         autoCropPadding: autoCrop ? 16 : 0,
       });
 
+      // Cleanup temp canvas
+      srcCvs.width = 0;
+      srcCvs.height = 0;
+
       const previewCvs = cleanSignCanvasRef.current;
       if (previewCvs) {
         previewCvs.width = cleanedCvs.width;
@@ -277,8 +297,13 @@ export const StudentToolsDialog: React.FC = () => {
       }
       const dataUrl = cleanedCvs.toDataURL(transparentBg ? 'image/png' : 'image/jpeg', 0.95);
       setCleanSignDataUrl(dataUrl);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error cleaning signature:', err);
+      addToast({
+        type: 'error',
+        title: 'Processing Failed',
+        message: err?.message || 'An unexpected error occurred while processing the image.',
+      });
     }
   }, [cleanSignImage, threshold, transparentBg, inkColor, autoCrop]);
 
@@ -309,6 +334,10 @@ export const StudentToolsDialog: React.FC = () => {
         datePrefix: dopPrefix,
       });
 
+      // Cleanup temp canvas
+      srcCvs.width = 0;
+      srcCvs.height = 0;
+
       const result = await compressToTargetKb(bannerCvs, 20, dopTargetMaxKb, 'image/jpeg');
       setDopResult(result);
 
@@ -321,8 +350,13 @@ export const StudentToolsDialog: React.FC = () => {
           pCtx.drawImage(bannerCvs, 0, 0);
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error generating DOP banner:', err);
+      addToast({
+        type: 'error',
+        title: 'Processing Failed',
+        message: err?.message || 'An unexpected error occurred while processing the image.',
+      });
     }
   }, [dopPhoto, candidateName, dateOfPhoto, dopPrefix, dopTargetMaxKb]);
 
@@ -351,7 +385,7 @@ export const StudentToolsDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-150" role="dialog" aria-modal="true" aria-label="Student Tools Dialog">
       <div className="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-5xl h-[92vh] max-h-[850px] shadow-2xl flex flex-col overflow-hidden text-slate-100">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90">

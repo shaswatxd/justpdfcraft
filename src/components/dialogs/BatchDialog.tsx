@@ -101,21 +101,44 @@ export const BatchDialog: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handleDownloadAll = () => {
+  const handleDownloadAll = async () => {
     const completedItems = items.filter((it) => it.status === 'completed' && it.outputBytes);
     if (completedItems.length === 0) return;
 
-    completedItems.forEach((item, index) => {
-      setTimeout(() => {
-        downloadFile(item.outputBytes!, item.outputFileName || `processed_${item.fileName}`);
-      }, index * 250);
+    addToast({
+      type: 'info',
+      title: 'Downloading Batch',
+      message: `Zipping ${completedItems.length} processed files...`,
     });
 
-    addToast({
-      type: 'success',
-      title: 'Downloading Batch',
-      message: `Exporting ${completedItems.length} processed files...`,
-    });
+    try {
+      const { createZip } = await import('@/utils/zip');
+      const filesToZip = completedItems.map((item) => ({
+        name: item.outputFileName || `processed_${item.fileName}`,
+        data: item.outputBytes!,
+      }));
+      
+      const zipBytes = createZip(filesToZip);
+      const blob = new Blob([zipBytes as unknown as BlobPart], { type: 'application/zip' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Batch_Processed_${Date.now()}.zip`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      addToast({
+        type: 'success',
+        title: 'Batch Download Complete',
+        message: `Saved ${completedItems.length} files as a ZIP.`,
+      });
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'ZIP Creation Failed',
+        message: 'Could not create ZIP archive.',
+      });
+    }
   };
 
   const handleStartBatch = async () => {
@@ -187,7 +210,7 @@ export const BatchDialog: React.FC = () => {
   const totalQueueSize = items.reduce((acc, it) => acc + it.fileSizeBytes, 0);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Batch Dialog">
       <div className="bg-slate-900 border border-slate-800 w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
@@ -208,7 +231,10 @@ export const BatchDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={() => {
+              setItems([]);
+              setActiveModal(null);
+            }}
             disabled={isProcessing}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors disabled:opacity-40"
           >
@@ -603,7 +629,10 @@ export const BatchDialog: React.FC = () => {
 
             <button
               type="button"
-              onClick={() => setActiveModal(null)}
+              onClick={() => {
+                setItems([]);
+                setActiveModal(null);
+              }}
               disabled={isProcessing}
               className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors disabled:opacity-50"
             >

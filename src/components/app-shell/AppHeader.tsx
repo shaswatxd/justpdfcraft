@@ -172,6 +172,7 @@ export const AppHeader: React.FC = () => {
                 disabled={undoStack.length === 0}
                 className="p-1 hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-transparent rounded text-slate-300 transition-colors"
                 title={`Undo (Ctrl+Z) - ${undoStack.length} states`}
+                aria-label="Undo"
               >
                 <Undo2 className="w-3.5 h-3.5" />
               </button>
@@ -180,6 +181,7 @@ export const AppHeader: React.FC = () => {
                 disabled={redoStack.length === 0}
                 className="p-1 hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-transparent rounded text-slate-300 transition-colors"
                 title={`Redo (Ctrl+Y) - ${redoStack.length} states`}
+                aria-label="Redo"
               >
                 <Redo2 className="w-3.5 h-3.5" />
               </button>
@@ -287,6 +289,7 @@ export const AppHeader: React.FC = () => {
               onClick={() => setZoom((z) => Math.max(0.25, z - 0.15))}
               className="p-1 hover:bg-slate-700 rounded text-slate-300 transition-colors"
               title="Zoom Out (Ctrl+-)"
+              aria-label="Zoom out"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
@@ -297,6 +300,7 @@ export const AppHeader: React.FC = () => {
               onClick={() => setZoom((z) => Math.min(4.0, z + 0.15))}
               className="p-1 hover:bg-slate-700 rounded text-slate-300 transition-colors"
               title="Zoom In (Ctrl++)"
+              aria-label="Zoom in"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
@@ -304,6 +308,7 @@ export const AppHeader: React.FC = () => {
               onClick={() => setZoom(1.0)}
               className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-slate-200 transition-colors"
               title="Reset Zoom to 100%"
+              aria-label="Reset zoom"
             >
               <Maximize2 className="w-3 h-3" />
             </button>
