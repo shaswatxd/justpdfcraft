@@ -5,6 +5,14 @@ import {
   FileText,
   Image as ImageIcon,
   GraduationCap,
+  Flame,
+  Layers,
+  FileArchive,
+  Sliders,
+  PenTool,
+  Scissors,
+  CheckCircle2,
+  Edit3,
 } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore, ModalType } from '@/stores/uiStore';
@@ -454,6 +462,98 @@ export const HomeDashboard: React.FC = () => {
                 Passport Crop
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* Top Line: Most Important & Popular Tools */}
+        <div className="mt-4 sm:mt-5 w-full flex flex-col items-center">
+          <div className="w-full flex items-center justify-start lg:justify-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 px-1 scrollbar-none">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 shadow-xs">
+              <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              <span className="hidden sm:inline">Important Tools:</span>
+              <span className="sm:hidden">Top:</span>
+            </span>
+
+            <button
+              type="button"
+              onClick={() => setActiveModal('merge')}
+              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-white border border-zinc-800/90 hover:border-blue-500/50 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
+            >
+              <Layers className="w-3.5 h-3.5 text-blue-400" />
+              <span>Merge PDF</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => triggerWorkflowWithFile({ modal: 'compress', label: 'Compress PDF' })}
+              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-white border border-zinc-800/90 hover:border-emerald-500/50 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
+            >
+              <FileArchive className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Compress PDF</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setActiveStudentTab('resizer');
+                setActiveModal('student-resizer');
+              }}
+              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-amber-300 border border-amber-500/30 hover:border-amber-500/60 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
+            >
+              <Sliders className="w-3.5 h-3.5 text-amber-400" />
+              <span>20–50 KB Resizer</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveModal('handwriting')}
+              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-purple-300 border border-purple-500/30 hover:border-purple-500/60 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
+            >
+              <PenTool className="w-3.5 h-3.5 text-purple-400" />
+              <span>Handwritten Notes</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => triggerWorkflowWithFile({ modal: 'split', label: 'Split PDF' })}
+              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-white border border-zinc-800/90 hover:border-rose-500/50 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
+            >
+              <Scissors className="w-3.5 h-3.5 text-rose-400" />
+              <span>Split PDF</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setActiveConvertTab('img-to-pdf');
+                setActiveModal('convert');
+              }}
+              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-white border border-zinc-800/90 hover:border-teal-500/50 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
+            >
+              <FilePlus className="w-3.5 h-3.5 text-teal-400" />
+              <span>Image to PDF</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setActiveStudentTab('attendance');
+                setActiveModal('student-calculators');
+              }}
+              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-white border border-zinc-800/90 hover:border-green-500/50 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />
+              <span>Attendance Bunk</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => triggerWorkflowWithFile({ modal: 'sign', label: 'Sign PDF' })}
+              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-white border border-zinc-800/90 hover:border-sky-500/50 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
+            >
+              <Edit3 className="w-3.5 h-3.5 text-sky-400" />
+              <span>Sign PDF</span>
+            </button>
           </div>
         </div>
       </HeroSection>
