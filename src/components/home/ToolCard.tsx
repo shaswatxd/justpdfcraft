@@ -180,6 +180,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
     setActiveImageTab,
     setActiveLegalTab,
     setActiveConvertTab,
+    setActiveView,
   } = useUIStore();
   const { setViewMode } = useDocumentStore();
   const { setTool } = useToolStore();
@@ -219,8 +220,10 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
       }
     } else if (act.type === 'viewMode') {
       setViewMode(act.viewMode);
+      setActiveView('editor');
     } else if (act.type === 'tool') {
       setTool(act.tool);
+      setActiveView('editor');
     }
   };
 

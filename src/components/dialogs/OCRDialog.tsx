@@ -22,8 +22,15 @@ import { ocrService, OCRPageResult } from '@core/ocr/ocr-service';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const OCRDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
-  const { documentId, fileName, currentPage, pageCount, loadDocument } = useDocumentStore();
+  const { activeModal, setActiveModal, activeView, addToast } = useUIStore();
+  const { documentId, fileName, currentPage, pageCount, loadDocument, closeCurrentDocument } = useDocumentStore();
+
+  const handleClose = () => {
+    setActiveModal(null);
+    if (activeView === 'home') {
+      closeCurrentDocument();
+    }
+  };
 
   const [language, setLanguage] = useState('eng');
   const [scope, setScope] = useState<'current' | 'all'>('current');
@@ -398,7 +405,7 @@ export const OCRDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={handleClose}
             className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
           >
             <X className="w-4 h-4" />

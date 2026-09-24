@@ -14,7 +14,7 @@ import { getPDFEngine } from '@core/pdf/engine.factory';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const CropDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
+  const { activeModal, setActiveModal, activeView, setActiveView, addToast } = useUIStore();
   const {
     documentId,
     currentPage,
@@ -23,8 +23,16 @@ export const CropDialog: React.FC = () => {
     fileName,
     filePath,
     loadDocument,
+    closeCurrentDocument,
     pushHistory,
   } = useDocumentStore();
+
+  const handleClose = () => {
+    setActiveModal(null);
+    if (activeView === 'home') {
+      closeCurrentDocument();
+    }
+  };
 
   const [trimTop, setTrimTop] = useState(36); // Default 0.5 inch (36 pt)
   const [trimBottom, setTrimBottom] = useState(36);
@@ -121,6 +129,9 @@ export const CropDialog: React.FC = () => {
         await loadDocument(updatedBytes, fileName, filePath || undefined);
       }
 
+      if (activeView === 'home') {
+        setActiveView('editor');
+      }
       setActiveModal(null);
       addToast({
         type: 'success',
@@ -174,7 +185,7 @@ export const CropDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={handleClose}
             disabled={isApplying}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors disabled:opacity-40"
           >
@@ -452,7 +463,7 @@ export const CropDialog: React.FC = () => {
           <div className="flex items-center gap-2.5">
             <button
               type="button"
-              onClick={() => setActiveModal(null)}
+              onClick={handleClose}
               disabled={isApplying}
               className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors disabled:opacity-50"
             >

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 export type ThemeMode = 'dark' | 'light' | 'oled';
 export type PaperTone = 'default' | 'sepia' | 'dark' | 'mint';
+export type ActiveView = 'home' | 'editor';
 
 export type SidebarTab = 'thumbnails' | 'search' | 'bookmarks' | 'annotations' | 'forms';
 export type ModalType = 
@@ -51,6 +52,7 @@ interface UIState {
   isCommandPaletteOpen: boolean;
   toasts: ToastMessage[];
   paperTone: PaperTone;
+  activeView: ActiveView;
   isFullscreen: boolean;
   isLaserPointerActive: boolean;
   isSpotlightActive: boolean;
@@ -75,6 +77,7 @@ interface UIState {
 
   setTheme: (theme: ThemeMode) => void;
   setPaperTone: (tone: PaperTone) => void;
+  setActiveView: (view: ActiveView) => void;
   toggleSidebar: () => void;
   setSidebarOpen: (open: boolean) => void;
   setSidebarTab: (tab: SidebarTab) => void;
@@ -132,6 +135,8 @@ const getInitialPaperTone = (): PaperTone => {
 export const useUIStore = create<UIState>((set) => ({
   theme: getInitialTheme(),
   paperTone: getInitialPaperTone(),
+  activeView: 'home',
+  setActiveView: (activeView) => set({ activeView }),
   isSidebarOpen: true,
   activeSidebarTab: 'thumbnails',
   isPropertiesPanelOpen: false,

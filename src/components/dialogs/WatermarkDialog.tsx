@@ -6,7 +6,7 @@ import { getPDFEngine } from '@core/pdf/engine.factory';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const WatermarkDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
+  const { activeModal, setActiveModal, activeView, setActiveView, addToast } = useUIStore();
   const {
     documentId,
     pageCount,
@@ -14,8 +14,15 @@ export const WatermarkDialog: React.FC = () => {
     fileName,
     filePath,
     loadDocument,
+    closeCurrentDocument,
     pushHistory,
   } = useDocumentStore();
+  const handleClose = () => {
+    setActiveModal(null);
+    if (activeView === 'home') {
+      closeCurrentDocument();
+    }
+  };
 
   const [mode, setMode] = useState<'text' | 'image'>('text');
   const [text, setText] = useState('CONFIDENTIAL');
@@ -129,6 +136,9 @@ export const WatermarkDialog: React.FC = () => {
         await loadDocument(updatedBytes, fileName, filePath || undefined);
       }
 
+      if (activeView === 'home') {
+        setActiveView('editor');
+      }
       setActiveModal(null);
       addToast({
         type: 'success',
@@ -157,7 +167,7 @@ export const WatermarkDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={handleClose}
             className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
           >
             <X className="w-4 h-4" />
@@ -431,7 +441,7 @@ export const WatermarkDialog: React.FC = () => {
             {/* Footer */}
             <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
               <button
-                onClick={() => setActiveModal(null)}
+                onClick={handleClose}
                 className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
               >
                 Cancel

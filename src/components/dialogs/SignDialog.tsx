@@ -17,7 +17,7 @@ import { NoDocumentState } from '@/components/common/NoDocumentState';
 export type SignaturePlacement = 'bottom-right' | 'bottom-left' | 'bottom-center' | 'top-right';
 
 export const SignDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
+  const { activeModal, setActiveModal, activeView, setActiveView, addToast } = useUIStore();
   const {
     documentId,
     currentPage,
@@ -25,8 +25,16 @@ export const SignDialog: React.FC = () => {
     fileName,
     filePath,
     loadDocument,
+    closeCurrentDocument,
     pushHistory,
   } = useDocumentStore();
+
+  const handleClose = () => {
+    setActiveModal(null);
+    if (activeView === 'home') {
+      closeCurrentDocument();
+    }
+  };
 
   const [activeTab, setActiveTab] = useState<'draw' | 'type' | 'upload' | 'saved'>('draw');
   const [typedName, setTypedName] = useState('');
@@ -244,6 +252,9 @@ export const SignDialog: React.FC = () => {
         await loadDocument(updatedBytes, fileName, filePath || undefined);
       }
 
+      if (activeView === 'home') {
+        setActiveView('editor');
+      }
       setActiveModal(null);
       addToast({
         type: 'success',
@@ -282,6 +293,9 @@ export const SignDialog: React.FC = () => {
         await loadDocument(updatedBytes, fileName, filePath || undefined);
       }
 
+      if (activeView === 'home') {
+        setActiveView('editor');
+      }
       setActiveModal(null);
       addToast({
         type: 'success',
@@ -321,7 +335,7 @@ export const SignDialog: React.FC = () => {
               <span>Exam Sign Cleaner</span>
             </button>
             <button
-              onClick={() => setActiveModal(null)}
+              onClick={handleClose}
               className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
             >
               <X className="w-4 h-4" />
@@ -572,7 +586,7 @@ export const SignDialog: React.FC = () => {
             {activeTab !== 'saved' && (
               <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
                 <button
-                  onClick={() => setActiveModal(null)}
+                  onClick={handleClose}
                   className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
                 >
                   Cancel

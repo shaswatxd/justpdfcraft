@@ -50,7 +50,9 @@ async function runViewerAudit() {
 
   await page.evaluate(async (bytes) => {
     const { useDocumentStore } = await import('/src/stores/documentStore.ts');
+    const { useUIStore } = await import('/src/stores/uiStore.ts');
     await useDocumentStore.getState().loadDocument(new Uint8Array(bytes), 'TestAuditDoc.pdf');
+    useUIStore.getState().setActiveView('editor');
   }, pdfBytes);
 
   // Wait for viewer to mount and render pages

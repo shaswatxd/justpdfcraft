@@ -17,8 +17,8 @@ import {
 } from '@core/print/print-layout';
 
 export const PrintDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
-  const { documentId, pageCount, currentPage, pageDimensions, viewMode, setViewMode, fileBytes } = useDocumentStore();
+  const { activeModal, setActiveModal, activeView, addToast } = useUIStore();
+  const { documentId, pageCount, currentPage, pageDimensions, viewMode, setViewMode, fileBytes, closeCurrentDocument } = useDocumentStore();
 
   const [settings, setSettings] = useState<PrintSettings>({
     copies: 1,
@@ -32,6 +32,13 @@ export const PrintDialog: React.FC = () => {
     rangeOption: 'all',
     customRangeString: '',
   });
+
+  const handleClose = () => {
+    setActiveModal(null);
+    if (activeView === 'home') {
+      closeCurrentDocument();
+    }
+  };
 
   if (activeModal !== 'print') return null;
 
@@ -54,6 +61,9 @@ export const PrintDialog: React.FC = () => {
     }
 
     setActiveModal(null);
+    if (activeView === 'home') {
+      closeCurrentDocument();
+    }
     if (settings.rangeOption !== 'current' && viewMode === 'single') {
       setViewMode('continuous');
     }
@@ -114,7 +124,7 @@ export const PrintDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={handleClose}
             className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
           >
             <X className="w-4 h-4" />
@@ -294,7 +304,7 @@ export const PrintDialog: React.FC = () => {
           </span>
           <div className="flex gap-2">
             <button
-              onClick={() => setActiveModal(null)}
+              onClick={handleClose}
               className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition-colors"
             >
               Cancel

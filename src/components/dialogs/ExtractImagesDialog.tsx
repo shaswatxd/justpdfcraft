@@ -17,8 +17,8 @@ import { getPDFEngine } from '@core/pdf/engine.factory';
 import { ExtractedImageItem } from '@core/pdf/engine.interface';
 
 export const ExtractImagesDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast, setActivePhotoUrl } = useUIStore();
-  const { documentId, currentPage } = useDocumentStore();
+  const { activeModal, setActiveModal, activeView, addToast, setActivePhotoUrl } = useUIStore();
+  const { documentId, currentPage, closeCurrentDocument } = useDocumentStore();
 
   const [images, setImages] = useState<ExtractedImageItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -235,6 +235,9 @@ export const ExtractImagesDialog: React.FC = () => {
               });
               setImages([]);
               setActiveModal(null);
+              if (activeView === 'home') {
+                closeCurrentDocument();
+              }
             }}
             className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
           >

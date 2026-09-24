@@ -94,18 +94,16 @@ export const AppHeader: React.FC = () => {
     paperTone,
     setPaperTone,
     toggleFullscreen,
+    activeView,
+    setActiveView,
   } = useUIStore();
+
+  const isDocumentOpen = Boolean(documentId) && activeView === 'editor';
 
   const { isTTSOpen, toggleTTS } = useTTSStore();
 
-  const handleGoHome = async () => {
-    const { tabs, closeTab } = useDocumentStore.getState();
-    if (tabs.length > 0) {
-      for (const t of [...tabs]) {
-        await closeTab(t.id);
-      }
-    }
-    useDocumentStore.setState({ documentId: null, activeTabId: null, tabs: [] });
+  const handleGoHome = () => {
+    setActiveView('home');
   };
 
   const handleSave = async () => {
@@ -140,7 +138,7 @@ export const AppHeader: React.FC = () => {
       {/* Left: Home / Back, Brand Logo & Undo/Redo */}
       {/* ======================================================== */}
       <div className="flex items-center gap-2 shrink-0">
-        {documentId && (
+        {isDocumentOpen && (
           <button
             onClick={handleGoHome}
             className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 hover:text-white text-slate-300 rounded-lg text-xs font-semibold border border-slate-700/80 transition-all group shrink-0 shadow-xs"
@@ -154,7 +152,7 @@ export const AppHeader: React.FC = () => {
         <button
           onClick={handleGoHome}
           className="flex items-center gap-2 hover:opacity-90 transition-opacity select-none focus:outline-none"
-          title={documentId ? 'Back to Home Dashboard' : 'JustPDFCraft'}
+          title={isDocumentOpen ? 'Back to Home Dashboard' : 'JustPDFCraft'}
         >
           <SwiftLogo className="w-6 h-6 shrink-0" />
           <span className="font-bold text-sm tracking-tight text-slate-100">
@@ -162,7 +160,18 @@ export const AppHeader: React.FC = () => {
           </span>
         </button>
 
-        {documentId && (
+        {documentId && activeView === 'home' && (
+          <button
+            onClick={() => setActiveView('editor')}
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-swift-600 hover:bg-swift-500 text-white rounded-lg text-xs font-semibold shadow-sm transition-all"
+            title="Return to your active document in the editor"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Resume Editor</span>
+          </button>
+        )}
+
+        {isDocumentOpen && (
           <>
             <div className="w-[1px] h-4 bg-slate-800 mx-0.5 hidden sm:block" />
             {/* Undo / Redo */}
@@ -193,7 +202,7 @@ export const AppHeader: React.FC = () => {
       {/* ======================================================== */}
       {/* Center: Clean Segmented View Modes, Page Nav & Zoom */}
       {/* ======================================================== */}
-      {documentId && (
+      {isDocumentOpen && (
         <div className="hidden md:flex items-center gap-2">
           {/* Segmented View Mode Picker */}
           <div className="flex items-center bg-slate-800/80 p-0.5 rounded-lg border border-slate-700/80 text-xs">
@@ -317,7 +326,7 @@ export const AppHeader: React.FC = () => {
       )}
 
       {/* When in Home Dashboard: Top Navigation Category Links */}
-      {!documentId && (
+      {!isDocumentOpen && (
         <nav className="hidden lg:flex items-center gap-1 text-xs font-semibold select-none">
           <button
             onClick={() => {
@@ -358,7 +367,7 @@ export const AppHeader: React.FC = () => {
       {/* Right: Actions, Reading Comfort, Save & Controls */}
       {/* ======================================================== */}
       <div className="flex items-center gap-1.5 shrink-0">
-        {documentId && (
+        {isDocumentOpen && (
           <>
             {/* Paper Tone Dropdown Button */}
             <div className="relative" ref={toneDropdownRef}>

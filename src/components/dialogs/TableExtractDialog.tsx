@@ -6,14 +6,22 @@ import { Table, Copy, Download, Check, X, RefreshCw, ChevronLeft, ChevronRight, 
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const TableExtractDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
-  const { documentId, currentPage, pageCount, fileName } = useDocumentStore();
+  const { activeModal, setActiveModal, activeView, addToast } = useUIStore();
+  const { documentId, currentPage, pageCount, fileName, closeCurrentDocument } = useDocumentStore();
 
   const [scopeMode, setScopeMode] = useState<'current' | 'all'>('current');
   const [selectedPage, setSelectedPage] = useState<number>(currentPage || 1);
   const [tableData, setTableData] = useState<ExtractedTableData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  const handleClose = () => {
+    setTableData(null);
+    setActiveModal(null);
+    if (activeView === 'home') {
+      closeCurrentDocument();
+    }
+  };
 
   useEffect(() => {
     if (activeModal === 'extract-table' && documentId) {
@@ -101,10 +109,7 @@ export const TableExtractDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => {
-              setTableData(null);
-              setActiveModal(null);
-            }}
+            onClick={handleClose}
             className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />

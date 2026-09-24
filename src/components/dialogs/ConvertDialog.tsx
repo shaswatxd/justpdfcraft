@@ -15,8 +15,10 @@ export const ConvertDialog: React.FC = () => {
     setActiveConvertTab,
     pendingImageFile,
     setPendingImageFile,
+    activeView,
+    setActiveView,
   } = useUIStore();
-  const { documentId, pageCount, currentPage, fileName, loadDocument } = useDocumentStore();
+  const { documentId, pageCount, currentPage, fileName, loadDocument, closeCurrentDocument } = useDocumentStore();
 
   const [mode, setMode] = useState<'pdf-to-img' | 'pdf-to-txt' | 'img-to-pdf'>('pdf-to-img');
   const [imageFormat, setImageFormat] = useState<'png' | 'jpeg' | 'webp'>('png');
@@ -43,6 +45,9 @@ export const ConvertDialog: React.FC = () => {
     });
     setActiveModal(null);
     setActiveConvertTab(null);
+    if (activeView === 'home' && mode !== 'img-to-pdf') {
+      closeCurrentDocument();
+    }
   };
 
   // Consume any pending image file dropped on home dashboard
@@ -292,6 +297,7 @@ export const ConvertDialog: React.FC = () => {
       const pdfBytes = await doc.save();
       await loadDocument(pdfBytes, 'Converted_Images.pdf');
 
+      setActiveView('editor');
       handleClose();
       addToast({
         type: 'success',

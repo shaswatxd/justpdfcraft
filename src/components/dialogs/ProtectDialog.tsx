@@ -17,8 +17,8 @@ import { getPDFEngine } from '@core/pdf/engine.factory';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const ProtectDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
-  const { documentId, metadata, pushHistory, fileName, filePath, loadDocument } = useDocumentStore();
+  const { activeModal, setActiveModal, activeView, setActiveView, addToast } = useUIStore();
+  const { documentId, metadata, pushHistory, fileName, filePath, loadDocument, closeCurrentDocument } = useDocumentStore();
 
   const [activeTab, setActiveTab] = useState<'unlock' | 'protect'>('unlock');
   const [userPassword, setUserPassword] = useState('');
@@ -26,6 +26,13 @@ export const ProtectDialog: React.FC = () => {
   const [restrictPrinting, setRestrictPrinting] = useState(false);
   const [restrictEditing, setRestrictEditing] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleClose = () => {
+    setActiveModal(null);
+    if (activeView === 'home') {
+      closeCurrentDocument();
+    }
+  };
 
   if (activeModal !== 'protect') return null;
 
@@ -66,6 +73,9 @@ export const ProtectDialog: React.FC = () => {
         await loadDocument(savedBytes, fileName, filePath || undefined, userPassword);
       }
 
+      if (activeView === 'home') {
+        setActiveView('editor');
+      }
       setActiveModal(null);
       addToast({
         type: 'success',
@@ -103,6 +113,10 @@ export const ProtectDialog: React.FC = () => {
           title: 'Unlocked PDF Downloaded',
           message: 'Saved fully unrestricted, unencrypted PDF copy.',
         });
+        if (activeView === 'home') {
+          closeCurrentDocument();
+          setActiveModal(null);
+        }
       } else {
         if (fileName) {
           await loadDocument(unlockedBytes, fileName, filePath || undefined);
@@ -112,6 +126,9 @@ export const ProtectDialog: React.FC = () => {
           title: 'Document Unlocked',
           message: 'All DRM restrictions, print locks, and owner permissions stripped successfully.',
         });
+        if (activeView === 'home') {
+          setActiveView('editor');
+        }
         setActiveModal(null);
       }
     } catch (err: any) {
@@ -142,7 +159,7 @@ export const ProtectDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={handleClose}
             className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
           >
             <X className="w-4 h-4" />
@@ -292,7 +309,7 @@ export const ProtectDialog: React.FC = () => {
               <div className="pt-2 flex justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setActiveModal(null)}
+                  onClick={handleClose}
                   className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
                 >
                   Cancel

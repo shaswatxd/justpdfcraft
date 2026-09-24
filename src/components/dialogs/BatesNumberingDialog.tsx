@@ -7,7 +7,7 @@ import { HeaderFooterPosition } from '@core/pdf/engine.interface';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const BatesNumberingDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
+  const { activeModal, setActiveModal, activeView, setActiveView, addToast } = useUIStore();
   const {
     documentId,
     pageCount,
@@ -15,8 +15,16 @@ export const BatesNumberingDialog: React.FC = () => {
     fileName,
     filePath,
     loadDocument,
+    closeCurrentDocument,
     pushHistory,
   } = useDocumentStore();
+
+  const handleClose = () => {
+    setActiveModal(null);
+    if (activeView === 'home') {
+      closeCurrentDocument();
+    }
+  };
 
   const [mode, setMode] = useState<'bates' | 'headerfooter'>('bates');
 
@@ -148,6 +156,9 @@ export const BatesNumberingDialog: React.FC = () => {
         await loadDocument(updatedBytes, fileName, filePath || undefined);
       }
 
+      if (activeView === 'home') {
+        setActiveView('editor');
+      }
       setActiveModal(null);
       addToast({
         type: 'success',
@@ -182,7 +193,7 @@ export const BatesNumberingDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={handleClose}
             className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
           >
             <X className="w-4 h-4" />
@@ -509,7 +520,7 @@ export const BatesNumberingDialog: React.FC = () => {
         <div className="px-6 py-3.5 bg-[#000000]/60 border-t border-slate-800 flex items-center justify-end gap-2.5">
           <button
             type="button"
-            onClick={() => setActiveModal(null)}
+            onClick={handleClose}
             className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           >
             Cancel

@@ -7,7 +7,7 @@ import { PDFDocument } from 'pdf-lib';
 export type ScanFilterMode = 'original' | 'document' | 'grayscale';
 
 export const ScanDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
+  const { activeModal, setActiveModal, setActiveView, addToast } = useUIStore();
   const { loadDocument } = useDocumentStore();
 
   const [inputMode, setInputMode] = useState<'camera' | 'upload'>('upload');
@@ -179,6 +179,7 @@ export const ScanDialog: React.FC = () => {
       const pdfBytes = await doc.save();
       await loadDocument(pdfBytes, `Scanned_Doc_${Date.now()}.pdf`);
 
+      setActiveView('editor');
       setActiveModal(null);
       stopCameraStream();
       addToast({

@@ -94,6 +94,8 @@ export const App: React.FC = () => {
     activeModal,
     setActiveModal,
     setActivePhotoUrl,
+    activeView,
+    setActiveView,
     setSidebarTab,
     addToast,
     isFullscreen,
@@ -356,6 +358,7 @@ export const App: React.FC = () => {
       const file = e.target.files[0];
       const buffer = await file.arrayBuffer();
       await loadDocument(new Uint8Array(buffer), file.name, (file as any).path);
+      setActiveView('editor');
     }
     e.target.value = '';
   };
@@ -390,13 +393,13 @@ export const App: React.FC = () => {
       {/* Top Application Header (Hidden in Fullscreen) */}
       {!isFullscreen && <AppHeader />}
 
-      {/* Multi-Tab Document Bar (Hidden in Fullscreen) */}
-      {!isFullscreen && (
+      {/* Multi-Tab Document Bar (Hidden in Fullscreen or when on Home) */}
+      {!isFullscreen && activeView === 'editor' && (
         <DocumentTabBar onOpenNewFile={() => hiddenFileInputRef.current?.click()} />
       )}
 
-      {/* Primary Toolbar & Properties (when document is loaded, hidden in Fullscreen) */}
-      {documentId && !isFullscreen && (
+      {/* Primary Toolbar & Properties (when document is loaded, hidden in Fullscreen or when on Home) */}
+      {documentId && activeView === 'editor' && !isFullscreen && (
         <>
           <MainToolbar />
           <ContextPropertiesBar />
@@ -462,7 +465,7 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {!documentId ? (
+        {!documentId || activeView === 'home' ? (
           <HomeDashboard />
         ) : (
           <>

@@ -11,7 +11,7 @@ interface MergeFileItem {
 }
 
 export const MergeDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
+  const { activeModal, setActiveModal, setActiveView, addToast } = useUIStore();
   const { loadDocument, documentId, fileBytes, fileName } = useDocumentStore();
 
   const [files, setFiles] = useState<MergeFileItem[]>([]);
@@ -88,6 +88,7 @@ export const MergeDialog: React.FC = () => {
       // Load directly into editor
       await loadDocument(mergedBytes, `Merged_${files[0].name}`);
       setFiles([]);
+      setActiveView('editor');
       setActiveModal(null);
 
       addToast({

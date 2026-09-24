@@ -6,14 +6,21 @@ import { getPDFEngine } from '@core/pdf/engine.factory';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const SplitDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
-  const { documentId, pageCount } = useDocumentStore();
+  const { activeModal, setActiveModal, activeView, addToast } = useUIStore();
+  const { documentId, pageCount, closeCurrentDocument } = useDocumentStore();
 
   const [splitMode, setSplitMode] = useState<'individual' | 'ranges'>('ranges');
   const [rangeInput, setRangeInput] = useState('1-2, 3-4');
   const [isSplitting, setIsSplitting] = useState(false);
 
   if (activeModal !== 'split') return null;
+
+  const handleClose = () => {
+    setActiveModal(null);
+    if (activeView === 'home') {
+      closeCurrentDocument();
+    }
+  };
 
   const handleExecuteSplit = async () => {
     if (!documentId) return;
@@ -120,7 +127,7 @@ export const SplitDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={handleClose}
             className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
           >
             <X className="w-4 h-4" />
@@ -186,7 +193,7 @@ export const SplitDialog: React.FC = () => {
             {/* Footer */}
             <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
               <button
-                onClick={() => setActiveModal(null)}
+                onClick={handleClose}
                 className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
               >
                 Cancel

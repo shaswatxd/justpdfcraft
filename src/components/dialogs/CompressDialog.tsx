@@ -7,8 +7,8 @@ import { CompressPreset, CompressResult } from '@core/pdf/engine.interface';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const CompressDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
-  const { documentId, fileName, fileBytes, loadDocument, filePath } = useDocumentStore();
+  const { activeModal, setActiveModal, activeView, setActiveView, addToast } = useUIStore();
+  const { documentId, fileName, fileBytes, loadDocument, closeCurrentDocument, filePath } = useDocumentStore();
 
   const [preset, setPreset] = useState<CompressPreset>('balanced');
   const [stripMetadata, setStripMetadata] = useState(true);
@@ -60,6 +60,13 @@ export const CompressDialog: React.FC = () => {
     }
   };
 
+  const handleClose = () => {
+    setActiveModal(null);
+    if (activeView === 'home') {
+      closeCurrentDocument();
+    }
+  };
+
   const handleDownloadCompressed = () => {
     if (!result) return;
     const blob = new Blob([result.data as unknown as BlobPart], { type: 'application/pdf' });
@@ -67,13 +74,16 @@ export const CompressDialog: React.FC = () => {
     const a = document.createElement('a');
     a.href = url;
     a.download = `Compressed_${fileName || 'document.pdf'}`;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const handleApplyToActive = async () => {
     if (!result || !fileName) return;
     await loadDocument(result.data, fileName, filePath || undefined);
+    setActiveView('editor');
     setActiveModal(null);
     addToast({
       type: 'info',
@@ -97,7 +107,7 @@ export const CompressDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={handleClose}
             className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
           >
             <X className="w-4 h-4" />
@@ -218,7 +228,7 @@ export const CompressDialog: React.FC = () => {
         {!result && (
           <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
             <button
-              onClick={() => setActiveModal(null)}
+              onClick={handleClose}
               className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition-colors"
             >
               Cancel

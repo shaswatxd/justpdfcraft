@@ -32,7 +32,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'FileArchive',
     color: 'text-emerald-400',
     badge: 'popular',
-    tags: ['compress', 'shrink', 'reduce', 'mb', 'kb', 'optimize', 'size'],
+    tags: ['compress', 'shrink', 'reduce', 'resize', 'resizer', 'pdf resizer', 'mb', 'kb', 'optimize', 'size'],
     action: { type: 'workflow', modal: 'compress', label: 'Compress PDF' },
   },
   {

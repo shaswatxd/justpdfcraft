@@ -34,6 +34,7 @@ export const HomeDashboard: React.FC = () => {
     setActiveImageTab,
     setActiveLegalTab,
     setPendingImageFile,
+    setActiveView,
   } = useUIStore();
   const { setTool } = useToolStore();
   const pdfInputRef = useRef<HTMLInputElement>(null);
@@ -155,6 +156,8 @@ export const HomeDashboard: React.FC = () => {
             setActiveConvertTab(pending.initialTab);
           }
           setActiveModal(pending.modal);
+        } else if (pending.viewMode || pending.tool) {
+          setActiveView('editor');
         }
         if (pending.viewMode) {
           setViewMode(pending.viewMode);
@@ -168,9 +171,10 @@ export const HomeDashboard: React.FC = () => {
           message: `${file.name} loaded. Opening ${pending.label || 'workflow'}...`,
         });
       } else {
+        setActiveView('editor');
         addToast({
           type: 'success',
-          title: 'Document Opened',
+          title: 'Document Opened in Editor',
           message: `${file.name} loaded successfully.`,
         });
       }
@@ -229,10 +233,11 @@ export const HomeDashboard: React.FC = () => {
     doc.addPage([595.28, 841.89]); // A4
     const bytes = await doc.save();
     await loadDocument(bytes, 'Untitled.pdf');
+    setActiveView('editor');
     addToast({
       type: 'info',
       title: 'Blank Document Created',
-      message: 'Created a new A4 PDF document.',
+      message: 'Created a new A4 PDF document in Editor.',
     });
   };
 
