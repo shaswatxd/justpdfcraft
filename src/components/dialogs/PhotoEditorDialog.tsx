@@ -580,10 +580,18 @@ export const PhotoEditorDialog: React.FC = () => {
                 />
 
                 {/* Crop Box Overlay */}
-                {isCropping && cropBox && (
-                  <div className="absolute inset-0 pointer-events-none border border-dashed border-purple-400 bg-purple-500/10">
-                    <div className="absolute top-2 left-2 bg-purple-900/90 text-purple-200 text-[11px] px-2 py-1 rounded font-mono shadow-md backdrop-blur-xs">
-                      {cropMode === 'passport' ? '🇮🇳 Indian Passport (3.5 × 4.5 cm)' : `${cropBox.width} × ${cropBox.height} px`}
+                {isCropping && cropBox && canvasRef.current && (
+                  <div
+                    className="absolute pointer-events-none border-2 border-purple-400 bg-purple-500/10 shadow-[0_0_0_9999px_rgba(0,0,0,0.55)] transition-all duration-150"
+                    style={{
+                      left: `${(cropBox.x / canvasRef.current.width) * 100}%`,
+                      top: `${(cropBox.y / canvasRef.current.height) * 100}%`,
+                      width: `${(cropBox.width / canvasRef.current.width) * 100}%`,
+                      height: `${(cropBox.height / canvasRef.current.height) * 100}%`,
+                    }}
+                  >
+                    <div className="absolute top-2 left-2 bg-purple-900/90 text-purple-200 text-[11px] px-2 py-1 rounded font-mono shadow-md backdrop-blur-xs whitespace-nowrap">
+                      {cropMode === 'passport' ? 'Passport (3.5 × 4.5 cm)' : `${cropBox.width} × ${cropBox.height} px`}
                     </div>
                   </div>
                 )}
@@ -713,8 +721,8 @@ export const PhotoEditorDialog: React.FC = () => {
                         : 'bg-slate-800/80 border-slate-700/60 hover:bg-slate-750 text-slate-300'
                     }`}
                   >
-                    <span className="text-[11px] font-bold text-white flex items-center gap-1">
-                      🪪 Passport
+                    <span className="text-[11px] font-bold text-white">
+                      Passport
                     </span>
                     <span className="text-[10px] text-slate-400">3.5 × 4.5 cm (Govt ID)</span>
                   </button>
