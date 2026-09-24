@@ -451,3 +451,5 @@ export const WatermarkDialog: React.FC = () => {
     </div>
   );
 };
+
+export default WatermarkDialog;

@@ -494,7 +494,11 @@ export const StudentToolsDialog: React.FC = () => {
                         min="2"
                         max={targetMaxKb}
                         value={targetMinKb}
-                        onChange={(e) => setTargetMinKb(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                        onChange={(e) => {
+                          const val = Math.max(1, parseInt(e.target.value, 10) || 1);
+                          setTargetMinKb(val);
+                          if (val > targetMaxKb) setTargetMaxKb(val + 5);
+                        }}
                         className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-swift-500"
                       />
                     </div>
@@ -505,7 +509,11 @@ export const StudentToolsDialog: React.FC = () => {
                         min={targetMinKb}
                         max="2000"
                         value={targetMaxKb}
-                        onChange={(e) => setTargetMaxKb(Math.max(targetMinKb, parseInt(e.target.value, 10) || 50))}
+                        onChange={(e) => {
+                          const val = Math.max(1, parseInt(e.target.value, 10) || 50);
+                          setTargetMaxKb(val);
+                          if (val < targetMinKb) setTargetMinKb(Math.max(1, val - 5));
+                        }}
                         className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-swift-500"
                       />
                     </div>
@@ -1206,3 +1214,5 @@ export const StudentToolsDialog: React.FC = () => {
     </div>
   );
 };
+
+export default StudentToolsDialog;

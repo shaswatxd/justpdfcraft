@@ -61,7 +61,9 @@ export const SplitDialog: React.FC = () => {
         a.href = url;
         const [start, end] = ranges[0];
         a.download = `JustPDFCraft_Part_1_Pages_${start + 1}_to_${end + 1}.pdf`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         setTimeout(() => URL.revokeObjectURL(url), 1000);
       } else {
         // Create ZIP for multiple files
@@ -80,7 +82,9 @@ export const SplitDialog: React.FC = () => {
         const a = document.createElement('a');
         a.href = url;
         a.download = `JustPDFCraft_Split_${results.length}_Parts.zip`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
 
@@ -202,3 +206,5 @@ export const SplitDialog: React.FC = () => {
     </div>
   );
 };
+
+export default SplitDialog;

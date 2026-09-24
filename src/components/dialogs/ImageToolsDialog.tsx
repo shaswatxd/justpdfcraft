@@ -388,3 +388,5 @@ export const ImageToolsDialog: React.FC = () => {
     </div>
   );
 };
+
+export default ImageToolsDialog;

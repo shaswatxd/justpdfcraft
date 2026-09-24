@@ -142,7 +142,20 @@ export const useUIStore = create<UIState>((set) => ({
   isLaserPointerActive: false,
   isSpotlightActive: false,
   activePhotoUrl: null,
-  setActivePhotoUrl: (activePhotoUrl) => set({ activePhotoUrl }),
+  setActivePhotoUrl: (activePhotoUrl) =>
+    set((state) => {
+      if (
+        state.activePhotoUrl &&
+        typeof state.activePhotoUrl === 'string' &&
+        state.activePhotoUrl.startsWith('blob:') &&
+        state.activePhotoUrl !== activePhotoUrl
+      ) {
+        try {
+          URL.revokeObjectURL(state.activePhotoUrl);
+        } catch {}
+      }
+      return { activePhotoUrl };
+    }),
   pendingImageFile: null,
   setPendingImageFile: (pendingImageFile) => set({ pendingImageFile }),
 
@@ -197,3 +210,7 @@ export const useUIStore = create<UIState>((set) => ({
   removeToast: (id) =>
     set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })),
 }));
+
+if (typeof window !== 'undefined') {
+  (window as any).__JUSTPDFCRAFT_UI_STORE__ = useUIStore;
+}

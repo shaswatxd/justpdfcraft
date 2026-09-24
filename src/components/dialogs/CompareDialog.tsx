@@ -517,3 +517,5 @@ export const CompareDialog: React.FC = () => {
     </div>
   );
 };
+
+export default CompareDialog;

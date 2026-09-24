@@ -592,3 +592,5 @@ export const SignDialog: React.FC = () => {
     </div>
   );
 };
+
+export default SignDialog;

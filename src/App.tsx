@@ -18,32 +18,61 @@ import { TTSPlayerHUD } from '@/components/viewer/TTSPlayerHUD';
 import { useTTSStore } from '@/stores/ttsStore';
 import { ChevronLeft, ChevronRight, Minimize2, Crosshair, Focus, FileText } from 'lucide-react';
 
+// Robust lazy loader with chunk load error handling and deployment recovery
+function safeLazy(
+  loader: () => Promise<any>,
+  componentName: string
+) {
+  return React.lazy(async () => {
+    try {
+      const module = await loader();
+      const comp = module?.default || module?.[componentName];
+      if (!comp) {
+        throw new Error(`Failed to load component: ${componentName}`);
+      }
+      return { default: comp };
+    } catch (err: any) {
+      console.error(`[DynamicImportError] ${componentName}:`, err);
+      if (typeof window !== 'undefined') {
+        const key = `chunk_reload_${componentName}`;
+        const last = sessionStorage.getItem(key);
+        const now = Date.now();
+        if (!last || now - parseInt(last, 10) > 10000) {
+          sessionStorage.setItem(key, String(now));
+          window.location.reload();
+        }
+      }
+      throw err;
+    }
+  });
+}
+
 // Lazy-loaded dialogs for high-speed bundle loading
-const CompressDialog = React.lazy(() => import('@/components/dialogs/CompressDialog').then(m => ({ default: m.CompressDialog })));
-const OCRDialog = React.lazy(() => import('@/components/dialogs/OCRDialog').then(m => ({ default: m.OCRDialog })));
-const PrintDialog = React.lazy(() => import('@/components/dialogs/PrintDialog').then(m => ({ default: m.PrintDialog })));
-const ProtectDialog = React.lazy(() => import('@/components/dialogs/ProtectDialog').then(m => ({ default: m.ProtectDialog })));
-const CompareDialog = React.lazy(() => import('@/components/dialogs/CompareDialog').then(m => ({ default: m.CompareDialog })));
-const MergeDialog = React.lazy(() => import('@/components/dialogs/MergeDialog').then(m => ({ default: m.MergeDialog })));
-const SplitDialog = React.lazy(() => import('@/components/dialogs/SplitDialog').then(m => ({ default: m.SplitDialog })));
-const SettingsDialog = React.lazy(() => import('@/components/dialogs/SettingsDialog').then(m => ({ default: m.SettingsDialog })));
-const SignDialog = React.lazy(() => import('@/components/dialogs/SignDialog').then(m => ({ default: m.SignDialog })));
-const ConvertDialog = React.lazy(() => import('@/components/dialogs/ConvertDialog').then(m => ({ default: m.ConvertDialog })));
-const WatermarkDialog = React.lazy(() => import('@/components/dialogs/WatermarkDialog').then(m => ({ default: m.WatermarkDialog })));
-const ScanDialog = React.lazy(() => import('@/components/dialogs/ScanDialog').then(m => ({ default: m.ScanDialog })));
-const BatesNumberingDialog = React.lazy(() => import('@/components/dialogs/BatesNumberingDialog').then(m => ({ default: m.BatesNumberingDialog })));
-const SanitizeDialog = React.lazy(() => import('@/components/dialogs/SanitizeDialog').then(m => ({ default: m.SanitizeDialog })));
-const BatchDialog = React.lazy(() => import('@/components/dialogs/BatchDialog').then(m => ({ default: m.BatchDialog })));
-const CropDialog = React.lazy(() => import('@/components/dialogs/CropDialog').then(m => ({ default: m.CropDialog })));
-const TableExtractDialog = React.lazy(() => import('@/components/dialogs/TableExtractDialog').then(m => ({ default: m.TableExtractDialog })));
-const ExtractImagesDialog = React.lazy(() => import('@/components/dialogs/ExtractImagesDialog').then(m => ({ default: m.ExtractImagesDialog })));
-const PhotoEditorDialog = React.lazy(() => import('@/components/dialogs/PhotoEditorDialog').then(m => ({ default: m.PhotoEditorDialog })));
-const StudentToolsDialog = React.lazy(() => import('@/components/dialogs/StudentToolsDialog').then(m => ({ default: m.StudentToolsDialog })));
-const StudentCalculatorsDialog = React.lazy(() => import('@/components/dialogs/StudentCalculatorsDialog').then(m => ({ default: m.StudentCalculatorsDialog })));
-const HandwritingDialog = React.lazy(() => import('@/components/dialogs/HandwritingDialog').then(m => ({ default: m.HandwritingDialog })));
-const ImageToolsDialog = React.lazy(() => import('@/components/dialogs/ImageToolsDialog').then(m => ({ default: m.ImageToolsDialog })));
-const LegalDialog = React.lazy(() => import('@/components/dialogs/LegalDialog').then(m => ({ default: m.LegalDialog })));
-const ShortcutsDialog = React.lazy(() => import('@/components/dialogs/ShortcutsDialog').then(m => ({ default: m.ShortcutsDialog })));
+const CompressDialog = safeLazy(() => import('@/components/dialogs/CompressDialog'), 'CompressDialog');
+const OCRDialog = safeLazy(() => import('@/components/dialogs/OCRDialog'), 'OCRDialog');
+const PrintDialog = safeLazy(() => import('@/components/dialogs/PrintDialog'), 'PrintDialog');
+const ProtectDialog = safeLazy(() => import('@/components/dialogs/ProtectDialog'), 'ProtectDialog');
+const CompareDialog = safeLazy(() => import('@/components/dialogs/CompareDialog'), 'CompareDialog');
+const MergeDialog = safeLazy(() => import('@/components/dialogs/MergeDialog'), 'MergeDialog');
+const SplitDialog = safeLazy(() => import('@/components/dialogs/SplitDialog'), 'SplitDialog');
+const SettingsDialog = safeLazy(() => import('@/components/dialogs/SettingsDialog'), 'SettingsDialog');
+const SignDialog = safeLazy(() => import('@/components/dialogs/SignDialog'), 'SignDialog');
+const ConvertDialog = safeLazy(() => import('@/components/dialogs/ConvertDialog'), 'ConvertDialog');
+const WatermarkDialog = safeLazy(() => import('@/components/dialogs/WatermarkDialog'), 'WatermarkDialog');
+const ScanDialog = safeLazy(() => import('@/components/dialogs/ScanDialog'), 'ScanDialog');
+const BatesNumberingDialog = safeLazy(() => import('@/components/dialogs/BatesNumberingDialog'), 'BatesNumberingDialog');
+const SanitizeDialog = safeLazy(() => import('@/components/dialogs/SanitizeDialog'), 'SanitizeDialog');
+const BatchDialog = safeLazy(() => import('@/components/dialogs/BatchDialog'), 'BatchDialog');
+const CropDialog = safeLazy(() => import('@/components/dialogs/CropDialog'), 'CropDialog');
+const TableExtractDialog = safeLazy(() => import('@/components/dialogs/TableExtractDialog'), 'TableExtractDialog');
+const ExtractImagesDialog = safeLazy(() => import('@/components/dialogs/ExtractImagesDialog'), 'ExtractImagesDialog');
+const PhotoEditorDialog = safeLazy(() => import('@/components/dialogs/PhotoEditorDialog'), 'PhotoEditorDialog');
+const StudentToolsDialog = safeLazy(() => import('@/components/dialogs/StudentToolsDialog'), 'StudentToolsDialog');
+const StudentCalculatorsDialog = safeLazy(() => import('@/components/dialogs/StudentCalculatorsDialog'), 'StudentCalculatorsDialog');
+const HandwritingDialog = safeLazy(() => import('@/components/dialogs/HandwritingDialog'), 'HandwritingDialog');
+const ImageToolsDialog = safeLazy(() => import('@/components/dialogs/ImageToolsDialog'), 'ImageToolsDialog');
+const LegalDialog = safeLazy(() => import('@/components/dialogs/LegalDialog'), 'LegalDialog');
+const ShortcutsDialog = safeLazy(() => import('@/components/dialogs/ShortcutsDialog'), 'ShortcutsDialog');
 
 export const App: React.FC = () => {
   const {
@@ -288,6 +317,7 @@ export const App: React.FC = () => {
   // Global Error & Promise Rejection Trap
   useEffect(() => {
     const handleRejection = (event: PromiseRejectionEvent) => {
+      event.preventDefault();
       console.error('Unhandled Promise Rejection caught:', event.reason);
       const msg = typeof event.reason === 'string'
         ? event.reason

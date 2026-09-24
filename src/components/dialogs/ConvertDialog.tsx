@@ -625,3 +625,5 @@ export const ConvertDialog: React.FC = () => {
     </div>
   );
 };
+
+export default ConvertDialog;

@@ -98,7 +98,7 @@ export const BatchDialog: React.FC = () => {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const handleDownloadAll = async () => {
@@ -124,7 +124,9 @@ export const BatchDialog: React.FC = () => {
       const a = document.createElement('a');
       a.href = url;
       a.download = `Batch_Processed_${Date.now()}.zip`;
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 1000);
 
       addToast({
@@ -663,3 +665,5 @@ export const BatchDialog: React.FC = () => {
     </div>
   );
 };
+
+export default BatchDialog;

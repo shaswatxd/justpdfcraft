@@ -441,3 +441,5 @@ export const ScanDialog: React.FC = () => {
     </div>
   );
 };
+
+export default ScanDialog;

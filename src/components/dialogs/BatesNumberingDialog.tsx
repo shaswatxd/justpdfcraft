@@ -539,3 +539,5 @@ export const BatesNumberingDialog: React.FC = () => {
     </div>
   );
 };
+
+export default BatesNumberingDialog;

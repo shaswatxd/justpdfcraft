@@ -226,3 +226,5 @@ export const LegalDialog: React.FC = () => {
     </div>
   );
 };
+
+export default LegalDialog;

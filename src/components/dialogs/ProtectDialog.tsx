@@ -316,3 +316,5 @@ export const ProtectDialog: React.FC = () => {
     </div>
   );
 };
+
+export default ProtectDialog;

@@ -283,3 +283,5 @@ export const TableExtractDialog: React.FC = () => {
     </div>
   );
 };
+
+export default TableExtractDialog;

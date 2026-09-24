@@ -235,3 +235,5 @@ export const ShortcutsDialog: React.FC = () => {
     </div>
   );
 };
+
+export default ShortcutsDialog;

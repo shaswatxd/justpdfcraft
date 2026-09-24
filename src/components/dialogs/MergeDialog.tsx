@@ -255,3 +255,5 @@ export const MergeDialog: React.FC = () => {
     </div>
   );
 };
+
+export default MergeDialog;

@@ -750,3 +750,5 @@ export const OCRDialog: React.FC = () => {
     </div>
   );
 };
+
+export default OCRDialog;

@@ -245,3 +245,5 @@ export const SanitizeDialog: React.FC = () => {
     </div>
   );
 };
+
+export default SanitizeDialog;

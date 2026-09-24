@@ -1039,3 +1039,5 @@ export const PhotoEditorDialog: React.FC = () => {
     </div>
   );
 };
+
+export default PhotoEditorDialog;

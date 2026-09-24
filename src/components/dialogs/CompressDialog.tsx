@@ -239,3 +239,5 @@ export const CompressDialog: React.FC = () => {
     </div>
   );
 };
+
+export default CompressDialog;

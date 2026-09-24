@@ -201,3 +201,5 @@ export const SettingsDialog: React.FC = () => {
     </div>
   );
 };
+
+export default SettingsDialog;

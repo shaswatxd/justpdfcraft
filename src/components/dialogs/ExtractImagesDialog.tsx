@@ -42,7 +42,14 @@ export const ExtractImagesDialog: React.FC = () => {
     try {
       const engine = getPDFEngine();
       const extracted = await engine.extractImages(documentId);
-      setImages(extracted);
+      setImages((prev) => {
+        prev.forEach((item) => {
+          if (item.dataUrl && item.dataUrl.startsWith("blob:")) {
+            try { URL.revokeObjectURL(item.dataUrl); } catch {}
+          }
+        });
+        return extracted;
+      });
       if (extracted.length === 0) {
         addToast({
           type: 'info',
@@ -67,7 +74,9 @@ export const ExtractImagesDialog: React.FC = () => {
       a.href = img.dataUrl;
       const ext = img.mimeType.includes('png') ? 'png' : 'jpg';
       a.download = img.name || `Photo_Page${img.pageIndex + 1}_${Date.now()}.${ext}`;
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       addToast({
         type: 'success',
         title: 'Image Downloaded',
@@ -112,7 +121,9 @@ export const ExtractImagesDialog: React.FC = () => {
       const a = document.createElement('a');
       a.href = url;
       a.download = `Extracted_Photos.zip`;
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 1000);
 
       addToast({
@@ -482,3 +493,5 @@ export const ExtractImagesDialog: React.FC = () => {
     </div>
   );
 };
+
+export default ExtractImagesDialog;

@@ -378,19 +378,15 @@ const AttendanceCalculatorView: React.FC = () => {
   const currentPercentage = totalClasses > 0 ? (attendedClasses / totalClasses) * 100 : 0;
   const isEligible = currentPercentage >= targetPercentage;
 
+  const isImpossible100 = targetPercentage === 100 && attendedClasses < totalClasses;
+
   // Calculate bunkable classes or classes needed to attend
   let bunkCount = 0;
   let classesNeeded = 0;
 
   if (isEligible) {
-    // (attended) / (total + x) >= target / 100
-    // attended * 100 >= target * total + target * x
-    // x <= (attended * 100 - target * total) / target
     bunkCount = Math.floor((attendedClasses * 100 - targetPercentage * totalClasses) / targetPercentage);
-  } else {
-    // (attended + y) / (total + y) >= target / 100
-    // 100 * attended + 100 * y >= target * total + target * y
-    // y * (100 - target) >= target * total - 100 * attended
+  } else if (!isImpossible100) {
     if (100 - targetPercentage > 0) {
       classesNeeded = Math.ceil(
         (targetPercentage * totalClasses - 100 * attendedClasses) / (100 - targetPercentage)
@@ -415,7 +411,11 @@ const AttendanceCalculatorView: React.FC = () => {
             type="number"
             min="1"
             value={totalClasses}
-            onChange={(e) => setTotalClasses(Math.max(1, parseInt(e.target.value) || 1))}
+            onChange={(e) => {
+              const val = Math.max(1, parseInt(e.target.value, 10) || 1);
+              setTotalClasses(val);
+              if (attendedClasses > val) setAttendedClasses(val);
+            }}
             className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-swift-500 font-mono"
           />
         </div>
@@ -427,7 +427,7 @@ const AttendanceCalculatorView: React.FC = () => {
             min="0"
             max={totalClasses}
             value={attendedClasses}
-            onChange={(e) => setAttendedClasses(Math.max(0, parseInt(e.target.value) || 0))}
+            onChange={(e) => setAttendedClasses(Math.min(totalClasses, Math.max(0, parseInt(e.target.value, 10) || 0)))}
             className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-swift-500 font-mono"
           />
         </div>
@@ -471,6 +471,10 @@ const AttendanceCalculatorView: React.FC = () => {
               🎉 You are on track! You can safely bunk{' '}
               <span className="underline font-bold text-white">{bunkCount}</span> more classes while staying above {targetPercentage}%.
             </p>
+          ) : isImpossible100 ? (
+            <p className="text-sm font-semibold text-rose-300">
+              ⚠️ Short attendance! 100% attendance cannot be achieved because at least one class was already missed.
+            </p>
           ) : (
             <p className="text-sm font-semibold text-rose-300">
               ⚠️ Short attendance! You must attend the next{' '}
@@ -504,8 +508,13 @@ const PercentageMarksView: React.FC = () => {
           <label className="text-xs font-semibold text-slate-300">Total Marks</label>
           <input
             type="number"
+            min="1"
             value={totalMarks}
-            onChange={(e) => setTotalMarks(parseFloat(e.target.value) || 0)}
+            onChange={(e) => {
+              const val = Math.max(1, parseFloat(e.target.value) || 1);
+              setTotalMarks(val);
+              if (obtainedMarks > val) setObtainedMarks(val);
+            }}
             className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-swift-500 font-mono"
           />
         </div>
@@ -513,8 +522,10 @@ const PercentageMarksView: React.FC = () => {
           <label className="text-xs font-semibold text-slate-300">Obtained Marks</label>
           <input
             type="number"
+            min="0"
+            max={totalMarks}
             value={obtainedMarks}
-            onChange={(e) => setObtainedMarks(parseFloat(e.target.value) || 0)}
+            onChange={(e) => setObtainedMarks(Math.min(totalMarks, Math.max(0, parseFloat(e.target.value) || 0)))}
             className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-swift-500 font-mono"
           />
         </div>
@@ -551,23 +562,31 @@ const AgeCalculatorView: React.FC = () => {
 
   const birthDate = new Date(dob);
   const targetDate = new Date(asOfDate);
+  const isInvalidDate = birthDate > targetDate;
 
-  let years = targetDate.getFullYear() - birthDate.getFullYear();
-  let months = targetDate.getMonth() - birthDate.getMonth();
-  let days = targetDate.getDate() - birthDate.getDate();
+  let years = 0;
+  let months = 0;
+  let days = 0;
+  let totalDays = 0;
 
-  if (days < 0) {
-    months -= 1;
-    const prevMonthDays = new Date(targetDate.getFullYear(), targetDate.getMonth(), 0).getDate();
-    days += prevMonthDays;
+  if (!isInvalidDate) {
+    years = targetDate.getFullYear() - birthDate.getFullYear();
+    months = targetDate.getMonth() - birthDate.getMonth();
+    days = targetDate.getDate() - birthDate.getDate();
+
+    if (days < 0) {
+      months -= 1;
+      const prevMonthDays = new Date(targetDate.getFullYear(), targetDate.getMonth(), 0).getDate();
+      days += prevMonthDays;
+    }
+    if (months < 0) {
+      years -= 1;
+      months += 12;
+    }
+
+    const diffTime = targetDate.getTime() - birthDate.getTime();
+    totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   }
-  if (months < 0) {
-    years -= 1;
-    months += 12;
-  }
-
-  const diffTime = targetDate.getTime() - birthDate.getTime();
-  const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
   return (
     <div className="space-y-6 max-w-xl mx-auto">
@@ -601,12 +620,20 @@ const AgeCalculatorView: React.FC = () => {
 
       <div className="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 text-center space-y-3">
         <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Your Exact Age</span>
-        <p className="text-3xl font-black text-rose-400">
-          {years} Years, {months} Months, {days} Days
-        </p>
-        <p className="text-xs text-slate-400">
-          Total lived days: <span className="font-mono text-slate-200 font-bold">{totalDays} days</span>
-        </p>
+        {isInvalidDate ? (
+          <p className="text-base font-bold text-rose-400">
+            ⚠️ Date of Birth cannot be after the Cut-Off date.
+          </p>
+        ) : (
+          <>
+            <p className="text-3xl font-black text-rose-400">
+              {years} Years, {months} Months, {days} Days
+            </p>
+            <p className="text-xs text-slate-400">
+              Total lived days: <span className="font-mono text-slate-200 font-bold">{totalDays} days</span>
+            </p>
+          </>
+        )}
       </div>
 
       {/* Exam Eligibility Reference */}
@@ -746,7 +773,10 @@ const DateDiffView: React.FC = () => {
     return d.toISOString().slice(0, 10);
   });
 
-  const diffMs = new Date(end).getTime() - new Date(start).getTime();
+  const sDate = new Date(start);
+  const eDate = new Date(end);
+  const isReversed = eDate < sDate;
+  const diffMs = Math.abs(eDate.getTime() - sDate.getTime());
   const totalDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
   const weeks = Math.floor(totalDays / 7);
   const remDays = totalDays % 7;
@@ -782,6 +812,11 @@ const DateDiffView: React.FC = () => {
       <div className="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 text-center space-y-2">
         <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Total Duration</span>
         <p className="text-3xl font-black text-blue-400">{totalDays} Days</p>
+        {isReversed && (
+          <p className="text-[11px] text-amber-400 font-medium">
+            (End date is before start date — showing absolute duration)
+          </p>
+        )}
         <p className="text-xs text-slate-400">
           Equivalent to <span className="font-bold text-white">{weeks} weeks</span> and {remDays} days
         </p>
@@ -1341,3 +1376,5 @@ const RandomPickerView: React.FC = () => {
     </div>
   );
 };
+
+export default StudentCalculatorsDialog;

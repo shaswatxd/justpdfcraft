@@ -152,7 +152,26 @@ export const HandwritingDialog: React.FC = () => {
         let currentLine = '';
 
         for (let i = 0; i < words.length; i++) {
-          const word = words[i];
+          let word = words[i];
+          if (ctx.measureText(word).width > printableWidth) {
+            let chunk = '';
+            for (const char of word) {
+              if (ctx.measureText(chunk + char).width > printableWidth) {
+                if (currentLine) {
+                  curPage.push(currentLine);
+                  if (curPage.length >= maxLines) { pageLines.push(curPage); curPage = []; }
+                  currentLine = '';
+                }
+                curPage.push(chunk);
+                if (curPage.length >= maxLines) { pageLines.push(curPage); curPage = []; }
+                chunk = char;
+              } else {
+                chunk += char;
+              }
+            }
+            word = chunk;
+          }
+
           const testLine = currentLine ? `${currentLine} ${word}` : word;
           const metrics = ctx.measureText(testLine);
 
@@ -795,3 +814,5 @@ export const HandwritingDialog: React.FC = () => {
     </div>
   );
 };
+
+export default HandwritingDialog;

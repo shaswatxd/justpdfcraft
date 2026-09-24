@@ -256,3 +256,5 @@ export const AreaOCRDialog: React.FC<AreaOCRModalProps> = ({
     </div>
   );
 };
+
+export default AreaOCRDialog;

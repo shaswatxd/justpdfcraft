@@ -314,3 +314,5 @@ export const PrintDialog: React.FC = () => {
     </div>
   );
 };
+
+export default PrintDialog;

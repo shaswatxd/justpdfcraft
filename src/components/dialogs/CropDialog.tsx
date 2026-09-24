@@ -485,3 +485,5 @@ export const CropDialog: React.FC = () => {
     </div>
   );
 };
+
+export default CropDialog;
