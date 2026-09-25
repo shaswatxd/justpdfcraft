@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Scissors, X } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
@@ -12,6 +12,17 @@ export const SplitDialog: React.FC = () => {
   const [splitMode, setSplitMode] = useState<'individual' | 'ranges'>('ranges');
   const [rangeInput, setRangeInput] = useState('1-2, 3-4');
   const [isSplitting, setIsSplitting] = useState(false);
+
+  useEffect(() => {
+    if (pageCount <= 1) {
+      setRangeInput('1');
+    } else if (pageCount === 2) {
+      setRangeInput('1, 2');
+    } else {
+      const mid = Math.floor(pageCount / 2);
+      setRangeInput(`1-${mid}, ${mid + 1}-${pageCount}`);
+    }
+  }, [pageCount, activeModal]);
 
   if (activeModal !== 'split') return null;
 
@@ -31,30 +42,41 @@ export const SplitDialog: React.FC = () => {
       let ranges: Array<[number, number]> = [];
 
       if (splitMode === 'individual') {
+        if (pageCount <= 0) {
+          throw new Error('Document contains no pages.');
+        }
         ranges = Array.from({ length: pageCount }, (_, i) => [i, i]);
       } else {
         const parts = rangeInput.split(',').map((p) => p.trim()).filter(Boolean);
         for (const p of parts) {
           if (p.includes('-')) {
             const [s, e] = p.split('-').map((v) => parseInt(v.trim(), 10));
-            if (!isNaN(s) && !isNaN(e)) {
-              const startIdx = Math.max(0, Math.min(s - 1, e - 1));
-              const endIdx = Math.min(pageCount - 1, Math.max(s - 1, e - 1));
-              if (startIdx <= endIdx) {
-                ranges.push([startIdx, endIdx]);
+            if (!isNaN(s) && !isNaN(e) && s >= 1 && e >= 1) {
+              const minVal = Math.min(s, e);
+              const maxVal = Math.max(s, e);
+              if (minVal <= pageCount) {
+                const startIdx = minVal - 1;
+                const endIdx = Math.min(pageCount - 1, maxVal - 1);
+                if (startIdx <= endIdx) {
+                  ranges.push([startIdx, endIdx]);
+                }
               }
             }
           } else {
             const n = parseInt(p, 10);
-            if (!isNaN(n)) {
-              ranges.push([Math.max(0, n - 1), Math.min(pageCount - 1, n - 1)]);
+            if (!isNaN(n) && n >= 1 && n <= pageCount) {
+              ranges.push([n - 1, n - 1]);
             }
           }
         }
       }
 
       if (ranges.length === 0) {
-        throw new Error('Please specify valid page ranges to split.');
+        throw new Error(
+          pageCount > 0
+            ? `Please specify valid page ranges between 1 and ${pageCount}.`
+            : 'Please specify valid page ranges to split.'
+        );
       }
 
       const results = await engine.splitDocument(documentId, ranges);
@@ -66,7 +88,7 @@ export const SplitDialog: React.FC = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        const [start, end] = ranges[0];
+        const [start, end] = ranges[0] || [0, 0];
         a.download = `JustPDFCraft_Part_1_Pages_${start + 1}_to_${end + 1}.pdf`;
         document.body.appendChild(a);
         a.click();
@@ -76,7 +98,7 @@ export const SplitDialog: React.FC = () => {
         // Create ZIP for multiple files
         const { createZip } = await import('@/utils/zip');
         const filesToZip = results.map((bytes, idx) => {
-          const [start, end] = ranges[idx];
+          const [start, end] = ranges[idx] || [idx, idx];
           return {
             name: `JustPDFCraft_Part_${idx + 1}_Pages_${start + 1}_to_${end + 1}.pdf`,
             data: bytes,

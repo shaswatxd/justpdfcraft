@@ -470,6 +470,7 @@ export class FallbackPDFEngine implements PDFEngine {
       for (let i = start; i <= end && i < doc.pdfLibDoc.getPageCount(); i++) {
         indices.push(i);
       }
+      if (indices.length === 0) continue;
       const pages = await splitDoc.copyPages(doc.pdfLibDoc, indices);
       pages.forEach((p) => splitDoc.addPage(p));
       results.push(await splitDoc.save());
