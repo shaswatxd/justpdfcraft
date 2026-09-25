@@ -21,4 +21,9 @@
    - **Universal AMOLED Theme**: Standardized all modal surfaces (`ShortcutsDialog`, `SettingsDialog`, `PrintDialog`, `ExtractImagesDialog`, `LegalDialog`) to `#000000` pitch black.
    - **Dialog UX Consistency**: Added bottom Close button to Universal Unlock tab in `ProtectDialog`.
 2. **Phase 8 Completed**: Native File System Access & OPFS in-place disk save and auto-save crash recovery drafts.
+3. **Android & Mobile Responsiveness**:
+   - Upgraded `MobileBottomBar` with dual-mode adaptive controls: Home navigation bar vs. full document Editor controls (Page stepper `< X/Y >`, Grid thumbnail toggle, Zoom stepper, and 1-tap Save).
+   - Added Android viewport meta (`viewport-fit=cover`, scaling up to 5x) and `.safe-area-bottom` inset padding.
+   - Optimized `PDFViewer` and `PageOrganizer` with touch-friendly padding (`pb-24`) so pages are never blocked by bottom bars on phone screens.
+   - Enabled smooth horizontal swipe on modal tabs (`StudentToolsDialog`, `StudentCalculatorsDialog`, and organizer ribbons).
 
