@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Scissors, X } from 'lucide-react';
+import { Scissors, X, Grid, FileText } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
 import { getPDFEngine } from '@core/pdf/engine.factory';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const SplitDialog: React.FC = () => {
-  const { activeModal, setActiveModal, activeView, addToast } = useUIStore();
-  const { documentId, pageCount, closeCurrentDocument } = useDocumentStore();
+  const { activeModal, setActiveModal, setActiveView, addToast } = useUIStore();
+  const { documentId, fileName, pageCount, setViewMode } = useDocumentStore();
 
   const [splitMode, setSplitMode] = useState<'individual' | 'ranges'>('ranges');
   const [rangeInput, setRangeInput] = useState('1-2, 3-4');
@@ -28,9 +28,6 @@ export const SplitDialog: React.FC = () => {
 
   const handleClose = () => {
     setActiveModal(null);
-    if (activeView === 'home') {
-      closeCurrentDocument();
-    }
   };
 
   const handleExecuteSplit = async () => {
@@ -167,6 +164,34 @@ export const SplitDialog: React.FC = () => {
           <>
             {/* Content */}
             <div className="p-6 space-y-4">
+              {/* Document Header Pill */}
+              <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-xl flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 truncate min-w-0 mr-2">
+                  <FileText className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span className="font-medium text-slate-200 truncate">{fileName || 'Document.pdf'}</span>
+                </div>
+                <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 font-mono text-[11px] shrink-0">
+                  {pageCount} {pageCount === 1 ? 'page' : 'pages'}
+                </span>
+              </div>
+
+              {/* Visual Split Alternative */}
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs">
+                <span className="text-slate-400 text-[11px]">Want to preview pages visually?</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveModal(null);
+                    setViewMode('organize');
+                    setActiveView('editor');
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-xs font-semibold flex items-center gap-1.5 transition-colors border border-amber-500/30 shrink-0"
+                >
+                  <Grid className="w-3.5 h-3.5" />
+                  <span>Visual Page Grid</span>
+                </button>
+              </div>
+
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-slate-300">Split Mode</label>
                 <div className="grid grid-cols-2 gap-2">

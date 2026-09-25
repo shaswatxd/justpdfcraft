@@ -205,6 +205,7 @@ export const HomeDashboard: React.FC = () => {
             setActiveConvertTab(pending.initialTab);
           }
           setActiveModal(pending.modal);
+          setActiveView('editor');
         } else if (pending.viewMode || pending.tool) {
           setActiveView('editor');
         }
