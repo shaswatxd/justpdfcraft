@@ -88,6 +88,11 @@ export const App: React.FC = () => {
     pageCount,
     setCurrentPage,
     addUserBookmark,
+    saveDirectly,
+    saveAsNativePicker,
+    openWithNativePicker,
+    fileHandle,
+    fileName,
   } = useDocumentStore();
 
   const {
@@ -165,18 +170,41 @@ export const App: React.FC = () => {
         toggleTTS();
       } else if (ctrl && e.key.toLowerCase() === 'o') {
         e.preventDefault();
-        hiddenFileInputRef.current?.click();
+        openWithNativePicker().then((opened) => {
+          if (opened) {
+            setActiveView('editor');
+            addToast({
+              type: 'success',
+              title: 'Document Opened',
+              message: 'Native disk file handle linked.',
+            });
+          } else {
+            hiddenFileInputRef.current?.click();
+          }
+        });
+      } else if (ctrl && e.shiftKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        saveAsNativePicker().then((saved) => {
+          if (saved) {
+            addToast({
+              type: 'success',
+              title: 'Document Saved As',
+              message: 'Saved to selected file.',
+            });
+          }
+        });
       } else if (ctrl && e.key.toLowerCase() === 's') {
         e.preventDefault();
-        saveCurrentDocument().then((bytes) => {
-          const blob = new Blob([bytes as unknown as BlobPart], { type: 'application/pdf' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'Saved_Document.pdf';
-          a.click();
-          URL.revokeObjectURL(url);
-          addToast({ type: 'success', title: 'File Saved' });
+        saveDirectly().then((saved) => {
+          if (saved) {
+            addToast({
+              type: 'success',
+              title: fileHandle ? 'Saved Directly to Disk' : 'File Saved',
+              message: fileHandle
+                ? `Saved directly to ${fileName}`
+                : 'File saved and downloaded successfully.',
+            });
+          }
         });
       } else if (ctrl && e.key.toLowerCase() === 'p') {
         e.preventDefault();
@@ -234,6 +262,12 @@ export const App: React.FC = () => {
     pageCount,
     setCurrentPage,
     addUserBookmark,
+    saveDirectly,
+    saveAsNativePicker,
+    openWithNativePicker,
+    fileHandle,
+    fileName,
+    setActiveView,
   ]);
 
   const [isWindowDragging, setIsWindowDragging] = React.useState(false);

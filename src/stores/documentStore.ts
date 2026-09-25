@@ -2,6 +2,21 @@ import { create } from 'zustand';
 import { DocumentMetadata, PageDimensions, RenderResult, FormFieldData, DocumentOutlineItem } from '@core/pdf/engine.interface';
 import { getPDFEngine } from '@core/pdf/engine.factory';
 import { localDb } from '@core/db/database';
+import {
+  saveDraftToOPFS,
+  loadDraftFromOPFS,
+  listOPFSDrafts,
+  deleteDraftFromOPFS,
+  clearAllOPFSDrafts,
+  OPFSDraftMeta,
+} from '@core/storage/opfs';
+import {
+  openPdfWithNativePicker,
+  saveToExistingHandle,
+  saveWithNativePicker,
+  isNativeFSSupported,
+} from '@core/storage/native-fs';
+import { downloadBlob } from '@/utils/download';
 
 export interface DocumentHistoryEntry {
   description: string;
@@ -58,6 +73,7 @@ export interface DocumentTab {
   fileName: string;
   filePath: string | null;
   fileBytes: Uint8Array;
+  fileHandle?: FileSystemFileHandle | null;
   metadata: DocumentMetadata | null;
   pageCount: number;
   currentPage: number;
@@ -84,6 +100,10 @@ interface DocumentState {
   fileName: string | null;
   filePath: string | null;
   fileBytes: Uint8Array | null;
+  fileHandle: FileSystemFileHandle | null;
+  isAutoSavingDraft: boolean;
+  lastSavedTimestamp: number | null;
+  availableDrafts: OPFSDraftMeta[];
   metadata: DocumentMetadata | null;
   pageCount: number;
   currentPage: number;
@@ -115,7 +135,15 @@ interface DocumentState {
   errorMessage: string | null;
 
   // Actions
-  loadDocument: (bytes: Uint8Array, fileName: string, filePath?: string, password?: string) => Promise<void>;
+  loadDocument: (bytes: Uint8Array, fileName: string, filePath?: string, password?: string, fileHandle?: FileSystemFileHandle | null) => Promise<void>;
+  openWithNativePicker: () => Promise<boolean>;
+  saveDirectly: () => Promise<boolean>;
+  saveAsNativePicker: () => Promise<boolean>;
+  checkAndLoadAvailableDrafts: () => Promise<OPFSDraftMeta[]>;
+  restoreDraft: (draftId: string) => Promise<boolean>;
+  discardDraft: (draftId: string) => Promise<void>;
+  clearAllDrafts: () => Promise<void>;
+  triggerAutoSaveDraft: () => Promise<void>;
   closeCurrentDocument: () => Promise<void>;
   switchTab: (tabId: string) => void;
   closeTab: (tabId: string) => Promise<void>;
@@ -165,6 +193,26 @@ interface DocumentState {
   saveCurrentDocument: () => Promise<Uint8Array>;
 }
 
+let autoSaveTimer: any = null;
+
+function scheduleDraftAutoSave(get: () => DocumentState, set: (partial: Partial<DocumentState>) => void) {
+  if (autoSaveTimer) clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(async () => {
+    const { documentId, fileName, currentPage, isDirty } = get();
+    if (!documentId || !fileName || !isDirty) return;
+    try {
+      set({ isAutoSavingDraft: true });
+      const engine = getPDFEngine();
+      const bytes = await engine.saveDocument(documentId);
+      await saveDraftToOPFS(documentId, fileName, bytes, { currentPage, isDirty: true });
+      set({ isAutoSavingDraft: false, lastSavedTimestamp: Date.now() });
+    } catch (e) {
+      console.warn('Auto-save to OPFS skipped:', e);
+      set({ isAutoSavingDraft: false });
+    }
+  }, 1200);
+}
+
 export const useDocumentStore = create<DocumentState>((set, get) => ({
   tabs: [],
   activeTabId: null,
@@ -173,6 +221,10 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   fileName: null,
   filePath: null,
   fileBytes: null,
+  fileHandle: null,
+  isAutoSavingDraft: false,
+  lastSavedTimestamp: null,
+  availableDrafts: [],
   metadata: null,
   pageCount: 0,
   currentPage: 1,
@@ -195,7 +247,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   isLoading: false,
   errorMessage: null,
 
-  loadDocument: async (bytes: Uint8Array, fileName: string, filePath?: string, password?: string) => {
+  loadDocument: async (bytes: Uint8Array, fileName: string, filePath?: string, password?: string, fileHandle?: FileSystemFileHandle | null) => {
     set({ isLoading: true, errorMessage: null });
     try {
       const engine = getPDFEngine();
@@ -262,6 +314,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         const preservedUndo = currentState.undoStack;
         const preservedRedo = currentState.redoStack;
         const preservedDirty = currentState.isDirty;
+        const preservedHandle = fileHandle !== undefined ? fileHandle : (currentState.fileHandle || null);
 
         const updatedTabs = tabs.map((tab) => {
           if (tab.id === activeTabId) {
@@ -269,6 +322,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
               ...tab,
               documentId,
               fileBytes: bytes,
+              fileHandle: preservedHandle,
               metadata,
               pageCount,
               pageDimensions: dimensions,
@@ -293,6 +347,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
           fileName,
           filePath: filePath || null,
           fileBytes: bytes,
+          fileHandle: preservedHandle,
           metadata,
           pageCount,
           currentPage: preservedPage,
@@ -340,6 +395,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         fileName,
         filePath: filePath || null,
         fileBytes: bytes,
+        fileHandle: fileHandle || null,
         metadata,
         pageCount,
         currentPage: 1,
@@ -363,6 +419,9 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         fileName,
         filePath: filePath || null,
         fileBytes: bytes,
+        fileHandle: fileHandle || null,
+        isAutoSavingDraft: false,
+        lastSavedTimestamp: Date.now(),
         metadata,
         pageCount,
         currentPage: 1,
@@ -424,6 +483,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       fileName: target.fileName,
       filePath: target.filePath,
       fileBytes: target.fileBytes,
+      fileHandle: target.fileHandle || null,
       metadata: target.metadata,
       pageCount: target.pageCount,
       currentPage: target.currentPage,
@@ -460,6 +520,10 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     } catch (e) {
       console.warn('Error closing tab document:', e);
     }
+
+    try {
+      await deleteDraftFromOPFS(tabToClose.documentId);
+    } catch {}
 
     const remainingTabs = tabs.filter((t) => t.id !== tabId);
 
@@ -872,6 +936,156 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       isDirty: true,
       tabs: tabs.map((t) => (t.id === activeTabId ? { ...t, isDirty: true } : t)),
     });
+    scheduleDraftAutoSave(get, set);
+  },
+
+  openWithNativePicker: async () => {
+    try {
+      const res = await openPdfWithNativePicker();
+      if (!res) return false;
+      await get().loadDocument(res.bytes, res.file.name, undefined, undefined, res.handle);
+      return true;
+    } catch (err) {
+      console.warn('Failed to open PDF with native picker:', err);
+      return false;
+    }
+  },
+
+  saveDirectly: async () => {
+    const { documentId, fileName, fileHandle, activeTabId, tabs } = get();
+    if (!documentId || !fileName) return false;
+    try {
+      const engine = getPDFEngine();
+      const bytes = await engine.saveDocument(documentId);
+
+      let saved = false;
+      let newHandle = fileHandle;
+
+      if (fileHandle) {
+        saved = await saveToExistingHandle(fileHandle, bytes);
+      }
+
+      if (!saved && isNativeFSSupported()) {
+        const pickerHandle = await saveWithNativePicker(bytes, fileName);
+        if (pickerHandle) {
+          saved = true;
+          newHandle = pickerHandle;
+        }
+      }
+
+      if (!saved) {
+        downloadBlob(new Blob([bytes as any], { type: 'application/pdf' }), fileName);
+        saved = true;
+      }
+
+      if (saved) {
+        await deleteDraftFromOPFS(documentId);
+        set({
+          fileBytes: bytes,
+          fileHandle: newHandle,
+          isDirty: false,
+          lastSavedTimestamp: Date.now(),
+          tabs: tabs.map((t) =>
+            t.id === activeTabId ? { ...t, fileBytes: bytes, fileHandle: newHandle, isDirty: false } : t
+          ),
+        });
+      }
+      return saved;
+    } catch (err) {
+      console.warn('Direct save error:', err);
+      return false;
+    }
+  },
+
+  saveAsNativePicker: async () => {
+    const { documentId, fileName, activeTabId, tabs } = get();
+    if (!documentId || !fileName) return false;
+    try {
+      const engine = getPDFEngine();
+      const bytes = await engine.saveDocument(documentId);
+      if (isNativeFSSupported()) {
+        const pickerHandle = await saveWithNativePicker(bytes, fileName);
+        if (pickerHandle) {
+          await deleteDraftFromOPFS(documentId);
+          set({
+            fileBytes: bytes,
+            fileHandle: pickerHandle,
+            isDirty: false,
+            lastSavedTimestamp: Date.now(),
+            tabs: tabs.map((t) =>
+              t.id === activeTabId ? { ...t, fileBytes: bytes, fileHandle: pickerHandle, isDirty: false } : t
+            ),
+          });
+          return true;
+        }
+      }
+      downloadBlob(new Blob([bytes as any], { type: 'application/pdf' }), fileName);
+      return true;
+    } catch (err) {
+      console.warn('Save as picker error:', err);
+      return false;
+    }
+  },
+
+  checkAndLoadAvailableDrafts: async () => {
+    try {
+      const drafts = await listOPFSDrafts();
+      set({ availableDrafts: drafts });
+      return drafts;
+    } catch (err) {
+      console.warn('Failed to list OPFS drafts:', err);
+      return [];
+    }
+  },
+
+  restoreDraft: async (draftId: string) => {
+    try {
+      const draft = await loadDraftFromOPFS(draftId);
+      if (!draft) return false;
+      await get().loadDocument(draft.bytes, draft.meta.fileName);
+      if (draft.meta.currentPage) {
+        get().setCurrentPage(draft.meta.currentPage);
+      }
+      get().markDirty();
+      await get().checkAndLoadAvailableDrafts();
+      return true;
+    } catch (err) {
+      console.warn('Failed to restore OPFS draft:', err);
+      return false;
+    }
+  },
+
+  discardDraft: async (draftId: string) => {
+    try {
+      await deleteDraftFromOPFS(draftId);
+      await get().checkAndLoadAvailableDrafts();
+    } catch (err) {
+      console.warn('Failed to delete OPFS draft:', err);
+    }
+  },
+
+  clearAllDrafts: async () => {
+    try {
+      await clearAllOPFSDrafts();
+      set({ availableDrafts: [] });
+    } catch (err) {
+      console.warn('Failed to clear all OPFS drafts:', err);
+    }
+  },
+
+  triggerAutoSaveDraft: async () => {
+    const { documentId, fileName, currentPage, isDirty } = get();
+    if (!documentId || !fileName || !isDirty) return;
+    try {
+      set({ isAutoSavingDraft: true });
+      const engine = getPDFEngine();
+      const bytes = await engine.saveDocument(documentId);
+      await saveDraftToOPFS(documentId, fileName, bytes, { currentPage, isDirty: true });
+      set({ isAutoSavingDraft: false, lastSavedTimestamp: Date.now() });
+    } catch (err) {
+      console.warn('Manual draft save to OPFS failed:', err);
+      set({ isAutoSavingDraft: false });
+    }
   },
 
   saveCurrentDocument: async () => {

@@ -13,6 +13,8 @@ import {
   Scissors,
   CheckCircle2,
   Edit3,
+  RotateCcw,
+  X,
 } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore, ModalType } from '@/stores/uiStore';
@@ -22,9 +24,29 @@ import { HeroSection } from '@/components/home/HeroSection';
 import { ToolExplorer } from '@/components/home/ToolExplorer';
 import { FAQSection } from '@/components/home/FAQSection';
 import { HomeFooter } from '@/components/home/HomeFooter';
+import { isNativeFSSupported } from '@core/storage/native-fs';
+
+function formatTimeAgo(timestamp: number): string {
+  const diffSec = Math.floor((Date.now() - timestamp) / 1000);
+  if (diffSec < 60) return 'just now';
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHours = Math.floor(diffMin / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  return `${Math.floor(diffHours / 24)}d ago`;
+}
 
 export const HomeDashboard: React.FC = () => {
-  const { loadDocument, setViewMode } = useDocumentStore();
+  const {
+    loadDocument,
+    setViewMode,
+    availableDrafts,
+    checkAndLoadAvailableDrafts,
+    restoreDraft,
+    discardDraft,
+    clearAllDrafts,
+    openWithNativePicker,
+  } = useDocumentStore();
   const {
     setActiveModal,
     addToast,
@@ -50,6 +72,33 @@ export const HomeDashboard: React.FC = () => {
   const [isDraggingPdf, setIsDraggingPdf] = useState(false);
   const [isDraggingPhoto, setIsDraggingPhoto] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<ToolCategory | 'all'>('all');
+
+  React.useEffect(() => {
+    checkAndLoadAvailableDrafts();
+  }, [checkAndLoadAvailableDrafts]);
+
+  const handleOpenPdfClick = async (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (isNativeFSSupported()) {
+      try {
+        const opened = await openWithNativePicker();
+        if (opened) {
+          setActiveView('editor');
+          addToast({
+            type: 'success',
+            title: 'Document Opened',
+            message: 'Direct disk save enabled via File System Access.',
+          });
+          return;
+        }
+      } catch (err: any) {
+        if (err?.name !== 'AbortError') {
+          console.warn('Native open error:', err);
+        }
+      }
+    }
+    pdfInputRef.current?.click();
+  };
 
   React.useEffect(() => {
     const handleCancel = () => {
@@ -282,6 +331,85 @@ export const HomeDashboard: React.FC = () => {
         onSelectCategory={handleCategorySelect}
         onOpenExamSuite={() => setActiveModal('student-resizer')}
       >
+        {/* Unsaved Session Crash Recovery Banner */}
+        {availableDrafts && availableDrafts.length > 0 && (
+          <div className="w-full mb-4 p-3.5 sm:p-4 rounded-2xl bg-amber-950/30 border border-amber-500/40 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left animate-in fade-in slide-in-from-top-2 shadow-xl shadow-amber-950/20">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0 text-amber-400 mt-0.5">
+                <RotateCcw className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h4 className="text-xs sm:text-sm font-semibold text-zinc-100">
+                    Unsaved Session Recovered
+                  </h4>
+                  <span className="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono">
+                    {availableDrafts.length} {availableDrafts.length === 1 ? 'draft' : 'drafts'}
+                  </span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">
+                  <span className="text-zinc-200 font-medium">{availableDrafts[0].fileName}</span> • {(availableDrafts[0].byteLength / 1024).toFixed(0)} KB • Auto-saved to OPFS {formatTimeAgo(availableDrafts[0].timestamp)}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+              <button
+                type="button"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  const restored = await restoreDraft(availableDrafts[0].id);
+                  if (restored) {
+                    setActiveView('editor');
+                    addToast({
+                      type: 'success',
+                      title: 'Draft Restored',
+                      message: `Restored ${availableDrafts[0].fileName} from crash recovery.`,
+                    });
+                  }
+                }}
+                className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs flex items-center gap-1.5 transition-all shadow-xs"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Restore Session</span>
+              </button>
+              {availableDrafts.length > 1 && (
+                <button
+                  type="button"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    await clearAllDrafts();
+                    addToast({
+                      type: 'info',
+                      title: 'All Drafts Discarded',
+                      message: 'Cleaned up all recovery drafts.',
+                    });
+                  }}
+                  className="px-2 py-1 rounded text-[11px] text-zinc-400 hover:text-zinc-200 transition-colors"
+                  title="Discard all recovery drafts"
+                >
+                  Dismiss All
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  await discardDraft(availableDrafts[0].id);
+                  addToast({
+                    type: 'info',
+                    title: 'Draft Discarded',
+                    message: 'Unsaved draft removed from storage.',
+                  });
+                }}
+                className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
+                title="Discard this draft"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Two Separate Workspaces: Document (PDF) & Photo (Images) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4 w-full">
           {/* Card 1: PDF Document */}
@@ -292,7 +420,7 @@ export const HomeDashboard: React.FC = () => {
             }}
             onDragLeave={() => setIsDraggingPdf(false)}
             onDrop={handlePdfDrop}
-            onClick={() => pdfInputRef.current?.click()}
+            onClick={handleOpenPdfClick}
             className={`group relative cursor-pointer border-2 border-dashed rounded-2xl p-4 sm:p-6 text-center transition-all duration-300 flex flex-col justify-between ${
               isDraggingPdf
                 ? 'border-blue-400 bg-blue-500/10 dropzone-dragging scale-[1.01]'
@@ -315,10 +443,7 @@ export const HomeDashboard: React.FC = () => {
               <div className="flex flex-wrap items-center justify-center gap-2 pt-0.5 w-full">
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    pdfInputRef.current?.click();
-                  }}
+                  onClick={handleOpenPdfClick}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-xl shadow-md shadow-blue-950/50 flex items-center justify-center gap-1.5 text-xs transition-all hover:-translate-y-0.5"
                 >
                   <FolderOpen className="w-3.5 h-3.5" />

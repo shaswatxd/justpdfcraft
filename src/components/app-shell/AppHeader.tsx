@@ -21,6 +21,8 @@ import {
   Sliders,
   Menu,
   X,
+  ChevronDown,
+  HardDrive,
 } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore } from '@/stores/uiStore';
@@ -42,7 +44,11 @@ export const AppHeader: React.FC = () => {
     redoStack,
     undo,
     redo,
-    saveCurrentDocument,
+    saveDirectly,
+    saveAsNativePicker,
+    isDirty,
+    fileHandle,
+    isAutoSavingDraft,
   } = useDocumentStore();
 
   const [pageInput, setPageInput] = useState<string>(String(currentPage));
@@ -108,21 +114,35 @@ export const AppHeader: React.FC = () => {
 
   const handleSave = async () => {
     try {
-      const bytes = await saveCurrentDocument();
-      // Trigger download or native save
-      const blob = new Blob([bytes as unknown as BlobPart], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName || 'JustPDFCraft_Document.pdf';
-      a.click();
-      URL.revokeObjectURL(url);
-
+      const ok = await saveDirectly();
+      if (ok) {
+        addToast({
+          type: 'success',
+          title: fileHandle ? 'Saved Directly to Disk' : 'Document Saved',
+          message: fileHandle
+            ? `Changes written directly to ${fileName}`
+            : 'Changes committed and file downloaded successfully.',
+        });
+      }
+    } catch (err: any) {
       addToast({
-        type: 'success',
-        title: 'Document Saved',
-        message: 'Changes committed and file saved successfully.',
+        type: 'error',
+        title: 'Save Failed',
+        message: err?.message || 'Could not save PDF.',
       });
+    }
+  };
+
+  const handleSaveAs = async () => {
+    try {
+      const ok = await saveAsNativePicker();
+      if (ok) {
+        addToast({
+          type: 'success',
+          title: 'Document Saved As',
+          message: 'Saved to chosen file.',
+        });
+      }
     } catch (err: any) {
       addToast({
         type: 'error',
@@ -443,15 +463,45 @@ export const AppHeader: React.FC = () => {
               <span className="hidden xl:inline font-medium">Read</span>
             </button>
 
-            {/* Save Button (Primary) */}
-            <button
-              onClick={handleSave}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-swift-600 hover:bg-swift-500 text-white rounded-lg text-xs font-bold shadow-md shadow-swift-900/30 transition-all"
-              title="Save changes to file (Ctrl+S)"
-            >
-              <Save className="w-3.5 h-3.5" />
-              <span>Save</span>
-            </button>
+            {/* Direct Disk / OPFS Draft status indicators */}
+            {isAutoSavingDraft && (
+              <span className="hidden xl:flex items-center gap-1.5 text-[11px] text-zinc-400 font-medium animate-pulse">
+                <span className="w-1.5 h-1.5 rounded-full bg-swift-400 animate-ping" />
+                Auto-saving draft...
+              </span>
+            )}
+
+            {fileHandle && !isAutoSavingDraft && (
+              <span
+                className="hidden xl:flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-[11px] text-emerald-400 font-medium"
+                title={`Native File System Access: In-place direct saving enabled to ${fileName}`}
+              >
+                <HardDrive className="w-3 h-3 text-emerald-400" />
+                <span>Direct Save</span>
+              </span>
+            )}
+
+            {/* Split Save Button (Save / Save As) */}
+            <div className="flex items-center rounded-lg shadow-md shadow-swift-900/30">
+              <button
+                onClick={handleSave}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-swift-600 hover:bg-swift-500 text-white rounded-l-lg text-xs font-bold transition-all relative"
+                title={fileHandle ? `Direct in-place save to ${fileName} (Ctrl+S)` : "Save changes to file (Ctrl+S)"}
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>Save</span>
+                {isDirty && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" title="Unsaved changes" />
+                )}
+              </button>
+              <button
+                onClick={handleSaveAs}
+                className="px-1.5 py-1.5 bg-swift-700 hover:bg-swift-600 text-white rounded-r-lg border-l border-swift-500/40 text-xs transition-all flex items-center justify-center"
+                title="Save As... (Ctrl+Shift+S)"
+              >
+                <ChevronDown className="w-3 h-3" />
+              </button>
+            </div>
 
             {/* Fullscreen */}
             <button
