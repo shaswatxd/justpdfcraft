@@ -16,7 +16,8 @@
 
 ## Future Horizons (Backlog)
 
-### Milestone 2: Cloud Sync & PWA Desktop Enhancements
-- [ ] Phase 8: PWA Installability with offline file system access API (Origin Private File System).
+### Milestone 2: Client Storage & Performance Enhancements
+- [x] Phase 8: Native File System Access & OPFS (Direct file save & crash recovery drafts).
 - [ ] Phase 9: Multi-threaded Web Worker background processing for large PDF OCR batch queues.
 - [ ] Phase 10: Multi-language OCR model auto-caching (Hindi, Bengali, Tamil, Spanish, French).
+
