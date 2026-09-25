@@ -218,7 +218,7 @@ export const ExtractImagesDialog: React.FC = () => {
                   Extract Photos & Images from PDF
                 </h3>
                 <span className="text-[11px] px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 font-medium">
-                  फ़ोटो निकालें व संपादित करें
+                  Extract & Edit Photos
                 </span>
               </div>
               <p className="text-xs text-slate-400">
@@ -283,7 +283,7 @@ export const ExtractImagesDialog: React.FC = () => {
             <button
               onClick={() => fileInputRef.current?.click()}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium transition-colors text-xs"
-              title="Upload photo from computer to edit or crop / फ़ोटो अपलोड करें"
+              title="Upload photo from computer to edit or crop"
             >
               <Upload className="w-3.5 h-3.5 text-sky-400" />
               <span>Upload Photo to Edit</span>
@@ -294,7 +294,7 @@ export const ExtractImagesDialog: React.FC = () => {
                 onClick={handleDownloadAll}
                 disabled={isDownloadingAll}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-swift-600 hover:bg-swift-500 disabled:opacity-50 text-white font-medium transition-colors text-xs shadow-md shadow-swift-900/30"
-                title="Download all extracted images / सभी फ़ोटो डाउनलोड करें"
+                title="Download all extracted images"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>{isDownloadingAll ? 'Downloading...' : `Download All (${displayedImages.length})`}</span>
@@ -305,7 +305,7 @@ export const ExtractImagesDialog: React.FC = () => {
               onClick={loadExtractedImages}
               disabled={loading}
               className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700/60 transition-colors"
-              title="Re-scan PDF for Images / दोबारा स्कैन करें"
+              title="Re-scan PDF for Images"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-swift-400' : ''}`} />
             </button>
@@ -430,7 +430,7 @@ export const ExtractImagesDialog: React.FC = () => {
                         <button
                           onClick={() => handleDownloadSingle(img)}
                           className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-medium text-[11px] border border-slate-700/60 transition-colors"
-                          title="Save photo to computer / डाउनलोड करें"
+                          title="Save photo to computer"
                         >
                           <Download className="w-3 h-3 text-emerald-400" />
                           <span>Save</span>
@@ -439,7 +439,7 @@ export const ExtractImagesDialog: React.FC = () => {
                         <button
                           onClick={() => handleCopy(img)}
                           className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-medium text-[11px] border border-slate-700/60 transition-colors"
-                          title="Copy image to clipboard (Ctrl+C) / कॉपी करें"
+                          title="Copy image to clipboard (Ctrl+C)"
                         >
                           {isCopied ? (
                             <Check className="w-3 h-3 text-emerald-400" />
@@ -452,7 +452,7 @@ export const ExtractImagesDialog: React.FC = () => {
                         <button
                           onClick={() => handleEditPhoto(img)}
                           className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-medium text-[11px] transition-colors shadow-sm"
-                          title="Edit Photo (Crop Passport 3.5×4.5cm, Filter, Rotate, Place in PDF) / फ़ोटो एडिट करें"
+                          title="Edit Photo (Crop Passport 3.5×4.5cm, Filter, Rotate, Place in PDF)"
                         >
                           <Edit className="w-3 h-3" />
                           <span>Edit</span>

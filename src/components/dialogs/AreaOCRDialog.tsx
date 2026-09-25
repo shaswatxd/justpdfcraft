@@ -17,8 +17,8 @@ interface AreaOCRModalProps {
 }
 
 const OCR_LANGUAGES = [
-  { code: 'eng+hin', label: 'English + Hindi (हिंदी Bilingual)' },
-  { code: 'hin', label: 'Hindi (हिंदी)' },
+  { code: 'eng+hin', label: 'English + Hindi (Bilingual)' },
+  { code: 'hin', label: 'Hindi' },
   { code: 'eng', label: 'English' },
   { code: 'spa', label: 'Spanish (Español)' },
   { code: 'fra', label: 'French (Français)' },
@@ -142,7 +142,7 @@ export const AreaOCRDialog: React.FC<AreaOCRModalProps> = ({
                 )}
               </div>
               <p className="text-xs text-slate-400">
-                Hindi (हिंदी) & English bilingual text recognition with DRM bypass.
+                Hindi & English bilingual text recognition with DRM bypass.
               </p>
             </div>
           </div>

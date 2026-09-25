@@ -530,7 +530,7 @@ export const PhotoEditorDialog: React.FC = () => {
                   Photo & Document Image Studio
                 </h3>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium">
-                  फ़ोटो संपादक व पासपोर्ट आईडी क्रॉप
+                  Photo Editor & Passport ID Crop
                 </span>
               </div>
               <p className="text-xs text-slate-400">
@@ -551,7 +551,7 @@ export const PhotoEditorDialog: React.FC = () => {
             <button
               onClick={() => fileInputRef.current?.click()}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition-colors"
-              title="Upload new image / नई फ़ोटो अपलोड करें"
+              title="Upload new image"
             >
               <Upload className="w-3.5 h-3.5 text-sky-400" />
               <span>Upload Photo</span>
@@ -648,14 +648,14 @@ export const PhotoEditorDialog: React.FC = () => {
                 <button
                   onClick={() => setRotation((r) => (r - 90) % 360)}
                   className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded-full transition-colors"
-                  title="Rotate Left 90° (वामावर्त घुमाएँ)"
+                  title="Rotate Left 90°"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => setRotation((r) => (r + 90) % 360)}
                   className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded-full transition-colors"
-                  title="Rotate Right 90° (दक्षिणावर्त घुमाएँ)"
+                  title="Rotate Right 90°"
                 >
                   <RotateCw className="w-3.5 h-3.5" />
                 </button>
@@ -665,7 +665,7 @@ export const PhotoEditorDialog: React.FC = () => {
                   className={`p-1.5 rounded-full transition-colors ${
                     flipH ? 'bg-purple-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white'
                   }`}
-                  title="Flip Horizontal (क्षैतिज उलटें)"
+                  title="Flip Horizontal"
                 >
                   <FlipHorizontal className="w-3.5 h-3.5" />
                 </button>
@@ -674,7 +674,7 @@ export const PhotoEditorDialog: React.FC = () => {
                   className={`p-1.5 rounded-full transition-colors ${
                     flipV ? 'bg-purple-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white'
                   }`}
-                  title="Flip Vertical (लंबवत उलटें)"
+                  title="Flip Vertical"
                 >
                   <FlipVertical className="w-3.5 h-3.5" />
                 </button>
@@ -682,7 +682,7 @@ export const PhotoEditorDialog: React.FC = () => {
                 <button
                   onClick={resetAdjustments}
                   className="flex items-center gap-1 px-2 py-0.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded-full transition-colors text-[11px]"
-                  title="Reset all adjustments / रीसेट करें"
+                  title="Reset all adjustments"
                 >
                   <Undo2 className="w-3 h-3" />
                   <span>Reset</span>
@@ -848,7 +848,7 @@ export const PhotoEditorDialog: React.FC = () => {
                   <div className="flex justify-between text-xs text-slate-300">
                     <span className="flex items-center gap-1">
                       <Sun className="w-3 h-3 text-amber-400" />
-                      Brightness (चमक)
+                      Brightness
                     </span>
                     <span className="font-mono text-[11px] text-slate-400">{brightness > 0 ? `+${brightness}` : brightness}</span>
                   </div>
@@ -867,7 +867,7 @@ export const PhotoEditorDialog: React.FC = () => {
                   <div className="flex justify-between text-xs text-slate-300">
                     <span className="flex items-center gap-1">
                       <Contrast className="w-3 h-3 text-cyan-400" />
-                      Contrast (कंट्रास्ट)
+                      Contrast
                     </span>
                     <span className="font-mono text-[11px] text-slate-400">{contrastVal > 0 ? `+${contrastVal}` : contrastVal}</span>
                   </div>
@@ -886,7 +886,7 @@ export const PhotoEditorDialog: React.FC = () => {
                   <div className="flex justify-between text-xs text-slate-300">
                     <span className="flex items-center gap-1">
                       <Palette className="w-3 h-3 text-purple-400" />
-                      Saturation (रंग गहराई)
+                      Saturation
                     </span>
                     <span className="font-mono text-[11px] text-slate-400">{saturation > 0 ? `+${saturation}` : saturation}</span>
                   </div>
@@ -905,7 +905,7 @@ export const PhotoEditorDialog: React.FC = () => {
                   <div className="flex justify-between text-xs text-slate-300">
                     <span className="flex items-center gap-1">
                       <Zap className="w-3 h-3 text-emerald-400" />
-                      Sharpness / Clarity (स्पष्टता)
+                      Sharpness / Clarity
                     </span>
                     <span className="font-mono text-[11px] text-slate-400">{sharpness}%</span>
                   </div>
@@ -925,7 +925,7 @@ export const PhotoEditorDialog: React.FC = () => {
                 <div className="space-y-2.5 p-3.5 rounded-xl bg-purple-950/20 border border-purple-800/40">
                   <label className="text-xs font-bold uppercase tracking-wider text-purple-300 flex items-center gap-1.5">
                     <FileText className="w-3.5 h-3.5 text-purple-400" />
-                    Insert Photo into PDF (पीडीएफ में जोड़ें)
+                    Insert Photo into PDF
                   </label>
 
                   <div className="grid grid-cols-2 gap-2 text-xs">
@@ -1006,7 +1006,7 @@ export const PhotoEditorDialog: React.FC = () => {
                 <button
                   onClick={() => handleDownload('jpeg')}
                   className="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 flex items-center justify-center gap-1.5 transition-colors"
-                  title="Download as JPG image / जेपीईजी डाउनलोड करें"
+                  title="Download as JPG image"
                 >
                   <Download className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Download JPG</span>
@@ -1015,7 +1015,7 @@ export const PhotoEditorDialog: React.FC = () => {
                 <button
                   onClick={handleCopyClipboard}
                   className="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 flex items-center justify-center gap-1.5 transition-colors"
-                  title="Copy to clipboard / क्लिपबोर्ड पर कॉपी करें"
+                  title="Copy to clipboard"
                 >
                   {copied ? (
                     <Check className="w-3.5 h-3.5 text-emerald-400" />

@@ -58,7 +58,7 @@ export const OCRDialog: React.FC = () => {
 
   const languages = [
     { code: 'eng', name: 'English' },
-    { code: 'hin', name: 'Hindi (हिंदी)' },
+    { code: 'hin', name: 'Hindi' },
     { code: 'eng+hin', name: 'English + Hindi Bilingual' },
     { code: 'spa', name: 'Spanish (Español)' },
     { code: 'fra', name: 'French (Français)' },

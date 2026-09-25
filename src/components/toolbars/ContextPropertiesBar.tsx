@@ -399,8 +399,8 @@ export const ContextPropertiesBar: React.FC = () => {
                 onChange={(e) => setOcrLanguage(e.target.value)}
                 className="bg-black border border-slate-700 hover:border-slate-600 rounded-lg px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-swift-500 font-medium cursor-pointer transition-colors shadow-sm"
               >
-                <option value="eng+hin">English + Hindi (हिंदी Bilingual)</option>
-                <option value="hin">Hindi Only (हिंदी)</option>
+                <option value="eng+hin">English + Hindi (Bilingual)</option>
+                <option value="hin">Hindi Only</option>
                 <option value="eng">English Only</option>
                 <option value="spa">Spanish (Español)</option>
                 <option value="fra">French (Français)</option>

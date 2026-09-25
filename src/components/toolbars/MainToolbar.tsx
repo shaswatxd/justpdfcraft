@@ -498,7 +498,7 @@ export const MainToolbar: React.FC = () => {
         <button
           onClick={() => setActiveModal('ocr')}
           className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-200 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700/60 shrink-0"
-          title="OCR & Text Recognition / टेक्स्ट पहचानें (Hindi + English)"
+          title="OCR & Text Recognition"
         >
           <ScanText className="w-3.5 h-3.5 text-indigo-400" />
           <span className="hidden md:inline font-medium">OCR</span>
@@ -507,7 +507,7 @@ export const MainToolbar: React.FC = () => {
         <button
           onClick={() => setActiveModal('extract-images')}
           className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-200 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700/60 shrink-0"
-          title="Extract Photos & Edit / पीडीएफ से फ़ोटो निकालें व क्रॉप/एडिट करें"
+          title="Extract Photos & Edit"
         >
           <ImageIcon className="w-3.5 h-3.5 text-purple-400" />
           <span className="hidden md:inline font-medium">Photos</span>
@@ -516,7 +516,7 @@ export const MainToolbar: React.FC = () => {
         <button
           onClick={() => setActiveModal('protect')}
           className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-200 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700/60 shrink-0"
-          title="Password Protect & Permissions / पासवर्ड सुरक्षा व अनलॉकर"
+          title="Password Protect & Permissions"
         >
           <Shield className="w-3.5 h-3.5 text-rose-400" />
           <span className="hidden md:inline font-medium">Protect</span>
@@ -525,7 +525,7 @@ export const MainToolbar: React.FC = () => {
         <button
           onClick={() => setActiveModal('print')}
           className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-200 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700/60 shrink-0"
-          title="Smart Print (Ctrl+P) / प्रिंट निकालें"
+          title="Smart Print (Ctrl+P)"
         >
           <Printer className="w-3.5 h-3.5 text-cyan-400" />
           <span className="hidden md:inline font-medium">Print</span>

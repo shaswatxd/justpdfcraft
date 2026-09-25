@@ -162,7 +162,7 @@ export const AppHeader: React.FC = () => {
           <button
             onClick={handleGoHome}
             className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 hover:text-white text-slate-300 rounded-lg text-xs font-semibold border border-slate-700/80 transition-all group shrink-0 shadow-xs"
-            title="Back to Home Dashboard (होम डैशबोर्ड पर वापस जाएं)"
+            title="Back to Home Dashboard"
           >
             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform text-swift-400" />
             <span className="hidden sm:inline">Home</span>
