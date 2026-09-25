@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Keyboard,
   X,
@@ -86,10 +86,10 @@ export const ShortcutsDialog: React.FC = () => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-3xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-in"
+        className="w-full max-w-3xl bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-in"
       >
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-[#000000]/90">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-swift-500/10 text-swift-400">
               <Keyboard className="w-5 h-5" />
@@ -115,7 +115,7 @@ export const ShortcutsDialog: React.FC = () => {
         </div>
 
         {/* Filter Bar & Tabs */}
-        <div className="p-4 border-b border-slate-800 flex flex-col sm:flex-row gap-3 items-center justify-between bg-slate-900/50">
+        <div className="p-4 border-b border-slate-800 flex flex-col sm:flex-row gap-3 items-center justify-between bg-[#000000]/60">
           <div className="relative w-full sm:w-72">
             <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
@@ -222,7 +222,7 @@ export const ShortcutsDialog: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-slate-800 bg-slate-900/80 flex items-center justify-between text-xs text-slate-400">
+        <div className="px-6 py-3 border-t border-slate-800 bg-[#000000]/80 flex items-center justify-between text-xs text-slate-400">
           <span>Tip: Press <kbd className="font-mono text-slate-300 bg-slate-800 px-1 py-0.5 rounded border border-slate-700">?</kbd> or <kbd className="font-mono text-slate-300 bg-slate-800 px-1 py-0.5 rounded border border-slate-700">F1</kbd> anytime to open this guide</span>
           <button
             onClick={() => setActiveModal(null)}

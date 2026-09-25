@@ -33,7 +33,8 @@ export const OCRDialog: React.FC = () => {
   };
 
   const [language, setLanguage] = useState('eng');
-  const [scope, setScope] = useState<'current' | 'all'>('current');
+  const [scope, setScope] = useState<'current' | 'all' | 'custom'>('current');
+  const [customRange, setCustomRange] = useState('');
   const [mode, setMode] = useState<'deep_visual' | 'smart_auto' | 'fast_stream'>('deep_visual');
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -117,10 +118,42 @@ export const OCRDialog: React.FC = () => {
     try {
       const engine = getPDFEngine();
       const totalPages = Math.max(1, pageCount);
-      const pagesToProcess =
-        scope === 'current'
-          ? [Math.max(0, Math.min(currentPage - 1, totalPages - 1))]
-          : Array.from({ length: Math.min(totalPages, 20) }, (_, i) => i);
+      let pagesToProcess: number[] = [];
+      if (scope === 'current') {
+        pagesToProcess = [Math.max(0, Math.min(currentPage - 1, totalPages - 1))];
+      } else if (scope === 'all') {
+        pagesToProcess = Array.from({ length: totalPages }, (_, i) => i);
+      } else {
+        const setOfPages = new Set<number>();
+        const parts = customRange.split(',').map((p) => p.trim()).filter(Boolean);
+        for (const p of parts) {
+          if (p.includes('-')) {
+            const [s, e] = p.split('-').map((v) => parseInt(v.trim(), 10));
+            if (!isNaN(s) && !isNaN(e) && s >= 1 && e >= 1) {
+              const start = Math.max(1, Math.min(s, e));
+              const end = Math.min(totalPages, Math.max(s, e));
+              for (let pageNum = start; pageNum <= end; pageNum++) {
+                setOfPages.add(pageNum - 1);
+              }
+            }
+          } else {
+            const num = parseInt(p, 10);
+            if (!isNaN(num) && num >= 1 && num <= totalPages) {
+              setOfPages.add(num - 1);
+            }
+          }
+        }
+        pagesToProcess = Array.from(setOfPages).sort((a, b) => a - b);
+        if (pagesToProcess.length === 0) {
+          addToast({
+            type: 'warning',
+            title: 'Invalid Page Range',
+            message: `Please specify valid pages between 1 and ${totalPages} (e.g. 1-3, 5).`,
+          });
+          setIsProcessing(false);
+          return;
+        }
+      }
 
       let textOutput = '';
       const collectedResults: OCRPageResult[] = [];
@@ -194,65 +227,78 @@ export const OCRDialog: React.FC = () => {
       }
 
       // 3. DEEP VISUAL OCR MODE (Bypasses all copy restrictions, scrambled fonts, and scans)
-      const canvases: Array<{ pageIndex: number; canvas: HTMLCanvasElement }> = [];
+      const results: OCRPageResult[] = [];
+      const totalToRun = pagesToProcess.length;
 
-      for (let i = 0; i < pagesToProcess.length; i++) {
+      for (let i = 0; i < totalToRun; i++) {
         const pIdx = pagesToProcess[i];
-        setStatusText(`Rendering page ${pIdx + 1} at 2.5x high-fidelity (300 DPI equivalent)...`);
-        setProgress(Math.round(10 + (i / pagesToProcess.length) * 30));
+        const pageNum = pIdx + 1;
+        const pagePercent = Math.round((i / totalToRun) * 100);
 
-        // Render at 2.5x scale for optimal OCR accuracy
+        setStatusText(`Rendering page ${pageNum} (${i + 1}/${totalToRun}) at 300 DPI equivalent...`);
+        setProgress(pagePercent);
+
+        // Render single page at 2.5x scale
         const renderRes = await engine.renderPage(documentId, pIdx, 2.5);
-        if (renderRes.canvas) {
-          canvases.push({ pageIndex: pIdx, canvas: renderRes.canvas });
+        if (!renderRes.canvas) continue;
+
+        setStatusText(`Recognizing neural text on page ${pageNum} (${i + 1}/${totalToRun})...`);
+        const pageRes = await ocrService.recognizeImage(renderRes.canvas, {
+          language,
+          preprocess: true,
+          preprocessOptions: {
+            grayscale: true,
+            enhanceContrast,
+            sharpen: sharpenText,
+            binarize: binarizeText,
+            autoInvert: true,
+          },
+        });
+
+        // Immediately release canvas bitmap memory
+        renderRes.canvas.width = 1;
+        renderRes.canvas.height = 1;
+
+        results.push({
+          pageIndex: pIdx,
+          text: pageRes.text,
+          confidence: pageRes.confidence,
+          lines: pageRes.lines,
+          wordCount: pageRes.wordCount,
+          charCount: pageRes.charCount,
+        });
+
+        // Live progressive preview update
+        const partialCombined = results
+          .map((r) => `=== PAGE ${r.pageIndex + 1} (${r.confidence}% confidence) ===\n${r.text.trim() || '[No text detected]'}\n`)
+          .join('\n');
+        setExtractedText(partialCombined);
+        setPageResults([...results]);
+
+        const validSoFar = results.map((r) => r.confidence).filter((c) => c > 0);
+        if (validSoFar.length > 0) {
+          setAvgConfidence(Math.round(validSoFar.reduce((a, b) => a + b, 0) / validSoFar.length));
         }
+        setTotalWords(results.reduce((acc, r) => acc + r.wordCount, 0));
+        setProgress(Math.round(((i + 1) / totalToRun) * 100));
       }
 
-      if (canvases.length === 0) {
+      if (results.length === 0) {
         throw new Error('Unable to render page canvases for visual text recognition.');
       }
 
-      const results = await ocrService.recognizePages(canvases, {
-        language,
-        preprocess: true,
-        preprocessOptions: {
-          grayscale: true,
-          enhanceContrast,
-          sharpen: sharpenText,
-          binarize: binarizeText,
-          autoInvert: true,
-        },
-        onProgress: (p, s, currentConf) => {
-          setProgress(Math.round(40 + (p / 100) * 58));
-          setStatusText(s);
-          if (currentConf !== undefined) {
-            setAvgConfidence(currentConf);
-          }
-        },
-      });
-
-      const combined = results
-        .map((r) => `=== PAGE ${r.pageIndex + 1} (${r.confidence}% confidence) ===\n${r.text.trim() || '[No text detected]'}\n`)
-        .join('\n');
-
       setProgress(100);
       setStatusText('Visual OCR processing finished!');
-      setExtractedText(combined);
-      setPageResults(results);
-
+      const finalWords = results.reduce((acc, r) => acc + r.wordCount, 0);
       const validConfs = results.map((r) => r.confidence).filter((c) => c > 0);
       const meanConfidence = validConfs.length > 0
         ? Math.round(validConfs.reduce((a, b) => a + b, 0) / validConfs.length)
         : 85;
-      setAvgConfidence(meanConfidence);
-
-      const wCount = results.reduce((acc, r) => acc + r.wordCount, 0);
-      setTotalWords(wCount);
 
       addToast({
         type: 'success',
         title: 'OCR Finished',
-        message: `Recognized ${wCount} words across ${results.length} page(s) (${meanConfidence}% confidence).`,
+        message: `Recognized ${finalWords} words across ${results.length} page(s) (${meanConfidence}% confidence).`,
       });
     } catch (err: any) {
       addToast({
@@ -568,9 +614,41 @@ export const OCRDialog: React.FC = () => {
                 >
                   All ({documentId ? pageCount : 1})
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setScope('custom')}
+                  disabled={isProcessing}
+                  className={`flex-1 py-1 text-xs rounded-lg font-medium transition-colors ${
+                    scope === 'custom' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Range
+                </button>
               </div>
             </div>
           </div>
+
+          {/* Custom Page Range Field */}
+          {scope === 'custom' && (
+            <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/80 space-y-1.5 animate-fade-in">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-slate-200">
+                  Custom Page Range
+                </label>
+                <span className="text-[11px] text-slate-400">Total {pageCount} pages</span>
+              </div>
+              <input
+                type="text"
+                value={customRange}
+                onChange={(e) => setCustomRange(e.target.value)}
+                placeholder={`e.g. 1-3, 5, ${Math.min(pageCount, 8)}`}
+                className="w-full bg-[#000000] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-indigo-500 font-mono"
+              />
+              <p className="text-[10px] text-slate-400">
+                Specify pages or hyphenated ranges separated by commas.
+              </p>
+            </div>
+          )}
 
           {/* Advanced Preprocessing Tuning Accordion */}
           {mode !== 'fast_stream' && (

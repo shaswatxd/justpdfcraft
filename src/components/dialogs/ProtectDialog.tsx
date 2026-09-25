@@ -259,6 +259,16 @@ export const ProtectDialog: React.FC = () => {
                   <span>Export Unlocked Copy</span>
                 </button>
               </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
