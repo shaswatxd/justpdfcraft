@@ -2512,7 +2512,7 @@ export const PDFViewer: React.FC = () => {
         onPointerDown={handleContainerPointerDown}
         onPointerMove={handleContainerPointerMove}
         onPointerUp={handleContainerPointerUp}
-        className={`flex-1 overflow-auto bg-black flex flex-col items-center p-6 select-none relative pdf-desk-bg ${
+        className={`flex-1 overflow-auto bg-black flex flex-col items-center p-2.5 sm:p-6 pb-24 md:pb-6 select-none relative pdf-desk-bg ${
           isPanning ? 'cursor-grabbing' : (isSpacePressed || currentTool === 'hand') ? 'cursor-grab' : ''
         }`}
       >

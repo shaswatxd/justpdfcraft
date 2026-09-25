@@ -364,9 +364,9 @@ export const PageOrganizer: React.FC = () => {
   return (
     <div className="flex-1 flex flex-col bg-black text-slate-200 overflow-hidden">
       {/* Top Action Ribbon */}
-      <div className="h-12 bg-black border-b border-slate-800 px-4 flex items-center justify-between gap-4">
+      <div className="h-12 bg-black border-b border-slate-800 px-3 sm:px-4 flex items-center justify-between gap-3 sm:gap-4 overflow-x-auto no-scrollbar select-none">
         {/* Selection summary & toggles */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <span className="text-xs font-semibold text-slate-300">
             {selectedPageIndices.length} of {pageCount} Selected
           </span>
@@ -398,7 +398,7 @@ export const PageOrganizer: React.FC = () => {
         </div>
 
         {/* Batch Operations */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 shrink-0">
           <button
             onClick={() => handleRotate(-90)}
             disabled={selectedPageIndices.length === 0}
@@ -501,8 +501,8 @@ export const PageOrganizer: React.FC = () => {
           />
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6 pb-24 md:pb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-6">
             {Array.from({ length: pageCount }, (_, i) => {
               const isSelected = selectedPageIndices.includes(i);
               const isCurrent = currentPage === i + 1;

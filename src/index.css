@@ -410,4 +410,20 @@ html.light ::-webkit-scrollbar-thumb:hover {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .safe-area-bottom {
+    padding-bottom: max(0.375rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Android & Mobile Touch Optimization */
+@media (max-width: 768px) {
+  html, body {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* Ensure dialogs fit neatly on narrow Android displays */
+  [role="dialog"] {
+    max-width: calc(100vw - 1rem);
+  }
 }
