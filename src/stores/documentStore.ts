@@ -914,3 +914,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     });
   },
 }));
+
+if (typeof window !== 'undefined') {
+  (window as any).__JUSTPDFCRAFT_DOC_STORE__ = useDocumentStore;
+}

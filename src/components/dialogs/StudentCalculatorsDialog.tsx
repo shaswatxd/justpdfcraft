@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import QRCode from 'qrcode';
 import {
   X,
   GraduationCap,
@@ -148,7 +149,7 @@ export const StudentCalculatorsDialog: React.FC = () => {
 // 1. CGPA CALCULATOR
 // =========================================================================
 const CGPACalculatorView: React.FC = () => {
-  const [semesters, setSemesters] = useState<Array<{ id: string; sem: number; gpa: number; credits: number }>>([
+  const [semesters, setSemesters] = useState<Array<{ id: string; sem: number; gpa: number | string; credits: number | string }>>([
     { id: '1', sem: 1, gpa: 8.5, credits: 20 },
     { id: '2', sem: 2, gpa: 8.2, credits: 22 },
     { id: '3', sem: 3, gpa: 8.7, credits: 21 },
@@ -164,7 +165,7 @@ const CGPACalculatorView: React.FC = () => {
     setSemesters(semesters.filter((s) => s.id !== id));
   };
 
-  const updateSemester = (id: string, field: 'gpa' | 'credits', val: number) => {
+  const updateSemester = (id: string, field: 'gpa' | 'credits', val: number | string) => {
     setSemesters(semesters.map((s) => (s.id === id ? { ...s, [field]: val } : s)));
   };
 
@@ -226,7 +227,7 @@ const CGPACalculatorView: React.FC = () => {
               min="0"
               max="10"
               value={s.gpa}
-              onChange={(e) => updateSemester(s.id, 'gpa', parseFloat(e.target.value) || 0)}
+              onChange={(e) => updateSemester(s.id, 'gpa', e.target.value === '' ? '' : e.target.value)}
               className="col-span-4 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-swift-500 font-mono"
             />
             <input
@@ -234,7 +235,7 @@ const CGPACalculatorView: React.FC = () => {
               min="1"
               max="50"
               value={s.credits}
-              onChange={(e) => updateSemester(s.id, 'credits', parseFloat(e.target.value) || 0)}
+              onChange={(e) => updateSemester(s.id, 'credits', e.target.value === '' ? '' : e.target.value)}
               className="col-span-4 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-swift-500 font-mono"
             />
             <button
@@ -255,7 +256,7 @@ const CGPACalculatorView: React.FC = () => {
 // 2. SGPA CALCULATOR
 // =========================================================================
 const SGPACalculatorView: React.FC = () => {
-  const [courses, setCourses] = useState<Array<{ id: string; name: string; credits: number; gradePoint: number }>>([
+  const [courses, setCourses] = useState<Array<{ id: string; name: string; credits: number | string; gradePoint: number }>>([
     { id: '1', name: 'Mathematics III', credits: 4, gradePoint: 9 },
     { id: '2', name: 'Data Structures', credits: 4, gradePoint: 10 },
     { id: '3', name: 'Operating Systems', credits: 3, gradePoint: 8 },
@@ -339,7 +340,7 @@ const SGPACalculatorView: React.FC = () => {
               min="1"
               max="10"
               value={c.credits}
-              onChange={(e) => updateCourse(c.id, 'credits', parseFloat(e.target.value) || 0)}
+              onChange={(e) => updateCourse(c.id, 'credits', e.target.value === '' ? '' : e.target.value)}
               className="col-span-3 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-swift-500 font-mono"
             />
             <select
@@ -1168,19 +1169,18 @@ const QRCodeGeneratorView: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Draw clean background
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, 240, 240);
-
-    // Using Google Chart QR API or pure client-side image loader
-    const qrImg = new Image();
-    qrImg.crossOrigin = 'anonymous';
-    qrImg.onload = () => {
-      ctx.drawImage(qrImg, 0, 0, 240, 240);
-    };
-    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(
-      text || 'https://justpdfcraft.xyz'
-    )}`;
+    const valueToEncode = text.trim() || 'https://justpdfcraft.xyz';
+    QRCode.toCanvas(canvas, valueToEncode, {
+      width: 240,
+      margin: 1,
+      color: {
+        dark: '#000000',
+        light: '#ffffff',
+      },
+      errorCorrectionLevel: 'M',
+    }).catch((err) => {
+      console.warn('QR code generation error:', err);
+    });
   }, [text]);
 
   const downloadQR = () => {
@@ -1245,8 +1245,16 @@ const ExamPasswordGeneratorView: React.FC = () => {
     if (includeSymbols) chars += symbols;
 
     let res = '';
-    for (let i = 0; i < length; i++) {
-      res += chars.charAt(Math.floor(Math.random() * chars.length));
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+      const randomValues = new Uint32Array(length);
+      window.crypto.getRandomValues(randomValues);
+      for (let i = 0; i < length; i++) {
+        res += chars.charAt(randomValues[i] % chars.length);
+      }
+    } else {
+      for (let i = 0; i < length; i++) {
+        res += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
     }
     setPassword(res);
   };
