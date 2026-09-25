@@ -16,9 +16,12 @@ export function createZip(files: { name: string; data: Uint8Array }[]): Uint8Arr
     lhView.setUint16(6, 0, true); // flags
     lhView.setUint16(8, 0, true); // compression (0 = store)
     
-    // Time & Date: static dummy time
-    lhView.setUint16(10, 0, true); // time
-    lhView.setUint16(12, 0, true); // date
+    // MS-DOS time & date from current timestamp
+    const now = new Date();
+    const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+    const dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+    lhView.setUint16(10, dosTime, true); // time
+    lhView.setUint16(12, dosDate, true); // date
     
     const crc = crc32(data);
     lhView.setUint32(14, crc, true);
@@ -39,8 +42,8 @@ export function createZip(files: { name: string; data: Uint8Array }[]): Uint8Arr
     cdView.setUint16(6, 10, true); // version needed
     cdView.setUint16(8, 0, true); // flags
     cdView.setUint16(10, 0, true); // compression
-    cdView.setUint16(12, 0, true); // time
-    cdView.setUint16(14, 0, true); // date
+    cdView.setUint16(12, dosTime, true); // time
+    cdView.setUint16(14, dosDate, true); // date
     cdView.setUint32(16, crc, true); // crc32
     cdView.setUint32(20, data.length, true); // compressed size
     cdView.setUint32(24, data.length, true); // uncompressed size

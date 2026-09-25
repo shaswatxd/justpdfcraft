@@ -67,16 +67,21 @@ export const MainToolbar: React.FC = () => {
 
   // Close menus on outside click
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (shapesMenuRef.current && !shapesMenuRef.current.contains(e.target as Node)) {
+    const handleClickOutside = (e: Event) => {
+      const target = e.target as Node;
+      if (shapesMenuRef.current && !shapesMenuRef.current.contains(target)) {
         setShapesOpen(false);
       }
-      if (moreToolsMenuRef.current && !moreToolsMenuRef.current.contains(e.target as Node)) {
+      if (moreToolsMenuRef.current && !moreToolsMenuRef.current.contains(target)) {
         setMoreToolsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
 
   if (!documentId) return null;

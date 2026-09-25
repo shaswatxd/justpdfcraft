@@ -22,6 +22,7 @@ export const PresentationOverlays: React.FC<{
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const trailRef = useRef<TrailPoint[]>([]);
   const animFrameRef = useRef<number | null>(null);
+  const mousePosRef = useRef<{ x: number; y: number } | null>(null);
 
   // Global Keyboard Shortcuts (L = Laser, S = Spotlight)
   useEffect(() => {
@@ -80,6 +81,7 @@ export const PresentationOverlays: React.FC<{
       const y = e.clientY - rect.top;
 
       setMousePos({ x, y });
+      mousePosRef.current = { x, y };
 
       if (isLaserPointerActive) {
         trailRef.current.push({ x, y, time: performance.now() });
@@ -88,6 +90,7 @@ export const PresentationOverlays: React.FC<{
 
     const handlePointerLeave = () => {
       setMousePos(null);
+      mousePosRef.current = null;
       trailRef.current = [];
     };
 
@@ -142,15 +145,16 @@ export const PresentationOverlays: React.FC<{
       }
 
       // Draw Glowing Head Dot
-      if (mousePos) {
+      const pos = mousePosRef.current;
+      if (pos) {
         // Outer halo
-        const grad = ctx.createRadialGradient(mousePos.x, mousePos.y, 0, mousePos.x, mousePos.y, 16);
+        const grad = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 16);
         grad.addColorStop(0, 'rgba(255, 40, 90, 0.95)');
         grad.addColorStop(0.35, 'rgba(255, 20, 70, 0.6)');
         grad.addColorStop(1, 'rgba(255, 0, 50, 0)');
 
         ctx.beginPath();
-        ctx.arc(mousePos.x, mousePos.y, 16, 0, Math.PI * 2);
+        ctx.arc(pos.x, pos.y, 16, 0, Math.PI * 2);
         ctx.fillStyle = grad;
         ctx.shadowBlur = 16;
         ctx.shadowColor = '#FF0055';
@@ -158,7 +162,7 @@ export const PresentationOverlays: React.FC<{
 
         // Hot center core
         ctx.beginPath();
-        ctx.arc(mousePos.x, mousePos.y, 3.5, 0, Math.PI * 2);
+        ctx.arc(pos.x, pos.y, 3.5, 0, Math.PI * 2);
         ctx.fillStyle = '#FFFFFF';
         ctx.shadowBlur = 6;
         ctx.shadowColor = '#FFFFFF';
@@ -173,7 +177,7 @@ export const PresentationOverlays: React.FC<{
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [isLaserPointerActive, mousePos]);
+  }, [isLaserPointerActive]);
 
   // Sync canvas dimensions with viewport container
   useEffect(() => {

@@ -127,6 +127,10 @@ export const CompareDialog: React.FC = () => {
     if (!e.target.files || e.target.files.length === 0 || !documentId) return;
 
     const file = e.target.files[0];
+    if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+      addToast({ type: 'error', title: 'Invalid File', message: 'Please select a PDF file for comparison.' });
+      return;
+    }
     setDocBName(file.name);
     setIsComparing(true);
 

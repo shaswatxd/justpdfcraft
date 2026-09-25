@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   Volume2,
   Play,
@@ -38,6 +38,12 @@ export const TTSPlayerHUD: React.FC = () => {
   const { documentId, currentPage, pageCount, setCurrentPage } = useDocumentStore();
   const [currentPageText, setCurrentPageText] = useState<string>('');
   const [isLoadingText, setIsLoadingText] = useState(false);
+
+  // Ref to avoid stale closures in TTS auto-advance callback
+  const currentPageRef = useRef(currentPage);
+  const pageCountRef = useRef(pageCount);
+  currentPageRef.current = currentPage;
+  pageCountRef.current = pageCount;
 
   // Initialize voices on mount
   useEffect(() => {
@@ -92,9 +98,9 @@ export const TTSPlayerHUD: React.FC = () => {
     }
 
     playPageText(text, () => {
-      // Auto-advance to next page when page finishes
-      if (currentPage < pageCount) {
-        setCurrentPage(currentPage + 1);
+      // Auto-advance to next page when page finishes (using refs to avoid stale closure)
+      if (currentPageRef.current < pageCountRef.current) {
+        setCurrentPage(currentPageRef.current + 1);
       }
     });
   };

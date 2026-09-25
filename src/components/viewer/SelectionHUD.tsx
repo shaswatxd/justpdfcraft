@@ -32,7 +32,19 @@ export const SelectionHUD: React.FC<SelectionHUDProps> = ({
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(selectedText);
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(selectedText);
+      } else {
+        // Fallback for non-secure contexts
+        const textarea = document.createElement('textarea');
+        textarea.value = selectedText;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
       setCopied(true);
       addToast({ type: 'success', title: 'Text Copied', message: `Copied ${selectedText.length} characters` });
       setTimeout(() => setCopied(false), 1800);

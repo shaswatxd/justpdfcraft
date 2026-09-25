@@ -458,7 +458,7 @@ export const Sidebar: React.FC = () => {
               <Icon className="w-3.5 h-3.5 shrink-0" />
               <span>{tab.label}</span>
               {typeof tab.badge === 'number' && tab.badge > 0 && (
-                <span className="bg-swift-500/30 text-swift-300 text-[9px] px-1 py-0.2 rounded-full font-mono font-bold">
+                <span className="bg-swift-500/30 text-swift-300 text-[9px] px-1 py-px rounded-full font-mono font-bold">
                   {tab.badge}
                 </span>
               )}

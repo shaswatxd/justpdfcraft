@@ -82,7 +82,7 @@ export const TableExtractDialog: React.FC = () => {
 
   const handleDownloadCsv = () => {
     if (!tableData || !tableData.csv) return;
-    const blob = new Blob([tableData.csv], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(['\uFEFF' + tableData.csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

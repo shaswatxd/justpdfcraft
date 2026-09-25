@@ -37,7 +37,7 @@ function safeLazy(
         const key = `chunk_reload_${componentName}`;
         const last = sessionStorage.getItem(key);
         const now = Date.now();
-        if (!last || now - parseInt(last, 10) > 10000) {
+        if (!last || isNaN(parseInt(last, 10)) || now - parseInt(last, 10) > 10000) {
           sessionStorage.setItem(key, String(now));
           window.location.reload();
         }
@@ -272,6 +272,7 @@ export const App: React.FC = () => {
           try {
             const buffer = await file.arrayBuffer();
             await loadDocument(new Uint8Array(buffer), file.name, (file as any).path);
+            setActiveView('editor');
             addToast({
               type: 'success',
               title: 'Document Opened',

@@ -39,7 +39,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
       list = list.filter((t) => favorites.includes(t.id));
     }
     if (showOnlyPopular) {
-      list = list.filter((t) => t.badge === 'popular' || ['merge-pdf', 'compress-pdf', 'student-resizer', 'handwriting-gen', 'sign-pdf', 'split-pdf', 'ocr-pdf'].includes(t.id));
+      list = list.filter((t) => t.badge === 'popular' || ['merge-pdf', 'compress-pdf', 'student-resizer', 'handwriting-generator', 'sign-pdf', 'split-pdf', 'ocr-pdf'].includes(t.id));
     }
     return list;
   }, [searchQuery, activeCategory, showOnlyFavorites, showOnlyPopular, favorites]);

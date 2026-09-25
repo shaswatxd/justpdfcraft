@@ -48,6 +48,11 @@ export const WatermarkDialog: React.FC = () => {
   const handleLogoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Logo image must be smaller than 5 MB.');
+      e.target.value = '';
+      return;
+    }
     const reader = new FileReader();
     reader.onload = () => {
       setLogoDataUrl(reader.result as string);

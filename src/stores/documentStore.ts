@@ -243,6 +243,15 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       );
 
       if (isReloadingActive) {
+        // Close the previous document in the engine to prevent memory leaks
+        const oldDocId = currentState.documentId;
+        if (oldDocId && oldDocId !== documentId) {
+          try {
+            engine.closeDocument(oldDocId);
+          } catch {
+            // Best effort — old doc may already be closed
+          }
+        }
         // Update current tab in-place, preserving viewMode, page, undo/redo stacks, zoom, etc.
         const preservedViewMode = currentState.viewMode || 'continuous';
         const preservedPage = Math.max(1, Math.min(currentState.currentPage || 1, pageCount));

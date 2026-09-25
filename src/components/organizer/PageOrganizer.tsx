@@ -543,8 +543,8 @@ export const PageOrganizer: React.FC = () => {
                       : isSelected
                       ? 'bg-swift-500/10 border-swift-500 shadow-lg ring-2 ring-swift-500/40'
                       : isCurrent
-                      ? 'bg-slate-850 border-swift-500/60 ring-1 ring-swift-500/30'
-                      : 'bg-black border-slate-800 hover:border-slate-700 hover:bg-slate-850'
+                      ? 'bg-slate-800/80 border-swift-500/60 ring-1 ring-swift-500/30'
+                      : 'bg-black border-slate-800 hover:border-slate-700 hover:bg-slate-800/80'
                   }`}
                 >
                   {/* Page Number & Checkbox */}
@@ -554,7 +554,7 @@ export const PageOrganizer: React.FC = () => {
                         #{i + 1}
                       </span>
                       {isCurrent && (
-                        <span className="text-[9px] font-semibold uppercase px-1 py-0.2 rounded bg-swift-500/20 text-swift-400 border border-swift-500/30">
+                        <span className="text-[9px] font-semibold uppercase px-1 py-px rounded bg-swift-500/20 text-swift-400 border border-swift-500/30">
                           Active
                         </span>
                       )}
