@@ -157,7 +157,7 @@ export const ConvertDialog: React.FC = () => {
         a.href = url;
         a.download = `${fileName ? fileName.replace('.pdf', '') : 'Document'}_Text.${textFormat}`;
         a.click();
-        URL.revokeObjectURL(url);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
         addToast({
           type: 'success',
           title: 'Text Exported',

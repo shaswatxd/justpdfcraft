@@ -1101,7 +1101,7 @@ const StudentNotesView: React.FC = () => {
     a.href = url;
     a.download = 'JustPDFCraft_Study_Notes.txt';
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
     addToast({ type: 'success', title: 'Notes Downloaded' });
   };
 

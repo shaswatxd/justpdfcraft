@@ -88,7 +88,7 @@ export const TableExtractDialog: React.FC = () => {
     a.href = url;
     a.download = scopeMode === 'current' ? `Page_${selectedPage}_Table.csv` : `${fileName || 'Document'}_All_Tables.csv`;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
     addToast({ type: 'success', title: 'CSV Downloaded', message: `Exported ${tableData.rowCount} rows.` });
   };
 

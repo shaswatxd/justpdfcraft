@@ -9,7 +9,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "audit:playwright": "node scripts/playwright-audit.cjs && node scripts/playwright-viewer-audit.cjs"
+    "audit:playwright": "node scripts/playwright-audit.cjs && node scripts/playwright-viewer-audit.cjs",
+    "audit:full": "node scripts/playwright-full-suite-audit.cjs"
   },
   "keywords": [
     "pdf",

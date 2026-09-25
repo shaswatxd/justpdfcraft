@@ -187,7 +187,8 @@ export const OCRDialog: React.FC = () => {
 
         if (!needsVisualOCR) {
           // Digital stream is clean!
-          return handleStreamRun(pagesToProcess);
+          await handleStreamRun(pagesToProcess);
+          return;
         }
         // Otherwise fall through to Deep Visual OCR below
       }
@@ -320,7 +321,7 @@ export const OCRDialog: React.FC = () => {
     a.href = url;
     a.download = `${fileName ? fileName.replace(/\.pdf$/i, '') : 'JustPDFCraft'}_Extracted_Text.txt`;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const handleDownloadMarkdown = () => {
@@ -332,7 +333,7 @@ export const OCRDialog: React.FC = () => {
     a.href = url;
     a.download = `${fileName ? fileName.replace(/\.pdf$/i, '') : 'JustPDFCraft'}_Extracted.md`;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const handleGenerateSearchablePDF = async () => {
@@ -363,7 +364,7 @@ export const OCRDialog: React.FC = () => {
       a.href = url;
       a.download = `${fileName ? fileName.replace(/\.pdf$/i, '') : 'JustPDFCraft'}_Searchable.pdf`;
       a.click();
-      URL.revokeObjectURL(url);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
 
       addToast({
         type: 'success',

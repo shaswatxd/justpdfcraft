@@ -107,7 +107,7 @@ export const ProtectDialog: React.FC = () => {
         a.href = url;
         a.download = `${fileName ? fileName.replace(/\.pdf$/i, '') : 'Document'}_Unlocked.pdf`;
         a.click();
-        URL.revokeObjectURL(url);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
         addToast({
           type: 'success',
           title: 'Unlocked PDF Downloaded',

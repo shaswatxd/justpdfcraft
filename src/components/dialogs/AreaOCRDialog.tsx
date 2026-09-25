@@ -109,7 +109,7 @@ export const AreaOCRDialog: React.FC<AreaOCRModalProps> = ({
     a.href = url;
     a.download = `Extracted_Text_${Date.now()}.txt`;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
     addToast({
       type: 'success',
       title: 'Downloaded',
