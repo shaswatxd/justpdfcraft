@@ -318,6 +318,7 @@ export interface BatchProcessOptions {
   compressOptions?: CompressOptions;
   watermarkOptions?: WatermarkOptions;
   onProgress?: (itemId: string, progress: number) => void;
+  shouldAbort?: () => boolean;
 }
 
 export interface SanitizeResult {

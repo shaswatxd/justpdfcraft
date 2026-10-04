@@ -44,6 +44,8 @@ import {
   Languages,
   CalendarCheck,
   FileBadge,
+  FileType,
+  Moon,
   Heart,
   ArrowRight,
   LucideIcon,
@@ -101,6 +103,8 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Languages,
   CalendarCheck,
   FileBadge,
+  FileType,
+  Moon,
 };
 
 const COLOR_THEMES: Record<string, { bg: string; border: string; text: string }> = {

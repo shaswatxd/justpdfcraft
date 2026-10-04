@@ -180,6 +180,10 @@ export async function extractTableFromPages(
         if (r.length > maxCols) maxCols = r.length;
       }
     }
+    // Yield to the event loop between pages to keep the UI responsive
+    if (pageIndices.length > 1) {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
   }
 
   const normalizedRows = allRows.map((r) => {

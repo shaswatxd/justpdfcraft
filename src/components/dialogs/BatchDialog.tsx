@@ -36,6 +36,7 @@ export const BatchDialog: React.FC = () => {
   const [items, setItems] = useState<BatchItem[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const abortRef = useRef(false);
 
   if (activeModal !== 'batch') return null;
 
@@ -629,17 +630,34 @@ export const BatchDialog: React.FC = () => {
               </button>
             )}
 
-            <button
-              type="button"
-              onClick={() => {
-                setItems([]);
-                setActiveModal(null);
-              }}
-              disabled={isProcessing}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors disabled:opacity-50"
-            >
-              Close
-            </button>
+            {isProcessing ? (
+              <button
+                type="button"
+                onClick={() => {
+                  abortRef.current = true;
+                  addToast({
+                    type: 'info',
+                    title: 'Cancelling Batch',
+                    message: 'Halting processing after current step...',
+                  });
+                }}
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 transition-colors flex items-center gap-1.5"
+              >
+                <X className="w-3.5 h-3.5" />
+                Cancel Batch
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setItems([]);
+                  setActiveModal(null);
+                }}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                Close
+              </button>
+            )}
 
             <button
               type="button"

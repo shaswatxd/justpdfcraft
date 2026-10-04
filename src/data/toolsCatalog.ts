@@ -57,6 +57,17 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     action: { type: 'workflow', modal: 'convert', initialTab: 'pdf-to-word', label: 'Convert to Word' },
   },
   {
+    id: 'pdf-to-grayscale',
+    name: 'PDF to Grayscale (B&W)',
+    shortDesc: 'Convert color PDFs into crisp monochrome/grayscale documents for ink saving and official submissions.',
+    category: 'pdf',
+    iconName: 'Moon',
+    color: 'text-slate-300',
+    badge: 'new',
+    tags: ['grayscale', 'black and white', 'b&w', 'monochrome', 'print ink saver', 'desaturate', 'remove color'],
+    action: { type: 'workflow', modal: 'convert', initialTab: 'pdf-to-grayscale', label: 'Convert to Grayscale' },
+  },
+  {
     id: 'text-to-pdf-compiler',
     name: 'Text & Notes to PDF',
     shortDesc: 'Compile plain text, essays, and notes directly into formatted multi-page PDF documents.',

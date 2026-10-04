@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { RefreshCw, X, Download, Image as ImageIcon, Plus, Trash2, FileText, Copy, Check, FileType } from 'lucide-react';
+import { RefreshCw, X, Download, Image as ImageIcon, Plus, Trash2, FileText, Copy, Check, FileType, Moon } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
 import { getPDFEngine } from '@core/pdf/engine.factory';
 import { PDFDocument } from 'pdf-lib';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 import { createDocx, DocxParagraph } from '@/utils/docx';
+import { convertToGrayscalePdf } from '@core/pdf/grayscale';
 
 export const ConvertDialog: React.FC = () => {
   const {
@@ -21,7 +22,8 @@ export const ConvertDialog: React.FC = () => {
   } = useUIStore();
   const { documentId, pageCount, currentPage, fileName, loadDocument, closeCurrentDocument } = useDocumentStore();
 
-  const [mode, setMode] = useState<'pdf-to-img' | 'pdf-to-word' | 'pdf-to-txt' | 'img-to-pdf' | 'txt-to-pdf'>('pdf-to-img');
+  const [mode, setMode] = useState<'pdf-to-img' | 'pdf-to-word' | 'pdf-to-grayscale' | 'pdf-to-txt' | 'img-to-pdf' | 'txt-to-pdf'>('pdf-to-img');
+  const [grayscaleProgress, setGrayscaleProgress] = useState<{ current: number; total: number } | null>(null);
   const [imageFormat, setImageFormat] = useState<'png' | 'jpeg' | 'webp'>('png');
   const [textFormat, setTextFormat] = useState<'txt' | 'md'>('txt');
   const [resolutionScale, setResolutionScale] = useState<number>(2.0);
@@ -32,7 +34,7 @@ export const ConvertDialog: React.FC = () => {
 
   // Sync mode with activeConvertTab when opened from a tool action
   React.useEffect(() => {
-    if (activeConvertTab && ['pdf-to-img', 'pdf-to-word', 'pdf-to-txt', 'img-to-pdf', 'txt-to-pdf'].includes(activeConvertTab)) {
+    if (activeConvertTab && ['pdf-to-img', 'pdf-to-word', 'pdf-to-grayscale', 'pdf-to-txt', 'img-to-pdf', 'txt-to-pdf'].includes(activeConvertTab)) {
       setMode(activeConvertTab as any);
     }
   }, [activeConvertTab]);
@@ -187,6 +189,48 @@ export const ConvertDialog: React.FC = () => {
   }, [pendingImageFile, activeModal, setPendingImageFile]);
 
   if (activeModal !== 'convert') return null;
+
+  const handleConvertToGrayscale = async () => {
+    if (!documentId) return;
+    setIsProcessing(true);
+    setGrayscaleProgress({ current: 0, total: scope === 'current' ? 1 : pageCount });
+    try {
+      const targetIndices = scope === 'current' ? [currentPage - 1] : Array.from({ length: pageCount }, (_, i) => i);
+      const pdfBytes = await convertToGrayscalePdf(documentId, {
+        pageIndices: targetIndices,
+        scale: resolutionScale,
+        onProgress: (current, total) => setGrayscaleProgress({ current, total }),
+      });
+
+      const blob = new Blob([pdfBytes as unknown as BlobPart], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const baseName = (fileName || 'Document').replace(/\.[^/.]+$/, '');
+      a.download = `${baseName}_Grayscale.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      addToast({
+        type: 'success',
+        title: 'Grayscale PDF Exported',
+        message: `Converted ${targetIndices.length} page${targetIndices.length > 1 ? 's' : ''} to black & white / grayscale.`,
+      });
+      handleClose();
+    } catch (err: any) {
+      console.error('Grayscale export failed:', err);
+      addToast({
+        type: 'error',
+        title: 'Export Failed',
+        message: err?.message || 'Could not convert to grayscale PDF.',
+      });
+    } finally {
+      setIsProcessing(false);
+      setGrayscaleProgress(null);
+    }
+  };
 
   const handleExportImages = async () => {
     if (!documentId) return;
@@ -542,6 +586,17 @@ export const ConvertDialog: React.FC = () => {
             <span>PDF to Word (.docx)</span>
           </button>
           <button
+            onClick={() => setMode('pdf-to-grayscale')}
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
+              mode === 'pdf-to-grayscale'
+                ? 'border-teal-500 text-teal-400'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Moon className="w-3.5 h-3.5" />
+            <span>PDF to Grayscale (B&W)</span>
+          </button>
+          <button
             onClick={() => setMode('pdf-to-txt')}
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
               mode === 'pdf-to-txt'
@@ -708,6 +763,89 @@ export const ConvertDialog: React.FC = () => {
                         <li>Standard ISO/IEC 29500 OpenXML (.docx) format</li>
                         <li>Compatible with Microsoft Word, Google Docs, Apple Pages & LibreOffice</li>
                         <li>100% Client-side conversion without cloud servers or data leakage</li>
+                      </ul>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {mode === 'pdf-to-grayscale' && (
+            <div className="space-y-4">
+              {!documentId ? (
+                <NoDocumentState
+                  toolName="PDF to Grayscale (B&W)"
+                  description="Please select a PDF document first to convert color pages into crisp monochrome/grayscale documents."
+                  icon={Moon}
+                  actionText="Select PDF to Convert"
+                />
+              ) : (
+                <>
+                  <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold text-slate-200">Export Scope</label>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setScope('current')}
+                          className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
+                            scope === 'current'
+                              ? 'bg-teal-500/20 border-teal-500 text-teal-300'
+                              : 'bg-slate-800 border-slate-700 text-slate-400'
+                          }`}
+                        >
+                          Page {currentPage}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setScope('all')}
+                          className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
+                            scope === 'all'
+                              ? 'bg-teal-500/20 border-teal-500 text-teal-300'
+                              : 'bg-slate-800 border-slate-700 text-slate-400'
+                          }`}
+                        >
+                          All ({pageCount} Pages)
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-slate-300 block mb-1">DPI / Resolution</label>
+                      <select
+                        value={resolutionScale}
+                        onChange={(e) => setResolutionScale(parseFloat(e.target.value))}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                      >
+                        <option value="1.0">Standard 72 DPI (Smaller File)</option>
+                        <option value="2.0">High-Res 144 DPI (Recommended for Print)</option>
+                        <option value="3.0">Ultra-Sharp 216 DPI (Fine Details)</option>
+                      </select>
+                    </div>
+
+                    {isProcessing && grayscaleProgress && (
+                      <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl space-y-1.5">
+                        <div className="flex justify-between text-xs text-teal-300">
+                          <span>Converting to Grayscale...</span>
+                          <span>{grayscaleProgress.current} / {grayscaleProgress.total} Pages</span>
+                        </div>
+                        <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                          <div
+                            className="bg-teal-500 h-full transition-all duration-200"
+                            style={{ width: `${Math.round((grayscaleProgress.current / grayscaleProgress.total) * 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="pt-3 border-t border-slate-800/80 text-[11px] text-slate-400 space-y-1.5">
+                      <p className="font-semibold text-slate-300">Grayscale Highlights:</p>
+                      <ul className="list-disc list-inside space-y-0.5 text-[10px] text-slate-400">
+                        <li>ITU-R BT.601 luminance weighting retains maximum text contrast</li>
+                        <li>Saves color ink and toner cartridges on home & office printers</li>
+                        <li>Meets B&W upload requirements for exams, visas, and government portals</li>
+                        <li>100% Client-side conversion without data leaves your browser</li>
                       </ul>
                     </div>
                   </div>
@@ -901,7 +1039,18 @@ export const ConvertDialog: React.FC = () => {
           >
             Cancel
           </button>
-          {mode === 'pdf-to-word' ? (
+          {mode === 'pdf-to-grayscale' ? (
+            documentId ? (
+              <button
+                onClick={handleConvertToGrayscale}
+                disabled={isProcessing}
+                className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-teal-900/30 flex items-center gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5" />
+                {isProcessing ? 'Converting...' : 'Download Grayscale PDF'}
+              </button>
+            ) : null
+          ) : mode === 'pdf-to-word' ? (
             documentId ? (
               <button
                 onClick={handleConvertToWord}

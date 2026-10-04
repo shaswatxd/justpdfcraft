@@ -1784,6 +1784,17 @@ export class FallbackPDFEngine implements PDFEngine {
     const results: BatchItem[] = [];
 
     for (let i = 0; i < items.length; i++) {
+      if (options.shouldAbort && options.shouldAbort()) {
+        for (let j = i; j < items.length; j++) {
+          results.push({
+            ...items[j],
+            status: 'error',
+            errorMessage: 'Batch processing cancelled by user',
+            progress: 0,
+          });
+        }
+        break;
+      }
       const item = items[i];
       const itemResult: BatchItem = {
         ...item,
