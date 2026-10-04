@@ -723,3 +723,76 @@ export function combinePhotoAndSignature(
 
   return resultCanvas;
 }
+
+export interface PhotoGridOptions {
+  sheetSize: '4x6' | 'a4';
+  photoCount: 4 | 6 | 8 | 16;
+  showBorder: boolean;
+  borderColor?: string;
+  backgroundColor?: string;
+}
+
+export function generatePassportPhotoGrid(
+  photoImg: HTMLImageElement | HTMLCanvasElement,
+  options: PhotoGridOptions
+): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  const isA4 = options.sheetSize === 'a4';
+  const width = isA4 ? 2480 : 1200;
+  const height = isA4 ? 3508 : 1800;
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d')!;
+
+  ctx.fillStyle = options.backgroundColor || '#ffffff';
+  ctx.fillRect(0, 0, width, height);
+
+  let cols = 2;
+  let rows = 2;
+  if (options.photoCount === 6) {
+    cols = 2;
+    rows = 3;
+  } else if (options.photoCount === 8) {
+    cols = 2;
+    rows = 4;
+  } else if (options.photoCount === 16) {
+    cols = 4;
+    rows = 4;
+  }
+
+  const marginX = width * 0.05;
+  const marginY = height * 0.05;
+  const availW = width - marginX * 2;
+  const availH = height - marginY * 2;
+
+  const cellW = availW / cols;
+  const cellH = availH / rows;
+
+  const targetAspect = 3.5 / 4.5;
+  let photoW = cellW * 0.88;
+  let photoH = photoW / targetAspect;
+
+  if (photoH > cellH * 0.88) {
+    photoH = cellH * 0.88;
+    photoW = photoH * targetAspect;
+  }
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const centerX = marginX + c * cellW + cellW / 2;
+      const centerY = marginY + r * cellH + cellH / 2;
+      const x = centerX - photoW / 2;
+      const y = centerY - photoH / 2;
+
+      ctx.drawImage(photoImg, x, y, photoW, photoH);
+
+      if (options.showBorder) {
+        ctx.strokeStyle = options.borderColor || '#cbd5e1';
+        ctx.lineWidth = Math.max(2, Math.round(width / 1000));
+        ctx.strokeRect(x, y, photoW, photoH);
+      }
+    }
+  }
+
+  return canvas;
+}

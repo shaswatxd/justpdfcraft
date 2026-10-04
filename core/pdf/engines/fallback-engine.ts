@@ -1398,7 +1398,20 @@ export class FallbackPDFEngine implements PDFEngine {
         small_file: { maxDim: 960, quality: 0.55 },
         extreme: { maxDim: 640, quality: 0.40 },
       };
-      const presetConfig = imagePresets[options.preset] || imagePresets.balanced;
+      let presetConfig = imagePresets[options.preset] || imagePresets.balanced;
+      if (options.targetSizeMB && options.targetSizeMB > 0) {
+        const currentMB = originalBytes / (1024 * 1024);
+        const ratioNeeded = options.targetSizeMB / Math.max(0.01, currentMB);
+        if (ratioNeeded <= 0.35) {
+          presetConfig = { maxDim: 640, quality: 0.35 };
+        } else if (ratioNeeded <= 0.60) {
+          presetConfig = { maxDim: 960, quality: 0.50 };
+        } else if (ratioNeeded <= 0.85) {
+          presetConfig = { maxDim: 1280, quality: 0.68 };
+        } else {
+          presetConfig = { maxDim: 1920, quality: 0.80 };
+        }
+      }
       const indirectObjects = doc.pdfLibDoc.context.enumerateIndirectObjects();
       const totalObjs = indirectObjects.length;
       let processedCount = 0;

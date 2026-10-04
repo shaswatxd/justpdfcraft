@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useUIStore } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
 import { extractTableFromPage, extractTableFromPages, ExtractedTableData } from '@core/pdf/table-extractor';
-import { Table, Copy, Download, Check, X, RefreshCw, ChevronLeft, ChevronRight, Layers } from 'lucide-react';
+import { Table, Copy, Download, Check, X, RefreshCw, ChevronLeft, ChevronRight, Layers, FileSpreadsheet } from 'lucide-react';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const TableExtractDialog: React.FC = () => {
@@ -92,6 +92,31 @@ export const TableExtractDialog: React.FC = () => {
     addToast({ type: 'success', title: 'CSV Downloaded', message: `Exported ${tableData.rowCount} rows.` });
   };
 
+  const handleDownloadXlsx = async () => {
+    if (!tableData || tableData.rowCount === 0) return;
+    try {
+      const { createXlsx } = await import('@/utils/xlsx');
+      const allRows = tableData.rows;
+      const xlsxBytes = createXlsx(allRows, scopeMode === 'current' ? `Page_${selectedPage}` : 'Tables');
+      const blob = new Blob([xlsxBytes as unknown as BlobPart], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = scopeMode === 'current' ? `Page_${selectedPage}_Table.xlsx` : `${fileName || 'Document'}_All_Tables.xlsx`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      addToast({
+        type: 'success',
+        title: 'Excel File Downloaded',
+        message: `Exported ${tableData.rowCount} rows to native .xlsx format.`,
+      });
+    } catch (err: any) {
+      addToast({ type: 'error', title: 'Export Failed', message: err?.message || 'Could not generate .xlsx file.' });
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in" role="dialog" aria-modal="true" aria-label="Table Extract Dialog">
       <div className="bg-[#000000] border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
@@ -127,161 +152,171 @@ export const TableExtractDialog: React.FC = () => {
           <>
             {/* Page Selector & Toolbar */}
             <div className="flex items-center justify-between px-6 py-3 bg-[#000000]/40 border-b border-slate-800 gap-4 flex-wrap">
-          <div className="flex items-center gap-3">
-            {/* Scope Mode Segmented Button */}
-            <div className="flex items-center bg-slate-800/80 p-0.5 rounded-lg border border-slate-700/60 text-xs">
-              <button
-                onClick={() => setScopeMode('current')}
-                className={`px-3 py-1 rounded-md transition-all font-medium ${
-                  scopeMode === 'current'
-                    ? 'bg-swift-600 text-white shadow'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Page {selectedPage}
-              </button>
-              <button
-                onClick={() => setScopeMode('all')}
-                className={`px-3 py-1 rounded-md transition-all flex items-center gap-1.5 font-medium ${
-                  scopeMode === 'all'
-                    ? 'bg-swift-600 text-white shadow'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span>All Pages ({pageCount})</span>
-              </button>
-            </div>
+              <div className="flex items-center gap-3">
+                {/* Scope Mode Segmented Button */}
+                <div className="flex items-center bg-slate-800/80 p-0.5 rounded-lg border border-slate-700/60 text-xs">
+                  <button
+                    onClick={() => setScopeMode('current')}
+                    className={`px-3 py-1 rounded-md transition-all font-medium ${
+                      scopeMode === 'current'
+                        ? 'bg-swift-600 text-white shadow'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    Page {selectedPage}
+                  </button>
+                  <button
+                    onClick={() => setScopeMode('all')}
+                    className={`px-3 py-1 rounded-md transition-all flex items-center gap-1.5 font-medium ${
+                      scopeMode === 'all'
+                        ? 'bg-swift-600 text-white shadow'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <Layers className="w-3.5 h-3.5" />
+                    <span>All Pages ({pageCount})</span>
+                  </button>
+                </div>
 
-            {scopeMode === 'current' && (
-              <div className="flex items-center gap-1">
+                {scopeMode === 'current' && (
+                  <div className="flex items-center gap-1">
+                    <button
+                      disabled={selectedPage <= 1}
+                      onClick={() => setSelectedPage((p) => Math.max(1, p - 1))}
+                      className="p-1 hover:bg-slate-800 disabled:opacity-30 rounded text-slate-300"
+                      title="Previous Page"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <span className="text-xs font-mono font-medium px-1 text-slate-200">
+                      {selectedPage} / {pageCount}
+                    </span>
+                    <button
+                      disabled={selectedPage >= pageCount}
+                      onClick={() => setSelectedPage((p) => Math.min(pageCount, p + 1))}
+                      className="p-1 hover:bg-slate-800 disabled:opacity-30 rounded text-slate-300"
+                      title="Next Page"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+
                 <button
-                  disabled={selectedPage <= 1}
-                  onClick={() => setSelectedPage((p) => Math.max(1, p - 1))}
-                  className="p-1 hover:bg-slate-800 disabled:opacity-30 rounded text-slate-300"
-                  title="Previous Page"
+                  onClick={() => (scopeMode === 'current' ? loadTable(selectedPage) : loadAllTables())}
+                  className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white ml-1 border border-transparent hover:border-slate-700"
+                  title="Refresh extraction"
                 >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <span className="text-xs font-mono font-medium px-1 text-slate-200">
-                  {selectedPage} / {pageCount}
-                </span>
-                <button
-                  disabled={selectedPage >= pageCount}
-                  onClick={() => setSelectedPage((p) => Math.min(pageCount, p + 1))}
-                  className="p-1 hover:bg-slate-800 disabled:opacity-30 rounded text-slate-300"
-                  title="Next Page"
-                >
-                  <ChevronRight className="w-4 h-4" />
+                  <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-swift-400' : ''}`} />
                 </button>
               </div>
-            )}
 
-            <button
-              onClick={() => (scopeMode === 'current' ? loadTable(selectedPage) : loadAllTables())}
-              className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white ml-1 border border-transparent hover:border-slate-700"
-              title="Refresh extraction"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-swift-400' : ''}`} />
-            </button>
-          </div>
+              {tableData && tableData.rowCount > 0 && (
+                <div className="text-xs text-slate-400 font-mono">
+                  Detected: <span className="text-swift-400 font-semibold">{tableData.rowCount}</span> rows ×{' '}
+                  <span className="text-swift-400 font-semibold">{tableData.colCount}</span> columns
+                </div>
+              )}
+            </div>
 
-          {tableData && tableData.rowCount > 0 && (
-            <div className="text-xs text-slate-400 font-mono">
-              Detected: <span className="text-swift-400 font-semibold">{tableData.rowCount}</span> rows ×{' '}
-              <span className="text-swift-400 font-semibold">{tableData.colCount}</span> columns
-            </div>
-          )}
-        </div>
-
-        {/* Table Content Preview */}
-        <div className="flex-1 overflow-auto p-6 bg-[#000000]/70">
-          {isLoading ? (
-            <div className="h-64 flex flex-col items-center justify-center text-slate-400 gap-3">
-              <div className="w-8 h-8 border-2 border-swift-500 border-t-transparent rounded-full animate-spin" />
-              <p className="text-xs">Analyzing page text coordinates & clustering grid...</p>
-            </div>
-          ) : !tableData || tableData.rowCount === 0 ? (
-            <div className="h-64 flex flex-col items-center justify-center text-slate-500 gap-2">
-              <Table className="w-10 h-10 stroke-1" />
-              <p className="text-sm font-medium">No distinct tabular data detected on Page {selectedPage}</p>
-              <p className="text-xs max-w-sm text-center text-slate-600">
-                Try switching to a page containing tables, receipts, or invoices.
-              </p>
-            </div>
-          ) : (
-            <div className="border border-slate-800 rounded-lg overflow-hidden shadow-inner max-w-full">
-              <table className="w-full text-left text-xs border-collapse font-mono">
-                <thead>
-                  <tr className="bg-slate-800/80 border-b border-slate-700 text-slate-300">
-                    <th className="p-2 w-10 text-center text-slate-500 border-r border-slate-700/60 font-semibold">
-                      #
-                    </th>
-                    {tableData.rows[0].map((_, colIdx) => (
-                      <th
-                        key={colIdx}
-                        className="p-2.5 font-semibold text-slate-200 border-r border-slate-700/60 last:border-r-0"
-                      >
-                        Col {colIdx + 1}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/60 bg-[#000000]/40">
-                  {tableData.rows.map((row, rIdx) => (
-                    <tr
-                      key={rIdx}
-                      className={rIdx === 0 ? 'bg-slate-800/30 font-semibold text-slate-200' : 'hover:bg-slate-800/20 text-slate-300'}
-                    >
-                      <td className="p-2 text-center text-slate-500 border-r border-slate-800 bg-[#000000]/60">
-                        {rIdx + 1}
-                      </td>
-                      {row.map((cell, cIdx) => (
-                        <td key={cIdx} className="p-2.5 border-r border-slate-800/60 last:border-r-0 truncate max-w-xs">
-                          {cell || <span className="text-slate-600 italic">-</span>}
-                        </td>
+            {/* Table Content Preview */}
+            <div className="flex-1 overflow-auto p-6 bg-[#000000]/70">
+              {isLoading ? (
+                <div className="h-64 flex flex-col items-center justify-center text-slate-400 gap-3">
+                  <div className="w-8 h-8 border-2 border-swift-500 border-t-transparent rounded-full animate-spin" />
+                  <p className="text-xs">Analyzing page text coordinates & clustering grid...</p>
+                </div>
+              ) : !tableData || tableData.rowCount === 0 ? (
+                <div className="h-64 flex flex-col items-center justify-center text-slate-500 gap-2">
+                  <Table className="w-10 h-10 stroke-1" />
+                  <p className="text-sm font-medium">No distinct tabular data detected on Page {selectedPage}</p>
+                  <p className="text-xs max-w-sm text-center text-slate-600">
+                    Try switching to a page containing tables, receipts, or invoices.
+                  </p>
+                </div>
+              ) : (
+                <div className="border border-slate-800 rounded-lg overflow-hidden shadow-inner max-w-full">
+                  <table className="w-full text-left text-xs border-collapse font-mono">
+                    <thead>
+                      <tr className="bg-slate-800/80 border-b border-slate-700 text-slate-300">
+                        <th className="p-2 w-10 text-center text-slate-500 border-r border-slate-700/60 font-semibold">
+                          #
+                        </th>
+                        {tableData.rows[0].map((_, colIdx) => (
+                          <th
+                            key={colIdx}
+                            className="p-2.5 font-semibold text-slate-200 border-r border-slate-700/60 last:border-r-0"
+                          >
+                            Col {colIdx + 1}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60 bg-[#000000]/40">
+                      {tableData.rows.map((row, rIdx) => (
+                        <tr
+                          key={rIdx}
+                          className={rIdx === 0 ? 'bg-slate-800/30 font-semibold text-slate-200' : 'hover:bg-slate-800/20 text-slate-300'}
+                        >
+                          <td className="p-2 text-center text-slate-500 border-r border-slate-800 bg-[#000000]/60">
+                            {rIdx + 1}
+                          </td>
+                          {row.map((cell, cIdx) => (
+                            <td key={cIdx} className="p-2.5 border-r border-slate-800/60 last:border-r-0 truncate max-w-xs">
+                              {cell || <span className="text-slate-600 italic">-</span>}
+                            </td>
+                          ))}
+                        </tr>
                       ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Modal Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-800 bg-[#000000]/80">
-          <button
-            onClick={() => {
-              setTableData(null);
-              setActiveModal(null);
-            }}
-            className="px-4 py-2 hover:bg-slate-800 rounded-xl text-xs font-medium text-slate-300 transition-colors"
-          >
-            Close
-          </button>
+            {/* Modal Footer */}
+            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-800 bg-[#000000]/80">
+              <button
+                onClick={() => {
+                  setTableData(null);
+                  setActiveModal(null);
+                }}
+                className="px-4 py-2 hover:bg-slate-800 rounded-xl text-xs font-medium text-slate-300 transition-colors"
+              >
+                Close
+              </button>
 
-          <div className="flex items-center gap-3">
-            <button
-              disabled={!tableData || tableData.rowCount === 0}
-              onClick={handleCopyExcel}
-              className="flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 rounded-xl text-xs font-medium text-slate-200 border border-slate-700 transition-colors"
-              title="Copy TSV directly into Excel / Google Sheets"
-            >
-              {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? 'Copied to Clipboard' : 'Copy for Excel'}</span>
-            </button>
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <button
+                  disabled={!tableData || tableData.rowCount === 0}
+                  onClick={handleCopyExcel}
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 rounded-xl text-xs font-medium text-slate-200 border border-slate-700 transition-colors"
+                  title="Copy TSV directly into Excel / Google Sheets"
+                >
+                  {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copied ? 'Copied' : 'Copy'}</span>
+                </button>
 
-            <button
-              disabled={!tableData || tableData.rowCount === 0}
-              onClick={handleDownloadCsv}
-              className="flex items-center gap-1.5 px-4 py-2 bg-swift-600 hover:bg-swift-500 disabled:opacity-40 rounded-xl text-xs font-medium text-white shadow-md transition-colors"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Download .CSV</span>
-            </button>
-          </div>
-        </div>
+                <button
+                  disabled={!tableData || tableData.rowCount === 0}
+                  onClick={handleDownloadCsv}
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 rounded-xl text-xs font-medium text-slate-200 border border-slate-700 transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>.CSV</span>
+                </button>
+
+                <button
+                  disabled={!tableData || tableData.rowCount === 0}
+                  onClick={handleDownloadXlsx}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 rounded-xl text-xs font-medium text-white shadow-md shadow-emerald-900/30 transition-colors font-semibold"
+                  title="Download Microsoft Excel .xlsx workbook"
+                >
+                  <FileSpreadsheet className="w-3.5 h-3.5" />
+                  <span>Download .XLSX</span>
+                </button>
+              </div>
+            </div>
           </>
         )}
       </div>

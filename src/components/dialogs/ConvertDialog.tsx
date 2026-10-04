@@ -20,7 +20,7 @@ export const ConvertDialog: React.FC = () => {
   } = useUIStore();
   const { documentId, pageCount, currentPage, fileName, loadDocument, closeCurrentDocument } = useDocumentStore();
 
-  const [mode, setMode] = useState<'pdf-to-img' | 'pdf-to-txt' | 'img-to-pdf'>('pdf-to-img');
+  const [mode, setMode] = useState<'pdf-to-img' | 'pdf-to-txt' | 'img-to-pdf' | 'txt-to-pdf'>('pdf-to-img');
   const [imageFormat, setImageFormat] = useState<'png' | 'jpeg' | 'webp'>('png');
   const [textFormat, setTextFormat] = useState<'txt' | 'md'>('txt');
   const [resolutionScale, setResolutionScale] = useState<number>(2.0);
@@ -31,10 +31,121 @@ export const ConvertDialog: React.FC = () => {
 
   // Sync mode with activeConvertTab when opened from a tool action
   React.useEffect(() => {
-    if (activeConvertTab && ['pdf-to-img', 'pdf-to-txt', 'img-to-pdf'].includes(activeConvertTab)) {
+    if (activeConvertTab && ['pdf-to-img', 'pdf-to-txt', 'img-to-pdf', 'txt-to-pdf'].includes(activeConvertTab)) {
       setMode(activeConvertTab as any);
     }
   }, [activeConvertTab]);
+
+  // Text to PDF state
+  const [inputText, setInputText] = useState('');
+  const [inputTitle, setInputTitle] = useState('My Document');
+  const textFileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleConvertTextToPdf = async () => {
+    if (!inputText.trim()) return;
+    setIsProcessing(true);
+    try {
+      const { StandardFonts, rgb } = await import('pdf-lib');
+      const doc = await PDFDocument.create();
+      const font = await doc.embedFont(StandardFonts.Helvetica);
+      const boldFont = await doc.embedFont(StandardFonts.HelveticaBold);
+      const fontSize = 11;
+      const lineHeight = 16;
+      const margin = 50;
+      const pageWidth = 595.28;
+      const pageHeight = 841.89;
+      const maxLineWidth = pageWidth - margin * 2;
+
+      let page = doc.addPage([pageWidth, pageHeight]);
+      let y = pageHeight - margin;
+
+      if (inputTitle.trim()) {
+        page.drawText(inputTitle.trim(), {
+          x: margin,
+          y,
+          size: 18,
+          font: boldFont,
+          color: rgb(0.1, 0.1, 0.1),
+        });
+        y -= 28;
+      }
+
+      const paragraphs = inputText.split('\n');
+      for (const para of paragraphs) {
+        if (!para.trim()) {
+          y -= lineHeight * 0.75;
+          if (y < margin + lineHeight) {
+            page = doc.addPage([pageWidth, pageHeight]);
+            y = pageHeight - margin;
+          }
+          continue;
+        }
+
+        const words = para.split(' ');
+        let currentLine = '';
+
+        for (const word of words) {
+          const testLine = currentLine ? `${currentLine} ${word}` : word;
+          const width = font.widthOfTextAtSize(testLine, fontSize);
+          if (width > maxLineWidth && currentLine) {
+            page.drawText(currentLine, {
+              x: margin,
+              y,
+              size: fontSize,
+              font,
+              color: rgb(0.15, 0.15, 0.15),
+            });
+            y -= lineHeight;
+            if (y < margin + lineHeight) {
+              page = doc.addPage([pageWidth, pageHeight]);
+              y = pageHeight - margin;
+            }
+            currentLine = word;
+          } else {
+            currentLine = testLine;
+          }
+        }
+
+        if (currentLine) {
+          page.drawText(currentLine, {
+            x: margin,
+            y,
+            size: fontSize,
+            font,
+            color: rgb(0.15, 0.15, 0.15),
+          });
+          y -= lineHeight;
+          if (y < margin + lineHeight) {
+            page = doc.addPage([pageWidth, pageHeight]);
+            y = pageHeight - margin;
+          }
+        }
+      }
+
+      const pdfBytes = await doc.save();
+      const blob = new Blob([pdfBytes as unknown as BlobPart], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${(inputTitle.trim() || "Notes").replace(/\s+/g, "_")}.pdf`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      addToast({
+        type: "success",
+        title: "PDF Created",
+        message: `Successfully compiled text into a ${doc.getPageCount()}-page PDF.`,
+      });
+    } catch (err: any) {
+      addToast({
+        type: "error",
+        title: "Conversion Failed",
+        message: err?.message || "Could not compile text to PDF.",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   // Images to PDF state
   const [imageFiles, setImageFiles] = useState<Array<{ name: string; buffer: Uint8Array; mime: string; previewUrl?: string }>>([]);
@@ -45,7 +156,7 @@ export const ConvertDialog: React.FC = () => {
     });
     setActiveModal(null);
     setActiveConvertTab(null);
-    if (activeView === 'home' && mode !== 'img-to-pdf') {
+    if (activeView === 'home' && mode !== 'img-to-pdf' && mode !== 'txt-to-pdf') {
       closeCurrentDocument();
     }
   };
@@ -368,6 +479,17 @@ export const ConvertDialog: React.FC = () => {
             <Plus className="w-3.5 h-3.5" />
             <span>Images to PDF</span>
           </button>
+          <button
+            onClick={() => setMode('txt-to-pdf')}
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
+              mode === 'txt-to-pdf'
+                ? 'border-teal-500 text-teal-400'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Text to PDF</span>
+          </button>
         </div>
 
         {/* Content */}
@@ -585,6 +707,53 @@ export const ConvertDialog: React.FC = () => {
             </div>
           )}
         </div>
+          {mode === 'txt-to-pdf' && (
+            <div className="space-y-4">
+              <input
+                ref={textFileInputRef}
+                type="file"
+                accept=".txt,.md,text/plain,text/markdown"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setInputTitle(file.name.replace(/\.[^/.]+$/, ""));
+                    const reader = new FileReader();
+                    reader.onload = () => setInputText((reader.result as string) || "");
+                    reader.readAsText(file);
+                  }
+                }}
+              />
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-slate-300">Document Title</label>
+                <button
+                  type="button"
+                  onClick={() => textFileInputRef.current?.click()}
+                  className="text-xs text-teal-400 hover:text-teal-300 font-medium flex items-center gap-1"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Load .txt or .md file</span>
+                </button>
+              </div>
+              <input
+                type="text"
+                value={inputTitle}
+                onChange={(e) => setInputTitle(e.target.value)}
+                placeholder="Document Title"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+              />
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-300">Text / Notes Content</label>
+                <textarea
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  placeholder="Type or paste your notes, essay, or text here..."
+                  rows={8}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white font-mono focus:outline-none focus:border-teal-500"
+                />
+              </div>
+            </div>
+          )}
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
@@ -616,7 +785,7 @@ export const ConvertDialog: React.FC = () => {
                 {isProcessing ? 'Extracting...' : `Download ${textFormat.toUpperCase()}`}
               </button>
             ) : null
-          ) : (
+          ) : mode === 'img-to-pdf' ? (
             <button
               onClick={handleConvertImagesToPdf}
               disabled={isProcessing || imageFiles.length === 0}
@@ -624,6 +793,15 @@ export const ConvertDialog: React.FC = () => {
             >
               <RefreshCw className="w-3.5 h-3.5" />
               {isProcessing ? 'Creating PDF...' : 'Convert to PDF'}
+            </button>
+          ) : (
+            <button
+              onClick={handleConvertTextToPdf}
+              disabled={isProcessing || !inputText.trim()}
+              className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-teal-900/30 flex items-center gap-1.5"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              {isProcessing ? 'Generating PDF...' : 'Compile Text to PDF'}
             </button>
           )}
         </div>

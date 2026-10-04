@@ -1,6 +1,8 @@
+import { PDFDocument } from 'pdf-lib';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   X,
+  LayoutGrid,
   Upload,
   Download,
   GraduationCap,
@@ -21,10 +23,11 @@ import {
   cleanPaperSignature,
   addNameAndDateBanner,
   combinePhotoAndSignature,
+  generatePassportPhotoGrid,
   CompressTargetResult,
 } from '@core/image/student-resizer';
 
-type StudentTab = 'resizer' | 'combiner' | 'clean-sign' | 'dop-banner';
+type StudentTab = 'resizer' | 'grid' | 'combiner' | 'clean-sign' | 'dop-banner';
 
 export const StudentToolsDialog: React.FC = () => {
   const {
@@ -41,7 +44,7 @@ export const StudentToolsDialog: React.FC = () => {
   const [activeTab, setActiveTab] = useState<StudentTab>('resizer');
 
   useEffect(() => {
-    if (activeStudentTab && ['resizer', 'combiner', 'clean-sign', 'dop-banner'].includes(activeStudentTab)) {
+    if (activeStudentTab && ['resizer', 'grid', 'combiner', 'clean-sign', 'dop-banner'].includes(activeStudentTab)) {
       setActiveTab(activeStudentTab as StudentTab);
     }
   }, [activeStudentTab]);
@@ -88,6 +91,89 @@ export const StudentToolsDialog: React.FC = () => {
 
   const resizerCanvasRef = useRef<HTMLCanvasElement>(null);
   const resizerInputRef = useRef<HTMLInputElement>(null);
+
+  // ==================== TAB 5: PASSPORT PHOTO PRINT GRID ====================
+  const [gridPhoto, setGridPhoto] = useState<HTMLImageElement | null>(null);
+  const [gridSheetSize, setGridSheetSize] = useState<'4x6' | 'a4'>('4x6');
+  const [gridPhotoCount, setGridPhotoCount] = useState<4 | 6 | 8 | 16>(8);
+  const [gridShowBorder, setGridShowBorder] = useState<boolean>(true);
+  const gridCanvasRef = useRef<HTMLCanvasElement>(null);
+  const gridInputRef = useRef<HTMLInputElement>(null);
+
+  const renderGridPreview = useCallback(() => {
+    if (!gridPhoto || !gridCanvasRef.current) return;
+    const generated = generatePassportPhotoGrid(gridPhoto, {
+      sheetSize: gridSheetSize,
+      photoCount: gridPhotoCount,
+      showBorder: gridShowBorder,
+    });
+    const targetCanvas = gridCanvasRef.current;
+    targetCanvas.width = generated.width;
+    targetCanvas.height = generated.height;
+    const ctx = targetCanvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(generated, 0, 0);
+    }
+  }, [gridPhoto, gridSheetSize, gridPhotoCount, gridShowBorder]);
+
+  useEffect(() => {
+    if (activeTab === 'grid' && gridPhoto) {
+      renderGridPreview();
+    }
+  }, [activeTab, gridPhoto, renderGridPreview]);
+
+  const handleDownloadGridJpg = () => {
+    if (!gridPhoto) return;
+    const canvas = generatePassportPhotoGrid(gridPhoto, {
+      sheetSize: gridSheetSize,
+      photoCount: gridPhotoCount,
+      showBorder: gridShowBorder,
+    });
+    triggerDownload(canvas.toDataURL('image/jpeg', 0.95), `JustPDFCraft_Photo_Sheet_${gridPhotoCount}_Photos_${gridSheetSize}.jpg`);
+  };
+
+  const handleDownloadGridPdf = async () => {
+    if (!gridPhoto) return;
+    try {
+      const canvas = generatePassportPhotoGrid(gridPhoto, {
+        sheetSize: gridSheetSize,
+        photoCount: gridPhotoCount,
+        showBorder: gridShowBorder,
+      });
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+      const imageBytes = await (await fetch(dataUrl)).arrayBuffer();
+
+      const pdfDoc = await PDFDocument.create();
+      const pageDims: [number, number] = gridSheetSize === "a4" ? [595.28, 841.89] : [288, 432];
+      const page = pdfDoc.addPage(pageDims);
+      const embeddedImg = await pdfDoc.embedJpg(imageBytes);
+      page.drawImage(embeddedImg, {
+        x: 0,
+        y: 0,
+        width: pageDims[0],
+        height: pageDims[1],
+      });
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes as unknown as BlobPart], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `JustPDFCraft_Print_Photo_Sheet_${gridPhotoCount}_Photos_${gridSheetSize}.pdf`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      addToast({
+        type: "success",
+        title: "Print Sheet PDF Generated",
+        message: `Created printable ${gridSheetSize.toUpperCase()} document with ${gridPhotoCount} passport photos.`,
+      });
+    } catch (err: any) {
+      addToast({
+        type: "error",
+        title: "PDF Generation Failed",
+        message: err?.message || "Could not compile print sheet to PDF.",
+      });
+    }
+  };
 
   // ==================== TAB 2: COMBINER ====================
   const [combinerPhoto, setCombinerPhoto] = useState<HTMLImageElement | null>(null);
@@ -420,6 +506,7 @@ export const StudentToolsDialog: React.FC = () => {
         <div className="flex items-center gap-1 px-3 sm:px-6 border-b border-slate-800 bg-black/50 overflow-x-auto no-scrollbar">
           {[
             { id: 'resizer' as const, label: 'Target KB & Dimensions Resizer', icon: Sliders },
+            { id: 'grid' as const, label: 'Print Photo Sheet (Grid)', icon: LayoutGrid },
             { id: 'combiner' as const, label: 'Photo + Sign Combiner', icon: Layers },
             { id: 'clean-sign' as const, label: 'Paper Signature Cleaner', icon: Eraser },
             { id: 'dop-banner' as const, label: 'Name & Date (DOP) Strip', icon: Tag },
@@ -1204,6 +1291,144 @@ export const StudentToolsDialog: React.FC = () => {
                         Download DOP Photo JPG ({dopResult?.finalKb || 0} KB)
                       </button>
                     </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          {activeTab === 'grid' && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Controls */}
+              <div className="lg:col-span-5 space-y-4">
+                <input
+                  ref={gridInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const img = new Image();
+                      img.onload = () => setGridPhoto(img);
+                      img.src = URL.createObjectURL(file);
+                    }
+                  }}
+                />
+
+                {!gridPhoto ? (
+                  <div
+                    onClick={() => gridInputRef.current?.click()}
+                    className="border-2 border-dashed border-slate-700 hover:border-swift-500 rounded-2xl p-8 text-center cursor-pointer transition-all bg-black/60 hover:bg-black/90 group"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-swift-500/10 text-swift-400 mx-auto flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                      <Upload className="w-6 h-6" />
+                    </div>
+                    <p className="text-xs font-semibold text-white">Upload Passport Photo</p>
+                    <p className="text-[11px] text-slate-400 mt-1">Click to select candidate photograph for print sheet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Sheet Size */}
+                    <div className="bg-black/80 border border-slate-800 rounded-xl p-4 space-y-2">
+                      <label className="text-xs font-semibold text-slate-200 block">Print Sheet Size</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setGridSheetSize('4x6')}
+                          className={`p-2.5 rounded-lg border text-xs font-semibold transition-all ${
+                            gridSheetSize === '4x6'
+                              ? 'bg-swift-500/20 border-swift-500 text-white'
+                              : 'bg-slate-800/40 border-slate-700/60 text-slate-400 hover:text-white'
+                          }`}
+                        >
+                          4 x 6 Inch (Photo Paper)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setGridSheetSize('a4')}
+                          className={`p-2.5 rounded-lg border text-xs font-semibold transition-all ${
+                            gridSheetSize === 'a4'
+                              ? 'bg-swift-500/20 border-swift-500 text-white'
+                              : 'bg-slate-800/40 border-slate-700/60 text-slate-400 hover:text-white'
+                          }`}
+                        >
+                          A4 Document Sheet
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Photo Count */}
+                    <div className="bg-black/80 border border-slate-800 rounded-xl p-4 space-y-2">
+                      <label className="text-xs font-semibold text-slate-200 block">Number of Photos on Sheet</label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {([4, 6, 8, 16] as const).map((cnt) => (
+                          <button
+                            key={cnt}
+                            type="button"
+                            onClick={() => setGridPhotoCount(cnt)}
+                            className={`py-2 rounded-lg border text-xs font-mono font-bold transition-all ${
+                              gridPhotoCount === cnt
+                                ? 'bg-swift-500/20 border-swift-500 text-white'
+                                : 'bg-slate-800/40 border-slate-700/60 text-slate-400 hover:text-white'
+                            }`}
+                          >
+                            {cnt} Photos
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Cut Borders Toggle */}
+                    <div className="bg-black/80 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-semibold text-slate-200">Scissor Cut Borders</p>
+                        <p className="text-[10px] text-slate-400">Draw subtle gray outline around each photo</p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={gridShowBorder}
+                        onChange={(e) => setGridShowBorder(e.target.checked)}
+                        className="rounded bg-slate-800 border-slate-700 text-swift-500 focus:ring-0"
+                      />
+                    </div>
+
+                    {/* Change Photo */}
+                    <button
+                      type="button"
+                      onClick={() => gridInputRef.current?.click()}
+                      className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold border border-slate-700 transition-colors"
+                    >
+                      Choose Different Photo
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Preview & Download */}
+              <div className="lg:col-span-7 flex flex-col items-center justify-center space-y-4">
+                <div className="w-full max-h-[440px] p-3 bg-black border border-slate-800 rounded-xl overflow-auto shadow-inner flex items-center justify-center">
+                  <canvas ref={gridCanvasRef} className="max-h-[400px] w-auto rounded shadow-xl object-contain bg-white" />
+                </div>
+
+                {gridPhoto && (
+                  <div className="w-full max-w-md grid grid-cols-2 gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={handleDownloadGridJpg}
+                      className="py-2.5 bg-gradient-to-r from-swift-600 to-indigo-600 hover:from-swift-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-swift-900/30 flex items-center justify-center gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Download JPG</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleDownloadGridPdf}
+                      className="py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Download Print PDF</span>
+                    </button>
                   </div>
                 )}
               </div>

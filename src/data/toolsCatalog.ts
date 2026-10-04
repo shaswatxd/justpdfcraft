@@ -27,7 +27,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
   {
     id: 'compress-pdf',
     name: 'Compress PDF',
-    shortDesc: 'Reduce PDF file size for portal submissions while retaining sharp clarity.',
+    shortDesc: 'Reduce PDF file size by preset or exact target KB (e.g. 100 KB, 200 KB) for portal submissions.',
     category: 'pdf',
     iconName: 'FileArchive',
     color: 'text-emerald-400',
@@ -44,6 +44,17 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     color: 'text-teal-400',
     tags: ['convert', 'jpg', 'png', 'webp', 'txt', 'markdown', 'images', 'export'],
     action: { type: 'workflow', modal: 'convert', label: 'Convert PDF' },
+  },
+  {
+    id: 'text-to-pdf-compiler',
+    name: 'Text & Notes to PDF',
+    shortDesc: 'Compile plain text, essays, and notes directly into formatted multi-page PDF documents.',
+    category: 'pdf',
+    iconName: 'FileText',
+    color: 'text-teal-400',
+    badge: 'new',
+    tags: ['text to pdf', 'txt to pdf', 'markdown to pdf', 'notes to pdf', 'write pdf', 'compile pdf'],
+    action: { type: 'modal', modal: 'convert', initialTab: 'txt-to-pdf' },
   },
   {
     id: 'organize-pdf',
@@ -138,7 +149,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
   {
     id: 'table-extract',
     name: 'Table to Excel / CSV',
-    shortDesc: 'Detect and extract tabular data coordinates into clean CSV or Excel files.',
+    shortDesc: 'Detect and extract tabular data coordinates into native Excel (.xlsx) workbooks or clean CSV files.',
     category: 'pdf',
     iconName: 'Table',
     color: 'text-emerald-400',
@@ -238,6 +249,17 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     color: 'text-emerald-400',
     tags: ['exam', 'ssc', 'upsc', 'neet', 'jee', 'ibps', 'passport', 'admit card'],
     action: { type: 'modal', modal: 'student-resizer', initialTab: 'resizer' },
+  },
+  {
+    id: 'passport-photo-sheet',
+    name: 'Print Photo Sheet (Grid)',
+    shortDesc: 'Tile 4, 6, 8, or 16 passport photos on 4x6 inch photo paper or A4 sheet with cut borders.',
+    category: 'image',
+    iconName: 'LayoutGrid',
+    color: 'text-amber-400',
+    badge: 'new',
+    tags: ['passport photo', 'print sheet', 'photo grid', 'tiling', '4x6', 'admit card photo', 'exam photo'],
+    action: { type: 'modal', modal: 'student-resizer', initialTab: 'grid' },
   },
   {
     id: 'paper-sign-cleaner',
