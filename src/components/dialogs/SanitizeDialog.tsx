@@ -16,6 +16,8 @@ export const SanitizeDialog: React.FC = () => {
     loadDocument,
     closeCurrentDocument,
     pushHistory,
+    formFields,
+    flattenDocumentForms,
   } = useDocumentStore();
   const { setTool } = useToolStore();
 
@@ -154,6 +156,41 @@ export const SanitizeDialog: React.FC = () => {
                 >
                   Open Redactor (R)
                 </button>
+              </div>
+
+              {/* Form Flattening Action */}
+              <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-xl flex items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-1.5 font-bold text-slate-200 text-xs">
+                    <Lock className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Flatten Interactive Form Fields ({formFields?.length || 0})</span>
+                  </div>
+                  <p className="text-slate-400 text-[10px] mt-0.5">
+                    {formFields && formFields.length > 0
+                      ? 'Bake form fields and checkboxes permanently into static page text to prevent editing.'
+                      : 'No active AcroForm interactive fields detected in this document.'}
+                  </p>
+                </div>
+                {formFields && formFields.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        await flattenDocumentForms();
+                        addToast({
+                          type: 'success',
+                          title: 'Forms Flattened',
+                          message: 'All interactive form fields have been baked permanently into page content.',
+                        });
+                      } catch (err: any) {
+                        addToast({ type: 'error', title: 'Flattening Failed', message: err?.message });
+                      }
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-all whitespace-nowrap shadow-sm shadow-emerald-900/40"
+                  >
+                    Flatten Forms
+                  </button>
+                )}
               </div>
 
               {/* Status / Leak Warning Banner */}

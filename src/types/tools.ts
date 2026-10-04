@@ -7,7 +7,7 @@ export type ToolBadge = 'popular' | 'recommended' | 'new' | 'special';
 
 export type ToolActionType = 
   | { type: 'modal'; modal: ModalType; initialTab?: string }
-  | { type: 'workflow'; modal?: ModalType; viewMode?: 'single' | 'continuous' | 'organize' | 'spread'; tool?: ToolMode; label: string }
+  | { type: 'workflow'; modal?: ModalType; viewMode?: 'single' | 'continuous' | 'organize' | 'spread'; tool?: ToolMode; label: string; initialTab?: string }
   | { type: 'viewMode'; viewMode: 'organize' }
   | { type: 'tool'; tool: ToolMode; label: string }
   | { type: 'custom'; handler: string };
