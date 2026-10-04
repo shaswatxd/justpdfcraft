@@ -26,7 +26,17 @@ export const BatesNumberingDialog: React.FC = () => {
     }
   };
 
-  const [mode, setMode] = useState<'bates' | 'headerfooter'>('bates');
+  const [mode, setMode] = useState<'bates' | 'headerfooter'>(
+    activeModal === 'page-number' ? 'headerfooter' : 'bates'
+  );
+
+  React.useEffect(() => {
+    if (activeModal === 'page-number') {
+      setMode('headerfooter');
+    } else if (activeModal === 'bates') {
+      setMode('bates');
+    }
+  }, [activeModal]);
 
   // Bates options
   const [prefix, setPrefix] = useState('CASE-');
@@ -49,7 +59,7 @@ export const BatesNumberingDialog: React.FC = () => {
   const [customRange, setCustomRange] = useState('');
   const [isApplying, setIsApplying] = useState(false);
 
-  if (activeModal !== 'bates') return null;
+  if (activeModal !== 'bates' && activeModal !== 'page-number') return null;
 
   const positions: Array<{ id: HeaderFooterPosition; label: string }> = [
     { id: 'top-left', label: 'Top Left' },
@@ -186,7 +196,9 @@ export const BatesNumberingDialog: React.FC = () => {
               <Hash className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Bates Numbering & Header/Footer</h3>
+              <h3 className="text-base font-bold text-white">
+                {activeModal === 'page-number' ? 'Add Page Numbers & Headers' : 'Bates Numbering & Header/Footer'}
+              </h3>
               <p className="text-xs text-slate-400">
                 Compliance sequential numbering, dynamic headers, and page counters
               </p>

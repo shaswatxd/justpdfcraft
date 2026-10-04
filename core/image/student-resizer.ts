@@ -796,3 +796,119 @@ export function generatePassportPhotoGrid(
 
   return canvas;
 }
+
+export interface IdCardMergeOptions {
+  sheetSize: 'a4' | 'letter';
+  orientation: 'portrait' | 'landscape';
+  layout: 'vertical' | 'horizontal';
+  cardWidthMm?: number;
+  cardHeightMm?: number;
+  cardSpacingMm?: number;
+  showCutLines?: boolean;
+  showLabels?: boolean;
+  title?: string;
+  backgroundColor?: string;
+}
+
+export function generateIdCardSheet(
+  frontImg: HTMLImageElement | HTMLCanvasElement,
+  backImg: HTMLImageElement | HTMLCanvasElement,
+  options: IdCardMergeOptions
+): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  const isA4 = options.sheetSize === 'a4';
+  const isPortrait = options.orientation === 'portrait';
+
+  let sheetW = isA4 ? 2480 : 2550;
+  let sheetH = isA4 ? 3508 : 3300;
+  if (!isPortrait) {
+    const temp = sheetW;
+    sheetW = sheetH;
+    sheetH = temp;
+  }
+
+  canvas.width = sheetW;
+  canvas.height = sheetH;
+  const ctx = canvas.getContext('2d')!;
+
+  ctx.fillStyle = options.backgroundColor || '#ffffff';
+  ctx.fillRect(0, 0, sheetW, sheetH);
+
+  const mmW = isPortrait ? (isA4 ? 210 : 215.9) : (isA4 ? 297 : 279.4);
+  const dpmm = sheetW / mmW;
+
+  const cardW = (options.cardWidthMm || 85.6) * dpmm;
+  const cardH = (options.cardHeightMm || 53.98) * dpmm;
+  const spacing = (options.cardSpacingMm ?? 15) * dpmm;
+
+  let topOffset = sheetH * 0.07;
+  if (options.title) {
+    ctx.font = `bold ${Math.round(26 * (dpmm / 11.8))}px sans-serif`;
+    ctx.fillStyle = '#1e293b';
+    ctx.textAlign = 'center';
+    ctx.fillText(options.title, sheetW / 2, topOffset);
+    topOffset += 35 * (dpmm / 11.8);
+  }
+
+  const renderSingleCard = (
+    img: HTMLImageElement | HTMLCanvasElement,
+    x: number,
+    y: number,
+    label: string | null
+  ) => {
+    if (label && options.showLabels) {
+      ctx.font = `600 ${Math.round(14 * (dpmm / 11.8))}px sans-serif`;
+      ctx.fillStyle = '#64748b';
+      ctx.textAlign = 'center';
+      ctx.fillText(label, x + cardW / 2, y - 8 * (dpmm / 11.8));
+    }
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x, y, cardW, cardH);
+
+    const imgAspect = img.width / img.height;
+    const cardAspect = cardW / cardH;
+    let drawW = cardW;
+    let drawH = cardH;
+    let drawX = x;
+    let drawY = y;
+
+    if (imgAspect > cardAspect) {
+      drawH = cardW / imgAspect;
+      drawY = y + (cardH - drawH) / 2;
+    } else {
+      drawW = cardH * imgAspect;
+      drawX = x + (cardW - drawW) / 2;
+    }
+
+    ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+    if (options.showCutLines ?? true) {
+      ctx.save();
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = Math.max(2, Math.round(sheetW / 1200));
+      ctx.setLineDash([8, 6]);
+      ctx.strokeRect(x, y, cardW, cardH);
+      ctx.restore();
+    }
+  };
+
+  if (options.layout === 'vertical') {
+    const totalBlockH = cardH * 2 + spacing;
+    const startY = Math.max(topOffset + 30, (sheetH - totalBlockH) / 2);
+    const startX = (sheetW - cardW) / 2;
+
+    renderSingleCard(frontImg, startX, startY, 'FRONT SIDE');
+    renderSingleCard(backImg, startX, startY + cardH + spacing, 'BACK SIDE');
+  } else {
+    const totalBlockW = cardW * 2 + spacing;
+    const startX = (sheetW - totalBlockW) / 2;
+    const startY = Math.max(topOffset + 30, (sheetH - cardH) / 2);
+
+    renderSingleCard(frontImg, startX, startY, 'FRONT SIDE');
+    renderSingleCard(backImg, startX + cardW + spacing, startY, 'BACK SIDE');
+  }
+
+  return canvas;
+}
+

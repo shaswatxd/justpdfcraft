@@ -20,6 +20,7 @@ export type ModalType =
   | 'watermark'
   | 'scan'
   | 'bates'
+  | 'page-number'
   | 'sanitize'
   | 'batch'
   | 'crop'

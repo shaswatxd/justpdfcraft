@@ -14,6 +14,7 @@ import {
   Eraser,
   Tag,
   RefreshCw,
+  CreditCard,
 } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import {
@@ -24,10 +25,11 @@ import {
   addNameAndDateBanner,
   combinePhotoAndSignature,
   generatePassportPhotoGrid,
+  generateIdCardSheet,
   CompressTargetResult,
 } from '@core/image/student-resizer';
 
-type StudentTab = 'resizer' | 'grid' | 'combiner' | 'clean-sign' | 'dop-banner';
+type StudentTab = 'resizer' | 'grid' | 'id-card' | 'combiner' | 'clean-sign' | 'dop-banner';
 
 export const StudentToolsDialog: React.FC = () => {
   const {
@@ -44,7 +46,7 @@ export const StudentToolsDialog: React.FC = () => {
   const [activeTab, setActiveTab] = useState<StudentTab>('resizer');
 
   useEffect(() => {
-    if (activeStudentTab && ['resizer', 'grid', 'combiner', 'clean-sign', 'dop-banner'].includes(activeStudentTab)) {
+    if (activeStudentTab && ['resizer', 'grid', 'id-card', 'combiner', 'clean-sign', 'dop-banner'].includes(activeStudentTab)) {
       setActiveTab(activeStudentTab as StudentTab);
     }
   }, [activeStudentTab]);
@@ -172,6 +174,173 @@ export const StudentToolsDialog: React.FC = () => {
         title: "PDF Generation Failed",
         message: err?.message || "Could not compile print sheet to PDF.",
       });
+    }
+  };
+
+  // ==================== TAB 6: ID CARD (FRONT + BACK) MERGER ====================
+  const [idFrontImg, setIdFrontImg] = useState<HTMLImageElement | null>(null);
+  const [idBackImg, setIdBackImg] = useState<HTMLImageElement | null>(null);
+  const [idSheetSize, setIdSheetSize] = useState<'a4' | 'letter'>('a4');
+  const [idOrientation, setIdOrientation] = useState<'portrait' | 'landscape'>('portrait');
+  const [idLayout, setIdLayout] = useState<'vertical' | 'horizontal'>('vertical');
+  const [idShowCutLines, setIdShowCutLines] = useState<boolean>(true);
+  const [idShowLabels, setIdShowLabels] = useState<boolean>(true);
+  const [idTitle, setIdTitle] = useState<string>('IDENTIFICATION CARD COPY');
+
+  const idCanvasRef = useRef<HTMLCanvasElement>(null);
+  const idFrontInputRef = useRef<HTMLInputElement>(null);
+  const idBackInputRef = useRef<HTMLInputElement>(null);
+
+  const renderIdCardPreview = useCallback(() => {
+    if (!idCanvasRef.current) return;
+    const targetCanvas = idCanvasRef.current;
+
+    if (!idFrontImg && !idBackImg) {
+      targetCanvas.width = 600;
+      targetCanvas.height = 400;
+      const ctx = targetCanvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#090d16';
+        ctx.fillRect(0, 0, 600, 400);
+        ctx.fillStyle = '#64748b';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Upload Front & Back ID Images to Generate Sheet', 300, 200);
+      }
+      return;
+    }
+
+    const placeholderCanvas = document.createElement('canvas');
+    placeholderCanvas.width = 856;
+    placeholderCanvas.height = 540;
+    const pctx = placeholderCanvas.getContext('2d');
+    if (pctx) {
+      pctx.fillStyle = '#f8fafc';
+      pctx.fillRect(0, 0, 856, 540);
+      pctx.strokeStyle = '#cbd5e1';
+      pctx.lineWidth = 4;
+      pctx.strokeRect(20, 20, 816, 500);
+      pctx.fillStyle = '#94a3b8';
+      pctx.font = 'bold 28px sans-serif';
+      pctx.textAlign = 'center';
+      pctx.fillText('Awaiting Card Image...', 428, 270);
+    }
+
+    const front = idFrontImg || placeholderCanvas;
+    const back = idBackImg || placeholderCanvas;
+
+    const generated = generateIdCardSheet(front, back, {
+      sheetSize: idSheetSize,
+      orientation: idOrientation,
+      layout: idLayout,
+      showCutLines: idShowCutLines,
+      showLabels: idShowLabels,
+      title: idTitle.trim() || undefined,
+    });
+
+    targetCanvas.width = generated.width;
+    targetCanvas.height = generated.height;
+    const ctx = targetCanvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(generated, 0, 0);
+    }
+  }, [
+    idFrontImg,
+    idBackImg,
+    idSheetSize,
+    idOrientation,
+    idLayout,
+    idShowCutLines,
+    idShowLabels,
+    idTitle,
+  ]);
+
+  useEffect(() => {
+    if (activeTab === 'id-card') {
+      renderIdCardPreview();
+    }
+  }, [activeTab, renderIdCardPreview]);
+
+  const handleDownloadIdJpg = () => {
+    if (!idFrontImg && !idBackImg) return;
+    const placeholder = document.createElement('canvas');
+    placeholder.width = 856;
+    placeholder.height = 540;
+    const front = idFrontImg || placeholder;
+    const back = idBackImg || placeholder;
+    const canvas = generateIdCardSheet(front, back, {
+      sheetSize: idSheetSize,
+      orientation: idOrientation,
+      layout: idLayout,
+      showCutLines: idShowCutLines,
+      showLabels: idShowLabels,
+      title: idTitle.trim() || undefined,
+    });
+    const link = document.createElement('a');
+    link.download = `ID_Card_Sheet_${idLayout}_${Date.now()}.jpg`;
+    link.href = canvas.toDataURL('image/jpeg', 0.95);
+    link.click();
+    addToast({
+      type: 'success',
+      title: 'ID Card Sheet Downloaded',
+      message: 'Saved high-resolution print JPEG.',
+    });
+  };
+
+  const handleDownloadIdPdf = async () => {
+    if (!idFrontImg && !idBackImg) return;
+    try {
+      const placeholder = document.createElement('canvas');
+      placeholder.width = 856;
+      placeholder.height = 540;
+      const front = idFrontImg || placeholder;
+      const back = idBackImg || placeholder;
+      const canvas = generateIdCardSheet(front, back, {
+        sheetSize: idSheetSize,
+        orientation: idOrientation,
+        layout: idLayout,
+        showCutLines: idShowCutLines,
+        showLabels: idShowLabels,
+        title: idTitle.trim() || undefined,
+      });
+
+      const jpgDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+      const res = await fetch(jpgDataUrl);
+      const jpgBytes = await res.arrayBuffer();
+
+      const pdfDoc = await PDFDocument.create();
+      const embeddedJpg = await pdfDoc.embedJpg(jpgBytes);
+
+      const isPortrait = idOrientation === 'portrait';
+      const isA4 = idSheetSize === 'a4';
+      const pageDims: [number, number] = isA4
+        ? isPortrait ? [595.28, 841.89] : [841.89, 595.28]
+        : isPortrait ? [612.0, 792.0] : [792.0, 612.0];
+
+      const page = pdfDoc.addPage(pageDims);
+      page.drawImage(embeddedJpg, {
+        x: 0,
+        y: 0,
+        width: pageDims[0],
+        height: pageDims[1],
+      });
+
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes as unknown as BlobPart], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `JustPDFCraft_ID_Card_${idSheetSize.toUpperCase()}.pdf`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      addToast({
+        type: 'success',
+        title: 'ID Card Print PDF Ready',
+        message: 'A4 formatted PDF document downloaded.',
+      });
+    } catch (err: any) {
+      addToast({ type: 'error', title: 'Export Failed', message: err?.message });
     }
   };
 
@@ -507,6 +676,7 @@ export const StudentToolsDialog: React.FC = () => {
           {[
             { id: 'resizer' as const, label: 'Target KB & Dimensions Resizer', icon: Sliders },
             { id: 'grid' as const, label: 'Print Photo Sheet (Grid)', icon: LayoutGrid },
+            { id: 'id-card' as const, label: 'ID Card (Front + Back)', icon: CreditCard },
             { id: 'combiner' as const, label: 'Photo + Sign Combiner', icon: Layers },
             { id: 'clean-sign' as const, label: 'Paper Signature Cleaner', icon: Eraser },
             { id: 'dop-banner' as const, label: 'Name & Date (DOP) Strip', icon: Tag },
@@ -1424,6 +1594,247 @@ export const StudentToolsDialog: React.FC = () => {
                     <button
                       type="button"
                       onClick={handleDownloadGridPdf}
+                      className="py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Download Print PDF</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ======================================================== */}
+          {/* TAB 6: ID CARD (FRONT + BACK) MERGER */}
+          {/* ======================================================== */}
+          {activeTab === 'id-card' && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
+              {/* Left Controls */}
+              <div className="lg:col-span-5 space-y-4 flex flex-col">
+                {/* Upload Buttons for Front & Back */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                    <input
+                      ref={idFrontInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (ev) => {
+                            const img = new Image();
+                            img.onload = () => setIdFrontImg(img);
+                            img.src = ev.target?.result as string;
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <span className="text-xs font-semibold text-slate-300 mb-2">Front Side</span>
+                    {idFrontImg ? (
+                      <div className="space-y-1">
+                        <span className="text-[10px] text-emerald-400 font-semibold block">✓ Loaded</span>
+                        <button
+                          type="button"
+                          onClick={() => idFrontInputRef.current?.click()}
+                          className="text-[10px] text-swift-400 hover:underline"
+                        >
+                          Replace
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => idFrontInputRef.current?.click()}
+                        className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5"
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload Front</span>
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                    <input
+                      ref={idBackInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (ev) => {
+                            const img = new Image();
+                            img.onload = () => setIdBackImg(img);
+                            img.src = ev.target?.result as string;
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <span className="text-xs font-semibold text-slate-300 mb-2">Back Side</span>
+                    {idBackImg ? (
+                      <div className="space-y-1">
+                        <span className="text-[10px] text-emerald-400 font-semibold block">✓ Loaded</span>
+                        <button
+                          type="button"
+                          onClick={() => idBackInputRef.current?.click()}
+                          className="text-[10px] text-swift-400 hover:underline"
+                        >
+                          Replace
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => idBackInputRef.current?.click()}
+                        className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5"
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload Back</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Layout Alignment */}
+                <div className="bg-black/80 border border-slate-800 rounded-xl p-4 space-y-2">
+                  <label className="text-xs font-semibold text-slate-200 block">Card Arrangement</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIdLayout('vertical')}
+                      className={`py-2 rounded-lg border text-xs font-semibold transition-all ${
+                        idLayout === 'vertical'
+                          ? 'bg-swift-500/20 border-swift-500 text-white'
+                          : 'bg-slate-800/40 border-slate-700/60 text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      Top & Bottom (Standard)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIdLayout('horizontal')}
+                      className={`py-2 rounded-lg border text-xs font-semibold transition-all ${
+                        idLayout === 'horizontal'
+                          ? 'bg-swift-500/20 border-swift-500 text-white'
+                          : 'bg-slate-800/40 border-slate-700/60 text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      Side by Side
+                    </button>
+                  </div>
+                </div>
+
+                {/* Page Size & Orientation */}
+                <div className="bg-black/80 border border-slate-800 rounded-xl p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-slate-200">Sheet Format</label>
+                    <div className="flex items-center gap-1">
+                      {(['a4', 'letter'] as const).map((sz) => (
+                        <button
+                          key={sz}
+                          type="button"
+                          onClick={() => setIdSheetSize(sz)}
+                          className={`px-2.5 py-1 rounded border text-xs uppercase font-mono transition-all ${
+                            idSheetSize === sz
+                              ? 'bg-swift-500/20 border-swift-500 text-white'
+                              : 'bg-slate-800 border-slate-700 text-slate-400'
+                          }`}
+                        >
+                          {sz}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-slate-200">Orientation</label>
+                    <div className="flex items-center gap-1">
+                      {(['portrait', 'landscape'] as const).map((o) => (
+                        <button
+                          key={o}
+                          type="button"
+                          onClick={() => setIdOrientation(o)}
+                          className={`px-2.5 py-1 rounded border text-xs capitalize transition-all ${
+                            idOrientation === o
+                              ? 'bg-swift-500/20 border-swift-500 text-white'
+                              : 'bg-slate-800 border-slate-700 text-slate-400'
+                          }`}
+                        >
+                          {o}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cut Lines & Labels Toggles */}
+                <div className="bg-black/80 border border-slate-800 rounded-xl p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold text-slate-200">Scissor Cut Outlines</p>
+                      <p className="text-[10px] text-slate-400">Dashed rectangle at exact card dimensions (85.6 × 54 mm)</p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={idShowCutLines}
+                      onChange={(e) => setIdShowCutLines(e.target.checked)}
+                      className="rounded bg-slate-800 border-slate-700 text-swift-500 focus:ring-0"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-800/80">
+                    <div>
+                      <p className="text-xs font-semibold text-slate-200">Card Labels</p>
+                      <p className="text-[10px] text-slate-400">Print 'FRONT SIDE' and 'BACK SIDE' indicators</p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={idShowLabels}
+                      onChange={(e) => setIdShowLabels(e.target.checked)}
+                      className="rounded bg-slate-800 border-slate-700 text-swift-500 focus:ring-0"
+                    />
+                  </div>
+                </div>
+
+                {/* Optional Title Header */}
+                <div className="bg-black/80 border border-slate-800 rounded-xl p-4 space-y-2">
+                  <label className="text-xs font-semibold text-slate-200 block">Document Title (Optional)</label>
+                  <input
+                    type="text"
+                    value={idTitle}
+                    onChange={(e) => setIdTitle(e.target.value)}
+                    placeholder="e.g. COLLEGE ID CARD / AADHAAR CARD COPY"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-swift-500"
+                  />
+                </div>
+              </div>
+
+              {/* Preview & Download */}
+              <div className="lg:col-span-7 flex flex-col items-center justify-center space-y-4">
+                <div className="w-full max-h-[460px] p-3 bg-black border border-slate-800 rounded-xl overflow-auto shadow-inner flex items-center justify-center">
+                  <canvas ref={idCanvasRef} className="max-h-[420px] w-auto rounded shadow-xl object-contain bg-white" />
+                </div>
+
+                {(idFrontImg || idBackImg) && (
+                  <div className="w-full max-w-md grid grid-cols-2 gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={handleDownloadIdJpg}
+                      className="py-2.5 bg-gradient-to-r from-swift-600 to-indigo-600 hover:from-swift-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-swift-900/30 flex items-center justify-center gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Download JPG</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleDownloadIdPdf}
                       className="py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2"
                     >
                       <Download className="w-4 h-4" />

@@ -524,7 +524,7 @@ export const App: React.FC = () => {
           {activeModal === 'convert' && <ConvertDialog />}
           {activeModal === 'watermark' && <WatermarkDialog />}
           {activeModal === 'scan' && <ScanDialog />}
-          {activeModal === 'bates' && <BatesNumberingDialog />}
+          {(activeModal === 'bates' || activeModal === 'page-number') && <BatesNumberingDialog />}
           {activeModal === 'sanitize' && <SanitizeDialog />}
           {activeModal === 'batch' && <BatchDialog />}
           {activeModal === 'crop' && <CropDialog />}

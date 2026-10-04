@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { PDFDocument } from 'pdf-lib';
 import {
   RotateCcw,
   RotateCw,
@@ -16,7 +17,8 @@ import {
   Grid,
   Eye,
   Undo2,
-  Redo2
+  Redo2,
+  Upload,
 } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore } from '@/stores/uiStore';
@@ -155,6 +157,7 @@ export const PageOrganizer: React.FC = () => {
 
   const { addToast, setActiveModal } = useUIStore();
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const externalFileInputRef = useRef<HTMLInputElement>(null);
 
   // Smoothly scroll active page card into view when currentPage changes (e.g. from header arrows or sidebar)
   useEffect(() => {
@@ -265,6 +268,67 @@ export const PageOrganizer: React.FC = () => {
       });
     } catch (err: any) {
       addToast({ type: 'error', title: 'Insert Failed', message: err?.message });
+    }
+  };
+
+  const handleInsertExternalFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !documentId) return;
+
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      const engine = getPDFEngine();
+      const currentBytes = await engine.saveDocument(documentId);
+      const currentDoc = await PDFDocument.load(currentBytes);
+      const at = selectedPageIndices.length > 0 ? Math.max(...selectedPageIndices) + 1 : pageCount;
+
+      if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+        const srcDoc = await PDFDocument.load(bytes, { ignoreEncryption: true });
+        const copiedPages = await currentDoc.copyPages(srcDoc, srcDoc.getPageIndices());
+        let insertPos = at;
+        for (const p of copiedPages) {
+          currentDoc.insertPage(insertPos, p);
+          insertPos++;
+        }
+        const updatedBytes = await currentDoc.save();
+        if (fileName) {
+          await loadDocument(updatedBytes, fileName, filePath || undefined);
+        }
+        addToast({
+          type: 'success',
+          title: 'Document Pages Appended',
+          message: `Inserted ${copiedPages.length} page(s) from "${file.name}".`,
+        });
+      } else if (file.type.startsWith('image/')) {
+        const imgDoc = await PDFDocument.create();
+        const isPng = file.type.includes('png') || file.name.toLowerCase().endsWith('.png');
+        const embedded = isPng ? await imgDoc.embedPng(bytes) : await imgDoc.embedJpg(bytes);
+        const p = imgDoc.addPage([embedded.width, embedded.height]);
+        p.drawImage(embedded, { x: 0, y: 0, width: embedded.width, height: embedded.height });
+        const imgPdfBytes = await imgDoc.save();
+
+        const srcDoc = await PDFDocument.load(imgPdfBytes);
+        const [copiedPage] = await currentDoc.copyPages(srcDoc, [0]);
+        currentDoc.insertPage(at, copiedPage);
+        const updatedBytes = await currentDoc.save();
+        if (fileName) {
+          await loadDocument(updatedBytes, fileName, filePath || undefined);
+        }
+        addToast({
+          type: 'success',
+          title: 'Image Inserted',
+          message: `Added image as new page #${at + 1}.`,
+        });
+      }
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Insert File Failed',
+        message: err?.message || 'Could not insert pages from file.',
+      });
+    } finally {
+      if (e.target) e.target.value = '';
     }
   };
 
@@ -443,6 +507,21 @@ export const PageOrganizer: React.FC = () => {
             <Plus className="w-3.5 h-3.5 text-emerald-400" />
             <span className="hidden sm:inline">Add Blank</span>
           </button>
+          <input
+            ref={externalFileInputRef}
+            type="file"
+            accept="application/pdf,image/png,image/jpeg,image/webp"
+            className="hidden"
+            onChange={handleInsertExternalFile}
+          />
+          <button
+            onClick={() => externalFileInputRef.current?.click()}
+            className="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs flex items-center gap-1 transition-colors"
+            title="Insert External PDF or Image as Pages"
+          >
+            <Upload className="w-3.5 h-3.5 text-indigo-400" />
+            <span className="hidden sm:inline">Insert File</span>
+          </button>
           <button
             onClick={handleRemoveBlank}
             className="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs flex items-center gap-1 transition-colors"
@@ -616,6 +695,25 @@ export const PageOrganizer: React.FC = () => {
                       <RotateCw className="w-3.5 h-3.5" />
                     </button>
                     <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        try {
+                          await insertBlankPageAt(i + 1);
+                          addToast({
+                            type: 'success',
+                            title: 'Blank Page Inserted',
+                            message: `Inserted new page after #${i + 1}.`,
+                          });
+                        } catch (err: any) {
+                          addToast({ type: 'error', title: 'Insert Failed', message: err?.message });
+                        }
+                      }}
+                      className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-emerald-300 transition-colors"
+                      title="Insert Blank Page After This"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleMovePage(i, 'right');
@@ -630,6 +728,34 @@ export const PageOrganizer: React.FC = () => {
                 </div>
               );
             })}
+
+            {/* Quick Add Blank Page End Card */}
+            <div className="flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-dashed border-slate-800 hover:border-swift-500/60 bg-slate-900/30 hover:bg-swift-500/5 transition-all text-slate-500 hover:text-swift-400 group min-h-[260px] gap-2.5">
+              <button
+                type="button"
+                onClick={handleInsertBlank}
+                className="flex flex-col items-center justify-center w-full"
+                title="Append Blank Page"
+              >
+                <div className="w-12 h-12 rounded-full bg-slate-800 group-hover:bg-swift-500/20 flex items-center justify-center mb-2 transition-colors">
+                  <Plus className="w-6 h-6 text-slate-400 group-hover:text-swift-400" />
+                </div>
+                <span className="text-xs font-bold text-slate-300 group-hover:text-white">
+                  Add Blank Page
+                </span>
+                <span className="text-[10px] text-slate-500 mt-0.5">Page #{pageCount + 1}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => externalFileInputRef.current?.click()}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-[11px] font-semibold text-slate-400 hover:text-white border border-slate-700/60 transition-colors mt-2"
+                title="Insert External PDF or Image as Pages"
+              >
+                <Upload className="w-3 h-3 text-indigo-400" />
+                <span>Insert File</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

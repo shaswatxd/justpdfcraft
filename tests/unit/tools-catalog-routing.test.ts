@@ -15,6 +15,7 @@ const VALID_MODALS = new Set([
   'watermark',
   'scan',
   'bates',
+  'page-number',
   'sanitize',
   'batch',
   'crop',
