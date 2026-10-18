@@ -18,6 +18,7 @@ import {
   LayoutGrid,
   List,
   MessageSquare,
+  X,
 } from 'lucide-react';
 import { useUIStore, SidebarTab } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
@@ -341,7 +342,7 @@ const OutlineNode: React.FC<OutlineNodeProps> = ({ item, currentPage, onNavigate
 };
 
 export const Sidebar: React.FC = () => {
-  const { isSidebarOpen, activeSidebarTab, setSidebarTab, addToast } = useUIStore();
+  const { isSidebarOpen, activeSidebarTab, setSidebarTab, addToast, toggleSidebar } = useUIStore();
   const {
     documentId,
     pageCount,
@@ -439,33 +440,49 @@ export const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="w-64 bg-black border-r border-slate-800 flex flex-col select-none z-10">
-      {/* Tab Switcher */}
-      <div className="h-10 border-b border-slate-800 flex items-center px-2 gap-1 bg-black/60">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeSidebarTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setSidebarTab(tab.id)}
-              className={`flex-1 py-1 px-1.5 rounded flex items-center justify-center gap-1 text-[11px] font-medium transition-colors relative ${
-                isActive
-                  ? 'bg-slate-800 text-swift-400 font-semibold shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5 shrink-0" />
-              <span>{tab.label}</span>
-              {typeof tab.badge === 'number' && tab.badge > 0 && (
-                <span className="bg-swift-500/30 text-swift-300 text-[9px] px-1 py-px rounded-full font-mono font-bold">
-                  {tab.badge}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
+    <>
+      {/* Mobile Drawer Backdrop */}
+      <div
+        onClick={toggleSidebar}
+        className="md:hidden fixed inset-0 z-40 bg-black/75 backdrop-blur-sm animate-fade-in"
+      />
+
+      <aside className="w-72 max-w-[85vw] md:w-64 bg-black border-r border-slate-800 flex flex-col select-none z-50 fixed md:relative inset-y-0 left-0 shadow-2xl md:shadow-none h-full">
+        {/* Tab Switcher */}
+        <div className="h-10 border-b border-slate-800 flex items-center px-2 gap-1 bg-black/60 shrink-0">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeSidebarTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setSidebarTab(tab.id)}
+                className={`flex-1 py-1 px-1 rounded flex items-center justify-center gap-1 text-[11px] font-medium transition-colors relative ${
+                  isActive
+                    ? 'bg-slate-800 text-swift-400 font-semibold shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden xs:inline sm:inline">{tab.label}</span>
+                {typeof tab.badge === 'number' && tab.badge > 0 && (
+                  <span className="bg-swift-500/30 text-swift-300 text-[9px] px-1 py-px rounded-full font-mono font-bold">
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+
+          {/* Mobile Drawer Close Button */}
+          <button
+            onClick={toggleSidebar}
+            className="md:hidden p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 shrink-0"
+            title="Close Sidebar"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
       {/* Tab Contents */}
       <div className="flex-1 overflow-y-auto p-3 text-slate-300 text-xs">
@@ -966,6 +983,7 @@ export const Sidebar: React.FC = () => {
         </div>
       )}
     </aside>
+    </>
   );
 };
 

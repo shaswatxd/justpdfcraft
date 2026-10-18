@@ -174,7 +174,7 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
       {onOpenFilePicker && (
         <button
           onClick={onOpenFilePicker}
-          className="flex flex-col items-center -mt-4 bg-indigo-600 hover:bg-indigo-500 text-white p-2.5 rounded-full shadow-lg shadow-indigo-950/80 border-2 border-black transition-transform active:scale-95"
+          className="flex flex-col items-center -mt-5 bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-full shadow-xl shadow-blue-950/80 border-2 border-black transition-transform active:scale-95"
           title="Open or Upload File"
           aria-label="Open or Upload File"
         >

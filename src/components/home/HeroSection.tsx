@@ -29,8 +29,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         </div>
       )}
 
-      {/* Quick Category Jump Buttons */}
-      <div className="mt-5 flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 w-full sm:w-auto px-2">
+      {/* Quick Category Jump Buttons (Desktop) */}
+      <div className="mt-5 hidden md:flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 w-full sm:w-auto px-2">
         <button
           onClick={() => onSelectCategory('pdf')}
           className="flex-1 sm:flex-initial px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 text-zinc-200 font-medium text-xs border border-zinc-800 hover:border-zinc-700 transition-all flex items-center justify-center gap-1.5 shadow-xs"

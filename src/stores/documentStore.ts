@@ -404,13 +404,19 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         documentOutline,
         userBookmarks,
         highlightFormFields: true,
-        zoom: 1.0,
+        zoom: typeof window !== 'undefined' && window.innerWidth < 768 && dimensions[0]?.width
+          ? Math.min(1.0, Math.max(0.45, Number(((window.innerWidth - 24) / dimensions[0].width).toFixed(2))))
+          : 1.0,
         viewMode: 'continuous',
         selectedPageIndices: [0],
         undoStack: [],
         redoStack: [],
         isDirty: false,
       };
+
+      const defaultZoom = typeof window !== 'undefined' && window.innerWidth < 768 && dimensions[0]?.width
+        ? Math.min(1.0, Math.max(0.45, Number(((window.innerWidth - 24) / dimensions[0].width).toFixed(2))))
+        : 1.0;
 
       set({
         tabs: [...updatedTabs, newTab],
@@ -436,7 +442,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         redoStack: [],
         isDirty: false,
         isLoading: false,
-        zoom: 1.0,
+        zoom: defaultZoom,
         viewMode: 'continuous',
       });
     } catch (err: any) {

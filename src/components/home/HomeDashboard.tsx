@@ -15,6 +15,8 @@ import {
   Edit3,
   RotateCcw,
   X,
+  ScanText,
+  Shield,
 } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore, ModalType } from '@/stores/uiStore';
@@ -411,8 +413,217 @@ export const HomeDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* Two Separate Workspaces: Document (PDF) & Photo (Images) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4 w-full">
+        {/* Dedicated Mobile-First Touch Workspace (Android & Mobile Browsers) */}
+        <div className="block md:hidden w-full space-y-3.5 select-none text-left">
+          {/* Mobile Privacy & Local Mode Banner */}
+          <div className="flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-blue-950/40 via-zinc-900 to-emerald-950/30 border border-zinc-800 shadow-md">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs font-semibold text-zinc-100">100% Private Mobile Suite</span>
+            </div>
+            <span className="text-[10px] font-mono text-zinc-400 bg-zinc-900/90 px-2 py-0.5 rounded-full border border-zinc-800">
+              No Uploads
+            </span>
+          </div>
+
+          {/* Mobile Card 1: PDF Document Studio */}
+          <div className="rounded-2xl p-4 bg-zinc-950/90 border border-blue-500/30 shadow-xl relative overflow-hidden">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-400 flex items-center justify-center shrink-0">
+                <FileText className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-bold text-white leading-tight">PDF Document Studio</h3>
+                <p className="text-[11px] text-zinc-400 truncate mt-0.5">Edit, sign, compress & convert PDFs</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleOpenPdfClick}
+                className="flex-1 py-2.5 px-3 bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-950/50 transition-all"
+              >
+                <FolderOpen className="w-4 h-4" />
+                <span>Open PDF File</span>
+              </button>
+              <button
+                type="button"
+                onClick={createBlankDocument}
+                className="py-2.5 px-3 bg-zinc-900 hover:bg-zinc-800 active:scale-[0.98] text-zinc-300 font-medium rounded-xl text-xs border border-zinc-800 transition-all"
+                title="Create Blank Document"
+              >
+                <FilePlus className="w-4 h-4 text-zinc-400" />
+              </button>
+            </div>
+
+            {/* Quick 1-tap chips */}
+            <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-zinc-900 overflow-x-auto scrollbar-none">
+              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider shrink-0">Quick:</span>
+              <button
+                type="button"
+                onClick={() => triggerWorkflowWithFile({ modal: 'compress', label: 'PDF Compress' })}
+                className="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
+              >
+                Compress
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveModal('merge')}
+                className="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
+              >
+                Merge
+              </button>
+              <button
+                type="button"
+                onClick={() => triggerWorkflowWithFile({ modal: 'sign', label: 'Sign PDF' })}
+                className="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
+              >
+                Sign
+              </button>
+              <button
+                type="button"
+                onClick={() => triggerWorkflowWithFile({ modal: 'split', label: 'Split PDF' })}
+                className="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
+              >
+                Split
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Card 2: Photos & Exam Resizer */}
+          <div className="rounded-2xl p-4 bg-zinc-950/90 border border-emerald-500/30 shadow-xl relative overflow-hidden">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
+                <ImageIcon className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-bold text-white leading-tight">Photos & Exam Suite</h3>
+                <p className="text-[11px] text-zinc-400 truncate mt-0.5">Target 20–50 KB, passport crop & images</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  pendingWorkflowRef.current = { modal: 'photo-editor', label: 'Photo Studio' };
+                  photoInputRef.current?.click();
+                }}
+                className="flex-1 py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 transition-all"
+              >
+                <ImageIcon className="w-4 h-4" />
+                <span>Select Photo / Image</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveModal('student-resizer')}
+                className="py-2.5 px-3 bg-amber-500/10 hover:bg-amber-500/20 active:scale-[0.98] text-amber-300 font-semibold rounded-xl text-xs border border-amber-500/30 transition-all flex items-center gap-1.5"
+                title="Exam Resizer"
+              >
+                <Sliders className="w-3.5 h-3.5 text-amber-400" />
+                <span>20–50 KB</span>
+              </button>
+            </div>
+
+            {/* Quick 1-tap chips */}
+            <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-zinc-900 overflow-x-auto scrollbar-none">
+              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider shrink-0">Quick:</span>
+              <button
+                type="button"
+                onClick={() => setActiveModal('student-resizer')}
+                className="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 text-amber-300 text-[11px] font-medium shrink-0 active:scale-95"
+              >
+                Exam 20–50 KB
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveConvertTab('img-to-pdf');
+                  setActiveModal('convert');
+                }}
+                className="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
+              >
+                Image to PDF
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  pendingWorkflowRef.current = { modal: 'photo-editor', label: 'Photo Studio' };
+                  photoInputRef.current?.click();
+                }}
+                className="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
+              >
+                Passport Crop
+              </button>
+            </div>
+          </div>
+
+          {/* 4 App-Like Shortcut Cards (2x2 Grid) */}
+          <div className="grid grid-cols-2 gap-2.5 pt-1">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveStudentTab('cgpa');
+                setActiveModal('student-calculators');
+              }}
+              className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800/90 hover:border-amber-500/40 text-left transition-all active:scale-[0.98] shadow-md flex flex-col justify-between space-y-2"
+            >
+              <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                <GraduationCap className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white">Student Tools</div>
+                <div className="text-[10px] text-zinc-400 mt-0.5">CGPA & Attendance</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveModal('handwriting')}
+              className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800/90 hover:border-purple-500/40 text-left transition-all active:scale-[0.98] shadow-md flex flex-col justify-between space-y-2"
+            >
+              <div className="w-8 h-8 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                <PenTool className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white">Handwriting</div>
+                <div className="text-[10px] text-zinc-400 mt-0.5">Assignment Notes</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveModal('ocr')}
+              className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800/90 hover:border-cyan-500/40 text-left transition-all active:scale-[0.98] shadow-md flex flex-col justify-between space-y-2"
+            >
+              <div className="w-8 h-8 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                <ScanText className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white">Scan & OCR</div>
+                <div className="text-[10px] text-zinc-400 mt-0.5">Extract Text</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveModal('protect')}
+              className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800/90 hover:border-rose-500/40 text-left transition-all active:scale-[0.98] shadow-md flex flex-col justify-between space-y-2"
+            >
+              <div className="w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                <Shield className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white">Protect PDF</div>
+                <div className="text-[10px] text-zinc-400 mt-0.5">Encrypt & Lock</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Two Separate Workspaces: Document (PDF) & Photo (Images) - Desktop Only */}
+        <div className="hidden md:grid md:grid-cols-2 gap-3.5 sm:gap-4 w-full">
           {/* Card 1: PDF Document */}
           <div
             onDragOver={(e) => {
@@ -596,8 +807,8 @@ export const HomeDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Top Line: Most Important & Popular Tools */}
-        <div className="mt-4 sm:mt-5 w-full flex flex-col items-center">
+        {/* Top Line: Most Important & Popular Tools (Desktop Only) */}
+        <div className="mt-4 sm:mt-5 w-full hidden md:flex flex-col items-center">
           <div className="w-full flex items-center justify-start lg:justify-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 px-1 scrollbar-none">
             <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 shadow-xs">
               <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />

@@ -45,7 +45,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
   }, [searchQuery, activeCategory, showOnlyFavorites, showOnlyPopular, favorites]);
 
   return (
-    <section id="tool-explorer" className="w-full max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+    <section id="tool-explorer" className="w-full max-w-6xl xl:max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 space-y-6 sm:space-y-10">
       {/* Search & Category Filter Header Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-zinc-950/80 p-2 sm:p-2.5 rounded-2xl border border-zinc-800/80 shadow-2xl backdrop-blur-xl">
         {/* Category Tabs */}
@@ -175,7 +175,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
             {filteredTools.map((tool) => (
               <ToolCard
                 key={tool.id}

@@ -420,10 +420,20 @@ html.light ::-webkit-scrollbar-thumb:hover {
   html, body {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    -webkit-overflow-scrolling: touch;
   }
   
   /* Ensure dialogs fit neatly on narrow Android displays */
   [role="dialog"] {
     max-width: calc(100vw - 1rem);
+    max-height: calc(100dvh - 2rem) !important;
+  }
+
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+
+  .safe-area-bottom {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
   }
 }

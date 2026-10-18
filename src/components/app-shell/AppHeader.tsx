@@ -23,6 +23,7 @@ import {
   X,
   ChevronDown,
   HardDrive,
+  MoreVertical,
 } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore } from '@/stores/uiStore';
@@ -54,6 +55,7 @@ export const AppHeader: React.FC = () => {
   const [pageInput, setPageInput] = useState<string>(String(currentPage));
   const [toneOpen, setToneOpen] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [mobileDocMenuOpen, setMobileDocMenuOpen] = useState<boolean>(false);
   const [isOffline, setIsOffline] = useState<boolean>(typeof navigator !== 'undefined' ? !navigator.onLine : false);
   const toneDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -158,20 +160,31 @@ export const AppHeader: React.FC = () => {
       {/* Left: Home / Back, Brand Logo & Undo/Redo */}
       {/* ======================================================== */}
       <div className="flex items-center gap-2 shrink-0">
-        {isDocumentOpen && (
-          <button
-            onClick={handleGoHome}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 hover:text-white text-slate-300 rounded-lg text-xs font-semibold border border-slate-700/80 transition-all group shrink-0 shadow-xs"
-            title="Back to Home Dashboard"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform text-swift-400" />
-            <span className="hidden sm:inline">Home</span>
-          </button>
-        )}
+        {/* On Mobile when doc is open: Clean Back Arrow + Truncated Doc Name with Page count */}
+        {isDocumentOpen ? (
+          <div className="flex md:hidden items-center gap-2 max-w-[190px] xs:max-w-[240px]">
+            <button
+              onClick={handleGoHome}
+              className="p-1.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white shrink-0"
+              title="Back to Home Dashboard"
+            >
+              <ArrowLeft className="w-4 h-4 text-swift-400" />
+            </button>
+            <div className="flex flex-col min-w-0">
+              <span className="text-xs font-bold text-white truncate leading-tight">
+                {fileName || 'Document'}
+              </span>
+              <span className="text-[10px] text-slate-400 font-mono">
+                Page {currentPage}/{pageCount}
+              </span>
+            </div>
+          </div>
+        ) : null}
 
+        {/* Desktop or Home Brand Logo */}
         <button
           onClick={handleGoHome}
-          className="flex items-center gap-2 hover:opacity-90 transition-opacity select-none focus:outline-none"
+          className={`${isDocumentOpen ? 'hidden md:flex' : 'flex'} items-center gap-2 hover:opacity-90 transition-opacity select-none focus:outline-none`}
           title={isDocumentOpen ? 'Back to Home Dashboard' : 'JustPDFCraft'}
         >
           <SwiftLogo className="w-6 h-6 shrink-0" />
@@ -180,6 +193,17 @@ export const AppHeader: React.FC = () => {
           </span>
         </button>
 
+        {isDocumentOpen && (
+          <button
+            onClick={handleGoHome}
+            className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 hover:text-white text-slate-300 rounded-lg text-xs font-semibold border border-slate-700/80 transition-all group shrink-0 shadow-xs"
+            title="Back to Home Dashboard"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform text-swift-400" />
+            <span>Home</span>
+          </button>
+        )}
+
         {documentId && activeView === 'home' && (
           <button
             onClick={() => setActiveView('editor')}
@@ -187,15 +211,15 @@ export const AppHeader: React.FC = () => {
             title="Return to your active document in the editor"
           >
             <FileText className="w-3.5 h-3.5" />
-            <span>Resume Editor</span>
+            <span className="hidden xs:inline">Resume Editor</span>
           </button>
         )}
 
         {isDocumentOpen && (
           <>
-            <div className="w-[1px] h-4 bg-slate-800 mx-0.5 hidden sm:block" />
-            {/* Undo / Redo */}
-            <div className="flex items-center bg-slate-800/60 p-0.5 rounded-lg border border-slate-800">
+            <div className="w-[1px] h-4 bg-slate-800 mx-0.5 hidden md:block" />
+            {/* Desktop Undo / Redo */}
+            <div className="hidden md:flex items-center bg-slate-800/60 p-0.5 rounded-lg border border-slate-800">
               <button
                 onClick={() => undo()}
                 disabled={undoStack.length === 0}
@@ -389,128 +413,173 @@ export const AppHeader: React.FC = () => {
       <div className="flex items-center gap-1.5 shrink-0">
         {isDocumentOpen && (
           <>
-            {/* Paper Tone Dropdown Button */}
-            <div className="relative" ref={toneDropdownRef}>
+            {/* Mobile Document Actions (Undo, Redo, 1-Tap Save, Menu) */}
+            <div className="flex md:hidden items-center gap-1">
               <button
-                onClick={() => setToneOpen((o) => !o)}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
-                  toneOpen
-                    ? 'bg-slate-700 text-white border-slate-600'
-                    : 'bg-slate-800 hover:bg-slate-700 border-slate-700/80 text-slate-300 hover:text-white'
-                }`}
-                title="Ergonomic Reading Tone (White, Sepia, Dark, Mint)"
+                onClick={() => undo()}
+                disabled={undoStack.length === 0}
+                className="p-1.5 rounded-lg text-slate-300 hover:text-white disabled:opacity-25"
+                title="Undo (Ctrl+Z)"
               >
-                <Sun className="w-3.5 h-3.5 text-amber-400" />
-                <span className="hidden xl:inline">Tone</span>
-                <span
-                  className={`w-2 h-2 rounded-full border ${
-                    paperTone === 'sepia'
-                      ? 'bg-amber-500 border-amber-300'
-                      : paperTone === 'dark'
-                      ? 'bg-slate-900 border-slate-600'
-                      : paperTone === 'mint'
-                      ? 'bg-emerald-500 border-emerald-300'
-                      : 'bg-white border-slate-300'
-                  }`}
-                />
+                <Undo2 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => redo()}
+                disabled={redoStack.length === 0}
+                className="p-1.5 rounded-lg text-slate-300 hover:text-white disabled:opacity-25"
+                title="Redo (Ctrl+Y)"
+              >
+                <Redo2 className="w-4 h-4" />
               </button>
 
-              {toneOpen && (
-                <div className="absolute right-0 top-full mt-1.5 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-1.5 z-50 w-44 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-100">
-                  <span className="text-[10px] font-bold text-slate-400 px-2 py-1 uppercase tracking-wider">
-                    Reading Tone
-                  </span>
-                  {[
-                    { id: 'default' as const, label: 'Default White', color: 'bg-white border-slate-300', desc: 'Standard clean' },
-                    { id: 'sepia' as const, label: 'Warm Sepia', color: 'bg-[#f4ecd8] border-amber-400', desc: 'Relaxes eyes' },
-                    { id: 'dark' as const, label: 'Night Dark', color: 'bg-slate-950 border-slate-700', desc: 'Inverted mode' },
-                    { id: 'mint' as const, label: 'Eye-Care Mint', color: 'bg-[#e8f5e9] border-emerald-400', desc: 'Soft calming' },
-                  ].map((t) => (
-                    <button
-                      key={t.id}
-                      onClick={() => {
-                        setPaperTone(t.id);
-                        setToneOpen(false);
-                      }}
-                      className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs transition-all text-left ${
-                        paperTone === t.id
-                          ? 'bg-swift-600/20 text-swift-300 font-semibold'
-                          : 'text-slate-300 hover:bg-slate-800'
-                      }`}
-                    >
-                      <span className={`w-3.5 h-3.5 rounded-full border shrink-0 ${t.color}`} />
-                      <div>
-                        <div className="font-medium leading-none">{t.label}</div>
-                        <div className="text-[9px] text-slate-400 mt-0.5">{t.desc}</div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Read Aloud (TTS) */}
-            <button
-              onClick={toggleTTS}
-              className={`p-1.5 sm:px-2.5 sm:py-1.5 border rounded-lg text-xs transition-colors flex items-center gap-1.5 ${
-                isTTSOpen
-                  ? 'bg-swift-600 text-white border-swift-500 shadow-sm'
-                  : 'bg-slate-800 hover:bg-slate-700 border-slate-700/80 text-slate-300 hover:text-white'
-              }`}
-              title="Read Aloud / Text-to-Speech (Ctrl+Shift+U)"
-            >
-              <Volume2 className="w-3.5 h-3.5 text-swift-400" />
-              <span className="hidden xl:inline font-medium">Read</span>
-            </button>
-
-            {/* Direct Disk / OPFS Draft status indicators */}
-            {isAutoSavingDraft && (
-              <span className="hidden xl:flex items-center gap-1.5 text-[11px] text-zinc-400 font-medium animate-pulse">
-                <span className="w-1.5 h-1.5 rounded-full bg-swift-400 animate-ping" />
-                Auto-saving draft...
-              </span>
-            )}
-
-            {fileHandle && !isAutoSavingDraft && (
-              <span
-                className="hidden xl:flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-[11px] text-emerald-400 font-medium"
-                title={`Native File System Access: In-place direct saving enabled to ${fileName}`}
-              >
-                <HardDrive className="w-3 h-3 text-emerald-400" />
-                <span>Direct Save</span>
-              </span>
-            )}
-
-            {/* Split Save Button (Save / Save As) */}
-            <div className="flex items-center rounded-lg shadow-md shadow-swift-900/30">
+              {/* Mobile Direct Save Button */}
               <button
                 onClick={handleSave}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-swift-600 hover:bg-swift-500 text-white rounded-l-lg text-xs font-bold transition-all relative"
-                title={fileHandle ? `Direct in-place save to ${fileName} (Ctrl+S)` : "Save changes to file (Ctrl+S)"}
+                className="flex items-center gap-1 px-2.5 py-1.5 bg-swift-600 hover:bg-swift-500 text-white rounded-xl text-xs font-bold transition-all relative shadow-sm"
+                title="Save Document"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>Save</span>
                 {isDirty && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" title="Unsaved changes" />
+                  <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0 ring-1 ring-black" title="Unsaved changes" />
                 )}
               </button>
+
+              {/* Mobile Options Drawer Toggle */}
               <button
-                onClick={handleSaveAs}
-                className="px-1.5 py-1.5 bg-swift-700 hover:bg-swift-600 text-white rounded-r-lg border-l border-swift-500/40 text-xs transition-all flex items-center justify-center"
-                title="Save As... (Ctrl+Shift+S)"
+                onClick={() => setMobileDocMenuOpen((o) => !o)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                title="Document Options"
               >
-                <ChevronDown className="w-3 h-3" />
+                <MoreVertical className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Fullscreen */}
-            <button
-              onClick={toggleFullscreen}
-              className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200 transition-colors hidden sm:block"
-              title="Fullscreen Presentation Mode (F11 / Ctrl+L)"
-            >
-              <Expand className="w-4 h-4" />
-            </button>
+            {/* Desktop Only Actions on Right */}
+            <div className="hidden md:flex items-center gap-1.5">
+              {/* Paper Tone Dropdown Button */}
+              <div className="relative" ref={toneDropdownRef}>
+                <button
+                  onClick={() => setToneOpen((o) => !o)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                    toneOpen
+                      ? 'bg-slate-700 text-white border-slate-600'
+                      : 'bg-slate-800 hover:bg-slate-700 border-slate-700/80 text-slate-300 hover:text-white'
+                  }`}
+                  title="Ergonomic Reading Tone (White, Sepia, Dark, Mint)"
+                >
+                  <Sun className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="hidden xl:inline">Tone</span>
+                  <span
+                    className={`w-2 h-2 rounded-full border ${
+                      paperTone === 'sepia'
+                        ? 'bg-amber-500 border-amber-300'
+                        : paperTone === 'dark'
+                        ? 'bg-slate-900 border-slate-600'
+                        : paperTone === 'mint'
+                        ? 'bg-emerald-500 border-emerald-300'
+                        : 'bg-white border-slate-300'
+                    }`}
+                  />
+                </button>
+
+                {toneOpen && (
+                  <div className="absolute right-0 top-full mt-1.5 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-1.5 z-50 w-44 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-100">
+                    <span className="text-[10px] font-bold text-slate-400 px-2 py-1 uppercase tracking-wider">
+                      Reading Tone
+                    </span>
+                    {[
+                      { id: 'default' as const, label: 'Default White', color: 'bg-white border-slate-300', desc: 'Standard clean' },
+                      { id: 'sepia' as const, label: 'Warm Sepia', color: 'bg-[#f4ecd8] border-amber-400', desc: 'Relaxes eyes' },
+                      { id: 'dark' as const, label: 'Night Dark', color: 'bg-slate-950 border-slate-700', desc: 'Inverted mode' },
+                      { id: 'mint' as const, label: 'Eye-Care Mint', color: 'bg-[#e8f5e9] border-emerald-400', desc: 'Soft calming' },
+                    ].map((t) => (
+                      <button
+                        key={t.id}
+                        onClick={() => {
+                          setPaperTone(t.id);
+                          setToneOpen(false);
+                        }}
+                        className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs transition-all text-left ${
+                          paperTone === t.id
+                            ? 'bg-swift-600/20 text-swift-300 font-semibold'
+                            : 'text-slate-300 hover:bg-slate-800'
+                        }`}
+                      >
+                        <span className={`w-3.5 h-3.5 rounded-full border shrink-0 ${t.color}`} />
+                        <div>
+                          <div className="font-medium leading-none">{t.label}</div>
+                          <div className="text-[9px] text-slate-400 mt-0.5">{t.desc}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Read Aloud (TTS) */}
+              <button
+                onClick={toggleTTS}
+                className={`p-1.5 sm:px-2.5 sm:py-1.5 border rounded-lg text-xs transition-colors flex items-center gap-1.5 ${
+                  isTTSOpen
+                    ? 'bg-swift-600 text-white border-swift-500 shadow-sm'
+                    : 'bg-slate-800 hover:bg-slate-700 border-slate-700/80 text-slate-300 hover:text-white'
+                }`}
+                title="Read Aloud / Text-to-Speech (Ctrl+Shift+U)"
+              >
+                <Volume2 className="w-3.5 h-3.5 text-swift-400" />
+                <span className="hidden xl:inline font-medium">Read</span>
+              </button>
+
+              {/* Direct Disk / OPFS Draft status indicators */}
+              {isAutoSavingDraft && (
+                <span className="hidden xl:flex items-center gap-1.5 text-[11px] text-zinc-400 font-medium animate-pulse">
+                  <span className="w-1.5 h-1.5 rounded-full bg-swift-400 animate-ping" />
+                  Auto-saving draft...
+                </span>
+              )}
+
+              {fileHandle && !isAutoSavingDraft && (
+                <span
+                  className="hidden xl:flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-[11px] text-emerald-400 font-medium"
+                  title={`Native File System Access: In-place direct saving enabled to ${fileName}`}
+                >
+                  <HardDrive className="w-3 h-3 text-emerald-400" />
+                  <span>Direct Save</span>
+                </span>
+              )}
+
+              {/* Split Save Button (Save / Save As) */}
+              <div className="flex items-center rounded-lg shadow-md shadow-swift-900/30">
+                <button
+                  onClick={handleSave}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-swift-600 hover:bg-swift-500 text-white rounded-l-lg text-xs font-bold transition-all relative"
+                  title={fileHandle ? `Direct in-place save to ${fileName} (Ctrl+S)` : "Save changes to file (Ctrl+S)"}
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save</span>
+                  {isDirty && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" title="Unsaved changes" />
+                  )}
+                </button>
+                <button
+                  onClick={handleSaveAs}
+                  className="px-1.5 py-1.5 bg-swift-700 hover:bg-swift-600 text-white rounded-r-lg border-l border-swift-500/40 text-xs transition-all flex items-center justify-center"
+                  title="Save As... (Ctrl+Shift+S)"
+                >
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+              </div>
+
+              {/* Fullscreen */}
+              <button
+                onClick={toggleFullscreen}
+                className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200 transition-colors hidden sm:block"
+                title="Fullscreen Presentation Mode (F11 / Ctrl+L)"
+              >
+                <Expand className="w-4 h-4" />
+              </button>
+            </div>
           </>
         )}
 
@@ -581,6 +650,100 @@ export const AppHeader: React.FC = () => {
             <GraduationCap className="w-3.5 h-3.5" />
             Student Calculators (CGPA, Attendance, Age)
           </button>
+        </div>
+      )}
+      {/* Mobile Document Action Drawer Sheet */}
+      {isDocumentOpen && mobileDocMenuOpen && (
+        <div className="md:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col justify-end animate-in fade-in duration-150">
+          <div className="w-full bg-zinc-950 border-t border-zinc-800 rounded-t-3xl p-5 space-y-4 animate-in slide-in-from-bottom duration-200">
+            <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
+              <div>
+                <h3 className="text-sm font-bold text-white truncate max-w-[240px]">{fileName || 'Document Options'}</h3>
+                <p className="text-[11px] text-zinc-400">{pageCount} Pages • {paperTone} Mode</p>
+              </div>
+              <button
+                onClick={() => setMobileDocMenuOpen(false)}
+                className="p-1.5 rounded-xl bg-zinc-900 text-zinc-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Reading Tone Selector */}
+            <div className="space-y-1.5">
+              <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Reading Tone</span>
+              <div className="grid grid-cols-4 gap-2">
+                {[
+                  { id: 'default' as const, label: 'White', color: 'bg-white border-slate-300' },
+                  { id: 'sepia' as const, label: 'Sepia', color: 'bg-[#f4ecd8] border-amber-400' },
+                  { id: 'dark' as const, label: 'Night', color: 'bg-slate-950 border-slate-700' },
+                  { id: 'mint' as const, label: 'Mint', color: 'bg-[#e8f5e9] border-emerald-400' },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => {
+                      setPaperTone(t.id);
+                    }}
+                    className={`py-2 px-1 rounded-xl border flex flex-col items-center gap-1 text-[11px] font-medium transition-all ${
+                      paperTone === t.id
+                        ? 'bg-swift-600/20 border-swift-500 text-white font-semibold'
+                        : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <span className={`w-3.5 h-3.5 rounded-full border shrink-0 ${t.color}`} />
+                    <span>{t.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Actions Grid */}
+            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-zinc-800">
+              <button
+                onClick={() => {
+                  setMobileDocMenuOpen(false);
+                  toggleTTS();
+                }}
+                className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-left flex items-center gap-2.5 text-xs text-white"
+              >
+                <Volume2 className="w-4 h-4 text-swift-400" />
+                <span>{isTTSOpen ? 'Stop TTS' : 'Read Aloud'}</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setMobileDocMenuOpen(false);
+                  handleSaveAs();
+                }}
+                className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-left flex items-center gap-2.5 text-xs text-white"
+              >
+                <Save className="w-4 h-4 text-emerald-400" />
+                <span>Save Copy As...</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setMobileDocMenuOpen(false);
+                  toggleFullscreen();
+                }}
+                className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-left flex items-center gap-2.5 text-xs text-white"
+              >
+                <Expand className="w-4 h-4 text-amber-400" />
+                <span>Fullscreen</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setMobileDocMenuOpen(false);
+                  setActiveModal('settings');
+                }}
+                className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-left flex items-center gap-2.5 text-xs text-white"
+              >
+                <Settings className="w-4 h-4 text-zinc-400" />
+                <span>Settings</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </header>

@@ -248,10 +248,10 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
           handleClick(e as any);
         }
       }}
-      className="group relative flex flex-col justify-between p-5 rounded-2xl bg-zinc-950 hover:bg-zinc-900/60 border border-zinc-900 hover:border-zinc-800 shadow-sm hover:shadow-xl hover:shadow-black/25 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer select-none text-left"
+      className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-zinc-950 hover:bg-zinc-900/60 border border-zinc-900 hover:border-zinc-800 shadow-sm hover:shadow-xl hover:shadow-black/25 active:scale-[0.99] transition-all duration-200 cursor-pointer select-none text-left"
     >
       {/* Top row: Icon, Badge (if any), Favorite */}
-      <div className="flex items-center justify-between gap-3 mb-3.5">
+      <div className="flex items-center justify-between gap-3 mb-3">
         <div
           className="w-10 h-10 rounded-xl bg-zinc-900/90 group-hover:bg-zinc-800 border border-zinc-800/80 group-hover:border-zinc-700 flex items-center justify-center transition-all duration-200 shadow-xs"
         >
@@ -273,7 +273,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
             className={`fav-btn p-1.5 rounded-lg transition-all ${
               isFav
                 ? 'opacity-100 text-rose-500 bg-rose-500/10'
-                : 'opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-rose-400 hover:bg-zinc-800'
+                : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-zinc-500 hover:text-rose-400 hover:bg-zinc-800'
             }`}
             title={isFav ? 'Remove from favorites' : 'Add to favorites'}
             aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
@@ -288,17 +288,17 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
         <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-white transition-colors leading-snug">
           {tool.name}
         </h3>
-        <p className="text-xs text-zinc-400/90 leading-relaxed line-clamp-2 min-h-[34px]">
+        <p className="text-xs text-zinc-400/90 leading-relaxed line-clamp-2 min-h-[32px]">
           {tool.shortDesc}
         </p>
       </div>
 
       {/* Bottom Footer: Category & Open Action */}
-      <div className="mt-4 pt-3 border-t border-zinc-900 flex items-center justify-between text-xs text-zinc-500">
+      <div className="mt-3.5 pt-2.5 border-t border-zinc-900 flex items-center justify-between text-xs text-zinc-500">
         <span className="text-[11px] font-medium capitalize text-zinc-500 group-hover:text-zinc-400 transition-colors">
           {tool.category} Tool
         </span>
-        <span className="text-xs font-semibold text-swift-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all flex items-center gap-1">
+        <span className="text-xs font-semibold text-swift-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-hover:translate-x-0.5 transition-all flex items-center gap-1">
           Open <ArrowRight className="w-3.5 h-3.5" />
         </span>
       </div>
