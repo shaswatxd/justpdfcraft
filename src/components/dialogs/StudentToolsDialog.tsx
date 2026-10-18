@@ -640,22 +640,24 @@ export const StudentToolsDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-in fade-in duration-150" role="dialog" aria-modal="true" aria-label="Student Tools Dialog">
-      <div className="bg-black border border-slate-700/80 rounded-2xl w-full max-w-5xl h-[92vh] max-h-[850px] shadow-2xl flex flex-col overflow-hidden text-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 md:p-5 bg-black/80 backdrop-blur-md animate-in fade-in duration-150" role="dialog" aria-modal="true" aria-label="Student Tools Dialog">
+      <div className="bg-black border-0 sm:border border-slate-700/80 rounded-none sm:rounded-2xl w-full max-w-5xl h-[100dvh] sm:h-[92vh] max-h-[100dvh] sm:max-h-[850px] shadow-2xl flex flex-col overflow-hidden text-slate-100">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-black/90">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-swift-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-swift-900/30">
-              <GraduationCap className="w-5 h-5" />
+        <div className="flex items-center justify-between px-3.5 py-2.5 sm:px-6 sm:py-4 border-b border-slate-800 bg-black/90 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 mr-2">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-swift-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-swift-900/30 shrink-0">
+              <GraduationCap className="w-4 h-4 sm:w-5 h-5" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-white tracking-tight">Student & Exam Admission Suite</h2>
-                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full">
+                <h2 className="text-sm sm:text-lg font-bold text-white tracking-tight truncate">
+                  Student & Exam Suite
+                </h2>
+                <span className="hidden sm:inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full whitespace-nowrap">
                   Exam Portal Ready
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="hidden sm:block text-xs text-slate-400 truncate">
                 Exact target KB resizer, signature cleaner, photo+sign combiner & Name/DOP generator for UPSC, SSC, NEET, JEE, IBPS.
               </p>
             </div>
@@ -665,9 +667,11 @@ export const StudentToolsDialog: React.FC = () => {
               setActiveModal(null);
               setActiveStudentTab(null);
             }}
-            className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
+            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors shrink-0"
+            title="Close"
+            aria-label="Close"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 sm:w-5 h-5" />
           </button>
         </div>
 
