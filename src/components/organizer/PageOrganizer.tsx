@@ -69,8 +69,9 @@ const OrganizerPageThumbnail: React.FC<OrganizerPageThumbnailProps> = ({
     const renderThumb = async () => {
       try {
         const engine = getPDFEngine();
-        // Scale 0.35 renders crisp, high-fidelity PDF vector text and images
-        const res = await engine.renderPage(documentId, pageIndex, 0.35);
+        // Scale with DPR to render crisp, high-DPI thumbnails on mobile/Retina screens
+        const dpr = typeof window !== 'undefined' ? Math.max(1, Math.min(window.devicePixelRatio || 1, 2.5)) : 1;
+        const res = await engine.renderPage(documentId, pageIndex, 0.35 * dpr);
         if (isCancelled || !canvasRef.current) return;
 
         const canvas = canvasRef.current;

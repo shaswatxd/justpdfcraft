@@ -227,11 +227,13 @@ export const MobileEditorToolbar: React.FC = () => {
           <button
             onClick={() => {
               if (typeof window !== 'undefined') {
-                setZoom(0.65);
+                const dims = useDocumentStore.getState().pageDimensions[0];
+                const fitW = dims?.width ? (window.innerWidth - 24) / dims.width : 0.65;
+                setZoom(Math.min(1.0, Math.max(0.45, Number(fitW.toFixed(2)))));
               }
             }}
             className="text-[10px] font-mono text-zinc-300 px-1 hover:text-white"
-            title="Reset Zoom"
+            title="Reset Zoom to Fit Width"
           >
             {Math.round(zoom * 100)}%
           </button>

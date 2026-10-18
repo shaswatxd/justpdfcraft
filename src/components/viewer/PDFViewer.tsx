@@ -168,19 +168,28 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
     noteColor: string;
   } | null>(null);
 
-  // Render Page to Canvas
+  // Render Page to Canvas with Retina / High-DPI support (iLovePDF & Adobe Acrobat clarity)
   useEffect(() => {
     let isCancelled = false;
     const render = async () => {
       if (!documentId || !canvasRef.current) return;
       try {
         const engine = getPDFEngine();
-        const res = await engine.renderPage(documentId, pageIndex, scale);
+        // Calculate high-DPI scaling factor for crisp mobile/Retina rendering
+        const dpr = typeof window !== 'undefined' ? Math.max(1, Math.min(window.devicePixelRatio || 1, 3)) : 1;
+        // Cap max canvas dimension to 4096px to prevent mobile GPU texture overflow on extreme zoom levels
+        const maxDim = Math.max(dimensions.width, dimensions.height);
+        const maxSafeScale = maxDim > 0 ? 4096 / maxDim : 3;
+        const renderScale = Math.min(scale * dpr, maxSafeScale);
+
+        const res = await engine.renderPage(documentId, pageIndex, renderScale);
         if (isCancelled || !canvasRef.current) return;
 
         const canvas = canvasRef.current;
         canvas.width = res.width;
         canvas.height = res.height;
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
         const ctx = canvas.getContext('2d');
         if (ctx && res.canvas) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -202,7 +211,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
         canvasRef.current.height = 0;
       }
     };
-  }, [documentId, pageIndex, scale, dimensions, renderVersion, externalRenderVersion]);
+  }, [documentId, pageIndex, scale, dimensions, renderVersion, externalRenderVersion, width, height]);
 
   // Load existing page text items when Selection HUD, Markup Tools, or In-Place Edit Text mode is active
   useEffect(() => {
@@ -965,7 +974,11 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
   return (
     <div
       ref={pageContainerRef}
-      className={`relative shadow-2xl select-none transition-shadow hover:shadow-cyan-950/20 touch-none ${
+      className={`relative shadow-2xl select-none transition-shadow hover:shadow-cyan-950/20 ${
+        ['draw', 'measure', 'rectangle', 'circle', 'line', 'arrow', 'snip_ocr', 'redact', 'eraser'].includes(currentTool)
+          ? 'touch-none'
+          : 'touch-pan-x touch-pan-y'
+      } ${
         currentTool === 'eraser'
           ? 'cursor-none'
           : ['draw', 'measure', 'rectangle', 'circle', 'line', 'arrow', 'snip_ocr', 'redact'].includes(currentTool)
@@ -1016,7 +1029,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
                 });
                 setEditInputText(item.str);
               }}
-              className="absolute z-20 transition-all border border-dashed border-swift-500/50 hover:border-swift-400 hover:bg-swift-500/25 cursor-text rounded-sm group flex items-center justify-center"
+              className="absolute z-20 transition-all border border-dashed border-swift-500/50 hover:border-swift-400 hover:bg-swift-500/25 cursor-text rounded-sm group flex items-center justify-center before:absolute before:-inset-1.5 before:content-['']"
               style={{
                 left: `${screenX}px`,
                 top: `${screenY}px`,
@@ -2456,6 +2469,59 @@ export const PDFViewer: React.FC = () => {
       }, 130);
     }
   };
+
+  // Mobile Pinch-to-Zoom multi-touch support
+  const pinchStartDistRef = useRef<number | null>(null);
+  const pinchStartKineticRef = useRef<number>(1.0);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        const t1 = e.touches[0];
+        const t2 = e.touches[1];
+        pinchStartDistRef.current = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+        pinchStartKineticRef.current = kineticScale;
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 2 && pinchStartDistRef.current) {
+        if (e.cancelable) e.preventDefault();
+        const t1 = e.touches[0];
+        const t2 = e.touches[1];
+        const currentDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+        const ratio = currentDist / pinchStartDistRef.current;
+        const nextScale = Math.max(0.4, Math.min(3.0, pinchStartKineticRef.current * ratio));
+        setKineticScale(nextScale);
+      }
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (pinchStartDistRef.current && e.touches.length < 2) {
+        pinchStartDistRef.current = null;
+        if (kineticScale !== 1.0) {
+          const finalZoom = Number((zoom * kineticScale).toFixed(2));
+          setZoom(Math.max(0.25, Math.min(4.0, finalZoom)));
+          setKineticScale(1.0);
+        }
+      }
+    };
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd, { passive: true });
+    el.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener('touchcancel', onTouchEnd);
+    };
+  }, [zoom, kineticScale, setZoom]);
 
   if (isLoading) {
     return (
