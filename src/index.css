@@ -392,10 +392,6 @@ html.light [class*="bg-emerald-600"] * {
 }
 
 /* Light Mode Scrollbar */
-html.light ::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
 html.light ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
 }
@@ -415,48 +411,19 @@ html.light ::-webkit-scrollbar-thumb:hover {
     scrollbar-width: none;
   }
   .safe-area-bottom {
-    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-  }
-  /* Minimum touch target for icon-only interactive controls */
-  .touch-target {
-    min-width: 44px;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  /* Content area padding to clear the fixed mobile bottom bar */
-  .mobile-content-pad {
-    padding-bottom: 4rem; /* 64px — clears the ~60px bottom bar + safe area */
+    padding-bottom: max(0.375rem, env(safe-area-inset-bottom));
   }
 }
 
 /* Android & Mobile Touch Optimization */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   html, body {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
-    /* Dynamic viewport height — fixes bar hiding content on Android Chrome */
-    height: 100%;
-    min-height: 100%;
   }
-
+  
   /* Ensure dialogs fit neatly on narrow Android displays */
   [role="dialog"] {
-    max-width: calc(100vw - 1rem) !important;
-    max-height: calc(100dvh - 2rem) !important;
-  }
-
-  /* Any fixed bottom bar must always clear device safe area */
-  .fixed.bottom-0 {
-    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
-  }
-}
-
-/* Horizontal scroll areas on mobile: subtle fade-out indicator on right edge */
-@media (max-width: 767px) {
-  .overflow-x-auto:not(.no-scrollbar):not(.scrollbar-none) {
-    /* Fallback: show thin scrollbar on mobile for discoverability */
-    scrollbar-width: thin;
+    max-width: calc(100vw - 1rem);
   }
 }

@@ -34,38 +34,30 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
 
   if (isFullscreen) return null;
 
-  // Shared button style for consistent 44px touch targets (WCAG 2.5.5)
-  const navBtnCls = "flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] px-2 text-slate-400 hover:text-white active:scale-95 transition-all rounded-xl";
-  const navBtnActiveCls = "flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] px-2 active:scale-95 transition-all rounded-xl";
-
-  // Common inline style for safe-area padding
-  const safeAreaStyle = { paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))', paddingTop: '0.375rem' };
-
   // 1. MOBILE BOTTOM BAR FOR ACTIVE DOCUMENT (EDITOR MODE)
   if (documentId) {
     return (
       <nav
         aria-label="Mobile Document Controls"
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/97 backdrop-blur-2xl border-t border-slate-800 px-2 flex items-center justify-between select-none shadow-2xl"
-        style={safeAreaStyle}
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-2xl border-t border-slate-800 px-3 py-1.5 flex items-center justify-between select-none safe-area-bottom shadow-2xl"
       >
         {/* Back to Home Dashboard */}
         <button
           onClick={() => setActiveView('home')}
-          className={navBtnCls}
+          className="flex flex-col items-center justify-center p-1.5 rounded-xl text-slate-400 hover:text-white active:scale-95 transition-all"
           title="Home Dashboard"
           aria-label="Home Dashboard"
         >
-          <Home className="w-5 h-5" />
-          <span className="text-[9.5px] font-medium">Home</span>
+          <Home className="w-4 h-4" />
+          <span className="text-[9.5px] font-medium mt-0.5">Home</span>
         </button>
 
         {/* Page Navigation Stepper */}
-        <div className="flex items-center gap-0.5 bg-slate-900/90 px-1.5 py-1 rounded-xl border border-slate-800">
+        <div className="flex items-center gap-1 bg-slate-900/90 px-2 py-1 rounded-xl border border-slate-800">
           <button
             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
             disabled={currentPage <= 1}
-            className="p-2 text-slate-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-transform min-w-[36px] min-h-[36px] flex items-center justify-center"
+            className="p-1 text-slate-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-transform"
             title="Previous Page"
             aria-label="Previous Page"
           >
@@ -79,7 +71,7 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
           <button
             onClick={() => setCurrentPage(Math.min(pageCount, currentPage + 1))}
             disabled={currentPage >= pageCount}
-            className="p-2 text-slate-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-transform min-w-[36px] min-h-[36px] flex items-center justify-center"
+            className="p-1 text-slate-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-transform"
             title="Next Page"
             aria-label="Next Page"
           >
@@ -90,7 +82,7 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
         {/* Toggle Page Grid / Organizer */}
         <button
           onClick={() => setViewMode(viewMode === 'organize' ? 'continuous' : 'organize')}
-          className={`${navBtnActiveCls} ${
+          className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all ${
             viewMode === 'organize'
               ? 'text-indigo-400 bg-indigo-500/15'
               : 'text-slate-400 hover:text-white'
@@ -98,8 +90,8 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
           title={viewMode === 'organize' ? 'Switch to Reader' : 'Visual Page Grid'}
           aria-label="Toggle Page Grid"
         >
-          {viewMode === 'organize' ? <AlignJustify className="w-5 h-5" /> : <Grid className="w-5 h-5" />}
-          <span className="text-[9.5px] font-medium">
+          {viewMode === 'organize' ? <AlignJustify className="w-4 h-4" /> : <Grid className="w-4 h-4" />}
+          <span className="text-[9.5px] font-medium mt-0.5">
             {viewMode === 'organize' ? 'Reader' : 'Grid'}
           </span>
         </button>
@@ -108,36 +100,36 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
         <div className="flex items-center bg-slate-900/90 rounded-xl border border-slate-800 p-0.5">
           <button
             onClick={() => setZoom((z) => Math.max(0.3, z - 0.2))}
-            className="p-2 text-slate-400 hover:text-white active:scale-90 transition-transform min-w-[36px] min-h-[36px] flex items-center justify-center"
+            className="p-1 text-slate-400 hover:text-white active:scale-90 transition-transform"
             title="Zoom Out"
             aria-label="Zoom out"
           >
-            <ZoomOut className="w-4 h-4" />
+            <ZoomOut className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => setZoom((z) => Math.min(3.0, z + 0.2))}
-            className="p-2 text-slate-400 hover:text-white active:scale-90 transition-transform min-w-[36px] min-h-[36px] flex items-center justify-center"
+            className="p-1 text-slate-400 hover:text-white active:scale-90 transition-transform"
             title="Zoom In"
             aria-label="Zoom in"
           >
-            <ZoomIn className="w-4 h-4" />
+            <ZoomIn className="w-3.5 h-3.5" />
           </button>
         </div>
 
         {/* Save Button */}
         <button
           onClick={() => saveDirectly()}
-          className={`${navBtnActiveCls} ${isDirty ? 'text-emerald-400 hover:text-emerald-300' : 'text-slate-500 hover:text-slate-400'}`}
+          className="flex flex-col items-center justify-center p-1.5 rounded-xl text-emerald-400 hover:text-emerald-300 active:scale-95 transition-all relative"
           title="Save Document"
           aria-label="Save Document"
         >
           <div className="relative">
-            <Save className="w-5 h-5" />
+            <Save className="w-4 h-4" />
             {isDirty && (
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400" />
+              <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-amber-400" />
             )}
           </div>
-          <span className="text-[9.5px] font-medium">Save</span>
+          <span className="text-[9.5px] font-medium mt-0.5">Save</span>
         </button>
       </nav>
     );
@@ -158,26 +150,23 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
   return (
     <nav
       aria-label="Mobile Navigation"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/97 backdrop-blur-2xl border-t border-slate-800 px-2 flex items-center justify-around select-none shadow-2xl"
-      style={safeAreaStyle}
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-2xl border-t border-slate-800 px-3 py-1.5 flex items-center justify-around select-none safe-area-bottom shadow-2xl"
     >
       {/* Home */}
       <button
         onClick={handleHomeClick}
-        className={navBtnCls}
-        aria-label="Scroll to top"
+        className="flex flex-col items-center gap-0.5 py-1 px-3 text-slate-400 hover:text-white transition-colors"
       >
-        <Home className="w-5 h-5" />
+        <Home className="w-4 h-4" />
         <span className="text-[10px] font-medium">Home</span>
       </button>
 
       {/* Tools Catalog */}
       <button
         onClick={handleToolsClick}
-        className={navBtnCls}
-        aria-label="Browse tools"
+        className="flex flex-col items-center gap-0.5 py-1 px-3 text-slate-400 hover:text-white transition-colors"
       >
-        <LayoutGrid className="w-5 h-5" />
+        <LayoutGrid className="w-4 h-4" />
         <span className="text-[10px] font-medium">Tools</span>
       </button>
 
@@ -185,31 +174,29 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
       {onOpenFilePicker && (
         <button
           onClick={onOpenFilePicker}
-          className="flex flex-col items-center -mt-5 bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-full shadow-lg shadow-indigo-950/80 border-2 border-black transition-transform active:scale-95 min-w-[52px] min-h-[52px] justify-center"
+          className="flex flex-col items-center -mt-4 bg-indigo-600 hover:bg-indigo-500 text-white p-2.5 rounded-full shadow-lg shadow-indigo-950/80 border-2 border-black transition-transform active:scale-95"
           title="Open or Upload File"
           aria-label="Open or Upload File"
         >
-          <PlusCircle className="w-6 h-6" />
+          <PlusCircle className="w-5 h-5" />
         </button>
       )}
 
       {/* Exam Suite */}
       <button
         onClick={() => setActiveModal('student-resizer')}
-        className={`${navBtnCls} hover:text-amber-400`}
-        aria-label="Open Exam Suite"
+        className="flex flex-col items-center gap-0.5 py-1 px-3 text-slate-400 hover:text-amber-400 transition-colors"
       >
-        <Sliders className="w-5 h-5" />
+        <Sliders className="w-4 h-4" />
         <span className="text-[10px] font-medium">Exam Suite</span>
       </button>
 
       {/* Search / Command Palette */}
       <button
         onClick={() => setCommandPaletteOpen(true)}
-        className={`${navBtnCls} hover:text-sky-400`}
-        aria-label="Open Search"
+        className="flex flex-col items-center gap-0.5 py-1 px-3 text-slate-400 hover:text-sky-400 transition-colors"
       >
-        <Search className="w-5 h-5" />
+        <Search className="w-4 h-4" />
         <span className="text-[10px] font-medium">Search</span>
       </button>
     </nav>

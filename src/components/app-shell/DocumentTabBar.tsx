@@ -41,7 +41,7 @@ export const DocumentTabBar: React.FC<DocumentTabBarProps> = ({ onOpenNewFile })
             key={tab.id}
             onClick={() => switchTab(tab.id)}
             onAuxClick={(e) => handleAuxClick(e, tab.id)}
-            className={`group relative flex items-center gap-1.5 px-2 sm:px-3 py-1 text-xs rounded-t-md border-t-2 transition-all cursor-pointer max-w-[160px] sm:max-w-[200px] min-w-[80px] sm:min-w-[120px] ${
+            className={`group relative flex items-center gap-2 px-3 py-1 text-xs rounded-t-md border-t-2 transition-all cursor-pointer max-w-[200px] min-w-[120px] ${
               isActive
                 ? 'bg-slate-900 border-swift-500 text-slate-100 font-medium shadow-sm'
                 : 'bg-slate-950/50 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'

@@ -30,42 +30,42 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       )}
 
       {/* Quick Category Jump Buttons */}
-      <div className="mt-5 grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-2 sm:gap-2.5 w-full sm:w-auto px-2">
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 w-full sm:w-auto px-2">
         <button
           onClick={() => onSelectCategory('pdf')}
-          className="px-3 py-2 sm:py-1.5 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 text-zinc-200 font-medium text-xs border border-zinc-800 hover:border-zinc-700 transition-all flex items-center justify-center gap-1.5 shadow-xs"
+          className="flex-1 sm:flex-initial px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 text-zinc-200 font-medium text-xs border border-zinc-800 hover:border-zinc-700 transition-all flex items-center justify-center gap-1.5 shadow-xs"
         >
-          <FileText className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+          <FileText className="w-3.5 h-3.5 text-blue-400" />
           <span>PDF Tools</span>
         </button>
 
         <button
           onClick={() => onSelectCategory('image')}
-          className="px-3 py-2 sm:py-1.5 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 text-zinc-200 font-medium text-xs border border-zinc-800 hover:border-zinc-700 transition-all flex items-center justify-center gap-1.5 shadow-xs"
+          className="flex-1 sm:flex-initial px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 text-zinc-200 font-medium text-xs border border-zinc-800 hover:border-zinc-700 transition-all flex items-center justify-center gap-1.5 shadow-xs"
         >
-          <ImageIcon className="w-3.5 h-3.5 text-pink-400 shrink-0" />
+          <ImageIcon className="w-3.5 h-3.5 text-pink-400" />
           <span>Image Tools</span>
         </button>
 
         <button
           onClick={() => onSelectCategory('student')}
-          className="px-3 py-2 sm:py-1.5 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 text-zinc-200 font-medium text-xs border border-zinc-800 hover:border-zinc-700 transition-all flex items-center justify-center gap-1.5 shadow-xs"
+          className="flex-1 sm:flex-initial px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 text-zinc-200 font-medium text-xs border border-zinc-800 hover:border-zinc-700 transition-all flex items-center justify-center gap-1.5 shadow-xs"
         >
-          <GraduationCap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <GraduationCap className="w-3.5 h-3.5 text-amber-400" />
           <span>Student Tools</span>
         </button>
 
         <button
           onClick={onOpenExamSuite}
-          className="px-3 py-2 sm:py-1.5 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 text-amber-400 hover:text-amber-300 font-medium text-xs border border-amber-500/30 hover:border-amber-500/50 transition-all flex items-center justify-center gap-1.5 shadow-xs"
+          className="flex-1 sm:flex-initial px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 text-amber-400 hover:text-amber-300 font-medium text-xs border border-amber-500/30 hover:border-amber-500/50 transition-all flex items-center justify-center gap-1.5 shadow-xs"
         >
-          <Sliders className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <Sliders className="w-3.5 h-3.5 text-amber-400" />
           <span>Exam Suite</span>
         </button>
 
         <button
           onClick={() => onSelectCategory('all')}
-          className="col-span-2 sm:col-span-1 px-3 py-2 sm:py-1.5 rounded-xl bg-zinc-950 hover:bg-zinc-900 text-zinc-400 hover:text-zinc-200 font-medium text-xs border border-zinc-800/80 hover:border-zinc-700 transition-all flex items-center justify-center gap-1"
+          className="flex-1 sm:flex-initial px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-zinc-950 hover:bg-zinc-900 text-zinc-400 hover:text-zinc-200 font-medium text-xs border border-zinc-800/80 hover:border-zinc-700 transition-all flex items-center justify-center gap-1"
         >
           <span>All 45 Tools</span>
           <ArrowRight className="w-3 h-3 text-zinc-500" />

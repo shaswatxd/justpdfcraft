@@ -643,20 +643,20 @@ export const StudentToolsDialog: React.FC = () => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-in fade-in duration-150" role="dialog" aria-modal="true" aria-label="Student Tools Dialog">
       <div className="bg-black border border-slate-700/80 rounded-2xl w-full max-w-5xl h-[92vh] max-h-[850px] shadow-2xl flex flex-col overflow-hidden text-slate-100">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-800 bg-black/90">
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-xl bg-gradient-to-tr from-swift-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-swift-900/30">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-black/90">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-swift-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-swift-900/30">
               <GraduationCap className="w-5 h-5" />
             </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-base sm:text-lg font-bold text-white tracking-tight truncate">Student & Exam Suite</h2>
-                <span className="hidden sm:inline px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full">
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold text-white tracking-tight">Student & Exam Admission Suite</h2>
+                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full">
                   Exam Portal Ready
                 </span>
               </div>
-              <p className="text-xs text-slate-400 hidden sm:block truncate">
-                Exact target KB resizer, signature cleaner, photo+sign combiner & Name/DOP generator.
+              <p className="text-xs text-slate-400">
+                Exact target KB resizer, signature cleaner, photo+sign combiner & Name/DOP generator for UPSC, SSC, NEET, JEE, IBPS.
               </p>
             </div>
           </div>

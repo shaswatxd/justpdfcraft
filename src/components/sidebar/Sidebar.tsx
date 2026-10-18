@@ -439,9 +439,9 @@ export const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="w-full sm:w-64 md:w-60 lg:w-64 max-w-full bg-black border-r border-slate-800 flex flex-col select-none z-10">
+    <aside className="w-64 bg-black border-r border-slate-800 flex flex-col select-none z-10">
       {/* Tab Switcher */}
-      <div className="h-10 border-b border-slate-800 flex items-center px-2 gap-1 bg-black/60 overflow-x-auto no-scrollbar">
+      <div className="h-10 border-b border-slate-800 flex items-center px-2 gap-1 bg-black/60">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeSidebarTab === tab.id;
@@ -449,7 +449,7 @@ export const Sidebar: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setSidebarTab(tab.id)}
-              className={`flex-1 py-1 px-1.5 rounded flex items-center justify-center gap-1 text-[11px] font-medium transition-colors relative shrink-0 sm:shrink ${
+              className={`flex-1 py-1 px-1.5 rounded flex items-center justify-center gap-1 text-[11px] font-medium transition-colors relative ${
                 isActive
                   ? 'bg-slate-800 text-swift-400 font-semibold shadow-sm'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
@@ -468,7 +468,7 @@ export const Sidebar: React.FC = () => {
       </div>
 
       {/* Tab Contents */}
-      <div className="flex-1 overflow-y-auto p-3 pb-20 md:pb-3 text-slate-300 text-xs">
+      <div className="flex-1 overflow-y-auto p-3 text-slate-300 text-xs">
         {/* Forms View */}
         {activeSidebarTab === 'forms' && <FormFieldsTab />}
 

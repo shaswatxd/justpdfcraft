@@ -153,11 +153,11 @@ export const AppHeader: React.FC = () => {
   };
 
   return (
-    <header className="relative h-14 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/80 px-3 sm:px-4 flex items-center justify-between text-slate-200 select-none z-30 gap-2 sticky top-0 min-w-0">
+    <header className="h-14 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/80 px-4 sm:px-6 flex items-center justify-between text-slate-200 select-none z-30 gap-3 sticky top-0">
       {/* ======================================================== */}
       {/* Left: Home / Back, Brand Logo & Undo/Redo */}
       {/* ======================================================== */}
-      <div className="flex items-center gap-1.5 shrink-0 min-w-0">
+      <div className="flex items-center gap-2 shrink-0">
         {isDocumentOpen && (
           <button
             onClick={handleGoHome}
@@ -386,7 +386,7 @@ export const AppHeader: React.FC = () => {
       {/* ======================================================== */}
       {/* Right: Actions, Reading Comfort, Save & Controls */}
       {/* ======================================================== */}
-      <div className="flex items-center gap-1 shrink-0 ml-auto">
+      <div className="flex items-center gap-1.5 shrink-0">
         {isDocumentOpen && (
           <>
             {/* Paper Tone Dropdown Button */}
@@ -550,7 +550,7 @@ export const AppHeader: React.FC = () => {
 
       {/* Mobile Drawer Menu */}
       {!documentId && mobileMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-slate-900/95 border-b border-slate-800 p-4 shadow-2xl z-50 flex flex-col gap-2 animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="lg:hidden absolute top-12 left-0 right-0 bg-slate-900/95 border-b border-slate-800 p-4 shadow-2xl z-50 flex flex-col gap-2 animate-in fade-in slide-in-from-top-2 duration-150">
           <button
             onClick={() => {
               setMobileMenuOpen(false);
