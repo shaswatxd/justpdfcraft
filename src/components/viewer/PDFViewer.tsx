@@ -1033,16 +1033,16 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
       {/* Direct In-Place Text Editor Popup */}
       {editingItem && (
         <div
-          className="absolute z-40 bg-black border border-swift-500 p-2 rounded-xl shadow-2xl flex items-center gap-2 animate-scale-in"
+          className="absolute z-40 bg-black border border-swift-500 p-2 rounded-xl shadow-2xl flex items-center gap-1.5 animate-scale-in max-w-[calc(100vw-1.5rem)]"
           style={{
-            left: `${Math.max(4, Math.min(width - 270, editingItem.screenRect.x))}px`,
-            top: `${Math.max(4, editingItem.screenRect.y - 44)}px`,
+            left: `${Math.max(4, Math.min(Math.max(4, width - 270), editingItem.screenRect.x))}px`,
+            top: `${Math.max(4, editingItem.screenRect.y - 48)}px`,
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center gap-1 text-[10px] text-swift-400 font-semibold uppercase tracking-wider pl-1">
+          <div className="flex items-center gap-1 text-[10px] text-swift-400 font-semibold uppercase tracking-wider pl-1 shrink-0">
             <Edit3 className="w-3 h-3" />
-            Edit:
+            <span className="hidden xs:inline">Edit:</span>
           </div>
           <input
             autoFocus
@@ -1053,19 +1053,19 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
               if (e.key === 'Enter') handleCommitTextEdit();
               if (e.key === 'Escape') setEditingItem(null);
             }}
-            className="bg-slate-800 text-white text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 outline-none w-56 focus:border-swift-500"
-            placeholder="Enter replacement text..."
+            className="bg-slate-800 text-white text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 outline-none w-36 xs:w-52 focus:border-swift-500 shrink min-w-0"
+            placeholder="Replacement text..."
           />
           <button
             onClick={handleCommitTextEdit}
-            className="p-1.5 bg-swift-600 hover:bg-swift-500 text-white rounded-lg transition-colors"
+            className="p-1.5 bg-swift-600 hover:bg-swift-500 text-white rounded-lg transition-colors shrink-0"
             title="Save text changes"
           >
             <Check className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => setEditingItem(null)}
-            className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors"
+            className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors shrink-0"
             title="Cancel"
           >
             <X className="w-3.5 h-3.5" />

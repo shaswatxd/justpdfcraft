@@ -23,6 +23,7 @@ import {
   Droplets,
   Crop,
   Sparkles,
+  Edit3,
 } from 'lucide-react';
 import { useToolStore, ToolMode } from '@/stores/toolStore';
 import { useDocumentStore } from '@/stores/documentStore';
@@ -61,7 +62,7 @@ export const MobileEditorToolbar: React.FC = () => {
     setViewMode,
   } = useDocumentStore();
 
-  const { setActiveModal, toggleSidebar } = useUIStore();
+  const { setActiveModal, toggleSidebar, addToast } = useUIStore();
 
   const [showOptions, setShowOptions] = useState(false);
   const [showMoreToolsSheet, setShowMoreToolsSheet] = useState(false);
@@ -78,6 +79,38 @@ export const MobileEditorToolbar: React.FC = () => {
         setShowOptions(true);
       } else {
         setShowOptions(false);
+      }
+
+      if (tool === 'edit_text') {
+        addToast({
+          type: 'info',
+          title: 'Direct Text Edit Active',
+          message: 'Tap any text box on the page to edit words.',
+        });
+      } else if (tool === 'text') {
+        addToast({
+          type: 'info',
+          title: 'Insert Text Mode',
+          message: 'Tap anywhere on the page to insert new text.',
+        });
+      } else if (tool === 'draw') {
+        addToast({
+          type: 'info',
+          title: 'Pen Draw Mode',
+          message: 'Use your finger to write or draw on the page.',
+        });
+      } else if (tool === 'highlight') {
+        addToast({
+          type: 'info',
+          title: 'Highlighter Mode',
+          message: 'Drag across content to highlight it.',
+        });
+      } else if (tool === 'eraser') {
+        addToast({
+          type: 'info',
+          title: 'Eraser Mode',
+          message: 'Swipe over any drawing to erase.',
+        });
       }
     }
   };
@@ -234,14 +267,14 @@ export const MobileEditorToolbar: React.FC = () => {
       {/* 3. Primary Mobile Tool Switcher Dock (Anchored to Bottom) */}
       <nav
         aria-label="Mobile PDF Tool Dock"
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-2xl border-t border-zinc-800/90 px-2.5 py-1.5 flex items-center justify-around select-none safe-area-bottom shadow-2xl"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-2xl border-t border-zinc-800/90 px-2 py-1.5 flex items-center justify-around gap-0.5 select-none safe-area-bottom shadow-2xl overflow-x-auto no-scrollbar"
       >
         {/* Hand / Pan Tool */}
         <button
           onClick={() => handleToolSelect('hand')}
-          className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all ${
+          className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all shrink-0 min-w-[42px] ${
             currentTool === 'hand'
-              ? 'text-blue-400 bg-blue-500/15'
+              ? 'text-blue-400 bg-blue-500/15 font-semibold'
               : 'text-zinc-400 hover:text-white'
           }`}
           title="Pan / Scroll Mode"
@@ -250,12 +283,26 @@ export const MobileEditorToolbar: React.FC = () => {
           <span className="text-[9.5px] font-medium mt-0.5">Pan</span>
         </button>
 
+        {/* Edit Text Tool */}
+        <button
+          onClick={() => handleToolSelect('edit_text')}
+          className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all shrink-0 min-w-[42px] ${
+            currentTool === 'edit_text'
+              ? 'text-cyan-400 bg-cyan-500/20 font-bold ring-1 ring-cyan-500/40'
+              : 'text-zinc-400 hover:text-white'
+          }`}
+          title="Edit Existing Text in PDF"
+        >
+          <Edit3 className="w-4 h-4" />
+          <span className="text-[9.5px] font-medium mt-0.5">Edit</span>
+        </button>
+
         {/* Draw / Pen Tool */}
         <button
           onClick={() => handleToolSelect('draw')}
-          className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all relative ${
+          className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all relative shrink-0 min-w-[42px] ${
             currentTool === 'draw'
-              ? 'text-blue-400 bg-blue-500/15'
+              ? 'text-blue-400 bg-blue-500/15 font-semibold'
               : 'text-zinc-400 hover:text-white'
           }`}
           title="Pen / Freehand Draw"
@@ -273,9 +320,9 @@ export const MobileEditorToolbar: React.FC = () => {
         {/* Highlighter Tool */}
         <button
           onClick={() => handleToolSelect('highlight')}
-          className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all relative ${
+          className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all relative shrink-0 min-w-[42px] ${
             currentTool === 'highlight'
-              ? 'text-amber-400 bg-amber-500/15'
+              ? 'text-amber-400 bg-amber-500/15 font-semibold'
               : 'text-zinc-400 hover:text-white'
           }`}
           title="Highlighter"
@@ -287,9 +334,9 @@ export const MobileEditorToolbar: React.FC = () => {
         {/* Text Annotation Tool */}
         <button
           onClick={() => handleToolSelect('text')}
-          className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all ${
+          className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all shrink-0 min-w-[42px] ${
             currentTool === 'text'
-              ? 'text-emerald-400 bg-emerald-500/15'
+              ? 'text-emerald-400 bg-emerald-500/15 font-semibold'
               : 'text-zinc-400 hover:text-white'
           }`}
           title="Add Text"
@@ -301,7 +348,7 @@ export const MobileEditorToolbar: React.FC = () => {
         {/* Sign Tool */}
         <button
           onClick={() => setActiveModal('sign')}
-          className="flex flex-col items-center justify-center p-1.5 rounded-xl text-purple-400 hover:text-purple-300 transition-all"
+          className="flex flex-col items-center justify-center p-1.5 rounded-xl text-purple-400 hover:text-purple-300 transition-all shrink-0 min-w-[42px]"
           title="Sign Document"
         >
           <Stamp className="w-4 h-4" />
@@ -311,9 +358,9 @@ export const MobileEditorToolbar: React.FC = () => {
         {/* Eraser Tool */}
         <button
           onClick={() => handleToolSelect('eraser')}
-          className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all ${
+          className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all shrink-0 min-w-[42px] ${
             currentTool === 'eraser'
-              ? 'text-rose-400 bg-rose-500/15'
+              ? 'text-rose-400 bg-rose-500/15 font-semibold'
               : 'text-zinc-400 hover:text-white'
           }`}
           title="Eraser"
@@ -325,7 +372,7 @@ export const MobileEditorToolbar: React.FC = () => {
         {/* More Tools Drawer Button */}
         <button
           onClick={() => setShowMoreToolsSheet(true)}
-          className="flex flex-col items-center justify-center p-1.5 rounded-xl text-zinc-400 hover:text-white transition-all"
+          className="flex flex-col items-center justify-center p-1.5 rounded-xl text-zinc-400 hover:text-white transition-all shrink-0 min-w-[42px]"
           title="More PDF Tools (Compress, Split, OCR, etc.)"
         >
           <SlidersHorizontal className="w-4 h-4" />
