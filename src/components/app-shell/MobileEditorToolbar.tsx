@@ -61,7 +61,7 @@ export const MobileEditorToolbar: React.FC = () => {
     setViewMode,
   } = useDocumentStore();
 
-  const { setActiveModal } = useUIStore();
+  const { setActiveModal, toggleSidebar } = useUIStore();
 
   const [showOptions, setShowOptions] = useState(false);
   const [showMoreToolsSheet, setShowMoreToolsSheet] = useState(false);
@@ -165,9 +165,13 @@ export const MobileEditorToolbar: React.FC = () => {
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <span className="text-[11px] font-mono font-semibold text-zinc-200 px-1 min-w-[48px] text-center">
+          <button
+            onClick={toggleSidebar}
+            className="text-[11px] font-mono font-semibold text-zinc-200 px-1.5 py-0.5 rounded-md hover:bg-zinc-800 hover:text-blue-400 min-w-[48px] text-center transition-colors"
+            title="Open Page Thumbnails"
+          >
             {currentPage} <span className="text-zinc-500">/</span> {pageCount}
-          </span>
+          </button>
           <button
             onClick={() => setCurrentPage(Math.min(pageCount, currentPage + 1))}
             disabled={currentPage >= pageCount}

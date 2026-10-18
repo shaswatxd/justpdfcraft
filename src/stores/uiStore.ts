@@ -138,7 +138,7 @@ export const useUIStore = create<UIState>((set) => ({
   paperTone: getInitialPaperTone(),
   activeView: 'home',
   setActiveView: (activeView) => set({ activeView }),
-  isSidebarOpen: true,
+  isSidebarOpen: typeof window !== 'undefined' ? window.innerWidth >= 768 : true,
   activeSidebarTab: 'thumbnails',
   isPropertiesPanelOpen: false,
   activeModal: null,

@@ -104,6 +104,7 @@ export const AppHeader: React.FC = () => {
     toggleFullscreen,
     activeView,
     setActiveView,
+    toggleSidebar,
   } = useUIStore();
 
   const isDocumentOpen = Boolean(documentId) && activeView === 'editor';
@@ -174,9 +175,14 @@ export const AppHeader: React.FC = () => {
               <span className="text-xs font-bold text-white truncate leading-tight">
                 {fileName || 'Document'}
               </span>
-              <span className="text-[10px] text-slate-400 font-mono">
-                Page {currentPage}/{pageCount}
-              </span>
+              <button
+                onClick={toggleSidebar}
+                className="text-[10px] text-slate-400 hover:text-swift-400 font-mono text-left transition-colors flex items-center gap-1"
+                title="Tap to toggle page thumbnails"
+              >
+                <span>Page {currentPage}/{pageCount}</span>
+                <span className="text-[9px] bg-slate-800 px-1 py-0.2 rounded text-slate-400">Pages</span>
+              </button>
             </div>
           </div>
         ) : null}

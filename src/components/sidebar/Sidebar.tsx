@@ -441,13 +441,13 @@ export const Sidebar: React.FC = () => {
 
   return (
     <>
-      {/* Mobile Drawer Backdrop */}
+      {/* Mobile Drawer Backdrop - Positioned below AppHeader */}
       <div
         onClick={toggleSidebar}
-        className="md:hidden fixed inset-0 z-40 bg-black/75 backdrop-blur-sm animate-fade-in"
+        className="md:hidden fixed top-14 inset-x-0 bottom-0 z-40 bg-black/75 backdrop-blur-sm animate-fade-in"
       />
 
-      <aside className="w-72 max-w-[85vw] md:w-64 bg-black border-r border-slate-800 flex flex-col select-none z-50 fixed md:relative inset-y-0 left-0 shadow-2xl md:shadow-none h-full">
+      <aside className="w-72 max-w-[85vw] md:w-64 bg-black border-r border-slate-800 flex flex-col select-none z-50 fixed top-14 bottom-0 left-0 md:relative md:top-auto md:bottom-auto md:left-auto md:z-auto shadow-2xl md:shadow-none h-[calc(100dvh-3.5rem)] md:h-full">
         {/* Tab Switcher */}
         <div className="h-10 border-b border-slate-800 flex items-center px-2 gap-1 bg-black/60 shrink-0">
           {tabs.map((tab) => {
@@ -477,10 +477,10 @@ export const Sidebar: React.FC = () => {
           {/* Mobile Drawer Close Button */}
           <button
             onClick={toggleSidebar}
-            className="md:hidden p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 shrink-0"
+            className="md:hidden p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white shrink-0 ml-1"
             title="Close Sidebar"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
@@ -569,6 +569,9 @@ export const Sidebar: React.FC = () => {
                     displayMode={thumbnailDisplayMode}
                     onClick={() => {
                       setCurrentPage(i + 1);
+                      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                        toggleSidebar();
+                      }
                       if (viewMode === 'organize') {
                         setSelectedPages([i]);
                         const el = document.getElementById(`organizer-page-${i}`);
