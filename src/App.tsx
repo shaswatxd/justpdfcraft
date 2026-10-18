@@ -399,7 +399,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-black text-slate-100 font-sans overflow-hidden relative">
+    <div className="h-screen w-full max-w-full overflow-x-hidden flex flex-col bg-black text-slate-100 font-sans overflow-hidden relative">
       {/* Global Window File Drop Overlay */}
       {isWindowDragging && (
         <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex flex-col items-center justify-center pointer-events-none p-6 animate-fade-in select-none">

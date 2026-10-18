@@ -7,6 +7,19 @@
     box-sizing: border-box;
   }
 
+  html,
+  body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  #root {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+  }
+
   body {
     user-select: none;
     -webkit-user-select: none;
@@ -284,7 +297,8 @@ textarea::placeholder {
 
 /* Outer Shell & Main Viewport */
 html.light body,
-html.light .h-screen.w-screen {
+html.light #root,
+html.light .h-screen {
   background-color: #f8fafc !important;
   color: #0f172a !important;
 }

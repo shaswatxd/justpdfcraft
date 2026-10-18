@@ -219,7 +219,7 @@ export const MainToolbar: React.FC = () => {
   ];
 
   return (
-    <div className="h-11 bg-black/95 border-b border-slate-800 px-3 flex items-center justify-between z-20 gap-2 select-none overflow-x-auto no-scrollbar overflow-y-visible">
+    <div className="w-full max-w-full h-11 bg-black/95 border-b border-slate-800 px-3 flex items-center justify-between z-20 gap-2 select-none overflow-x-auto no-scrollbar overflow-y-visible">
       {/* Left: Sidebar toggle + Main Edit Tools */}
       <div className="flex items-center gap-1 shrink-0">
         <button

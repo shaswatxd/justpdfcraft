@@ -115,14 +115,14 @@ export const PrintDialog: React.FC = () => {
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Print Dialog">
       <div className="w-full max-w-2xl bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 shrink-0">
               <Printer className="w-5 h-5" />
             </div>
-            <div>
-              <h3 className="text-base font-bold text-white">Smart Print Workflow</h3>
-              <p className="text-xs text-slate-400">
+            <div className="min-w-0">
+              <h3 className="text-base font-bold text-white truncate">Smart Print Workflow</h3>
+              <p className="text-xs text-slate-400 hidden sm:block">
                 Configure layout, pages-per-sheet, booklet folding, and preflight safety checks
               </p>
             </div>
@@ -145,7 +145,7 @@ export const PrintDialog: React.FC = () => {
         ) : (
           <>
             {/* Content */}
-            <div className="p-6 space-y-5 overflow-y-auto flex-1">
+            <div className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1">
           {/* Printer Safe Check Banner */}
           <div
             className={`p-3.5 rounded-xl border flex items-start gap-3 ${
@@ -173,7 +173,7 @@ export const PrintDialog: React.FC = () => {
           </div>
 
           {/* Form Settings Grid */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             {/* Copies & Duplex */}
             <div className="space-y-1">
               <label className="text-xs font-semibold text-slate-300">Copies</label>
@@ -258,7 +258,7 @@ export const PrintDialog: React.FC = () => {
           )}
 
           {/* Checkboxes */}
-          <div className="grid grid-cols-2 gap-3 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 pt-2">
             <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
               <input
                 type="checkbox"
@@ -302,7 +302,7 @@ export const PrintDialog: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-slate-800 bg-[#000000]/60 flex items-center justify-between">
           <span className="text-xs text-slate-400 font-mono">
             {pageIndices.length} page{pageIndices.length !== 1 ? 's' : ''} to be sent
           </span>

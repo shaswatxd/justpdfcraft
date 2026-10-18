@@ -35,8 +35,8 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
   if (isFullscreen) return null;
 
   // Shared button style for consistent 44px touch targets (WCAG 2.5.5)
-  const navBtnCls = "flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] px-2 text-slate-400 hover:text-white active:scale-95 transition-all rounded-xl";
-  const navBtnActiveCls = "flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] px-2 active:scale-95 transition-all rounded-xl";
+  const navBtnCls = "flex flex-col items-center justify-center gap-0.5 min-w-[38px] sm:min-w-[44px] min-h-[44px] px-1 sm:px-2 text-slate-400 hover:text-white active:scale-95 transition-all rounded-xl";
+  const navBtnActiveCls = "flex flex-col items-center justify-center gap-0.5 min-w-[38px] sm:min-w-[44px] min-h-[44px] px-1 sm:px-2 active:scale-95 transition-all rounded-xl";
 
   // Common inline style for safe-area padding
   const safeAreaStyle = { paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))', paddingTop: '0.375rem' };
@@ -46,7 +46,7 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
     return (
       <nav
         aria-label="Mobile Document Controls"
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/97 backdrop-blur-2xl border-t border-slate-800 px-2 flex items-center justify-between select-none shadow-2xl"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/97 backdrop-blur-2xl border-t border-slate-800 px-1.5 sm:px-2 gap-1 sm:gap-2 justify-between w-full max-w-full overflow-hidden flex items-center select-none shadow-2xl"
         style={safeAreaStyle}
       >
         {/* Back to Home Dashboard */}
@@ -61,25 +61,25 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
         </button>
 
         {/* Page Navigation Stepper */}
-        <div className="flex items-center gap-0.5 bg-slate-900/90 px-1.5 py-1 rounded-xl border border-slate-800">
+        <div className="flex items-center gap-0.5 bg-slate-900/90 px-1 py-0.5 sm:px-1.5 sm:py-1 rounded-xl border border-slate-800 shrink-0">
           <button
             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
             disabled={currentPage <= 1}
-            className="p-2 text-slate-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-transform min-w-[36px] min-h-[36px] flex items-center justify-center"
+            className="p-1.5 text-slate-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-transform min-w-[30px] min-h-[30px] sm:min-w-[36px] sm:min-h-[36px] flex items-center justify-center rounded-lg"
             title="Previous Page"
             aria-label="Previous Page"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
 
-          <span className="text-[11px] font-mono font-semibold text-slate-200 px-1 min-w-[50px] text-center">
+          <span className="text-[10px] sm:text-[11px] font-mono font-semibold text-slate-200 px-0.5 sm:px-1 min-w-[38px] sm:min-w-[50px] text-center">
             {currentPage} <span className="text-slate-500 font-sans">/</span> {pageCount}
           </span>
 
           <button
             onClick={() => setCurrentPage(Math.min(pageCount, currentPage + 1))}
             disabled={currentPage >= pageCount}
-            className="p-2 text-slate-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-transform min-w-[36px] min-h-[36px] flex items-center justify-center"
+            className="p-1.5 text-slate-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-transform min-w-[30px] min-h-[30px] sm:min-w-[36px] sm:min-h-[36px] flex items-center justify-center rounded-lg"
             title="Next Page"
             aria-label="Next Page"
           >
@@ -105,10 +105,10 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
         </button>
 
         {/* Zoom Quick Stepper */}
-        <div className="flex items-center bg-slate-900/90 rounded-xl border border-slate-800 p-0.5">
+        <div className="hidden min-[360px]:flex items-center bg-slate-900/90 rounded-xl border border-slate-800 p-0.5 shrink-0">
           <button
             onClick={() => setZoom((z) => Math.max(0.3, z - 0.2))}
-            className="p-2 text-slate-400 hover:text-white active:scale-90 transition-transform min-w-[36px] min-h-[36px] flex items-center justify-center"
+            className="p-1.5 text-slate-400 hover:text-white active:scale-90 transition-transform min-w-[30px] min-h-[30px] sm:min-w-[36px] sm:min-h-[36px] flex items-center justify-center rounded-lg"
             title="Zoom Out"
             aria-label="Zoom out"
           >
@@ -116,7 +116,7 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
           </button>
           <button
             onClick={() => setZoom((z) => Math.min(3.0, z + 0.2))}
-            className="p-2 text-slate-400 hover:text-white active:scale-90 transition-transform min-w-[36px] min-h-[36px] flex items-center justify-center"
+            className="p-1.5 text-slate-400 hover:text-white active:scale-90 transition-transform min-w-[30px] min-h-[30px] sm:min-w-[36px] sm:min-h-[36px] flex items-center justify-center rounded-lg"
             title="Zoom In"
             aria-label="Zoom in"
           >
@@ -158,7 +158,7 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
   return (
     <nav
       aria-label="Mobile Navigation"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/97 backdrop-blur-2xl border-t border-slate-800 px-2 flex items-center justify-around select-none shadow-2xl"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/97 backdrop-blur-2xl border-t border-slate-800 px-1.5 sm:px-2 w-full max-w-full overflow-hidden flex items-center justify-around select-none shadow-2xl"
       style={safeAreaStyle}
     >
       {/* Home */}

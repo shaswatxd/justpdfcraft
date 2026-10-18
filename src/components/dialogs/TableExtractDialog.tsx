@@ -119,16 +119,16 @@ export const TableExtractDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in" role="dialog" aria-modal="true" aria-label="Table Extract Dialog">
-      <div className="bg-[#000000] border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-[#000000] border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-[#000000]/80">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-swift-500/10 rounded-xl text-swift-400 border border-swift-500/20">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-800 bg-[#000000]/80">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="p-2 bg-swift-500/10 rounded-xl text-swift-400 border border-swift-500/20 shrink-0">
               <Table className="w-5 h-5" />
             </div>
-            <div>
-              <h2 className="font-semibold text-white text-base">PDF Table Extractor to Excel & CSV</h2>
-              <p className="text-xs text-slate-400">
+            <div className="min-w-0">
+              <h2 className="font-semibold text-white text-base truncate">PDF Table Extractor to Excel & CSV</h2>
+              <p className="text-xs text-slate-400 hidden sm:block">
                 Reconstruct tabular data from document text coordinates and export cleanly.
               </p>
             </div>
@@ -151,7 +151,7 @@ export const TableExtractDialog: React.FC = () => {
         ) : (
           <>
             {/* Page Selector & Toolbar */}
-            <div className="flex items-center justify-between px-6 py-3 bg-[#000000]/40 border-b border-slate-800 gap-4 flex-wrap">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 sm:py-3 bg-[#000000]/40 border-b border-slate-800 gap-4 flex-wrap">
               <div className="flex items-center gap-3">
                 {/* Scope Mode Segmented Button */}
                 <div className="flex items-center bg-slate-800/80 p-0.5 rounded-lg border border-slate-700/60 text-xs">
@@ -275,7 +275,7 @@ export const TableExtractDialog: React.FC = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-800 bg-[#000000]/80">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-t border-slate-800 bg-[#000000]/80">
               <button
                 onClick={() => {
                   setTableData(null);

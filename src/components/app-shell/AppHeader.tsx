@@ -153,7 +153,7 @@ export const AppHeader: React.FC = () => {
   };
 
   return (
-    <header className="relative h-14 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/80 px-3 sm:px-4 flex items-center justify-between text-slate-200 select-none z-30 gap-2 sticky top-0 min-w-0">
+    <header className="relative w-full max-w-full h-14 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/80 px-3 sm:px-4 flex items-center justify-between text-slate-200 select-none z-30 gap-2 sticky top-0 min-w-0">
       {/* ======================================================== */}
       {/* Left: Home / Back, Brand Logo & Undo/Redo */}
       {/* ======================================================== */}
@@ -175,7 +175,7 @@ export const AppHeader: React.FC = () => {
           title={isDocumentOpen ? 'Back to Home Dashboard' : 'JustPDFCraft'}
         >
           <SwiftLogo className="w-6 h-6 shrink-0" />
-          <span className="font-bold text-sm tracking-tight text-slate-100">
+          <span className={`font-bold text-sm tracking-tight text-slate-100 ${isDocumentOpen ? 'hidden sm:inline' : 'inline'}`}>
             Just<span className="text-swift-400">PDFCraft</span>
           </span>
         </button>
@@ -390,7 +390,7 @@ export const AppHeader: React.FC = () => {
         {isDocumentOpen && (
           <>
             {/* Paper Tone Dropdown Button */}
-            <div className="relative" ref={toneDropdownRef}>
+            <div className="relative hidden sm:block" ref={toneDropdownRef}>
               <button
                 onClick={() => setToneOpen((o) => !o)}
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
@@ -452,7 +452,7 @@ export const AppHeader: React.FC = () => {
             {/* Read Aloud (TTS) */}
             <button
               onClick={toggleTTS}
-              className={`p-1.5 sm:px-2.5 sm:py-1.5 border rounded-lg text-xs transition-colors flex items-center gap-1.5 ${
+              className={`hidden sm:flex p-1.5 sm:px-2.5 sm:py-1.5 border rounded-lg text-xs transition-colors items-center gap-1.5 ${
                 isTTSOpen
                   ? 'bg-swift-600 text-white border-swift-500 shadow-sm'
                   : 'bg-slate-800 hover:bg-slate-700 border-slate-700/80 text-slate-300 hover:text-white'

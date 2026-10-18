@@ -144,16 +144,16 @@ export const ProtectDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Protect Dialog">
-      <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+      <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-rose-500/10 text-rose-400">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="p-2 rounded-xl bg-rose-500/10 text-rose-400 shrink-0">
               <Shield className="w-5 h-5" />
             </div>
-            <div>
-              <h3 className="text-base font-bold text-white">Security & Permissions Center</h3>
-              <p className="text-xs text-slate-400">
+            <div className="min-w-0">
+              <h3 className="text-base font-bold text-white truncate">Security & Permissions Center</h3>
+              <p className="text-xs text-slate-400 hidden sm:block">
                 Unlock restricted PDFs or apply standard password protection
               </p>
             </div>
@@ -176,11 +176,11 @@ export const ProtectDialog: React.FC = () => {
         ) : (
           <>
             {/* Tab Selector */}
-            <div className="px-6 pt-3 border-b border-slate-800 flex gap-4">
+            <div className="px-4 sm:px-6 pt-3 border-b border-slate-800 flex gap-4 overflow-x-auto no-scrollbar">
           <button
             type="button"
             onClick={() => setActiveTab('unlock')}
-            className={`pb-2.5 text-xs font-semibold border-b-2 flex items-center gap-1.5 transition-colors ${
+            className={`pb-2.5 text-xs font-semibold border-b-2 flex items-center gap-1.5 transition-colors shrink-0 ${
               activeTab === 'unlock'
                 ? 'border-emerald-500 text-emerald-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -192,7 +192,7 @@ export const ProtectDialog: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('protect')}
-            className={`pb-2.5 text-xs font-semibold border-b-2 flex items-center gap-1.5 transition-colors ${
+            className={`pb-2.5 text-xs font-semibold border-b-2 flex items-center gap-1.5 transition-colors shrink-0 ${
               activeTab === 'protect'
                 ? 'border-rose-500 text-rose-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -204,7 +204,7 @@ export const ProtectDialog: React.FC = () => {
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4">
+        <div className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
           {activeTab === 'unlock' ? (
             <div className="space-y-4">
               <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/25 space-y-2">
