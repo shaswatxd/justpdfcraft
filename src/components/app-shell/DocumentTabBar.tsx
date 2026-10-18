@@ -32,7 +32,7 @@ export const DocumentTabBar: React.FC<DocumentTabBarProps> = ({ onOpenNewFile })
     <div
       ref={barRef}
       onWheel={handleWheel}
-      className="w-full max-w-full h-9 bg-slate-950/80 border-b border-slate-800 flex items-center px-2 gap-1 overflow-x-auto select-none no-scrollbar z-20"
+      className="h-9 bg-slate-950/80 border-b border-slate-800 flex items-center px-2 gap-1 overflow-x-auto select-none no-scrollbar z-20"
     >
       {tabs.map((tab) => {
         const isActive = tab.id === activeTabId;

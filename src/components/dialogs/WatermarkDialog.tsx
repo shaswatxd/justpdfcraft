@@ -159,9 +159,9 @@ export const WatermarkDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Watermark Dialog">
-      <div className="w-full max-w-md max-h-[90vh] bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+      <div className="w-full max-w-md bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
-        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-rose-500/10 text-rose-400">
               <Stamp className="w-5 h-5" />
@@ -189,11 +189,11 @@ export const WatermarkDialog: React.FC = () => {
         ) : (
           <>
             {/* Mode Switcher */}
-            <div className="flex border-b border-slate-800 bg-[#000000]/40 px-4 sm:px-6 pt-2 gap-2 text-xs overflow-x-auto no-scrollbar">
+            <div className="flex border-b border-slate-800 bg-[#000000]/40 px-6 pt-2 gap-2 text-xs">
               <button
                 type="button"
                 onClick={() => setMode('text')}
-                className={`pb-2 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors shrink-0 ${
+                className={`pb-2 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
                   mode === 'text'
                     ? 'border-rose-500 text-rose-400'
                     : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -205,7 +205,7 @@ export const WatermarkDialog: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setMode('image')}
-                className={`pb-2 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors shrink-0 ${
+                className={`pb-2 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
                   mode === 'image'
                     ? 'border-rose-500 text-rose-400'
                     : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -217,7 +217,7 @@ export const WatermarkDialog: React.FC = () => {
             </div>
 
             {/* Content */}
-            <div className="p-4 sm:p-6 space-y-4 text-xs flex-1 overflow-y-auto">
+            <div className="p-6 space-y-4 text-xs max-h-[70vh] overflow-y-auto">
               {mode === 'text' ? (
                 <>
                   {/* Presets */}
@@ -444,7 +444,7 @@ export const WatermarkDialog: React.FC = () => {
             </div>
 
             {/* Footer */}
-            <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
+            <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
               <button
                 onClick={handleClose}
                 className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"

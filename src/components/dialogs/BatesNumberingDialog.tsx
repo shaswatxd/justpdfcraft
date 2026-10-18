@@ -188,18 +188,18 @@ export const BatesNumberingDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Bates Numbering Dialog">
-      <div className="w-full max-w-xl bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
+      <div className="w-full max-w-xl bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
-        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="p-2 rounded-xl bg-swift-500/10 text-swift-400 shrink-0">
+        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-swift-500/10 text-swift-400">
               <Hash className="w-5 h-5" />
             </div>
-            <div className="min-w-0">
-              <h3 className="text-base font-bold text-white truncate">
+            <div>
+              <h3 className="text-base font-bold text-white">
                 {activeModal === 'page-number' ? 'Add Page Numbers & Headers' : 'Bates Numbering & Header/Footer'}
               </h3>
-              <p className="text-xs text-slate-400 hidden sm:block">
+              <p className="text-xs text-slate-400">
                 Compliance sequential numbering, dynamic headers, and page counters
               </p>
             </div>
@@ -222,14 +222,14 @@ export const BatesNumberingDialog: React.FC = () => {
         ) : (
           <>
             {/* Tab Selection */}
-            <div className="flex border-b border-slate-800 bg-[#000000]/40 px-4 sm:px-6 overflow-x-auto no-scrollbar">
+            <div className="flex border-b border-slate-800 bg-[#000000]/40 px-6">
           <button
             type="button"
             onClick={() => {
               setMode('bates');
               setPosition('bottom-right');
             }}
-            className={`py-3 px-4 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 shrink-0 ${
+            className={`py-3 px-4 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${
               mode === 'bates'
                 ? 'border-swift-500 text-swift-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -244,7 +244,7 @@ export const BatesNumberingDialog: React.FC = () => {
               setMode('headerfooter');
               setPosition('bottom-center');
             }}
-            className={`py-3 px-4 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 shrink-0 ${
+            className={`py-3 px-4 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${
               mode === 'headerfooter'
                 ? 'border-swift-500 text-swift-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -256,7 +256,7 @@ export const BatesNumberingDialog: React.FC = () => {
         </div>
 
         {/* Form Body */}
-        <div className="p-4 sm:p-6 space-y-4 text-xs flex-1 overflow-y-auto">
+        <div className="p-6 space-y-4 text-xs max-h-[65vh] overflow-y-auto">
           {/* Mode-specific Fields */}
           {mode === 'bates' ? (
             <div className="grid grid-cols-2 gap-3 bg-slate-800/40 p-3.5 rounded-xl border border-slate-800">
@@ -529,7 +529,7 @@ export const BatesNumberingDialog: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-4 sm:px-6 py-3.5 bg-[#000000]/60 border-t border-slate-800 flex items-center justify-end gap-2.5">
+        <div className="px-6 py-3.5 bg-[#000000]/60 border-t border-slate-800 flex items-center justify-end gap-2.5">
           <button
             type="button"
             onClick={handleClose}

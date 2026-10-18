@@ -167,19 +167,19 @@ export const CropDialog: React.FC = () => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Crop Dialog">
       <div className="bg-[#000000] border border-slate-800 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-800 flex items-center justify-between bg-[#000000]/60">
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shrink-0">
+        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-[#000000]/60">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
               <Crop className="w-5 h-5" />
             </div>
-            <div className="min-w-0">
-              <h3 className="font-bold text-slate-100 text-sm sm:text-base flex items-center gap-2 truncate">
-                <span>Page Cropping & Margin Trimmer</span>
-                <span className="hidden sm:inline-block text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono">
+            <div>
+              <h3 className="font-bold text-slate-100 text-base flex items-center gap-2">
+                Page Cropping & Margin Trimmer
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono">
                   ISO 32000 Box Engine
                 </span>
               </h3>
-              <p className="text-slate-400 text-xs mt-0.5 hidden sm:block">
+              <p className="text-slate-400 text-xs mt-0.5">
                 Trim unwanted printer margins, remove scanner edge bleed, or adjust page dimensions.
               </p>
             </div>
@@ -203,7 +203,7 @@ export const CropDialog: React.FC = () => {
         ) : (
           <>
             {/* Content Body */}
-            <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1">
+            <div className="p-6 overflow-y-auto space-y-6 flex-1">
           {/* Visual Preview & Coordinate Simulation */}
           <div className="bg-[#000000]/60 border border-slate-800 rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-6">
             {/* Visual Mini Page Box */}
@@ -455,7 +455,7 @@ export const CropDialog: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-4 sm:px-6 py-3 sm:py-4 bg-[#000000]/70 border-t border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-[#000000]/70 border-t border-slate-800 flex items-center justify-between">
           <span className="text-[11px] text-slate-400">
             Action is reversible via <kbd className="bg-slate-800 px-1 py-0.5 rounded font-mono text-[10px]">Ctrl+Z</kbd>
           </span>

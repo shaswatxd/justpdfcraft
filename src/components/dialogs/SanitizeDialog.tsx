@@ -107,14 +107,14 @@ export const SanitizeDialog: React.FC = () => {
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Sanitize Dialog">
       <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in max-h-[90vh]">
         {/* Header */}
-        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 shrink-0">
+        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
               <ShieldCheck className="w-5 h-5" />
             </div>
-            <div className="min-w-0">
-              <h3 className="text-base font-bold text-white truncate">Sanitize & Redact Security Hub</h3>
-              <p className="text-xs text-slate-400 hidden sm:block">Scrub hidden tags, device history, and redact confidential data</p>
+            <div>
+              <h3 className="text-base font-bold text-white">Sanitize & Redact Security Hub</h3>
+              <p className="text-xs text-slate-400">Scrub hidden tags, device history, and redact confidential data</p>
             </div>
           </div>
           <button
@@ -135,7 +135,7 @@ export const SanitizeDialog: React.FC = () => {
         ) : (
           <>
             {/* Body */}
-            <div className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 text-xs">
+            <div className="p-6 space-y-4 overflow-y-auto flex-1 text-xs">
               {/* Visual Redaction Callout */}
               <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-center justify-between gap-3">
                 <div className="flex items-start gap-2.5">
@@ -277,7 +277,7 @@ export const SanitizeDialog: React.FC = () => {
             </div>
 
             {/* Footer */}
-            <div className="px-4 sm:px-6 py-3.5 bg-[#000000]/60 border-t border-slate-800 flex items-center justify-between">
+            <div className="px-6 py-3.5 bg-[#000000]/60 border-t border-slate-800 flex items-center justify-between">
               <span className="text-[11px] text-slate-500">
                 {sanitizedReport ? 'Ready for distribution' : 'Action is undoable via Ctrl+Z'}
               </span>
