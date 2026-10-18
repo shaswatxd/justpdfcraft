@@ -541,7 +541,7 @@ export const ConvertDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Convert Dialog">
-      <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+      <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -562,10 +562,10 @@ export const ConvertDialog: React.FC = () => {
         </div>
 
         {/* Mode Switcher */}
-        <div className="flex border-b border-slate-800 bg-[#000000]/40 px-6 pt-2 gap-2 text-xs">
+        <div className="flex border-b border-slate-800 bg-[#000000]/40 px-4 sm:px-6 pt-2 gap-1.5 sm:gap-2 text-xs overflow-x-auto no-scrollbar">
           <button
             onClick={() => setMode('pdf-to-img')}
-            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors shrink-0 whitespace-nowrap ${
               mode === 'pdf-to-img'
                 ? 'border-teal-500 text-teal-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -576,7 +576,7 @@ export const ConvertDialog: React.FC = () => {
           </button>
           <button
             onClick={() => setMode('pdf-to-word')}
-            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors shrink-0 whitespace-nowrap ${
               mode === 'pdf-to-word'
                 ? 'border-teal-500 text-teal-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -587,7 +587,7 @@ export const ConvertDialog: React.FC = () => {
           </button>
           <button
             onClick={() => setMode('pdf-to-grayscale')}
-            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors shrink-0 whitespace-nowrap ${
               mode === 'pdf-to-grayscale'
                 ? 'border-teal-500 text-teal-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -598,7 +598,7 @@ export const ConvertDialog: React.FC = () => {
           </button>
           <button
             onClick={() => setMode('pdf-to-txt')}
-            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors shrink-0 whitespace-nowrap ${
               mode === 'pdf-to-txt'
                 ? 'border-teal-500 text-teal-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -609,7 +609,7 @@ export const ConvertDialog: React.FC = () => {
           </button>
           <button
             onClick={() => setMode('img-to-pdf')}
-            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors shrink-0 whitespace-nowrap ${
               mode === 'img-to-pdf'
                 ? 'border-teal-500 text-teal-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -620,7 +620,7 @@ export const ConvertDialog: React.FC = () => {
           </button>
           <button
             onClick={() => setMode('txt-to-pdf')}
-            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors shrink-0 whitespace-nowrap ${
               mode === 'txt-to-pdf'
                 ? 'border-teal-500 text-teal-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -632,7 +632,7 @@ export const ConvertDialog: React.FC = () => {
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4 overflow-y-auto flex-1">
           {mode === 'pdf-to-img' && (
             <div className="space-y-4">
               {!documentId ? (

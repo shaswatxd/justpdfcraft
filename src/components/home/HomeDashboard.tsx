@@ -300,7 +300,7 @@ export const HomeDashboard: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-black flex flex-col items-center pb-24 sm:pb-12">
+    <div className="flex-1 overflow-y-auto bg-black flex flex-col items-center pb-20 md:pb-6">
       {/* Hidden File Inputs: Document & Photo */}
       <input
         ref={pdfInputRef}

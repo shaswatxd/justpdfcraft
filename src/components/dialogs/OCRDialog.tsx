@@ -433,20 +433,20 @@ export const OCRDialog: React.FC = () => {
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="OCR Dialog">
       <div className="w-full max-w-2xl bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-800 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 shrink-0">
               <ScanText className="w-5 h-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white">Ultra-OCR & Text Extraction</h3>
-                <span className="bg-emerald-500/15 text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="text-sm sm:text-base font-bold text-white truncate">Ultra-OCR & Extraction</h3>
+                <span className="hidden sm:inline-flex bg-emerald-500/15 text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30 items-center gap-1">
                   <ShieldCheck className="w-3 h-3" />
                   DRM / Copy-Bypass
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-400 hidden sm:block truncate">
                 Extract text from scans, photos, scrambled fonts, and permission-restricted PDFs
               </p>
             </div>

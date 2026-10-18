@@ -135,18 +135,20 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
 
       {/* Tools Grid Section */}
       <div className="space-y-5">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-slate-200 flex items-center gap-2 capitalize">
-            <SlidersHorizontal className="w-4 h-4 text-swift-400" />
-            {showOnlyFavorites
-              ? 'Your Favorite Tools'
-              : searchQuery
-              ? `Search Results for "${searchQuery}"`
-              : activeCategory === 'all'
-              ? 'All Tools & Productivity Utilities'
-              : `${activeCategory} Tools Suite`}
-            <span className="text-xs font-normal text-slate-400 px-2 py-0.5 rounded-full bg-slate-800/80 border border-slate-700/50">
-              {filteredTools.length} {filteredTools.length === 1 ? 'tool' : 'tools'}
+        <div className="flex items-center justify-between gap-2 min-w-0">
+          <h2 className="text-base font-semibold text-slate-200 flex items-center gap-2 capitalize min-w-0">
+            <SlidersHorizontal className="w-4 h-4 text-swift-400 shrink-0" />
+            <span className="truncate">
+              {showOnlyFavorites
+                ? 'Your Favorite Tools'
+                : searchQuery
+                ? `Results: "${searchQuery}"`
+                : activeCategory === 'all'
+                ? 'All Tools & Utilities'
+                : `${activeCategory} Tools Suite`}
+            </span>
+            <span className="text-xs font-normal text-slate-400 px-2 py-0.5 rounded-full bg-slate-800/80 border border-slate-700/50 shrink-0">
+              {filteredTools.length}
             </span>
           </h2>
         </div>
@@ -175,7 +177,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
             {filteredTools.map((tool) => (
               <ToolCard
                 key={tool.id}

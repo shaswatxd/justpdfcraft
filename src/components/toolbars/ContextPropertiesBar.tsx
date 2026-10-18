@@ -95,9 +95,9 @@ export const ContextPropertiesBar: React.FC = () => {
   ];
 
   return (
-    <div className="bg-slate-850 border-b border-slate-800 px-4 py-1.5 flex flex-wrap items-center justify-between text-xs text-slate-300 gap-3">
+    <div className="bg-slate-850 border-b border-slate-800 px-3 sm:px-4 py-1.5 flex items-center justify-between text-xs text-slate-300 gap-3 overflow-x-auto no-scrollbar">
       {/* Tool Context Controls */}
-      <div className="flex items-center gap-4 flex-wrap">
+      <div className="flex items-center gap-3 sm:gap-4 flex-nowrap sm:flex-wrap shrink-0">
         {/* Text Options */}
         {currentTool === 'text' && (
           <div className="flex items-center gap-3">

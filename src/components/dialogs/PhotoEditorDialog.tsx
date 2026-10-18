@@ -519,10 +519,10 @@ export const PhotoEditorDialog: React.FC = () => {
         />
 
         {/* Modal Header */}
-        <div className="px-6 py-3.5 border-b border-slate-800 flex items-center justify-between bg-black/80">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
-              <Sparkles className="w-5 h-5" />
+        <div className="px-4 sm:px-6 py-3 border-b border-slate-800 flex items-center justify-between bg-black/80 gap-2">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="p-2 sm:p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 shrink-0">
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -533,28 +533,28 @@ export const PhotoEditorDialog: React.FC = () => {
                   Photo Editor & Passport ID Crop
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
-                Crop (Passport 3.5×4.5cm, 1:1, 16:9), rotate, apply document scanner filters, and insert into PDF.
+              <p className="text-xs text-slate-400 hidden sm:block truncate">
+                Crop (Passport 3.5×4.5cm, 1:1, 16:9), rotate, apply document scanner filters.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={() => setActiveModal('student-resizer')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 text-indigo-200 text-xs font-semibold border border-indigo-700/60 transition-colors"
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 text-indigo-200 text-xs font-semibold border border-indigo-700/60 transition-colors"
               title="Student & Exam Resizer (Target KB, DOP)"
             >
               <GraduationCap className="w-3.5 h-3.5 text-amber-400" />
-              <span>Student Suite</span>
+              <span className="hidden sm:inline">Student Suite</span>
             </button>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition-colors"
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition-colors"
               title="Upload new image"
             >
               <Upload className="w-3.5 h-3.5 text-sky-400" />
-              <span>Upload Photo</span>
+              <span className="hidden sm:inline">Upload Photo</span>
             </button>
             <button
               onClick={() => setActiveModal(null)}
