@@ -307,7 +307,7 @@ export const HomeDashboard: React.FC = () => {
       <input
         ref={pdfInputRef}
         type="file"
-        accept=".pdf"
+        accept=".pdf,application/pdf"
         className="hidden"
         onChange={(e) => {
           if (e.target.files && e.target.files.length > 0) {

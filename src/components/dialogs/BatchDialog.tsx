@@ -473,7 +473,7 @@ export const BatchDialog: React.FC = () => {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".pdf"
+                  accept=".pdf,application/pdf"
                   multiple
                   onChange={(e) => handleFilesSelected(e.target.files)}
                   className="hidden"

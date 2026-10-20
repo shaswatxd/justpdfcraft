@@ -166,7 +166,7 @@ export const MergeDialog: React.FC = () => {
             <span>Add PDF Files... (or drag & drop PDFs here)</span>
             <input
               type="file"
-              accept=".pdf"
+              accept=".pdf,application/pdf"
               multiple
               onClick={(e) => {
                 (e.target as HTMLInputElement).value = '';

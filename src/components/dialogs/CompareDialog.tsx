@@ -270,7 +270,7 @@ export const CompareDialog: React.FC = () => {
                       Browse
                       <input
                         type="file"
-                        accept=".pdf"
+                        accept=".pdf,application/pdf"
                         onChange={handlePickSecondFile}
                         className="hidden"
                       />

@@ -421,7 +421,7 @@ export const App: React.FC = () => {
       <input
         ref={hiddenFileInputRef}
         type="file"
-        accept=".pdf"
+        accept=".pdf,application/pdf"
         onChange={handleGlobalFile}
         className="hidden"
       />

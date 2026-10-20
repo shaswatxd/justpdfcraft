@@ -463,7 +463,7 @@ export const OCRDialog: React.FC = () => {
         <input
           type="file"
           ref={fileInputRef}
-          accept="application/pdf"
+          accept=".pdf,application/pdf"
           className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0];

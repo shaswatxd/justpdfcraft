@@ -55,7 +55,7 @@ export const NoDocumentState: React.FC<NoDocumentStateProps> = ({
       <input
         ref={fileInputRef}
         type="file"
-        accept=".pdf"
+        accept=".pdf,application/pdf"
         onChange={handleFileChange}
         className="hidden"
       />

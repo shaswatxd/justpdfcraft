@@ -225,7 +225,15 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
         const engine = getPDFEngine();
         const textContent = await engine.extractPageText(documentId, pageIndex);
         if (!isCancelled) {
-          setPageTextItems(textContent.items || []);
+          const items = (textContent.items || []).filter((item) => item.str && item.str.trim().length > 0);
+          setPageTextItems(items);
+          if (currentTool === 'edit_text' && items.length === 0 && _isActive) {
+            addToast({
+              type: 'info',
+              title: 'No Digital Text Detected',
+              message: 'This page may be scanned or image-based. Tap anywhere on the page to insert text.',
+            });
+          }
         }
       } catch (err) {
         console.warn('Error fetching text items for edit/selection:', err);
@@ -235,7 +243,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
     return () => {
       isCancelled = true;
     };
-  }, [currentTool, documentId, pageIndex, renderVersion, externalRenderVersion]);
+  }, [currentTool, documentId, pageIndex, renderVersion, externalRenderVersion, _isActive]);
 
   // Load existing annotations on mount or when renderVersion updates
   useEffect(() => {
@@ -311,7 +319,16 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
   const handlePointerDown = async (e: React.PointerEvent<HTMLDivElement>) => {
     // Only primary button (left click / touch / stylus tip)
     if (e.button !== 0 || isSpacePressed) return;
-    if (['select', 'hand', 'edit_text'].includes(currentTool)) return;
+    // Primary selection and hand tools return early
+    if (['select', 'hand'].includes(currentTool)) return;
+
+    // In direct edit text mode, tapping on empty page space triggers text insertion at that spot
+    if (currentTool === 'edit_text') {
+      const { clientX, clientY, pdfX, pdfY } = getPdfCoordinates(e);
+      setTextInputPos({ x: clientX, y: clientY, pdfX, pdfY });
+      setInlineText('');
+      return;
+    }
 
     const isTextSpanClicked = Boolean(
       (e.target as HTMLElement)?.closest('[data-text-layer]') ||
@@ -983,7 +1000,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
           ? 'cursor-none'
           : ['draw', 'measure', 'rectangle', 'circle', 'line', 'arrow', 'snip_ocr', 'redact'].includes(currentTool)
           ? 'cursor-crosshair'
-          : currentTool === 'text'
+          : currentTool === 'text' || currentTool === 'edit_text'
           ? 'cursor-text'
           : currentTool === 'hand'
           ? 'cursor-grab'
@@ -1011,37 +1028,41 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
 
       {/* Direct In-Place Text Editing Overlays */}
       {currentTool === 'edit_text' &&
-        pageTextItems.map((item, idx) => {
-          const screenX = (item.x / dimensions.width) * width;
-          const screenH = Math.max(12, (item.height / dimensions.height) * height);
-          const screenY = height - ((item.y + (item.height || 12)) / dimensions.height) * height;
-          const screenW = Math.max(14, (item.width / dimensions.width) * width);
+        pageTextItems
+          .filter((item) => item.str && item.str.trim().length > 0)
+          .map((item, idx) => {
+            const screenX = (item.x / dimensions.width) * width;
+            const screenH = Math.max(12, (item.height / dimensions.height) * height);
+            const screenY = height - ((item.y + (item.height || 12)) / dimensions.height) * height;
+            const screenW = Math.max(14, (item.width / dimensions.width) * width);
 
-          return (
-            <div
-              key={`edit_text_${idx}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setEditingItem({
-                  item,
-                  pdfRect: [item.x, item.y, Math.max(item.width, 10), Math.max(item.height || 12, 10)],
-                  screenRect: { x: screenX, y: screenY, w: screenW, h: screenH },
-                });
-                setEditInputText(item.str);
-              }}
-              className="absolute z-20 transition-all border border-dashed border-swift-500/50 hover:border-swift-400 hover:bg-swift-500/25 cursor-text rounded-sm group flex items-center justify-center before:absolute before:-inset-1.5 before:content-['']"
-              style={{
-                left: `${screenX}px`,
-                top: `${screenY}px`,
-                width: `${screenW}px`,
-                height: `${screenH}px`,
-              }}
-              title={`Click to edit: "${item.str}"`}
-            >
-              <span className="sr-only">{item.str}</span>
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={`edit_text_${idx}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingItem({
+                    item,
+                    pdfRect: [item.x, item.y, Math.max(item.width, 10), Math.max(item.height || 12, 10)],
+                    screenRect: { x: screenX, y: screenY, w: screenW, h: screenH },
+                  });
+                  setEditInputText(item.str);
+                }}
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                className="absolute z-20 transition-all border border-dashed border-swift-500/50 hover:border-swift-400 hover:bg-swift-500/25 cursor-text rounded-sm group flex items-center justify-center before:absolute before:-inset-1.5 before:content-['']"
+                style={{
+                  left: `${screenX}px`,
+                  top: `${screenY}px`,
+                  width: `${screenW}px`,
+                  height: `${screenH}px`,
+                }}
+                title={`Click to edit: "${item.str}"`}
+              >
+                <span className="sr-only">{item.str}</span>
+              </div>
+            );
+          })}
 
       {/* Direct In-Place Text Editor Popup */}
       {editingItem && (
@@ -1049,9 +1070,11 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
           className="absolute z-40 bg-black border border-swift-500 p-2 rounded-xl shadow-2xl flex items-center gap-1.5 animate-scale-in max-w-[calc(100vw-1.5rem)]"
           style={{
             left: `${Math.max(4, Math.min(Math.max(4, width - 270), editingItem.screenRect.x))}px`,
-            top: `${Math.max(4, editingItem.screenRect.y - 48)}px`,
+            top: `${Math.max(4, editingItem.screenRect.y < 55 ? editingItem.screenRect.y + editingItem.screenRect.h + 8 : editingItem.screenRect.y - 48)}px`,
           }}
           onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
         >
           <div className="flex items-center gap-1 text-[10px] text-swift-400 font-semibold uppercase tracking-wider pl-1 shrink-0">
             <Edit3 className="w-3 h-3" />
@@ -1070,6 +1093,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
             placeholder="Replacement text..."
           />
           <button
+            type="button"
             onClick={handleCommitTextEdit}
             className="p-1.5 bg-swift-600 hover:bg-swift-500 text-white rounded-lg transition-colors shrink-0"
             title="Save text changes"
@@ -1077,6 +1101,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
             <Check className="w-3.5 h-3.5" />
           </button>
           <button
+            type="button"
             onClick={() => setEditingItem(null)}
             className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors shrink-0"
             title="Cancel"
@@ -1089,12 +1114,14 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
       {/* AcroForm Field Builder Popup */}
       {newFieldModal && (
         <div
-          className="absolute z-40 bg-black border border-swift-500 p-3 rounded-xl shadow-2xl flex flex-col gap-2 animate-scale-in text-xs w-64"
+          className="absolute z-40 bg-black border border-swift-500 p-3 rounded-xl shadow-2xl flex flex-col gap-2 animate-scale-in text-xs w-64 max-w-[calc(100vw-1.5rem)]"
           style={{
             left: `${Math.max(10, Math.min(width - 270, (newFieldModal.rect[0] / dimensions.width) * width))}px`,
             top: `${Math.max(10, height - ((newFieldModal.rect[1] + newFieldModal.rect[3]) / dimensions.height) * height - 80)}px`,
           }}
           onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
         >
           <div className="font-semibold text-white flex items-center justify-between">
             <span className="capitalize">New {newFieldModal.type} Field</span>
@@ -1779,11 +1806,14 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
       {/* Inline Text Input Placement Box */}
       {textInputPos && (
         <div
-          className="absolute z-30 bg-black/95 border border-swift-500 p-2 rounded-lg shadow-xl flex items-center gap-2"
+          className="absolute z-30 bg-black/95 border border-swift-500 p-2 rounded-lg shadow-xl flex items-center gap-2 max-w-[calc(100vw-1.5rem)]"
           style={{
-            left: `${Math.max(8, Math.min(width - 270, textInputPos.x))}px`,
-            top: `${Math.max(8, Math.min(height - 50, textInputPos.y))}px`,
+            left: `${Math.max(8, Math.min(Math.max(8, width - 260), textInputPos.x))}px`,
+            top: `${Math.max(8, Math.min(height - 50, textInputPos.y < 50 ? textInputPos.y + 20 : textInputPos.y - 45))}px`,
           }}
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
         >
           <input
             autoFocus
@@ -1795,18 +1825,20 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
               if (e.key === 'Escape') setTextInputPos(null);
             }}
             placeholder="Type text to place..."
-            className="bg-slate-800 text-white text-xs px-2 py-1 rounded border border-slate-700 outline-none w-48"
+            className="bg-slate-800 text-white text-xs px-2 py-1 rounded border border-slate-700 outline-none w-36 xs:w-48 shrink min-w-0"
           />
           <button
+            type="button"
             onClick={handleCommitInlineText}
-            className="p-1 bg-swift-600 hover:bg-swift-500 text-white rounded"
+            className="p-1.5 bg-swift-600 hover:bg-swift-500 text-white rounded transition-colors shrink-0"
             title="Place text"
           >
             <Check className="w-3.5 h-3.5" />
           </button>
           <button
+            type="button"
             onClick={() => setTextInputPos(null)}
-            className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded"
+            className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-colors shrink-0"
             title="Cancel"
           >
             <X className="w-3.5 h-3.5" />
@@ -1817,12 +1849,14 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
       {/* Inline Sticky Note Placement Card */}
       {pendingNote && (
         <div
-          className="absolute z-40 bg-black/95 border border-amber-400/80 p-3 rounded-xl shadow-2xl flex flex-col gap-2.5 animate-scale-in text-xs w-64 backdrop-blur-md"
+          className="absolute z-40 bg-black/95 border border-amber-400/80 p-3 rounded-xl shadow-2xl flex flex-col gap-2.5 animate-scale-in text-xs w-64 backdrop-blur-md max-w-[calc(100vw-1.5rem)]"
           style={{
-            left: `${Math.max(8, Math.min(width - 264, pendingNote.clientX - 12))}px`,
+            left: `${Math.max(8, Math.min(Math.max(8, width - 264), pendingNote.clientX - 12))}px`,
             top: `${Math.max(8, Math.min(height - 180, pendingNote.clientY + 14))}px`,
           }}
           onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between pb-1.5 border-b border-slate-800">
             <div className="flex items-center gap-1.5 text-amber-400 font-semibold text-xs">

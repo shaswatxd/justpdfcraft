@@ -85,7 +85,7 @@ export const MobileEditorToolbar: React.FC = () => {
         addToast({
           type: 'info',
           title: 'Direct Text Edit Active',
-          message: 'Tap any text box on the page to edit words.',
+          message: 'Tap any word to edit, or tap empty space to add text.',
         });
       } else if (tool === 'text') {
         addToast({
