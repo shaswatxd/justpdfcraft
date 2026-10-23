@@ -20,13 +20,20 @@ import {
   Palette,
   Zap,
   GraduationCap,
+  Thermometer,
+  Coffee,
+  Droplets,
+  Aperture,
+  Frame,
+  Type,
+  Maximize2,
 } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
 import { getPDFEngine } from '@core/pdf/engine.factory';
 
 type AspectRatioMode = 'free' | 'passport' | '1:1' | '4:3' | '16:9' | '3:4';
-type FilterType = 'normal' | 'scanner' | 'grayscale' | 'auto' | 'vivid' | 'warm' | 'cool' | 'invert';
+type FilterType = 'normal' | 'scanner' | 'grayscale' | 'auto' | 'vivid' | 'warm' | 'cool' | 'invert' | 'dramatic' | 'faded' | 'sunset' | 'bw-high';
 
 interface CropBox {
   x: number;
@@ -51,9 +58,10 @@ export const PhotoEditorDialog: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const taintWarnedRef = useRef<boolean>(false);
 
   // Source image data
-  const [sourceImage, setSourceImage] = useState<HTMLImageElement | null>(null);
+  const [sourceImage, setSourceImage] = useState<HTMLImageElement | HTMLCanvasElement | null>(null);
   const [rotation, setRotation] = useState<number>(0);
   const [flipH, setFlipH] = useState<boolean>(false);
   const [flipV, setFlipV] = useState<boolean>(false);
@@ -63,6 +71,16 @@ export const PhotoEditorDialog: React.FC = () => {
   const [contrastVal, setContrastVal] = useState<number>(0); // -100 to 100
   const [saturation, setSaturation] = useState<number>(0); // -100 to 100
   const [sharpness, setSharpness] = useState<number>(0); // 0 to 100
+  const [temperature, setTemperature] = useState<number>(0); // -100 to 100
+  const [sepia, setSepia] = useState<number>(0); // 0 to 100
+  const [blur, setBlur] = useState<number>(0); // 0 to 20
+  const [vignette, setVignette] = useState<number>(0); // 0 to 100
+  const [border, setBorder] = useState<number>(0); // 0 to 60 (px frame)
+  const [scalePct, setScalePct] = useState<number>(100); // 25 to 150 output resize
+  const [photoText, setPhotoText] = useState<string>('');
+  const [textSize, setTextSize] = useState<number>(10); // % of canvas min dimension
+  const [textColor, setTextColor] = useState<string>('#ffffff');
+  const [textPos, setTextPos] = useState<string>('bottom-right');
   const [activeFilter, setActiveFilter] = useState<FilterType>('normal');
 
   // Cropping state
@@ -85,7 +103,29 @@ export const PhotoEditorDialog: React.FC = () => {
       const img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = () => {
-        setSourceImage(img);
+        const urlToClean = activePhotoUrl;
+        // Mobile stability: downscale very large photos so pixel edits stay fast
+        const MAX_DIM = 2400;
+        const naturalW = img.naturalWidth || img.width;
+        const naturalH = img.naturalHeight || img.height;
+        const largest = Math.max(naturalW, naturalH);
+
+        if (largest > MAX_DIM) {
+          const ratio = MAX_DIM / largest;
+          const c = document.createElement('canvas');
+          c.width = Math.max(1, Math.round(naturalW * ratio));
+          c.height = Math.max(1, Math.round(naturalH * ratio));
+          const cc = c.getContext('2d');
+          if (cc) {
+            cc.drawImage(img, 0, 0, c.width, c.height);
+            setSourceImage(c);
+          } else {
+            setSourceImage(img);
+          }
+        } else {
+          setSourceImage(img);
+        }
+
         resetAdjustments();
         if (urlToClean.startsWith('blob:')) {
           URL.revokeObjectURL(urlToClean);
@@ -116,6 +156,16 @@ export const PhotoEditorDialog: React.FC = () => {
     setContrastVal(0);
     setSaturation(0);
     setSharpness(0);
+    setTemperature(0);
+    setSepia(0);
+    setBlur(0);
+    setVignette(0);
+    setBorder(0);
+    setScalePct(100);
+    setPhotoText('');
+    setTextSize(10);
+    setTextColor('#ffffff');
+    setTextPos('bottom-right');
     setActiveFilter('normal');
     setIsCropping(false);
     setCropBox(null);
@@ -128,10 +178,13 @@ export const PhotoEditorDialog: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Calculate canvas size based on rotation
+    // Calculate canvas size based on rotation + output resize (+ optional white border frame)
     const isRotated90or270 = Math.abs(rotation % 180) === 90;
-    const cw = isRotated90or270 ? sourceImage.height : sourceImage.width;
-    const ch = isRotated90or270 ? sourceImage.width : sourceImage.height;
+    const scaleF = Math.max(0.25, Math.min(1.5, scalePct / 100));
+    const baseW = Math.max(1, Math.round((isRotated90or270 ? sourceImage.height : sourceImage.width) * scaleF));
+    const baseH = Math.max(1, Math.round((isRotated90or270 ? sourceImage.width : sourceImage.height) * scaleF));
+    const cw = baseW + border * 2;
+    const ch = baseH + border * 2;
 
     canvas.width = cw;
     canvas.height = ch;
@@ -139,11 +192,21 @@ export const PhotoEditorDialog: React.FC = () => {
     ctx.save();
     ctx.clearRect(0, 0, cw, ch);
 
-    // Center transform
+    // White frame border (ideal for passport-size photo prints)
+    if (border > 0) {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, cw, ch);
+    }
+
+    // Center transform (blur applied during draw)
+    if (blur > 0) {
+      ctx.filter = `blur(${blur}px)`;
+    }
     ctx.translate(cw / 2, ch / 2);
     ctx.rotate((rotation * Math.PI) / 180);
     ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
-    ctx.drawImage(sourceImage, -sourceImage.width / 2, -sourceImage.height / 2);
+    ctx.drawImage(sourceImage, -baseW / 2, -baseH / 2, baseW, baseH);
+    ctx.filter = 'none';
     ctx.restore();
 
     // Apply pixel-level filters & adjustments
@@ -151,15 +214,33 @@ export const PhotoEditorDialog: React.FC = () => {
       brightness !== 0 ||
       contrastVal !== 0 ||
       saturation !== 0 ||
+      temperature !== 0 ||
+      sepia > 0 ||
       activeFilter !== 'normal' ||
       sharpness > 0
     ) {
-      const imgData = ctx.getImageData(0, 0, cw, ch);
+      let imgData: ImageData;
+      try {
+        imgData = ctx.getImageData(0, 0, cw, ch);
+      } catch {
+        // Tainted canvas security guard — fail gracefully instead of crashing
+        if (!taintWarnedRef.current) {
+          taintWarnedRef.current = true;
+          addToast({
+            type: 'error',
+            title: 'Edit Failed',
+            message: 'This image is blocked by browser security. Please upload the photo file directly.',
+          });
+        }
+        return;
+      }
       const data = imgData.data;
 
       const bFactor = (brightness / 100) * 255;
       const cFactor = (259 * (contrastVal + 255)) / (255 * (259 - contrastVal));
       const sFactor = (saturation + 100) / 100;
+      const tFactor = (temperature / 100) * 40;
+      const sepAmount = sepia / 100;
 
       for (let i = 0; i < data.length; i += 4) {
         let r = data[i];
@@ -179,12 +260,28 @@ export const PhotoEditorDialog: React.FC = () => {
           b = Math.min(255, Math.max(0, cFactor * (b - 128) + 128));
         }
 
+        // 1b. Temperature (warm/cool tint)
+        if (temperature !== 0) {
+          r += tFactor;
+          b -= tFactor;
+        }
+
         // 2. Saturation
         if (saturation !== 0) {
           const gray = 0.2989 * r + 0.587 * g + 0.114 * b;
           r = Math.min(255, Math.max(0, gray + (r - gray) * sFactor));
           g = Math.min(255, Math.max(0, gray + (g - gray) * sFactor));
           b = Math.min(255, Math.max(0, gray + (b - gray) * sFactor));
+        }
+
+        // 2b. Sepia tone blend
+        if (sepia > 0) {
+          const sr = 0.393 * r + 0.769 * g + 0.189 * b;
+          const sg = 0.349 * r + 0.686 * g + 0.168 * b;
+          const sb = 0.272 * r + 0.534 * g + 0.131 * b;
+          r = r * (1 - sepAmount) + sr * sepAmount;
+          g = g * (1 - sepAmount) + sg * sepAmount;
+          b = b * (1 - sepAmount) + sb * sepAmount;
         }
 
         // 3. Preset Filters
@@ -216,6 +313,30 @@ export const PhotoEditorDialog: React.FC = () => {
           r = 255 - r;
           g = 255 - g;
           b = 255 - b;
+        } else if (activeFilter === 'dramatic') {
+          // S-curve high contrast punch
+          const f = (v: number) => {
+            const n = v / 255;
+            const s = n < 0.5 ? 0.5 * Math.pow(n * 2, 1.7) : 1 - 0.5 * Math.pow((1 - n) * 2, 1.7);
+            return s * 255;
+          };
+          r = f(r);
+          g = f(g);
+          b = f(b);
+        } else if (activeFilter === 'faded') {
+          // Lifted blacks, muted tone
+          r = r * 0.82 + 34;
+          g = g * 0.82 + 34;
+          b = b * 0.82 + 36;
+        } else if (activeFilter === 'sunset') {
+          r = Math.min(255, r * 1.12 + 8);
+          g = Math.min(255, g * 0.98);
+          b = Math.max(0, b * 0.72);
+        } else if (activeFilter === 'bw-high') {
+          // Strong monochrome with contrast
+          const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+          const val = Math.min(255, Math.max(0, (gray - 128) * 1.45 + 128));
+          r = g = b = val;
         }
 
         data[i] = r;
@@ -236,7 +357,57 @@ export const PhotoEditorDialog: React.FC = () => {
         applyConvolution(ctx, cw, ch, weights);
       }
     }
-  }, [sourceImage, rotation, flipH, flipV, brightness, contrastVal, saturation, activeFilter, sharpness]);
+
+    // 5. Vignette (soft dark edges)
+    if (vignette > 0) {
+      const grd = ctx.createRadialGradient(
+        cw / 2,
+        ch / 2,
+        Math.min(cw, ch) * 0.4,
+        cw / 2,
+        ch / 2,
+        Math.max(cw, ch) * 0.72
+      );
+      grd.addColorStop(0, 'rgba(0,0,0,0)');
+      grd.addColorStop(1, `rgba(0,0,0,${Math.min(0.9, vignette / 100)})`);
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, cw, ch);
+    }
+
+    // 6. Text overlay (name / date / caption)
+    const textStr = photoText.trim();
+    if (textStr) {
+      const fontPx = Math.max(10, (textSize / 100) * Math.min(cw, ch));
+      const pad = Math.max(6, fontPx * 0.5);
+
+      const hAlign: 'top' | 'middle' | 'bottom' = textPos.startsWith('top')
+        ? 'top'
+        : textPos.startsWith('center')
+          ? 'middle'
+          : 'bottom';
+      const vAlign: 'left' | 'center' | 'right' = textPos.endsWith('left')
+        ? 'left'
+        : textPos.endsWith('right')
+          ? 'right'
+          : 'center';
+
+      ctx.font = `bold ${fontPx}px ui-sans-serif, system-ui, -apple-system, sans-serif`;
+      ctx.textAlign = vAlign;
+      ctx.textBaseline = hAlign;
+      const tx = vAlign === 'left' ? pad : vAlign === 'right' ? cw - pad : cw / 2;
+      const ty = hAlign === 'top' ? pad : hAlign === 'bottom' ? ch - pad : ch / 2;
+
+      // Dark stroke behind for readability on any photo
+      ctx.save();
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = 'rgba(0,0,0,0.72)';
+      ctx.lineWidth = Math.max(2, fontPx * 0.14);
+      ctx.strokeText(textStr, tx, ty);
+      ctx.fillStyle = textColor;
+      ctx.fillText(textStr, tx, ty);
+      ctx.restore();
+    }
+  }, [sourceImage, rotation, flipH, flipV, brightness, contrastVal, saturation, activeFilter, sharpness, temperature, sepia, blur, vignette, border, scalePct, photoText, textSize, textColor, textPos, addToast]);
 
   useEffect(() => {
     renderCanvas();
@@ -534,7 +705,7 @@ export const PhotoEditorDialog: React.FC = () => {
                 </span>
               </div>
               <p className="hidden sm:block text-xs text-slate-400 truncate">
-                Crop (Passport 3.5×4.5cm, 1:1, 16:9), rotate, apply document scanner filters, and insert into PDF.
+                Crop (Passport 3.5×4.5cm, 1:1, 16:9), rotate, 12 filters, tune (warm, sepia, blur, vignette, frame), add text, resize, and insert into PDF.
               </p>
             </div>
           </div>
@@ -810,6 +981,10 @@ export const PhotoEditorDialog: React.FC = () => {
                     { id: 'warm', label: 'Warm', hint: 'Warm tone' },
                     { id: 'cool', label: 'Cool', hint: 'Blue tone' },
                     { id: 'invert', label: 'Invert', hint: 'Negative' },
+                    { id: 'dramatic', label: 'Dramatic', hint: 'Punchy' },
+                    { id: 'faded', label: 'Faded', hint: 'Soft retro' },
+                    { id: 'sunset', label: 'Sunset', hint: 'Golden sky' },
+                    { id: 'bw-high', label: 'B&W Strong', hint: 'Deep mono' },
                   ].map((f) => (
                     <button
                       key={f.id}
@@ -840,6 +1015,11 @@ export const PhotoEditorDialog: React.FC = () => {
                       setContrastVal(0);
                       setSaturation(0);
                       setSharpness(0);
+                      setTemperature(0);
+                      setSepia(0);
+                      setBlur(0);
+                      setVignette(0);
+                      setBorder(0);
                     }}
                     className="text-[10px] text-slate-400 hover:text-slate-200 underline"
                   >
@@ -922,6 +1102,208 @@ export const PhotoEditorDialog: React.FC = () => {
                     className="w-full accent-swift-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
                   />
                 </div>
+
+                {/* Temperature */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs text-slate-300">
+                    <span className="flex items-center gap-1">
+                      <Thermometer className="w-3 h-3 text-orange-400" />
+                      Temperature (Warm / Cool)
+                    </span>
+                    <span className="font-mono text-[11px] text-slate-400">{temperature > 0 ? `+${temperature}` : temperature}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={-100}
+                    max={100}
+                    value={temperature}
+                    onChange={(e) => setTemperature(Number(e.target.value))}
+                    className="w-full accent-swift-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                  />
+                </div>
+
+                {/* Sepia */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs text-slate-300">
+                    <span className="flex items-center gap-1">
+                      <Coffee className="w-3 h-3 text-amber-600" />
+                      Sepia (Vintage Tone)
+                    </span>
+                    <span className="font-mono text-[11px] text-slate-400">{sepia}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={sepia}
+                    onChange={(e) => setSepia(Number(e.target.value))}
+                    className="w-full accent-swift-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                  />
+                </div>
+
+                {/* Blur */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs text-slate-300">
+                    <span className="flex items-center gap-1">
+                      <Droplets className="w-3 h-3 text-sky-400" />
+                      Blur (Soften)
+                    </span>
+                    <span className="font-mono text-[11px] text-slate-400">{blur}px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={20}
+                    value={blur}
+                    onChange={(e) => setBlur(Number(e.target.value))}
+                    className="w-full accent-swift-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                  />
+                </div>
+
+                {/* Vignette */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs text-slate-300">
+                    <span className="flex items-center gap-1">
+                      <Aperture className="w-3 h-3 text-violet-400" />
+                      Vignette (Dark Edges)
+                    </span>
+                    <span className="font-mono text-[11px] text-slate-400">{vignette}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={vignette}
+                    onChange={(e) => setVignette(Number(e.target.value))}
+                    className="w-full accent-swift-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                  />
+                </div>
+
+                {/* White Border Frame */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs text-slate-300">
+                    <span className="flex items-center gap-1">
+                      <Frame className="w-3 h-3 text-fuchsia-400" />
+                      White Border (Passport Frame)
+                    </span>
+                    <span className="font-mono text-[11px] text-slate-400">{border}px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={60}
+                    value={border}
+                    onChange={(e) => setBorder(Number(e.target.value))}
+                    className="w-full accent-swift-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              {/* Tool Section: Text on Photo */}
+              <div className="space-y-2.5 p-3.5 rounded-xl border border-slate-800 bg-black/60">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                  <Type className="w-3.5 h-3.5 text-pink-400" />
+                  Text on Photo
+                </label>
+
+                <input
+                  type="text"
+                  value={photoText}
+                  onChange={(e) => setPhotoText(e.target.value)}
+                  placeholder="Name, date, exam roll no..."
+                  maxLength={60}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 text-xs placeholder:text-slate-500 focus:border-pink-500 focus:outline-none"
+                />
+
+                {photoText.trim() !== '' && (
+                  <>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs text-slate-300">
+                        <span>Size</span>
+                        <span className="font-mono text-[11px] text-slate-400">{textSize}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={4}
+                        max={60}
+                        value={textSize}
+                        onChange={(e) => setTextSize(Number(e.target.value))}
+                        className="w-full accent-swift-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <span className="text-xs text-slate-300">Color</span>
+                      <div className="flex items-center gap-1.5">
+                        {['#ffffff', '#000000', '#ef4444', '#3b82f6', '#22c55e', '#facc15'].map((c) => (
+                          <button
+                            key={c}
+                            onClick={() => setTextColor(c)}
+                            className={`w-6 h-6 rounded-full border-2 transition-transform ${textColor === c ? 'border-pink-400 scale-110' : 'border-slate-600'}`}
+                            style={{ backgroundColor: c }}
+                            aria-label={`Text color ${c}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <span className="text-xs text-slate-300">Position</span>
+                      <div className="grid grid-cols-3 gap-1 max-w-[220px]">
+                        {['top-left', 'top-center', 'top-right', 'center-left', 'center-center', 'center-right', 'bottom-left', 'bottom-center', 'bottom-right'].map((p) => (
+                          <button
+                            key={p}
+                            onClick={() => setTextPos(p)}
+                            className={`py-1.5 rounded-md border text-[9px] font-medium transition-all ${
+                              textPos === p
+                                ? 'bg-pink-600 text-white border-pink-500'
+                                : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-750'
+                            }`}
+                          >
+                            {p.split('-').map((w) => w[0].toUpperCase()).join('')}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Tool Section: Output Size (Resize) */}
+              <div className="space-y-2.5 p-3.5 rounded-xl border border-slate-800 bg-black/60">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                  <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
+                  Output Size (Resize)
+                </label>
+
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs text-slate-300">
+                    <span>Scale (aspect locked)</span>
+                    <span className="font-mono text-[11px] text-slate-400">{scalePct}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={25}
+                    max={150}
+                    value={scalePct}
+                    onChange={(e) => setScalePct(Number(e.target.value))}
+                    className="w-full accent-swift-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                  />
+                </div>
+                {sourceImage && (
+                  (() => {
+                    const rot90 = Math.abs(rotation % 180) === 90;
+                    const w0 = sourceImage.width;
+                    const h0 = sourceImage.height;
+                    const outW = Math.round((rot90 ? h0 : w0) * (scalePct / 100)) + border * 2;
+                    const outH = Math.round((rot90 ? w0 : h0) * (scalePct / 100)) + border * 2;
+                    return (
+                      <p className="text-[11px] font-mono text-slate-400">
+                        Final image: {outW} × {outH} px
+                      </p>
+                    );
+                  })()
+                )}
               </div>
 
               {/* Tool Section: Insert Back into PDF Document */}

@@ -17,6 +17,9 @@ import {
   X,
   ScanText,
   Shield,
+  Crop,
+  RefreshCw,
+  Eraser,
 } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore, ModalType } from '@/stores/uiStore';
@@ -548,6 +551,33 @@ export const HomeDashboard: React.FC = () => {
               </button>
               <button
                 type="button"
+                onClick={() => setActiveModal('photo-editor')}
+                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-emerald-300 text-[11px] font-medium shrink-0 active:scale-95"
+              >
+                Edit Photo
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveImageTab('bulk-compress');
+                  setActiveModal('image-tools');
+                }}
+                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
+              >
+                Compress
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveImageTab('converter');
+                  setActiveModal('image-tools');
+                }}
+                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
+              >
+                JPG ⇄ PNG
+              </button>
+              <button
+                type="button"
                 onClick={() => {
                   pendingWorkflowRef.current = { modal: 'photo-editor', label: 'Photo Studio' };
                   photoInputRef.current?.click();
@@ -770,8 +800,68 @@ export const HomeDashboard: React.FC = () => {
             </div>
 
             {/* Quick action triggers for Photo */}
-            <div className="pt-3 mt-3 border-t border-zinc-900 flex flex-wrap items-center justify-center gap-1.5 text-[10px] sm:text-[11px] text-zinc-400">
-              <span className="text-zinc-500 font-medium">Quick Photo:</span>
+            <div className="pt-3 mt-3 border-t border-zinc-900 flex flex-col items-center gap-1.5 text-[10px] sm:text-[11px] text-zinc-400">
+              <div className="flex flex-wrap items-center justify-center gap-1.5">
+                <span className="text-zinc-500 font-medium">Edit Tools:</span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    pendingWorkflowRef.current = { modal: 'photo-editor', label: 'Photo Studio' };
+                    photoInputRef.current?.click();
+                  }}
+                  className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors inline-flex items-center gap-1"
+                >
+                  <Crop className="w-3 h-3 text-emerald-400" />
+                  Crop &amp; Filters
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    triggerWorkflowWithFile({ modal: 'image-tools', initialTab: 'bulk-compress', label: 'Image Compressor' });
+                  }}
+                  className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors inline-flex items-center gap-1"
+                >
+                  <FileArchive className="w-3 h-3 text-teal-400" />
+                  Compress
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    triggerWorkflowWithFile({ modal: 'image-tools', initialTab: 'converter', label: 'Format Converter' });
+                  }}
+                  className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors inline-flex items-center gap-1"
+                >
+                  <RefreshCw className="w-3 h-3 text-sky-400" />
+                  JPG ⇄ PNG
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    triggerWorkflowWithFile({ modal: 'student-resizer', initialTab: 'combiner', label: 'Photo + Sign Combiner' });
+                  }}
+                  className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors inline-flex items-center gap-1"
+                >
+                  <Layers className="w-3 h-3 text-blue-400" />
+                  Sign Combine
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    triggerWorkflowWithFile({ modal: 'student-resizer', initialTab: 'clean-sign', label: 'Signature Cleaner' });
+                  }}
+                  className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors inline-flex items-center gap-1"
+                >
+                  <Eraser className="w-3 h-3 text-rose-400" />
+                  Sign Clean
+                </button>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-1.5">
+                <span className="text-zinc-500 font-medium">Quick Photo:</span>
               <button
                 type="button"
                 onClick={(e) => {
@@ -803,6 +893,7 @@ export const HomeDashboard: React.FC = () => {
               >
                 Passport Crop
               </button>
+              </div>
             </div>
           </div>
         </div>
