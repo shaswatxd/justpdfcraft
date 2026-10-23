@@ -66,7 +66,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
                   setShowOnlyPopular(false);
                   onCategoryChange(tab.id);
                 }}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all select-none ${
+                className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all select-none ${
                   isActive
                     ? 'bg-swift-600 text-white font-semibold shadow-md shadow-swift-950/50'
                     : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'
@@ -84,7 +84,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
               setShowOnlyFavorites(false);
               setShowOnlyPopular((prev) => !prev);
             }}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all select-none ${
+            className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all select-none ${
               showOnlyPopular
                 ? 'bg-amber-600 text-white font-semibold shadow-md shadow-amber-950/50'
                 : 'text-zinc-400 hover:text-amber-300 hover:bg-zinc-900/60'
@@ -100,7 +100,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
               setShowOnlyPopular(false);
               setShowOnlyFavorites((prev) => !prev);
             }}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all select-none ${
+            className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all select-none ${
               showOnlyFavorites
                 ? 'bg-rose-600 text-white font-semibold shadow-md shadow-rose-950/50'
                 : 'text-zinc-400 hover:text-rose-300 hover:bg-zinc-900/60'

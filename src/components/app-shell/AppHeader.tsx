@@ -166,7 +166,7 @@ export const AppHeader: React.FC = () => {
           <div className="flex md:hidden items-center gap-2 max-w-[190px] xs:max-w-[240px]">
             <button
               onClick={handleGoHome}
-              className="p-1.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white shrink-0"
+              className="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white shrink-0"
               title="Back to Home Dashboard"
             >
               <ArrowLeft className="w-4 h-4 text-swift-400" />
@@ -177,11 +177,11 @@ export const AppHeader: React.FC = () => {
               </span>
               <button
                 onClick={toggleSidebar}
-                className="text-[10px] text-slate-400 hover:text-swift-400 font-mono text-left transition-colors flex items-center gap-1"
+                className="text-[10px] text-slate-400 hover:text-swift-400 font-mono text-left transition-colors flex items-center gap-1 py-1.5 -my-1.5"
                 title="Tap to toggle page thumbnails"
               >
                 <span>Page {currentPage}/{pageCount}</span>
-                <span className="text-[9px] bg-slate-800 px-1 py-0.2 rounded text-slate-400">Pages</span>
+                <span className="text-[9px] bg-slate-800 px-1 py-0.5 rounded text-slate-400">Pages</span>
               </button>
             </div>
           </div>
@@ -424,7 +424,7 @@ export const AppHeader: React.FC = () => {
               <button
                 onClick={() => undo()}
                 disabled={undoStack.length === 0}
-                className="p-1.5 rounded-lg text-slate-300 hover:text-white disabled:opacity-25"
+                className="p-2 rounded-lg text-slate-300 hover:text-white disabled:opacity-25"
                 title="Undo (Ctrl+Z)"
               >
                 <Undo2 className="w-4 h-4" />
@@ -432,7 +432,7 @@ export const AppHeader: React.FC = () => {
               <button
                 onClick={() => redo()}
                 disabled={redoStack.length === 0}
-                className="p-1.5 rounded-lg text-slate-300 hover:text-white disabled:opacity-25"
+                className="p-2 rounded-lg text-slate-300 hover:text-white disabled:opacity-25"
                 title="Redo (Ctrl+Y)"
               >
                 <Redo2 className="w-4 h-4" />
@@ -441,7 +441,7 @@ export const AppHeader: React.FC = () => {
               {/* Mobile Direct Save Button */}
               <button
                 onClick={handleSave}
-                className="flex items-center gap-1 px-2.5 py-1.5 bg-swift-600 hover:bg-swift-500 text-white rounded-xl text-xs font-bold transition-all relative shadow-sm"
+                className="flex items-center gap-1 py-2 px-3 bg-swift-600 hover:bg-swift-500 text-white rounded-xl text-xs font-bold transition-all relative shadow-sm"
                 title="Save Document"
               >
                 <Save className="w-3.5 h-3.5" />
@@ -454,7 +454,7 @@ export const AppHeader: React.FC = () => {
               {/* Mobile Options Drawer Toggle */}
               <button
                 onClick={() => setMobileDocMenuOpen((o) => !o)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
                 title="Document Options"
               >
                 <MoreVertical className="w-4 h-4" />
@@ -605,7 +605,7 @@ export const AppHeader: React.FC = () => {
         {/* Settings */}
         <button
           onClick={() => setActiveModal('settings')}
-          className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200 transition-colors"
+          className="p-2.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200 transition-colors -mr-1.5"
           title="Settings"
         >
           <Settings className="w-4 h-4" />
@@ -615,7 +615,7 @@ export const AppHeader: React.FC = () => {
         {!documentId && (
           <button
             onClick={() => setMobileMenuOpen((o) => !o)}
-            className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+            className="lg:hidden p-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors -mr-1.5"
             title="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

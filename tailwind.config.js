@@ -7,6 +7,15 @@ export default {
   ],
   darkMode: 'class',
   theme: {
+    // Full screens list (not `extend`) so `xs` sorts BEFORE `sm` in generated CSS order
+    screens: {
+      xs: '375px',
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+      xl: '1280px',
+      '2xl': '1536px',
+    },
     extend: {
       colors: {
         swift: {

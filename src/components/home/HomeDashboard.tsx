@@ -463,28 +463,28 @@ export const HomeDashboard: React.FC = () => {
               <button
                 type="button"
                 onClick={() => triggerWorkflowWithFile({ modal: 'compress', label: 'PDF Compress' })}
-                className="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
+                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
               >
                 Compress
               </button>
               <button
                 type="button"
                 onClick={() => setActiveModal('merge')}
-                className="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
+                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
               >
                 Merge
               </button>
               <button
                 type="button"
                 onClick={() => triggerWorkflowWithFile({ modal: 'sign', label: 'Sign PDF' })}
-                className="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
+                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
               >
                 Sign
               </button>
               <button
                 type="button"
                 onClick={() => triggerWorkflowWithFile({ modal: 'split', label: 'Split PDF' })}
-                className="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
+                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
               >
                 Split
               </button>
@@ -532,7 +532,7 @@ export const HomeDashboard: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveModal('student-resizer')}
-                className="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 text-amber-300 text-[11px] font-medium shrink-0 active:scale-95"
+                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-amber-300 text-[11px] font-medium shrink-0 active:scale-95"
               >
                 Exam 20–50 KB
               </button>
@@ -542,7 +542,7 @@ export const HomeDashboard: React.FC = () => {
                   setActiveConvertTab('img-to-pdf');
                   setActiveModal('convert');
                 }}
-                className="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
+                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
               >
                 Image to PDF
               </button>
@@ -552,7 +552,7 @@ export const HomeDashboard: React.FC = () => {
                   pendingWorkflowRef.current = { modal: 'photo-editor', label: 'Photo Studio' };
                   photoInputRef.current?.click();
                 }}
-                className="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
+                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
               >
                 Passport Crop
               </button>

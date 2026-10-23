@@ -117,6 +117,35 @@ export const App: React.FC = () => {
   const { setTool } = useToolStore();
   const { toggleTTS } = useTTSStore();
 
+  // Global Modal Dismissal: Escape key + backdrop click.
+  // Applies centrally to every lazy dialog rendered from `activeModal`, so no
+  // dialog can trap the user (works with both mouse and touch).
+  useEffect(() => {
+    if (!activeModal) return;
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      const target = e.target as HTMLElement | null;
+      const isInput =
+        ['INPUT', 'TEXTAREA', 'SELECT'].includes(target?.tagName || '') || Boolean(target?.isContentEditable);
+      if (isInput) return; // don't yank the modal while user is typing
+      e.preventDefault();
+      setActiveModal(null);
+    };
+    const handleBackdropClick = (e: MouseEvent) => {
+      // Only a click that lands exactly on the dialog's own backdrop layer closes it;
+      // clicks anywhere inside the panel bubble up from child elements.
+      if (e.target instanceof Element && e.target.matches('div[role="dialog"][aria-modal="true"]')) {
+        setActiveModal(null);
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    document.addEventListener('click', handleBackdropClick);
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('click', handleBackdropClick);
+    };
+  }, [activeModal, setActiveModal]);
+
   // Global Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

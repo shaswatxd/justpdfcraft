@@ -387,10 +387,8 @@ export const Sidebar: React.FC = () => {
     return () => window.removeEventListener('click', handleOutside);
   }, []);
 
-  if (!isSidebarOpen) return null;
-
-  const totalBookmarks = (documentOutline?.length || 0) + (userBookmarks?.length || 0);
-
+  // NOTE: All hooks must run unconditionally BEFORE any early return below,
+  // otherwise opening/closing the sidebar breaks the hook order (React #300).
   const [docAnnotations, setDocAnnotations] = useState<AnnotationObject[]>([]);
   const [loadingAnnots, setLoadingAnnots] = useState(false);
 
@@ -406,6 +404,10 @@ export const Sidebar: React.FC = () => {
       });
     }
   }, [activeSidebarTab, documentId]);
+
+  if (!isSidebarOpen) return null;
+
+  const totalBookmarks = (documentOutline?.length || 0) + (userBookmarks?.length || 0);
 
   const tabs: Array<{ id: SidebarTab; label: string; icon: any; badge?: number }> = [
     { id: 'thumbnails', label: 'Pages', icon: Image },

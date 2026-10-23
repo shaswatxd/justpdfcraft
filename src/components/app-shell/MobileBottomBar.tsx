@@ -57,7 +57,7 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
           <button
             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
             disabled={currentPage <= 1}
-            className="p-1 text-slate-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-transform"
+            className="p-1.5 text-slate-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-transform"
             title="Previous Page"
             aria-label="Previous Page"
           >
@@ -71,7 +71,7 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
           <button
             onClick={() => setCurrentPage(Math.min(pageCount, currentPage + 1))}
             disabled={currentPage >= pageCount}
-            className="p-1 text-slate-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-transform"
+            className="p-1.5 text-slate-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-transform"
             title="Next Page"
             aria-label="Next Page"
           >
@@ -100,19 +100,19 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
         <div className="flex items-center bg-slate-900/90 rounded-xl border border-slate-800 p-0.5">
           <button
             onClick={() => setZoom((z) => Math.max(0.3, z - 0.2))}
-            className="p-1 text-slate-400 hover:text-white active:scale-90 transition-transform"
+            className="p-1.5 text-slate-400 hover:text-white active:scale-90 transition-transform"
             title="Zoom Out"
             aria-label="Zoom out"
           >
-            <ZoomOut className="w-3.5 h-3.5" />
+            <ZoomOut className="w-4 h-4" />
           </button>
           <button
             onClick={() => setZoom((z) => Math.min(3.0, z + 0.2))}
-            className="p-1 text-slate-400 hover:text-white active:scale-90 transition-transform"
+            className="p-1.5 text-slate-400 hover:text-white active:scale-90 transition-transform"
             title="Zoom In"
             aria-label="Zoom in"
           >
-            <ZoomIn className="w-3.5 h-3.5" />
+            <ZoomIn className="w-4 h-4" />
           </button>
         </div>
 
@@ -156,6 +156,8 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
       <button
         onClick={handleHomeClick}
         className="flex flex-col items-center gap-0.5 py-1 px-3 text-slate-400 hover:text-white transition-colors"
+        aria-label="Home Dashboard"
+        title="Home Dashboard"
       >
         <Home className="w-4 h-4" />
         <span className="text-[10px] font-medium">Home</span>
@@ -165,6 +167,8 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
       <button
         onClick={handleToolsClick}
         className="flex flex-col items-center gap-0.5 py-1 px-3 text-slate-400 hover:text-white transition-colors"
+        aria-label="Tools Catalog"
+        title="Browse All Tools"
       >
         <LayoutGrid className="w-4 h-4" />
         <span className="text-[10px] font-medium">Tools</span>
@@ -186,6 +190,8 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
       <button
         onClick={() => setActiveModal('student-resizer')}
         className="flex flex-col items-center gap-0.5 py-1 px-3 text-slate-400 hover:text-amber-400 transition-colors"
+        aria-label="Exam Suite"
+        title="Student & Exam Suite"
       >
         <Sliders className="w-4 h-4" />
         <span className="text-[10px] font-medium">Exam Suite</span>
@@ -195,6 +201,8 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
       <button
         onClick={() => setCommandPaletteOpen(true)}
         className="flex flex-col items-center gap-0.5 py-1 px-3 text-slate-400 hover:text-sky-400 transition-colors"
+        aria-label="Search / Command Palette"
+        title="Search Tools & Actions"
       >
         <Search className="w-4 h-4" />
         <span className="text-[10px] font-medium">Search</span>
