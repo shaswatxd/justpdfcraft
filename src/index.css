@@ -431,3 +431,21 @@ html.light ::-webkit-scrollbar-thumb:hover {
     padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
   }
 }
+
+/* Keyboard Accessibility: visible focus ring for keyboard users only
+   (mouse/touch clicks don't show an outline, tab navigation does) */
+:focus-visible {
+  outline: 2px solid theme('colors.swift.400');
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Respect users who prefer reduced motion (vestibular disorders, etc.) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
