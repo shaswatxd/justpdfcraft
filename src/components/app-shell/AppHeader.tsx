@@ -28,6 +28,7 @@ import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useTTSStore } from '@/stores/ttsStore';
 import { SwiftLogo } from '@/components/common/SwiftLogo';
+import { ThemeToggle } from '@/components/common/ThemeToggle';
 
 export const AppHeader: React.FC = () => {
   const {
@@ -374,35 +375,42 @@ export const AppHeader: React.FC = () => {
         </div>
       )}
 
-      {/* When in Home Dashboard: Top Navigation Category Links */}
+      {/* When in Home Dashboard: iLovePDF-style Top Navigation Links */}
       {!isDocumentOpen && (
-        <nav className="hidden lg:flex items-center gap-1 text-xs font-semibold select-none">
+        <nav className="hidden lg:flex items-center gap-1 text-xs font-bold select-none">
           <button
-            onClick={() => {
-              const el = document.getElementById('tool-explorer');
-              el?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+            onClick={() => setActiveModal('merge')}
+            className="px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors uppercase tracking-wider"
           >
-            All Tools
+            Merge PDF
+          </button>
+          <button
+            onClick={() => setActiveModal('split')}
+            className="px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors uppercase tracking-wider"
+          >
+            Split PDF
+          </button>
+          <button
+            onClick={() => setActiveModal('compress')}
+            className="px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors uppercase tracking-wider"
+          >
+            Compress PDF
+          </button>
+          <button
+            onClick={() => setActiveModal('convert')}
+            className="px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors uppercase tracking-wider"
+          >
+            Convert PDF
           </button>
           <button
             onClick={() => {
               const el = document.getElementById('tool-explorer');
               el?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+            className="px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors uppercase tracking-wider"
           >
-            PDF Suite
+            All PDF Tools
           </button>
-          <button
-            onClick={() => setActiveModal('student-resizer')}
-            className="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-1"
-          >
-            <Sliders className="w-3.5 h-3.5 text-amber-400" />
-            Exam Photo & Sign
-          </button>
-          
         </nav>
       )}
 
@@ -594,6 +602,8 @@ export const AppHeader: React.FC = () => {
           </div>
         )}
 
+
+        <ThemeToggle className="hidden sm:flex mr-1" />
 
         {/* Settings */}
         <button

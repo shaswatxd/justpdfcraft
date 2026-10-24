@@ -86,30 +86,34 @@ export interface UIState {
   removeToast: (id: string) => void;
 }
 
-const applyThemeToDOM = (theme: ThemeMode = 'oled') => {
+const applyThemeToDOM = (theme: ThemeMode = 'light') => {
   if (typeof document === 'undefined') return;
   const root = document.documentElement;
   root.classList.remove('light', 'dark', 'oled');
-  if (theme === 'light') {
-    root.classList.add('light');
-  } else if (theme === 'dark') {
+  if (theme === 'dark') {
     root.classList.add('dark');
-  } else {
+  } else if (theme === 'oled') {
     root.classList.add('dark', 'oled');
+  } else {
+    root.classList.add('light');
   }
 };
 
 const getInitialTheme = (): ThemeMode => {
-  if (typeof window === 'undefined') return 'oled';
+  if (typeof window === 'undefined') return 'light';
   try {
     const saved = localStorage.getItem('justpdfcraft_theme') as ThemeMode;
-    if (['dark', 'light', 'oled'].includes(saved)) {
+    if (saved === 'dark' || saved === 'oled') {
       applyThemeToDOM(saved);
       return saved;
     }
+    if (saved === 'light') {
+      applyThemeToDOM('light');
+      return 'light';
+    }
   } catch {}
-  applyThemeToDOM('oled');
-  return 'oled';
+  applyThemeToDOM('light');
+  return 'light';
 };
 
 const getInitialPaperTone = (): PaperTone => {

@@ -5,34 +5,28 @@ interface HeroSectionProps {
   children?: React.ReactNode;
 }
 
-/**
- * Compact identity header: says in plain language what JustPDFCraft does,
- * without exaggerated claims, fake statistics or marketing slogans.
- */
 export const HeroSection: React.FC<HeroSectionProps> = ({ children }) => {
   return (
     <section className="w-full max-w-6xl xl:max-w-7xl mx-auto flex flex-col items-center text-center px-3 sm:px-6 lg:px-8">
-      <h1 className="mt-4 sm:mt-6 text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-tight max-w-3xl">
-        Every PDF, photo & student task in one private toolbox
+      <h1 className="mt-4 sm:mt-8 text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight max-w-3xl">
+        Every tool you need to work with PDFs in one place
       </h1>
-      <p className="mt-2 text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl">
-        Edit, sign, merge, compress and convert PDFs. Resize exam photos to an exact KB
-        limit. Use student calculators and a handwriting generator — all processed on
-        your own device.
+      <p className="mt-2.5 text-sm sm:text-base text-slate-600 dark:text-zinc-400 leading-relaxed max-w-2xl font-normal">
+        All are 100% free and easy to use! Merge, split, compress, convert, edit, and sign PDFs with just a few clicks. Processed 100% privately in your browser.
       </p>
-      <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[11px] sm:text-xs text-zinc-400">
+      <div className="mt-3.5 flex flex-wrap items-center justify-center gap-2 text-[11px] sm:text-xs">
         <span
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 text-emerald-300"
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300 font-medium"
           title="Your documents never leave this browser tab."
         >
-          <ShieldCheck className="w-3.5 h-3.5" />
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
           Files never leave your device
         </span>
         <span
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-zinc-800 bg-zinc-900/70 text-zinc-300"
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/70 text-slate-600 dark:text-zinc-300 font-medium shadow-xs"
           title="Tools keep working without an internet connection."
         >
-          <WifiOff className="w-3.5 h-3.5" />
+          <WifiOff className="w-3.5 h-3.5 text-slate-500 dark:text-zinc-400" />
           Works offline
         </span>
       </div>

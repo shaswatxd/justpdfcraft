@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import {
   FolderOpen,
   FilePlus,
-  Image as ImageIcon,
   RotateCcw,
   X,
 } from 'lucide-react';
@@ -40,6 +39,7 @@ export const HomeDashboard: React.FC = () => {
   const {
     setActiveModal,
     addToast,
+    setActivePhotoUrl,
     setActiveConvertTab,
     setActiveStudentTab,
     setActiveLegalTab,
@@ -102,6 +102,10 @@ export const HomeDashboard: React.FC = () => {
         return;
       }
 
+      // Pass image URL to activePhotoUrl for resizer dialog
+      const photoUrl = URL.createObjectURL(file);
+      setActivePhotoUrl(photoUrl);
+
       if (pending?.modal) {
         if (pending.modal === 'student-resizer' && pending.initialTab) {
           setActiveStudentTab(pending.initialTab);
@@ -110,8 +114,6 @@ export const HomeDashboard: React.FC = () => {
         return;
       }
 
-      // Default fallback when an image is directly dropped/picked on the home dropzone:
-      // open the lean exact-KB resizer
       setActiveModal('student-resizer');
       addToast({
         type: 'success',
@@ -125,7 +127,7 @@ export const HomeDashboard: React.FC = () => {
       addToast({
         type: 'error',
         title: 'Unsupported File Type',
-        message: 'Please select a valid .pdf document or photo (JPG/PNG).',
+        message: 'Please select a valid .pdf document.',
       });
       return;
     }
@@ -230,7 +232,7 @@ export const HomeDashboard: React.FC = () => {
   return (
     <div
       id="home-dashboard"
-      className="flex-1 overflow-y-auto bg-black flex flex-col items-center pb-28 md:pb-12"
+      className="flex-1 overflow-y-auto bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100 flex flex-col items-center pb-28 md:pb-12"
     >
       {/* Hidden File Inputs: Document & Photo */}
       <input
@@ -261,22 +263,22 @@ export const HomeDashboard: React.FC = () => {
       <HeroSection>
         {/* Unsaved Session Crash Recovery Banner */}
         {availableDrafts && availableDrafts.length > 0 && (
-          <div className="w-full mb-4 p-3.5 sm:p-4 rounded-2xl bg-amber-950/30 border border-amber-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left animate-in fade-in slide-in-from-top-2">
+          <div className="w-full mb-4 p-3.5 sm:p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left animate-in fade-in slide-in-from-top-2">
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0 text-amber-400 mt-0.5">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0 text-amber-600 dark:text-amber-400 mt-0.5">
                 <RotateCcw className="w-4 h-4" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h4 className="text-xs sm:text-sm font-semibold text-amber-100">
+                  <h4 className="text-xs sm:text-sm font-semibold text-amber-900 dark:text-amber-100">
                     Unsaved session recovered
                   </h4>
-                  <span className="px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono">
+                  <span className="px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[10px] font-mono">
                     {availableDrafts.length} {availableDrafts.length === 1 ? 'draft' : 'drafts'}
                   </span>
                 </div>
-                <p className="text-[11px] sm:text-xs text-amber-200/70 mt-0.5">
-                  <span className="text-amber-100 font-medium">{availableDrafts[0].fileName}</span> •{' '}
+                <p className="text-[11px] sm:text-xs text-amber-700/80 dark:text-amber-200/70 mt-0.5">
+                  <span className="text-amber-900 dark:text-amber-100 font-medium">{availableDrafts[0].fileName}</span> •{' '}
                   {(availableDrafts[0].byteLength / 1024).toFixed(0)} KB • auto-saved to this
                   browser {formatTimeAgo(availableDrafts[0].timestamp)}
                 </p>
@@ -297,7 +299,7 @@ export const HomeDashboard: React.FC = () => {
                     });
                   }
                 }}
-                className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs flex items-center gap-1.5 transition-all"
+                className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs flex items-center gap-1.5 transition-all shadow-xs"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Restore</span>
@@ -314,7 +316,7 @@ export const HomeDashboard: React.FC = () => {
                       message: 'Cleaned up all recovery drafts.',
                     });
                   }}
-                  className="px-2 py-1 rounded text-[11px] text-amber-200/70 hover:text-amber-100 transition-colors"
+                  className="px-2 py-1 rounded text-[11px] text-amber-700 hover:text-amber-900 dark:text-amber-200/70 dark:hover:text-amber-100 transition-colors"
                   title="Discard all recovery drafts"
                 >
                   Dismiss all
@@ -331,7 +333,7 @@ export const HomeDashboard: React.FC = () => {
                     message: 'Unsaved draft removed from storage.',
                   });
                 }}
-                className="p-1.5 rounded-lg hover:bg-amber-500/10 text-amber-200/70 hover:text-amber-100 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-amber-500/10 text-amber-700 hover:text-amber-900 dark:text-amber-200/70 dark:hover:text-amber-100 transition-colors"
                 title="Discard this draft"
                 aria-label="Discard this draft"
               >
@@ -341,7 +343,7 @@ export const HomeDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* 1. Primary Action: unified Open / Select file panel */}
+        {/* 1. Primary Action: iLovePDF-style Select PDF files button */}
         <div
           onDragOver={(e) => {
             e.preventDefault();
@@ -349,48 +351,33 @@ export const HomeDashboard: React.FC = () => {
           }}
           onDragLeave={() => setIsDraggingFile(false)}
           onDrop={handleDrop}
-          className={`relative w-full border-2 border-dashed rounded-2xl p-4 sm:p-6 transition-all duration-200 ${
+          className={`relative w-full max-w-xl mx-auto border-2 border-dashed rounded-3xl p-6 sm:p-8 transition-all duration-200 ${
             isDraggingFile
-              ? 'border-swift-400 bg-swift-500/[0.08]'
-              : 'border-zinc-800 bg-zinc-950/60 hover:border-zinc-700'
+              ? 'border-red-500 bg-red-500/[0.08]'
+              : 'border-slate-300 dark:border-zinc-800 bg-white dark:bg-zinc-950/60 hover:border-red-400 dark:hover:border-zinc-700 shadow-sm hover:shadow-md'
           }`}
         >
-          <div className="flex flex-col gap-3">
-            {/* Primary row: open a PDF / photo */}
-            <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
-              <button
-                type="button"
-                onClick={() => handleOpenPdfClick()}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-swift-600 hover:bg-swift-500 active:scale-[0.99] text-white font-semibold rounded-xl text-sm shadow-lg shadow-swift-950/40 transition-all min-h-[48px]"
-              >
-                <FolderOpen className="w-5 h-5" />
-                <span>Open a PDF</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  pendingWorkflowRef.current = null;
-                  photoInputRef.current?.click();
-                }}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-semibold rounded-xl text-sm shadow-lg shadow-emerald-950/40 transition-all min-h-[48px]"
-              >
-                <ImageIcon className="w-5 h-5" />
-                <span>Select a photo</span>
-              </button>
-            </div>
-            <p className="text-xs text-zinc-500 text-center">
-              PDF, JPG, PNG, WebP, GIF, BMP — files are processed in your browser, nothing is
-              uploaded. Drag &amp; drop works here too.
+          <div className="flex flex-col items-center text-center gap-3">
+            <button
+              type="button"
+              onClick={() => handleOpenPdfClick()}
+              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-red-500 hover:bg-red-600 active:scale-[0.99] text-white font-bold rounded-2xl text-base sm:text-lg shadow-lg shadow-red-500/25 transition-all min-h-[52px]"
+            >
+              <FolderOpen className="w-6 h-6" />
+              <span>Select PDF files</span>
+            </button>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-zinc-500">
+              or drop PDFs here • 100% private, files never leave your browser
             </p>
 
-            {/* Secondary row: blank document (desktop-labelled, available everywhere) */}
+            {/* Secondary row: blank document */}
             <div className="flex justify-center pt-1">
               <button
                 type="button"
                 onClick={() => createBlankDocument()}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-xl text-xs font-medium transition-all min-h-[44px]"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-slate-600 dark:text-zinc-300 border border-slate-200 dark:border-zinc-800 rounded-xl text-xs font-medium transition-all"
               >
-                <FilePlus className="w-3.5 h-3.5 text-zinc-400" />
+                <FilePlus className="w-3.5 h-3.5 text-slate-500 dark:text-zinc-400" />
                 <span>New blank PDF</span>
               </button>
             </div>

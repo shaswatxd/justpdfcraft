@@ -42,28 +42,25 @@ export const StudentToolsDialog: React.FC = () => {
   // Load image from URL when provided by external store trigger
   useEffect(() => {
     if (activePhotoUrl && isOpen) {
-      const urlToClean = activePhotoUrl;
+      const url = activePhotoUrl;
       const img = new Image();
       img.onload = () => {
+        console.log("[StudentToolsDialog] img.onload fired! naturalWidth:", img.naturalWidth, img.naturalHeight);
         setResizerImage(img);
-        if (urlToClean.startsWith('blob:')) {
-          URL.revokeObjectURL(urlToClean);
-        }
         setActivePhotoUrl(null);
       };
-      img.onerror = () => {
-        if (urlToClean.startsWith('blob:')) {
-          URL.revokeObjectURL(urlToClean);
-        }
+      img.onerror = (e) => {
+        console.error("[StudentToolsDialog] img.onerror fired!", e);
         setActivePhotoUrl(null);
       };
-      img.src = urlToClean;
+      img.src = url;
     }
   }, [activePhotoUrl, isOpen, setActivePhotoUrl]);
 
   // Helper to safely load an image from File object
   const loadImageFromFile = (file: File) => {
-    if (!file.type.startsWith('image/')) {
+    const isImage = file.type.startsWith('image/') || /\.(jpe?g|png|webp|gif|bmp)$/i.test(file.name);
+    if (!isImage) {
       addToast({
         type: 'warning',
         title: 'Image File Required',
@@ -74,11 +71,14 @@ export const StudentToolsDialog: React.FC = () => {
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.onload = () => {
-      URL.revokeObjectURL(url);
       setResizerImage(img);
     };
     img.onerror = () => {
-      URL.revokeObjectURL(url);
+      addToast({
+        type: 'error',
+        title: 'Failed to Load Image',
+        message: 'Could not decode the selected image.',
+      });
     };
     img.src = url;
   };
@@ -107,7 +107,9 @@ export const StudentToolsDialog: React.FC = () => {
         ctx.fillRect(0, 0, customWidthPx, customHeightPx);
         ctx.drawImage(resizerImage, 0, 0, customWidthPx, customHeightPx);
 
+        console.log("[StudentToolsDialog] processResizer calling compressToTargetKb...");
         const result = await compressToTargetKb(cvs, targetMinKb, targetMaxKb, 'image/jpeg');
+        console.log("[StudentToolsDialog] processResizer result:", result);
         cvs.width = 0;
         cvs.height = 0;
         setResizerResult(result);
