@@ -218,6 +218,13 @@ textarea {
   color: #f8fafc !important;
 }
 
+/* Hide the native WebKit clear "✕" on search inputs — a custom clear button is rendered by ToolExplorer */
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 input::placeholder,
 textarea::placeholder {
   color: #64748b !important;
@@ -369,6 +376,102 @@ html.light .pdf-desk-bg {
 html.light [class*="bg-black/"],
 html.light [class*="bg-slate-950/"] {
   background-color: rgba(15, 23, 42, 0.4) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Light theme for the Home dashboard & mobile nav bar.
+   The home redesign uses the zinc/neon palette (bg-zinc-950 cards, bg-black
+   scroll area) which the slate-based overrides above do not cover — scope a
+   matching remap to #home-dashboard so light users get a full light dashboard
+   without touching the editor's deliberately-dark canvas areas.
+   -------------------------------------------------------------------------- */
+html.light #home-dashboard {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Card / chip surfaces: zinc-950 cards -> white, zinc-900 chips -> soft gray, zinc-800 tiles -> lighter gray */
+html.light #home-dashboard [class*="bg-zinc-950"] {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+html.light #home-dashboard [class*="bg-zinc-900"] {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+}
+html.light #home-dashboard [class*="bg-zinc-800"] {
+  background-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+html.light #home-dashboard [class*="border-zinc-"] {
+  border-color: #cbd5e1 !important;
+}
+html.light #home-dashboard [class*="hover:bg-zinc-800"]:hover,
+html.light #home-dashboard [class*="hover:bg-zinc-900"]:hover {
+  background-color: #e2e8f0 !important;
+}
+
+/* Text on light dashboard surfaces */
+html.light #home-dashboard [class*="text-white"] {
+  color: #0f172a !important;
+}
+html.light #home-dashboard [class*="text-zinc-100"],
+html.light #home-dashboard [class*="text-zinc-200"],
+html.light #home-dashboard [class*="text-zinc-300"] {
+  color: #0f172a !important;
+}
+html.light #home-dashboard [class*="text-zinc-400"] {
+  color: #334155 !important;
+}
+html.light #home-dashboard [class*="text-zinc-500"] {
+  color: #64748b !important;
+}
+
+/* Accent (-400) text is tuned for dark surfaces; on white it fails contrast — darken to -700 equivalents */
+html.light #home-dashboard [class*="text-amber-400"] { color: #b45309 !important; }
+html.light #home-dashboard [class*="text-orange-400"] { color: #c2410c !important; }
+html.light #home-dashboard [class*="text-yellow-400"] { color: #a16207 !important; }
+html.light #home-dashboard [class*="text-lime-400"] { color: #4d7c0f !important; }
+html.light #home-dashboard [class*="text-sky-400"] { color: #0369a1 !important; }
+html.light #home-dashboard [class*="text-blue-400"] { color: #1d4ed8 !important; }
+html.light #home-dashboard [class*="text-cyan-400"] { color: #0e7490 !important; }
+html.light #home-dashboard [class*="text-teal-400"] { color: #0f766e !important; }
+html.light #home-dashboard [class*="text-emerald-400"] { color: #047857 !important; }
+html.light #home-dashboard [class*="text-green-400"] { color: #15803d !important; }
+html.light #home-dashboard [class*="text-rose-400"] { color: #be123c !important; }
+html.light #home-dashboard [class*="text-red-400"] { color: #b91c1c !important; }
+html.light #home-dashboard [class*="text-purple-400"] { color: #7e22ce !important; }
+html.light #home-dashboard [class*="text-violet-400"] { color: #6d28d9 !important; }
+html.light #home-dashboard [class*="text-pink-400"] { color: #be185d !important; }
+html.light #home-dashboard [class*="text-indigo-400"] { color: #4338ca !important; }
+/* -300 shades are even lighter — same treatment */
+html.light #home-dashboard [class*="text-emerald-300"] { color: #047857 !important; }
+html.light #home-dashboard [class*="text-green-300"] { color: #15803d !important; }
+html.light #home-dashboard [class*="text-amber-300"] { color: #b45309 !important; }
+html.light #home-dashboard [class*="text-amber-200"] { color: #92400e !important; }
+html.light #home-dashboard [class*="text-amber-100"] { color: #78350f !important; }
+html.light #home-dashboard [class*="text-sky-300"] { color: #0369a1 !important; }
+html.light #home-dashboard [class*="text-blue-300"] { color: #1d4ed8 !important; }
+html.light #home-dashboard [class*="text-rose-300"] { color: #be123c !important; }
+html.light #home-dashboard [class*="text-cyan-300"] { color: #0e7490 !important; }
+html.light #home-dashboard [class*="text-teal-300"] { color: #0f766e !important; }
+
+/* GUARDS (must stay after the text rules above): white text on solid colored buttons/chips.
+   Exact classes only — substring matching would also hit tinted bg-*-500/10 cards that need dark text. */
+html.light #home-dashboard .bg-swift-600 *,
+html.light #home-dashboard .bg-emerald-600 *,
+html.light #home-dashboard .bg-rose-600 *,
+html.light #home-dashboard .bg-amber-600 * {
+  color: #ffffff !important;
+}
+
+/* Mobile bottom nav bar on light home */
+html.light nav[aria-label="Mobile Navigation"] {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-top-color: #cbd5e1 !important;
+}
+html.light nav[aria-label="Mobile Navigation"] button:hover {
+  color: #0f172a !important;
 }
 
 /* ==========================================================================

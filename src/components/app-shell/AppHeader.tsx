@@ -190,7 +190,7 @@ export const AppHeader: React.FC = () => {
         {/* Desktop or Home Brand Logo */}
         <button
           onClick={handleGoHome}
-          className={`${isDocumentOpen ? 'hidden md:flex' : 'flex'} items-center gap-2 hover:opacity-90 transition-opacity select-none focus:outline-none`}
+          className={`${isDocumentOpen ? 'hidden lg:flex' : 'flex'} items-center gap-2 hover:opacity-90 transition-opacity select-none focus:outline-none`}
           title={isDocumentOpen ? 'Back to Home Dashboard' : 'JustPDFCraft'}
         >
           <SwiftLogo className="w-6 h-6 shrink-0" />
@@ -464,7 +464,7 @@ export const AppHeader: React.FC = () => {
             {/* Desktop Only Actions on Right */}
             <div className="hidden md:flex items-center gap-1.5">
               {/* Paper Tone Dropdown Button */}
-              <div className="relative" ref={toneDropdownRef}>
+              <div className="relative hidden xl:block" ref={toneDropdownRef}>
                 <button
                   onClick={() => setToneOpen((o) => !o)}
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
@@ -526,7 +526,7 @@ export const AppHeader: React.FC = () => {
               {/* Read Aloud (TTS) */}
               <button
                 onClick={toggleTTS}
-                className={`p-1.5 sm:px-2.5 sm:py-1.5 border rounded-lg text-xs transition-colors flex items-center gap-1.5 ${
+                className={`hidden xl:flex items-center gap-1.5 ${
                   isTTSOpen
                     ? 'bg-swift-600 text-white border-swift-500 shadow-sm'
                     : 'bg-slate-800 hover:bg-slate-700 border-slate-700/80 text-slate-300 hover:text-white'
@@ -580,7 +580,7 @@ export const AppHeader: React.FC = () => {
               {/* Fullscreen */}
               <button
                 onClick={toggleFullscreen}
-                className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200 transition-colors hidden sm:block"
+                className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200 transition-colors hidden xl:block"
                 title="Fullscreen Presentation Mode (F11 / Ctrl+L)"
               >
                 <Expand className="w-4 h-4" />
