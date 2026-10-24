@@ -133,7 +133,7 @@ export const MobileEditorToolbar: React.FC = () => {
             </span>
             <button
               onClick={() => setShowOptions(false)}
-              className="p-1 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-white"
+              className="p-1 rounded-lg hover:bg-zinc-800 text-gray-500 hover:text-gray-900"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -169,7 +169,7 @@ export const MobileEditorToolbar: React.FC = () => {
 
           {/* Stroke Width Buttons */}
           <div className="flex items-center justify-between gap-1.5 pt-1 border-t border-zinc-800/60">
-            <span className="text-[10px] text-zinc-500 font-medium">Thickness</span>
+            <span className="text-[10px] text-gray-400 font-medium">Thickness</span>
             <div className="flex items-center gap-2">
               {STROKE_SIZES.map((sz) => (
                 <button
@@ -178,7 +178,7 @@ export const MobileEditorToolbar: React.FC = () => {
                   className={`px-2.5 py-1 rounded-lg text-xs font-mono font-medium border transition-all ${
                     strokeWidth === sz
                       ? 'bg-blue-600 border-blue-500 text-white'
-                      : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
+                      : 'bg-zinc-900 border-zinc-800 text-gray-500 hover:text-gray-900'
                   }`}
                 >
                   {sz}px
@@ -196,26 +196,26 @@ export const MobileEditorToolbar: React.FC = () => {
         style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 58px)' }}
       >
         {/* Left: Page Stepper Pill */}
-        <div className="pointer-events-auto bg-black/90 backdrop-blur-xl border border-zinc-800/90 rounded-2xl px-2 py-1 flex items-center gap-1 shadow-xl">
+        <div className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-gray-200 rounded-2xl px-2 py-1 flex items-center shadow-lg gap-1 shadow-xl">
           <button
             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
             disabled={currentPage <= 1}
-            className="p-2 text-zinc-300 hover:text-white disabled:opacity-25 active:scale-90 transition-transform -my-1"
+            className="p-2 text-gray-600 hover:text-gray-900 disabled:opacity-25 active:scale-90 transition-transform -my-1"
             aria-label="Previous Page"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={toggleSidebar}
-            className="text-[11px] font-mono font-semibold text-zinc-200 px-1.5 py-1.5 rounded-md hover:bg-zinc-800 hover:text-blue-400 min-w-[48px] min-h-[36px] inline-flex items-center justify-center text-center transition-colors"
+            className="text-[11px] font-mono font-semibold text-gray-800 px-1.5 py-1.5 rounded-md hover:bg-zinc-800 hover:text-red-600 min-w-[48px] min-h-[36px] inline-flex items-center justify-center text-center transition-colors"
             title="Open Page Thumbnails"
           >
-            {currentPage} <span className="text-zinc-500">/</span> {pageCount}
+            {currentPage} <span className="text-gray-400">/</span> {pageCount}
           </button>
           <button
             onClick={() => setCurrentPage(Math.min(pageCount, currentPage + 1))}
             disabled={currentPage >= pageCount}
-            className="p-2 text-zinc-300 hover:text-white disabled:opacity-25 active:scale-90 transition-transform -my-1"
+            className="p-2 text-gray-600 hover:text-gray-900 disabled:opacity-25 active:scale-90 transition-transform -my-1"
             aria-label="Next Page"
           >
             <ChevronRight className="w-4 h-4" />
@@ -223,10 +223,10 @@ export const MobileEditorToolbar: React.FC = () => {
         </div>
 
         {/* Right: Quick Zoom & Grid Toggle */}
-        <div className="pointer-events-auto bg-black/90 backdrop-blur-xl border border-zinc-800/90 rounded-2xl px-2 py-1 flex items-center gap-1.5 shadow-xl">
+        <div className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-gray-200 rounded-2xl px-2 py-1 flex items-center shadow-lg gap-1.5 shadow-xl">
           <button
             onClick={() => setZoom((z) => Math.max(0.3, z - 0.15))}
-            className="p-2 text-zinc-400 hover:text-white active:scale-90 transition-transform -my-1 -ml-1"
+            className="p-2 text-gray-500 hover:text-gray-900 active:scale-90 transition-transform -my-1 -ml-1"
             title="Zoom Out"
           >
             <ZoomOut className="w-4 h-4" />
@@ -246,13 +246,13 @@ export const MobileEditorToolbar: React.FC = () => {
           </button>
           <button
             onClick={() => setZoom((z) => Math.min(3.0, z + 0.15))}
-            className="p-2 text-zinc-400 hover:text-white active:scale-90 transition-transform -my-1 -mr-1"
+            className="p-2 text-gray-500 hover:text-gray-900 active:scale-90 transition-transform -my-1 -mr-1"
             title="Zoom In"
           >
             <ZoomIn className="w-4 h-4" />
           </button>
 
-          <div className="w-[1px] h-3.5 bg-zinc-800 mx-0.5" />
+          <div className="w-[1px] h-3.5 bg-gray-200 mx-0.5" />
 
           {/* Grid View Organizer Toggle */}
           <button
@@ -260,7 +260,7 @@ export const MobileEditorToolbar: React.FC = () => {
             className={`p-1.5 rounded-xl transition-all ${
               viewMode === 'organize'
                 ? 'bg-blue-600 text-white'
-                : 'text-zinc-400 hover:text-white'
+                : 'text-gray-500 hover:text-gray-900'
             }`}
             title={viewMode === 'organize' ? 'Back to Reader' : 'Organize Page Grid'}
           >
@@ -276,15 +276,15 @@ export const MobileEditorToolbar: React.FC = () => {
       {/* 3. Primary Mobile Tool Switcher Dock (Anchored to Bottom) */}
       <nav
         aria-label="Mobile PDF Tool Dock"
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-2xl border-t border-zinc-800/90 px-2 py-1.5 flex items-center justify-around gap-0.5 select-none safe-area-bottom shadow-2xl overflow-x-auto no-scrollbar"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-2xl border-t border-gray-200 px-2 py-1.5 flex items-center justify-around gap-0.5 select-none safe-area-bottom shadow-xl overflow-x-auto no-scrollbar"
       >
         {/* Hand / Pan Tool */}
         <button
           onClick={() => handleToolSelect('hand')}
           className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all shrink-0 min-w-[44px] ${
             currentTool === 'hand'
-              ? 'text-blue-400 bg-blue-500/15 font-semibold'
-              : 'text-zinc-400 hover:text-white'
+              ? 'text-red-600 bg-red-50 text-red-600 font-semibold'
+              : 'text-gray-500 hover:text-gray-900'
           }`}
           title="Pan / Scroll Mode"
         >
@@ -298,7 +298,7 @@ export const MobileEditorToolbar: React.FC = () => {
           className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all shrink-0 min-w-[44px] ${
             currentTool === 'edit_text'
               ? 'text-cyan-400 bg-cyan-500/20 font-bold ring-1 ring-cyan-500/40'
-              : 'text-zinc-400 hover:text-white'
+              : 'text-gray-500 hover:text-gray-900'
           }`}
           title="Edit Existing Text in PDF"
         >
@@ -311,8 +311,8 @@ export const MobileEditorToolbar: React.FC = () => {
           onClick={() => handleToolSelect('draw')}
           className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all relative shrink-0 min-w-[44px] ${
             currentTool === 'draw'
-              ? 'text-blue-400 bg-blue-500/15 font-semibold'
-              : 'text-zinc-400 hover:text-white'
+              ? 'text-red-600 bg-red-50 text-red-600 font-semibold'
+              : 'text-gray-500 hover:text-gray-900'
           }`}
           title="Pen / Freehand Draw"
         >
@@ -332,7 +332,7 @@ export const MobileEditorToolbar: React.FC = () => {
           className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all relative shrink-0 min-w-[44px] ${
             currentTool === 'highlight'
               ? 'text-amber-400 bg-amber-500/15 font-semibold'
-              : 'text-zinc-400 hover:text-white'
+              : 'text-gray-500 hover:text-gray-900'
           }`}
           title="Highlighter"
         >
@@ -346,7 +346,7 @@ export const MobileEditorToolbar: React.FC = () => {
           className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all shrink-0 min-w-[44px] ${
             currentTool === 'text'
               ? 'text-emerald-400 bg-emerald-500/15 font-semibold'
-              : 'text-zinc-400 hover:text-white'
+              : 'text-gray-500 hover:text-gray-900'
           }`}
           title="Add Text"
         >
@@ -370,7 +370,7 @@ export const MobileEditorToolbar: React.FC = () => {
           className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all shrink-0 min-w-[44px] ${
             currentTool === 'eraser'
               ? 'text-rose-400 bg-rose-500/15 font-semibold'
-              : 'text-zinc-400 hover:text-white'
+              : 'text-gray-500 hover:text-gray-900'
           }`}
           title="Eraser"
         >
@@ -381,7 +381,7 @@ export const MobileEditorToolbar: React.FC = () => {
         {/* More Tools Drawer Button */}
         <button
           onClick={() => setShowMoreToolsSheet(true)}
-          className="flex flex-col items-center justify-center p-1.5 rounded-xl text-zinc-400 hover:text-white transition-all shrink-0 min-w-[44px]"
+          className="flex flex-col items-center justify-center p-1.5 rounded-xl text-gray-500 hover:text-gray-900 transition-all shrink-0 min-w-[44px]"
           title="More PDF Tools (Compress, Split, OCR, etc.)"
         >
           <SlidersHorizontal className="w-4 h-4" />
@@ -404,7 +404,7 @@ export const MobileEditorToolbar: React.FC = () => {
               </div>
               <button
                 onClick={() => setShowMoreToolsSheet(false)}
-                className="p-1.5 rounded-xl bg-zinc-900 text-zinc-400 hover:text-white"
+                className="p-1.5 rounded-xl bg-zinc-900 text-gray-500 hover:text-gray-900"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -414,7 +414,7 @@ export const MobileEditorToolbar: React.FC = () => {
               {[
                 { id: 'compress', label: 'Compress PDF', icon: FileArchive, color: 'text-emerald-400', desc: 'Reduce file size' },
                 { id: 'split', label: 'Split & Extract', icon: Scissors, color: 'text-rose-400', desc: 'Cut into pages' },
-                { id: 'merge', label: 'Merge Files', icon: Files, color: 'text-blue-400', desc: 'Combine external PDFs' },
+                { id: 'merge', label: 'Merge Files', icon: Files, color: 'text-red-600', desc: 'Combine external PDFs' },
                 { id: 'ocr', label: 'Scan & OCR', icon: ScanText, color: 'text-cyan-400', desc: 'Extract text' },
                 { id: 'protect', label: 'Protect / Lock', icon: Shield, color: 'text-amber-400', desc: 'Password encryption' },
                 { id: 'watermark', label: 'Watermark', icon: Droplets, color: 'text-indigo-400', desc: 'Custom text stamp' },

@@ -11,6 +11,7 @@ import { useToolStore, ToolMode } from '@/stores/toolStore';
 import { ToolCategory } from '@/types/tools';
 import { HeroSection } from '@/components/home/HeroSection';
 import { ToolExplorer } from '@/components/home/ToolExplorer';
+import { SecurityFeatureSection } from '@/components/home/SecurityFeatureSection';
 import { FAQSection } from '@/components/home/FAQSection';
 import { HomeFooter } from '@/components/home/HomeFooter';
 import { isNativeFSSupported } from '@core/storage/native-fs';
@@ -232,7 +233,7 @@ export const HomeDashboard: React.FC = () => {
   return (
     <div
       id="home-dashboard"
-      className="flex-1 overflow-y-auto bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100 flex flex-col items-center pb-28 md:pb-12"
+      className="flex-1 overflow-y-auto bg-slate-50 text-gray-900 flex flex-col items-center pb-28 md:pb-12"
     >
       {/* Hidden File Inputs: Document & Photo */}
       <input
@@ -392,6 +393,9 @@ export const HomeDashboard: React.FC = () => {
           onCategoryChange={setSelectedCategory}
           onSelectWorkflowFile={triggerWorkflowWithFile}
         />
+
+        {/* Local-First Architecture Explainer */}
+        <SecurityFeatureSection />
 
         {/* FAQ Accordion */}
         <FAQSection />

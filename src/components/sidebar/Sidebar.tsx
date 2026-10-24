@@ -140,8 +140,8 @@ const SidebarPageThumbnail: React.FC<SidebarPageThumbnailProps> = ({
           isDragOver ? 'border-t-2 border-swift-400 bg-swift-500/10' : ''
         } ${
           isCurrent
-            ? 'bg-swift-600/20 border-2 border-swift-500 shadow-md ring-2 ring-swift-500/30'
-            : 'bg-black/80 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 shadow-sm'
+            ? 'bg-red-50 border-2 border-red-500 shadow-sm ring-2 ring-red-500/20'
+            : 'bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 shadow-2xs'
         }`}
       >
         {/* Crisp Page Preview Canvas */}
@@ -450,9 +450,9 @@ export const Sidebar: React.FC = () => {
         className="md:hidden fixed top-14 inset-x-0 bottom-0 z-40 bg-black/75 backdrop-blur-sm animate-fade-in"
       />
 
-      <aside className="w-72 max-w-[85vw] md:w-64 bg-black border-r border-slate-800 flex flex-col select-none z-50 fixed top-14 bottom-0 left-0 md:relative md:top-auto md:bottom-auto md:left-auto md:z-auto shadow-2xl md:shadow-none h-[calc(100dvh-3.5rem)] md:h-full">
+      <aside className="w-72 max-w-[85vw] md:w-64 bg-white border-r border-gray-200 flex flex-col select-none z-50 fixed top-14 bottom-0 left-0 md:relative md:top-auto md:bottom-auto md:left-auto md:z-auto shadow-xl md:shadow-none h-[calc(100dvh-3.5rem)] md:h-full">
         {/* Tab Switcher */}
-        <div className="h-11 border-b border-slate-800 flex items-center px-2 gap-1 bg-black/60 shrink-0">
+        <div className="h-11 border-b border-gray-200 flex items-center px-2 gap-1 bg-gray-50 shrink-0">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeSidebarTab === tab.id;

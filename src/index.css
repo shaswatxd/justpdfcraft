@@ -501,3 +501,55 @@ html.light ::-webkit-scrollbar-thumb:hover {
     scroll-behavior: auto !important;
   }
 }
+
+
+/* ==========================================================================
+   EDITOR & CHROME LIGHT THEME GUARANTEES (BillGenHai Theme Standard)
+   Zero black surfaces anywhere across editor, toolbars, sidebar, or HUDs
+   ========================================================================== */
+html.light .MainToolbar,
+html.light [class*="MainToolbar"],
+html.light .DocumentTabBar,
+html.light [class*="DocumentTabBar"] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+html.light aside,
+html.light aside.bg-black {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+html.light aside div[class*="bg-black"] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+html.light .pdf-desk-bg {
+  background-color: #f1f5f9 !important;
+}
+
+html.light [data-testid="mobile-editor-hud"] > div {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+html.light nav[aria-label="Mobile PDF Tool Dock"] {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-top-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+html.light div[class*="SelectionHUD"],
+html.light div[class*="TTSPlayerHUD"] {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
+}
+

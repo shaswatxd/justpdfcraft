@@ -232,9 +232,9 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
   const IconComponent = ICON_MAP[tool.iconName] || Sparkles;
   const isFav = isFavorite(tool.id);
   const theme = COLOR_THEMES[tool.color] || {
-    bg: 'bg-slate-50 group-hover:bg-slate-100',
-    border: 'border-slate-200/80',
-    text: 'text-slate-700',
+    bg: 'bg-slate-50 group-hover:bg-gray-100',
+    border: 'border-gray-200/80',
+    text: 'text-gray-700',
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -263,7 +263,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
           handleClick(e as any);
         }
       }}
-      className="group relative flex flex-col justify-between p-5 rounded-2xl bg-white hover:bg-slate-50/70 border border-slate-200 hover:border-slate-300 shadow-xs hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-200 cursor-pointer select-none text-left"
+      className="group relative flex flex-col justify-between p-5 rounded-2xl bg-white hover:bg-gray-50/80 border border-gray-200 hover:border-gray-300 shadow-xs hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-200 cursor-pointer select-none text-left"
     >
       {/* Top row: Icon, Badge (if any), Favorite */}
       <div className="flex items-center justify-between gap-3 mb-3">
@@ -276,7 +276,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
         <div className="flex items-center gap-1.5">
           {tool.badge && (
             <span
-              className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-slate-100 border border-slate-200 text-slate-600"
+              className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-gray-100 border border-gray-200 text-gray-600"
             >
               {tool.badge}
             </span>
@@ -288,7 +288,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
             className={`fav-btn p-2 rounded-lg transition-all ${
               isFav
                 ? 'opacity-100 text-rose-500 bg-rose-50'
-                : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-slate-400 hover:text-rose-500 hover:bg-slate-100'
+                : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-gray-400 hover:text-rose-500 hover:bg-gray-100'
             }`}
             title={isFav ? 'Remove from favorites' : 'Add to favorites'}
             aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
@@ -300,17 +300,17 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
 
       {/* Title & Description */}
       <div className="space-y-1.5">
-        <h3 className="text-sm font-bold text-slate-900 group-hover:text-red-600 transition-colors leading-snug">
+        <h3 className="text-sm font-bold text-gray-900 group-hover:text-red-600 transition-colors leading-snug">
           {tool.name}
         </h3>
-        <p className="text-xs text-slate-500 leading-relaxed line-clamp-2 min-h-[32px]">
+        <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 min-h-[32px]">
           {tool.shortDesc}
         </p>
       </div>
 
       {/* Bottom Footer: Category & Open Action */}
-      <div className="mt-3.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-        <span className="text-[11px] font-medium capitalize text-slate-500 group-hover:text-slate-700 transition-colors">
+      <div className="mt-3.5 pt-2.5 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
+        <span className="text-[11px] font-medium capitalize text-gray-500 group-hover:text-gray-700 transition-colors">
           {tool.category} Tool
         </span>
         <span className="text-xs font-semibold text-red-600 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-hover:translate-x-0.5 transition-all flex items-center gap-1">

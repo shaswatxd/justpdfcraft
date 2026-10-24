@@ -38,12 +38,12 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
   return (
     <nav
       aria-label="Mobile Navigation"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-2xl border-t border-slate-800 px-2 py-1.5 flex items-center justify-around select-none safe-area-bottom shadow-2xl"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-2xl border-t border-gray-200 px-2 py-1.5 flex items-center justify-around select-none safe-area-bottom shadow-xl"
     >
       {/* Home */}
       <button
         onClick={scrollHomeToTop}
-        className="flex flex-col items-center gap-0.5 py-1.5 px-3 min-h-[44px] min-w-[56px] text-slate-400 hover:text-white transition-colors active:scale-95"
+        className="flex flex-col items-center gap-0.5 py-1.5 px-3 min-h-[44px] min-w-[56px] text-gray-500 hover:text-gray-900 transition-colors active:scale-95"
         aria-label="Home Dashboard"
         title="Home Dashboard"
       >
@@ -54,7 +54,7 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
       {/* Tools Catalog */}
       <button
         onClick={scrollToExplorer}
-        className="flex flex-col items-center gap-0.5 py-1.5 px-3 min-h-[44px] min-w-[56px] text-slate-400 hover:text-white transition-colors active:scale-95"
+        className="flex flex-col items-center gap-0.5 py-1.5 px-3 min-h-[44px] min-w-[56px] text-gray-500 hover:text-gray-900 transition-colors active:scale-95"
         aria-label="Browse All Tools"
         title="Browse All Tools"
       >
@@ -66,7 +66,7 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
       {onOpenFilePicker && (
         <button
           onClick={onOpenFilePicker}
-          className="flex items-center justify-center -mt-5 bg-swift-600 hover:bg-swift-500 text-white w-12 h-12 rounded-full shadow-xl shadow-swift-950/80 border-2 border-black transition-transform active:scale-95"
+          className="flex items-center justify-center -mt-5 bg-red-600 hover:bg-red-700 text-white w-12 h-12 rounded-full shadow-lg shadow-red-500/30 border-2 border-white transition-transform active:scale-95"
           title="Open or Upload File"
           aria-label="Open or Upload File"
         >
@@ -77,7 +77,7 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
       {/* Exam Suite */}
       <button
         onClick={() => setActiveModal('student-resizer')}
-        className="flex flex-col items-center gap-0.5 py-1.5 px-3 min-h-[44px] min-w-[56px] text-slate-400 hover:text-amber-400 transition-colors active:scale-95"
+        className="flex flex-col items-center gap-0.5 py-1.5 px-3 min-h-[44px] min-w-[56px] text-gray-500 hover:text-amber-600 transition-colors active:scale-95"
         aria-label="Exam Photo and Signature Suite"
         title="Student & Exam Suite"
       >
@@ -88,7 +88,7 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
       {/* Search / Command Palette */}
       <button
         onClick={() => setCommandPaletteOpen(true)}
-        className="flex flex-col items-center gap-0.5 py-1.5 px-3 min-h-[44px] min-w-[56px] text-slate-400 hover:text-sky-400 transition-colors active:scale-95"
+        className="flex flex-col items-center gap-0.5 py-1.5 px-3 min-h-[44px] min-w-[56px] text-gray-500 hover:text-red-600 transition-colors active:scale-95"
         aria-label="Search Tools and Commands"
         title="Search Tools & Actions"
       >

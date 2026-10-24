@@ -60,13 +60,13 @@ export const NoDocumentState: React.FC<NoDocumentStateProps> = ({
         className="hidden"
       />
 
-      <div className="w-16 h-16 rounded-2xl bg-swift-500/10 text-swift-400 flex items-center justify-center border border-swift-500/20 shadow-inner">
+      <div className="w-16 h-16 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center border border-red-200/80 shadow-2xs">
         <Icon className="w-8 h-8" />
       </div>
 
       <div className="space-y-1">
-        <h4 className="text-base font-bold text-white">No PDF Document Open</h4>
-        <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+        <h4 className="text-base font-bold text-gray-900">No PDF Document Open</h4>
+        <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
           {description || `Please select a PDF document first to use the ${toolName} workflow.`}
         </p>
       </div>
@@ -74,7 +74,7 @@ export const NoDocumentState: React.FC<NoDocumentStateProps> = ({
       <button
         type="button"
         onClick={() => fileInputRef.current?.click()}
-        className="px-5 py-2.5 bg-swift-600 hover:bg-swift-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-lg shadow-swift-900/40 transition-all hover:scale-[1.02] active:scale-[0.98]"
+        className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-md shadow-red-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
       >
         <FolderOpen className="w-4 h-4" />
         <span>{actionText || `Select PDF to ${toolName}`}</span>

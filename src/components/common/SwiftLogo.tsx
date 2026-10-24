@@ -4,48 +4,21 @@ export interface LogoProps {
   className?: string;
 }
 
-export const JustPDFCraftLogo: React.FC<LogoProps> = ({ className = 'w-6 h-6' }) => {
+export const JustPDFCraftLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 48 48"
+      viewBox="0 0 24 24"
+      fill="currentColor"
       className={className}
-      fill="none"
+      aria-hidden="true"
     >
-      <defs>
-        <linearGradient id="jpc-header-grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#6c63ff" />
-          <stop offset="100%" stopColor="#ff6584" />
-        </linearGradient>
-      </defs>
-      {/* Background with rounded corners */}
-      <rect width="48" height="48" rx="11" fill="url(#jpc-header-grad)" />
-
-      {/* Document icon */}
+      {/* Precision Document with Folded Corner & PDF Monogram */}
       <path
-        d="M15 8h12l8 8v22a2 2 0 0 1-2 2H15a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z"
-        fill="rgba(255,255,255,0.96)"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4 4a2 2 0 0 1 2-2h8.586a2 2 0 0 1 1.414.586l4.414 4.414A2 2 0 0 1 21 8.414V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4zm11 0v4a1 1 0 0 0 1 1h4l-5-5zM7.5 14a.75.75 0 0 1 .75-.75h1.5a1.75 1.75 0 0 1 0 3.5h-.75V18a.75.75 0 0 1-1.5 0v-4zm1.5.75v1h.75a.25.25 0 0 0 0-.5h-.75zm4-.75a.75.75 0 0 1 .75-.75h1.25a2 2 0 0 1 0 4H14.5V18a.75.75 0 0 1-1.5 0v-4zm1.5.75v2h.5a.5.5 0 0 0 0-1h-.5zm3.5-.75a.75.75 0 0 1 .75-.75H20a.75.75 0 0 1 0 1.5h-1.75v1.25H19a.75.75 0 0 1 0 1.5h-.75V18a.75.75 0 0 1-1.5 0v-4z"
       />
-
-      {/* Folded corner */}
-      <path
-        d="M27 8v6a2 2 0 0 0 2 2h6z"
-        fill="rgba(255,255,255,0.65)"
-      />
-
-      {/* Bold "PDF" inside mark */}
-      <text
-        x="24"
-        y="32"
-        textAnchor="middle"
-        fontSize="10"
-        fontFamily="Arial, Helvetica, sans-serif"
-        fill="#6c63ff"
-        fontWeight="900"
-        letterSpacing="-0.5"
-      >
-        PDF
-      </text>
     </svg>
   );
 };

@@ -2569,7 +2569,7 @@ export const PDFViewer: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-black text-slate-400 gap-3">
+      <div className="flex-1 flex flex-col items-center justify-center bg-slate-100 text-gray-500 gap-3">
         <div className="w-8 h-8 border-2 border-swift-500 border-t-transparent rounded-full animate-spin" />
         <p className="text-xs font-medium">Rendering PDF pages...</p>
       </div>
@@ -2578,7 +2578,7 @@ export const PDFViewer: React.FC = () => {
 
   if (errorMessage) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-black text-rose-400 p-6 text-center">
+      <div className="flex-1 flex flex-col items-center justify-center bg-slate-100 text-rose-600 p-6 text-center">
         <AlertCircle className="w-10 h-10 mb-2" />
         <h3 className="font-bold text-base">Error Loading PDF</h3>
         <p className="text-xs text-slate-400 mt-1 max-w-md">{errorMessage}</p>
@@ -2623,7 +2623,7 @@ export const PDFViewer: React.FC = () => {
         onPointerMove={handleContainerPointerMove}
         onPointerUp={handleContainerPointerUp}
         style={{ touchAction: 'pan-x pan-y' }}
-        className={`flex-1 overflow-auto bg-black flex flex-col items-center p-2.5 sm:p-6 pb-24 md:pb-6 select-none relative pdf-desk-bg ${
+        className={`flex-1 overflow-auto bg-slate-100 flex flex-col items-center p-2.5 sm:p-6 pb-24 md:pb-6 select-none relative pdf-desk-bg ${
           isPanning ? 'cursor-grabbing' : (isSpacePressed || currentTool === 'hand') ? 'cursor-grab' : ''
         }`}
       >

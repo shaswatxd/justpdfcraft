@@ -95,24 +95,24 @@ export const ContextPropertiesBar: React.FC = () => {
   ];
 
   return (
-    <div className="bg-slate-850 border-b border-slate-800 px-4 py-1.5 flex flex-wrap items-center justify-between text-xs text-slate-300 gap-3">
+    <div className="bg-gray-50 border-b border-gray-200 px-4 py-1.5 flex flex-wrap items-center justify-between text-xs text-gray-700 gap-3">
       {/* Tool Context Controls */}
       <div className="flex items-center gap-4 flex-wrap">
         {/* Text Options */}
         {currentTool === 'text' && (
           <div className="flex items-center gap-3">
-            <span className="text-slate-400 font-medium">Text Font:</span>
+            <span className="text-gray-500 font-medium">Text Font:</span>
             <select
               value={fontFamily}
               onChange={(e) => setFontFamily(e.target.value as any)}
-              className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-slate-200"
+              className="bg-white border border-gray-200 rounded px-2 py-1 text-gray-800 shadow-2xs"
             >
               <option value="Helvetica">Helvetica (Sans)</option>
               <option value="TimesRoman">Times Roman (Serif)</option>
               <option value="Courier">Courier (Mono)</option>
             </select>
 
-            <span className="text-slate-400 font-medium ml-2">Size:</span>
+            <span className="text-gray-500 font-medium ml-2">Size:</span>
             <input
               type="number"
               min={8}
@@ -127,7 +127,7 @@ export const ContextPropertiesBar: React.FC = () => {
         {/* Dedicated Highlighter Colors */}
         {currentTool === 'highlight' && (
           <div className="flex items-center gap-3">
-            <span className="text-slate-400 font-medium">Highlighter:</span>
+            <span className="text-gray-500 font-medium">Highlighter:</span>
             <div className="flex items-center gap-1.5">
               {highlightColors.map((hc) => (
                 <button
@@ -142,7 +142,7 @@ export const ContextPropertiesBar: React.FC = () => {
               ))}
             </div>
 
-            <span className="text-slate-400 font-medium ml-2">Opacity:</span>
+            <span className="text-gray-500 font-medium ml-2">Opacity:</span>
             <input
               type="range"
               min={0.15}
@@ -159,7 +159,7 @@ export const ContextPropertiesBar: React.FC = () => {
         {/* Dedicated Dynamic Rubber Stamp Controls */}
         {currentTool === 'stamp' && (
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-slate-400 font-medium">Stamp:</span>
+            <span className="text-gray-500 font-medium">Stamp:</span>
             <div className="flex items-center gap-1 overflow-x-auto py-0.5">
               {STAMP_PRESETS.map((sp) => {
                 const isSelected = dynamicStampConfig.preset === sp.id;
@@ -268,7 +268,7 @@ export const ContextPropertiesBar: React.FC = () => {
         {/* Shape / Line / Drawing Stroke Options */}
         {['draw', 'rectangle', 'circle', 'line', 'arrow', 'underline', 'strikethrough'].includes(currentTool) && (
           <div className="flex items-center gap-3">
-            <span className="text-slate-400 font-medium">Stroke:</span>
+            <span className="text-gray-500 font-medium">Stroke:</span>
             <input
               type="range"
               min={1}
@@ -279,7 +279,7 @@ export const ContextPropertiesBar: React.FC = () => {
             />
             <span className="w-4 text-center font-mono">{strokeWidth}px</span>
 
-            <span className="text-slate-400 font-medium ml-2">Opacity:</span>
+            <span className="text-gray-500 font-medium ml-2">Opacity:</span>
             <input
               type="range"
               min={0.2}
@@ -340,11 +340,11 @@ export const ContextPropertiesBar: React.FC = () => {
               <span>Dimension Ruler:</span>
             </div>
 
-            <span className="text-slate-400 font-medium">Unit:</span>
+            <span className="text-gray-500 font-medium">Unit:</span>
             <select
               value={measureUnit}
               onChange={(e) => setMeasureUnit(e.target.value as any)}
-              className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-slate-200 text-xs font-mono"
+              className="bg-white border border-gray-200 rounded px-2 py-1 text-gray-800 shadow-2xs text-xs font-mono"
             >
               <option value="mm">Millimeters (mm)</option>
               <option value="cm">Centimeters (cm)</option>
@@ -352,11 +352,11 @@ export const ContextPropertiesBar: React.FC = () => {
               <option value="pt">Points (pt)</option>
             </select>
 
-            <span className="text-slate-400 font-medium ml-1">Scale Ratio:</span>
+            <span className="text-gray-500 font-medium ml-1">Scale Ratio:</span>
             <select
               value={measureScale}
               onChange={(e) => setMeasureScale(Number(e.target.value))}
-              className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-slate-200 text-xs font-mono"
+              className="bg-white border border-gray-200 rounded px-2 py-1 text-gray-800 shadow-2xs text-xs font-mono"
             >
               <option value={1}>1:1 (Direct Document)</option>
               <option value={10}>1:10 (Architectural 10x)</option>
@@ -366,7 +366,7 @@ export const ContextPropertiesBar: React.FC = () => {
               <option value={500}>1:500 (Topography 500x)</option>
             </select>
 
-            <span className="text-slate-400 font-medium ml-1">Stroke:</span>
+            <span className="text-gray-500 font-medium ml-1">Stroke:</span>
             <input
               type="range"
               min={1}
@@ -393,11 +393,11 @@ export const ContextPropertiesBar: React.FC = () => {
             <div className="h-4 w-[1px] bg-slate-700" />
             <div className="flex items-center gap-1.5 text-xs">
               <Globe className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-slate-400 font-medium">Language:</span>
+              <span className="text-gray-500 font-medium">Language:</span>
               <select
                 value={ocrLanguage}
                 onChange={(e) => setOcrLanguage(e.target.value)}
-                className="bg-black border border-slate-700 hover:border-slate-600 rounded-lg px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-swift-500 font-medium cursor-pointer transition-colors shadow-sm"
+                className="bg-white border border-gray-200 hover:border-gray-300 rounded-lg px-2.5 py-1 text-xs text-gray-800 shadow-2xs focus:outline-none focus:border-swift-500 font-medium cursor-pointer transition-colors shadow-sm"
               >
                 <option value="eng+hin">English + Hindi (Bilingual)</option>
                 <option value="hin">Hindi Only</option>

@@ -25,7 +25,7 @@ const FooterLink: React.FC<{
 }> = ({ label, onClick, title }) => (
   <button
     onClick={onClick || scrollToExplorer}
-    className="inline-block w-auto py-1.5 min-h-[32px] text-slate-600 hover:text-red-600 font-medium transition-colors text-left"
+    className="inline-block w-auto py-1.5 min-h-[32px] text-gray-600 hover:text-red-600 font-medium transition-colors text-left"
     title={title}
   >
     {label}
@@ -46,7 +46,7 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
   };
 
   return (
-    <footer className="w-full bg-slate-100/70 border-t border-slate-200 text-slate-600 text-xs mt-12 py-12 px-4 sm:px-6 lg:px-8 select-none">
+    <footer className="w-full bg-gray-100/70 border-t border-gray-200 text-gray-600 text-xs mt-12 py-12 px-4 sm:px-6 lg:px-8 select-none">
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
         {/* Column 1: Brand & Mission */}
         <div className="md:col-span-1 space-y-3">
@@ -54,11 +54,11 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
             <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-white shadow-md shadow-red-500/20">
               <SwiftLogo className="w-4 h-4 shrink-0 text-white fill-white" />
             </div>
-            <span className="font-extrabold text-base tracking-tight text-slate-900">
+            <span className="font-extrabold text-base tracking-tight text-gray-900">
               Just<span className="text-red-600">PDFCraft</span>
             </span>
           </div>
-          <p className="text-xs text-slate-500 leading-relaxed">
+          <p className="text-xs text-gray-500 leading-relaxed">
             100% private, client-side PDF tools. Documents and photos are processed strictly inside your browser — never uploaded to a server.
           </p>
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-semibold">
@@ -69,7 +69,7 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
 
         {/* Column 2: PDF Essentials */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">PDF Essentials</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900">PDF Essentials</h4>
           <ul className="space-y-0.5">
             <li><FooterLink label="Merge PDF" title="Combine multiple PDFs" onClick={() => setActiveModal('merge')} /></li>
             <li><FooterLink label="Split PDF" title="Extract pages or split ranges" onClick={() => setActiveModal('split')} /></li>
@@ -81,7 +81,7 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
 
         {/* Column 3: Organize & Security */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Organize & Security</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900">Organize & Security</h4>
           <ul className="space-y-0.5">
             <li><FooterLink label="Protect & Encrypt" title="Set password & AES encryption" onClick={() => setActiveModal('protect')} /></li>
             <li><FooterLink label="Unlock PDF" title="Strip password & restrictions" onClick={() => setActiveModal('protect')} /></li>
@@ -93,7 +93,7 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
 
         {/* Column 4: Student & Special Tools */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Exam & Study Tools</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900">Exam & Study Tools</h4>
           <ul className="space-y-0.5">
             <li><FooterLink label="Photo & Sign Resizer (Exact KB)" title="Compress to 20-50 KB for exams" onClick={() => setActiveModal('student-resizer')} /></li>
             <li><FooterLink label="Handwriting Generator" title="Generate realistic handwritten assignments" onClick={() => setActiveModal('handwriting')} /></li>
@@ -105,7 +105,7 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
 
         {/* Column 5: Trust & Legal */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Trust & Legal</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900">Trust & Legal</h4>
           <ul className="space-y-0.5">
             <li><FooterLink label="About JustPDFCraft" onClick={() => openLegal('about')} /></li>
             <li><FooterLink label="Privacy Policy" onClick={() => openLegal('privacy')} /></li>
@@ -117,7 +117,7 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="max-w-6xl mx-auto pt-8 mt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px]">
+      <div className="max-w-6xl mx-auto pt-8 mt-8 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-gray-500 text-[11px]">
         <p>
           © {new Date().getFullYear()} JustPDFCraft. 100% Client-Side In-Browser Processing.
         </p>

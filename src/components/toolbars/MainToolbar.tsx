@@ -197,31 +197,31 @@ export const MainToolbar: React.FC = () => {
   ];
 
   return (
-    <div className="h-11 bg-black/95 border-b border-slate-800 px-3 flex items-center justify-between z-20 gap-2 select-none overflow-x-auto no-scrollbar overflow-y-visible">
+    <div className="h-11 bg-white border-b border-gray-200 px-3 flex items-center justify-between z-20 gap-2 select-none overflow-x-auto no-scrollbar overflow-y-visible shadow-2xs">
       {/* Left: Sidebar toggle + Main Edit Tools */}
       <div className="flex items-center gap-1 shrink-0">
         <button
           onClick={toggleSidebar}
           className={`p-1.5 rounded-lg border transition-colors shrink-0 ${
             isSidebarOpen
-              ? 'bg-slate-800 border-slate-700 text-swift-400'
-              : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+              ? 'bg-red-50 border-red-200 text-red-600'
+              : 'border-transparent text-gray-500 hover:bg-gray-100 hover:text-gray-800'
           }`}
           title="Toggle Navigation Sidebar"
         >
           <Sidebar className="w-4 h-4" />
         </button>
 
-        <div className="w-[1px] h-5 bg-slate-800 mx-1 shrink-0" />
+        <div className="w-[1px] h-5 bg-gray-200 mx-1 shrink-0" />
 
         {/* Primary Pointer Tools */}
-        <div className="flex items-center gap-0.5 bg-slate-800/60 p-0.5 rounded-lg border border-slate-800 shrink-0">
+        <div className="flex items-center gap-0.5 bg-gray-100 p-0.5 rounded-lg border border-gray-200 shrink-0">
           <button
             onClick={() => setTool('select')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               currentTool === 'select'
-                ? 'bg-swift-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white'
             }`}
             title="Select / Interact (V)"
           >
@@ -231,8 +231,8 @@ export const MainToolbar: React.FC = () => {
             onClick={() => setTool('hand')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               currentTool === 'hand'
-                ? 'bg-swift-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white'
             }`}
             title="Pan / Hand Tool (H)"
           >
@@ -241,13 +241,13 @@ export const MainToolbar: React.FC = () => {
         </div>
 
         {/* Primary Drawing & Annotation Tools */}
-        <div className="flex items-center gap-0.5 bg-slate-800/60 p-0.5 rounded-lg border border-slate-800 shrink-0">
+        <div className="flex items-center gap-0.5 bg-gray-100 p-0.5 rounded-lg border border-gray-200 shrink-0">
           <button
             onClick={() => setTool('draw')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               currentTool === 'draw'
-                ? 'bg-swift-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white'
             }`}
             title="Pen / Freehand Draw (P)"
           >
@@ -257,8 +257,8 @@ export const MainToolbar: React.FC = () => {
             onClick={() => setTool('eraser')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               currentTool === 'eraser'
-                ? 'bg-swift-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white'
             }`}
             title="Stroke Eraser (E) - Click or drag to erase strokes & annotations"
           >
@@ -268,8 +268,8 @@ export const MainToolbar: React.FC = () => {
             onClick={() => setTool('highlight')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               currentTool === 'highlight'
-                ? 'bg-swift-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white'
             }`}
             title="Highlighter"
           >
@@ -279,8 +279,8 @@ export const MainToolbar: React.FC = () => {
             onClick={() => setTool('text')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               currentTool === 'text'
-                ? 'bg-swift-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white'
             }`}
             title="Add Text (T)"
           >
@@ -290,23 +290,23 @@ export const MainToolbar: React.FC = () => {
             onClick={() => setTool('edit_text')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               currentTool === 'edit_text'
-                ? 'bg-swift-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white'
             }`}
             title="Edit Existing PDF Text (Click any text on page to edit)"
           >
-            <Edit3 className={`w-3.5 h-3.5 ${currentTool === 'edit_text' ? 'text-white' : 'text-swift-400'}`} />
+            <Edit3 className={`w-3.5 h-3.5 ${currentTool === 'edit_text' ? 'text-white' : 'text-red-600'}`} />
           </button>
           <button
             onClick={() => setTool('snip_ocr')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               currentTool === 'snip_ocr'
-                ? 'bg-swift-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white'
             }`}
             title="Area OCR / Text Grabber (Ctrl+Shift+X) - Drag box to extract text to clipboard"
           >
-            <ScanText className={`w-3.5 h-3.5 ${currentTool === 'snip_ocr' ? 'text-white' : 'text-amber-400'}`} />
+            <ScanText className={`w-3.5 h-3.5 ${currentTool === 'snip_ocr' ? 'text-white' : 'text-amber-600'}`} />
           </button>
 
           {/* Shapes Dropdown */}
@@ -325,8 +325,8 @@ export const MainToolbar: React.FC = () => {
             </button>
 
             {shapesOpen && (
-              <div className="absolute left-0 top-full mt-1.5 bg-black border border-slate-800 rounded-xl shadow-2xl p-1 z-50 w-44 flex flex-col gap-0.5 animate-scale-in">
-                <span className="text-[10px] font-semibold text-slate-400 px-2 py-1 uppercase tracking-wider">
+              <div className="absolute left-0 top-full mt-1.5 bg-white border border-gray-200 rounded-xl shadow-xl p-1 z-50 w-44 flex flex-col gap-0.5 animate-scale-in text-gray-800">
+                <span className="text-[10px] font-semibold text-gray-400 px-2 py-1 uppercase tracking-wider">
                   Geometric Shapes
                 </span>
                 {shapeTools.map((s) => {
@@ -341,8 +341,8 @@ export const MainToolbar: React.FC = () => {
                       }}
                       className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
                         isSelected
-                          ? 'bg-swift-600 text-white'
-                          : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                          ? 'bg-red-600 text-white'
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                       }`}
                     >
                       <SIcon className="w-3.5 h-3.5" />
@@ -359,8 +359,8 @@ export const MainToolbar: React.FC = () => {
             onClick={() => setTool('measure')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               currentTool === 'measure'
-                ? 'bg-swift-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white'
             }`}
             title="Measure / Dimension Ruler (M) - Calibrated distance & scale measurement"
           >
@@ -369,13 +369,13 @@ export const MainToolbar: React.FC = () => {
         </div>
 
         {/* Text Markup & Stamps */}
-        <div className="flex items-center gap-0.5 bg-slate-800/60 p-0.5 rounded-lg border border-slate-800 shrink-0">
+        <div className="flex items-center gap-0.5 bg-gray-100 p-0.5 rounded-lg border border-gray-200 shrink-0">
           <button
             onClick={() => setTool('underline')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               currentTool === 'underline'
-                ? 'bg-swift-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white'
             }`}
             title="Underline Text"
           >
@@ -385,8 +385,8 @@ export const MainToolbar: React.FC = () => {
             onClick={() => setTool('strikethrough')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               currentTool === 'strikethrough'
-                ? 'bg-swift-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white'
             }`}
             title="Strikethrough Text"
           >
@@ -396,8 +396,8 @@ export const MainToolbar: React.FC = () => {
             onClick={() => setTool('stamp')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               currentTool === 'stamp'
-                ? 'bg-swift-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white'
             }`}
             title="Approval & Review Stamps"
           >
@@ -407,8 +407,8 @@ export const MainToolbar: React.FC = () => {
             onClick={() => setTool('note')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               currentTool === 'note'
-                ? 'bg-swift-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white'
             }`}
             title="Sticky Note"
           >
@@ -418,8 +418,8 @@ export const MainToolbar: React.FC = () => {
             onClick={() => setActiveModal('sign')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               activeModal === 'sign'
-                ? 'bg-sky-600 text-white shadow-sm'
-                : 'text-sky-400 hover:text-sky-200 hover:bg-sky-950/40'
+                ? 'bg-sky-600 text-white shadow-xs'
+                : 'text-sky-700 hover:text-sky-900 hover:bg-sky-50'
             }`}
             title="E-Sign & Digital Signature (Draw, Type, Upload)"
           >
@@ -429,8 +429,8 @@ export const MainToolbar: React.FC = () => {
             onClick={() => setTool('redact')}
             className={`p-1.5 rounded-md transition-all flex items-center gap-1 text-xs font-medium ${
               currentTool === 'redact'
-                ? 'bg-rose-600 text-white shadow-sm'
-                : 'text-rose-400 hover:text-rose-200 hover:bg-rose-950/40'
+                ? 'bg-rose-600 text-white shadow-xs'
+                : 'text-rose-700 hover:text-rose-900 hover:bg-rose-50'
             }`}
             title="True Redact (R)"
           >
@@ -443,16 +443,16 @@ export const MainToolbar: React.FC = () => {
       <div className="flex items-center gap-1 shrink-0">
         <button
           onClick={() => setSidebarTab('search')}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-200 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700/60 shrink-0"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 rounded-lg transition-colors border border-gray-200 shadow-2xs shrink-0"
           title="Search Document (Ctrl+F)"
         >
-          <Search className="w-3.5 h-3.5 text-slate-300" />
+          <Search className="w-3.5 h-3.5 text-gray-500" />
           <span className="hidden md:inline font-medium">Search</span>
         </button>
 
         <button
           onClick={() => setSidebarTab('forms')}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-200 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700/60 relative shrink-0"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 rounded-lg transition-colors border border-gray-200 shadow-2xs relative shrink-0"
           title="Interactive Forms & Field Filling"
         >
           <FileText className="w-3.5 h-3.5 text-amber-400" />
@@ -466,7 +466,7 @@ export const MainToolbar: React.FC = () => {
 
         <button
           onClick={() => setActiveModal('compress')}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-200 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700/60 shrink-0"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 rounded-lg transition-colors border border-gray-200 shadow-2xs shrink-0"
           title="Smart Compression"
         >
           <FileArchive className="w-3.5 h-3.5 text-emerald-400" />
@@ -475,7 +475,7 @@ export const MainToolbar: React.FC = () => {
 
         <button
           onClick={() => setActiveModal('ocr')}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-200 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700/60 shrink-0"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 rounded-lg transition-colors border border-gray-200 shadow-2xs shrink-0"
           title="OCR & Text Recognition"
         >
           <ScanText className="w-3.5 h-3.5 text-indigo-400" />
@@ -486,7 +486,7 @@ export const MainToolbar: React.FC = () => {
 
         <button
           onClick={() => setActiveModal('protect')}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-200 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700/60 shrink-0"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 rounded-lg transition-colors border border-gray-200 shadow-2xs shrink-0"
           title="Password Protect & Permissions"
         >
           <Shield className="w-3.5 h-3.5 text-rose-400" />
@@ -501,8 +501,8 @@ export const MainToolbar: React.FC = () => {
             onClick={() => setMoreToolsOpen((v) => !v)}
             className={`flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-colors border shrink-0 ${
               moreToolsOpen
-                ? 'bg-swift-600 text-white border-swift-500 shadow-sm'
-                : 'text-slate-200 bg-slate-800/80 border-slate-700/60 hover:bg-slate-700 hover:text-white'
+                ? 'bg-red-600 text-white border-red-600 shadow-xs'
+                : 'text-gray-700 bg-white border-gray-200 hover:bg-gray-50 shadow-2xs'
             }`}
             title="More Professional Tools"
           >
@@ -511,8 +511,8 @@ export const MainToolbar: React.FC = () => {
           </button>
 
           {moreToolsOpen && (
-            <div className="absolute right-0 top-full mt-1.5 bg-black border border-slate-800 rounded-2xl shadow-2xl p-1.5 z-50 w-72 flex flex-col gap-1 animate-scale-in">
-              <span className="text-[10px] font-bold text-slate-400 px-3 py-1.5 uppercase tracking-wider border-b border-slate-800/80">
+            <div className="absolute right-0 top-full mt-1.5 bg-white border border-gray-200 rounded-2xl shadow-xl p-1.5 z-50 w-72 flex flex-col gap-1 animate-scale-in text-gray-800">
+              <span className="text-[10px] font-bold text-gray-400 px-3 py-1.5 uppercase tracking-wider border-b border-gray-100">
                 Advanced PDF Utilities
               </span>
               <div className="max-h-80 overflow-y-auto space-y-0.5 p-1">
@@ -525,16 +525,16 @@ export const MainToolbar: React.FC = () => {
                         setActiveModal(tool.id);
                         setMoreToolsOpen(false);
                       }}
-                      className="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-slate-800 transition-colors group"
+                      className="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-gray-50 transition-colors group"
                     >
-                      <div className={`p-1.5 rounded-lg bg-slate-800/80 group-hover:bg-slate-750 shrink-0 mt-0.5 ${tool.color}`}>
+                      <div className={`p-1.5 rounded-lg bg-gray-100 group-hover:bg-gray-200/80 shrink-0 mt-0.5 ${tool.color}`}>
                         <TIcon className="w-4 h-4" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <span className="text-xs font-semibold text-slate-200 block truncate group-hover:text-white">
+                        <span className="text-xs font-semibold text-gray-900 block truncate group-hover:text-red-600 transition-colors">
                           {tool.label}
                         </span>
-                        <span className="text-[11px] text-slate-400 block leading-tight truncate">
+                        <span className="text-[11px] text-gray-500 block leading-tight truncate">
                           {tool.description}
                         </span>
                       </div>
@@ -546,15 +546,15 @@ export const MainToolbar: React.FC = () => {
           )}
         </div>
 
-        <div className="w-[1px] h-5 bg-slate-800 mx-0.5 shrink-0" />
+        <div className="w-[1px] h-5 bg-gray-200 mx-0.5 shrink-0" />
 
         {/* Properties toggle */}
         <button
           onClick={togglePropertiesPanel}
           className={`p-1.5 rounded-lg border transition-colors shrink-0 ${
             isPropertiesPanelOpen
-              ? 'bg-slate-800 border-slate-700 text-swift-400'
-              : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+              ? 'bg-red-50 border-red-200 text-red-600'
+              : 'border-transparent text-gray-500 hover:bg-gray-100 hover:text-gray-800'
           }`}
           title="Tool Properties Panel"
         >

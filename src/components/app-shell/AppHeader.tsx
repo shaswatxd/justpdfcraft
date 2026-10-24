@@ -7,7 +7,6 @@ import {
   ZoomOut,
   Maximize2,
   Grid,
-  Settings,
   BookOpen,
   Volume2,
   Expand,
@@ -208,10 +207,10 @@ export const AppHeader: React.FC = () => {
         {isDocumentOpen && (
           <button
             onClick={handleGoHome}
-            className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 hover:text-white text-slate-300 rounded-lg text-xs font-semibold border border-slate-700/80 transition-all group shrink-0 shadow-xs"
+            className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 rounded-lg text-xs font-semibold border border-gray-200 transition-all group shrink-0 shadow-2xs"
             title="Back to Home Dashboard"
           >
-            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform text-swift-400" />
+            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform text-red-600" />
             <span>Home</span>
           </button>
         )}
@@ -229,13 +228,13 @@ export const AppHeader: React.FC = () => {
 
         {isDocumentOpen && (
           <>
-            <div className="w-[1px] h-4 bg-slate-800 mx-0.5 hidden md:block" />
+            <div className="w-[1px] h-4 bg-gray-200 mx-0.5 hidden md:block" />
             {/* Desktop Undo / Redo */}
-            <div className="hidden md:flex items-center bg-slate-800/60 p-0.5 rounded-lg border border-slate-800">
+            <div className="hidden md:flex items-center bg-gray-100/90 p-0.5 rounded-lg border border-gray-200">
               <button
                 onClick={() => undo()}
                 disabled={undoStack.length === 0}
-                className="p-1 hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-transparent rounded text-slate-300 transition-colors"
+                className="p-1 hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent rounded text-gray-600 hover:text-gray-900 transition-colors"
                 title={`Undo (Ctrl+Z) - ${undoStack.length} states`}
                 aria-label="Undo"
               >
@@ -244,7 +243,7 @@ export const AppHeader: React.FC = () => {
               <button
                 onClick={() => redo()}
                 disabled={redoStack.length === 0}
-                className="p-1 hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-transparent rounded text-slate-300 transition-colors"
+                className="p-1 hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent rounded text-gray-600 hover:text-gray-900 transition-colors"
                 title={`Redo (Ctrl+Y) - ${redoStack.length} states`}
                 aria-label="Redo"
               >
@@ -261,13 +260,13 @@ export const AppHeader: React.FC = () => {
       {isDocumentOpen && (
         <div className="hidden md:flex items-center gap-2">
           {/* Segmented View Mode Picker */}
-          <div className="flex items-center bg-slate-800/80 p-0.5 rounded-lg border border-slate-700/80 text-xs">
+          <div className="flex items-center bg-gray-100/90 p-0.5 rounded-lg border border-gray-200 text-xs">
             <button
               onClick={() => setViewMode('continuous')}
               className={`px-2.5 py-1 rounded-md font-medium flex items-center gap-1.5 transition-all ${
                 viewMode === 'continuous'
-                  ? 'bg-swift-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/40'
+                  ? 'bg-red-600 text-white shadow-xs'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/80'
               }`}
               title="Continuous Vertical Scrolling"
             >
@@ -278,8 +277,8 @@ export const AppHeader: React.FC = () => {
               onClick={() => setViewMode('single')}
               className={`px-2.5 py-1 rounded-md font-medium flex items-center gap-1.5 transition-all ${
                 viewMode === 'single'
-                  ? 'bg-swift-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/40'
+                  ? 'bg-red-600 text-white shadow-xs'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/80'
               }`}
               title="Single Page View"
             >
@@ -290,8 +289,8 @@ export const AppHeader: React.FC = () => {
               onClick={() => setViewMode('spread')}
               className={`px-2.5 py-1 rounded-md font-medium flex items-center gap-1.5 transition-all ${
                 viewMode === 'spread'
-                  ? 'bg-swift-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/40'
+                  ? 'bg-red-600 text-white shadow-xs'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/80'
               }`}
               title="Dual-Page Spread (Book Mode)"
             >
@@ -302,8 +301,8 @@ export const AppHeader: React.FC = () => {
               onClick={() => setViewMode('organize')}
               className={`px-2.5 py-1 rounded-md font-medium flex items-center gap-1.5 transition-all ${
                 viewMode === 'organize'
-                  ? 'bg-swift-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/40'
+                  ? 'bg-red-600 text-white shadow-xs'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/80'
               }`}
               title="Visual Page Organizer Grid"
             >
@@ -313,11 +312,11 @@ export const AppHeader: React.FC = () => {
           </div>
 
           {/* Quick Page Jump Controls */}
-          <div className="flex items-center bg-slate-800/80 px-1 py-0.5 rounded-lg border border-slate-700/80 text-xs">
+          <div className="flex items-center bg-gray-100/90 px-1 py-0.5 rounded-lg border border-gray-200 text-xs">
             <button
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage <= 1}
-              className="p-1 hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-transparent rounded text-slate-300 transition-colors"
+              className="p-1 hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent rounded text-gray-600 hover:text-gray-900 transition-colors"
               title="Previous Page (Left Arrow / PageUp)"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
@@ -332,16 +331,16 @@ export const AppHeader: React.FC = () => {
                   if (e.key === 'Enter') handleCommitPage();
                   if (e.key === 'Escape') setPageInput(String(currentPage));
                 }}
-                className="w-7 bg-slate-900 border border-slate-700 rounded px-1 py-0.5 text-center text-xs text-slate-100 focus:outline-none focus:border-swift-500 font-mono"
+                className="w-7 bg-white border border-gray-300 rounded px-1 py-0.5 text-center text-xs text-gray-900 focus:outline-none focus:border-red-500 font-mono shadow-2xs"
                 title="Type page number and press Enter"
               />
-              <span className="text-slate-500 font-sans text-[11px]">/</span>
-              <span className="text-slate-400 min-w-[12px] text-center text-xs">{pageCount}</span>
+              <span className="text-gray-400 font-sans text-[11px]">/</span>
+              <span className="text-gray-600 min-w-[12px] text-center text-xs">{pageCount}</span>
             </div>
             <button
               onClick={() => setCurrentPage(Math.min(pageCount, currentPage + 1))}
               disabled={currentPage >= pageCount}
-              className="p-1 hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-transparent rounded text-slate-300 transition-colors"
+              className="p-1 hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent rounded text-gray-600 hover:text-gray-900 transition-colors"
               title="Next Page (Right Arrow / PageDown)"
             >
               <ChevronRight className="w-3.5 h-3.5" />
@@ -349,7 +348,7 @@ export const AppHeader: React.FC = () => {
           </div>
 
           {/* Zoom */}
-          <div className="flex items-center bg-slate-800/80 p-0.5 rounded-lg border border-slate-700/80 text-xs">
+          <div className="flex items-center bg-gray-100/90 p-0.5 rounded-lg border border-gray-200 text-xs">
             <button
               onClick={() => setZoom((z) => Math.max(0.25, z - 0.15))}
               className="p-1 hover:bg-slate-700 rounded text-slate-300 transition-colors"
@@ -358,7 +357,7 @@ export const AppHeader: React.FC = () => {
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
-            <span className="text-xs font-mono font-medium px-1.5 text-slate-300 min-w-[42px] text-center">
+            <span className="text-xs font-mono font-medium px-1.5 text-gray-700 min-w-[42px] text-center">
               {Math.round(zoom * 100)}%
             </span>
             <button
@@ -371,7 +370,7 @@ export const AppHeader: React.FC = () => {
             </button>
             <button
               onClick={() => setZoom(1.0)}
-              className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-slate-200 transition-colors"
+              className="p-1 hover:bg-white rounded text-gray-500 hover:text-gray-900 transition-colors"
               title="Reset Zoom to 100%"
               aria-label="Reset zoom"
             >
@@ -566,7 +565,7 @@ export const AppHeader: React.FC = () => {
               <div className="flex items-center rounded-lg shadow-md shadow-swift-900/30">
                 <button
                   onClick={handleSave}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-swift-600 hover:bg-swift-500 text-white rounded-l-lg text-xs font-bold transition-all relative"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-l-lg text-xs font-bold transition-all relative shadow-xs"
                   title={fileHandle ? `Direct in-place save to ${fileName} (Ctrl+S)` : "Save changes to file (Ctrl+S)"}
                 >
                   <Save className="w-3.5 h-3.5" />
@@ -577,7 +576,7 @@ export const AppHeader: React.FC = () => {
                 </button>
                 <button
                   onClick={handleSaveAs}
-                  className="px-1.5 py-1.5 bg-swift-700 hover:bg-swift-600 text-white rounded-r-lg border-l border-swift-500/40 text-xs transition-all flex items-center justify-center"
+                  className="px-1.5 py-1.5 bg-red-700 hover:bg-red-800 text-white rounded-r-lg border-l border-red-500/40 text-xs transition-all flex items-center justify-center"
                   title="Save As... (Ctrl+Shift+S)"
                 >
                   <ChevronDown className="w-3 h-3" />
@@ -587,7 +586,7 @@ export const AppHeader: React.FC = () => {
               {/* Fullscreen */}
               <button
                 onClick={toggleFullscreen}
-                className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200 transition-colors hidden xl:block"
+                className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors hidden xl:block"
                 title="Fullscreen Presentation Mode (F11 / Ctrl+L)"
               >
                 <Expand className="w-4 h-4" />
@@ -609,14 +608,7 @@ export const AppHeader: React.FC = () => {
         )}
 
 
-        {/* Settings */}
-        <button
-          onClick={() => setActiveModal('settings')}
-          className="p-2.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200 transition-colors -mr-1.5"
-          title="Settings"
-        >
-          <Settings className="w-4 h-4" />
-        </button>
+        
 
         {/* Mobile Navigation Menu Toggle */}
         {!documentId && (
@@ -632,14 +624,14 @@ export const AppHeader: React.FC = () => {
 
       {/* Mobile Drawer Menu */}
       {!documentId && mobileMenuOpen && (
-        <div className="lg:hidden absolute top-12 left-0 right-0 bg-slate-900/95 border-b border-slate-800 p-4 shadow-2xl z-50 flex flex-col gap-2 animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="lg:hidden absolute top-14 left-0 right-0 bg-white border-b border-gray-200 p-4 shadow-xl z-50 flex flex-col gap-2 animate-in fade-in slide-in-from-top-2 duration-150 text-gray-800">
           <button
             onClick={() => {
               setMobileMenuOpen(false);
               const el = document.getElementById('tool-explorer');
               el?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="w-full py-2 px-3 text-left rounded-lg text-xs font-semibold text-slate-200 hover:bg-slate-800"
+            className="w-full py-2 px-3 text-left rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-100 hover:text-gray-900"
           >
             All Tools & Suite Explorer
           </button>
@@ -648,7 +640,7 @@ export const AppHeader: React.FC = () => {
               setMobileMenuOpen(false);
               setActiveModal('student-resizer');
             }}
-            className="w-full py-2 px-3 text-left rounded-lg text-xs font-semibold text-amber-300 hover:bg-slate-800 flex items-center gap-2"
+            className="w-full py-2 px-3 text-left rounded-lg text-xs font-semibold text-amber-800 hover:bg-amber-50 flex items-center gap-2"
           >
             <Sliders className="w-3.5 h-3.5" />
             Exam Photo & Signature Suite (20–50 KB)
@@ -658,16 +650,16 @@ export const AppHeader: React.FC = () => {
       )}
       {/* Mobile Document Action Drawer Sheet */}
       {isDocumentOpen && mobileDocMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col justify-end animate-in fade-in duration-150">
-          <div className="w-full bg-zinc-950 border-t border-zinc-800 rounded-t-3xl p-5 space-y-4 animate-in slide-in-from-bottom duration-200">
-            <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
+        <div className="md:hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex flex-col justify-end animate-in fade-in duration-150">
+          <div className="w-full bg-white border-t border-gray-200 rounded-t-3xl p-5 space-y-4 animate-in slide-in-from-bottom duration-200 text-gray-900 shadow-2xl">
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
               <div>
-                <h3 className="text-sm font-bold text-white truncate max-w-[240px]">{fileName || 'Document Options'}</h3>
-                <p className="text-[11px] text-zinc-400">{pageCount} Pages • {paperTone} Mode</p>
+                <h3 className="text-sm font-bold text-gray-900 truncate max-w-[240px]">{fileName || 'Document Options'}</h3>
+                <p className="text-[11px] text-gray-500">{pageCount} Pages • {paperTone} Mode</p>
               </div>
               <button
                 onClick={() => setMobileDocMenuOpen(false)}
-                className="p-1.5 rounded-xl bg-zinc-900 text-zinc-400 hover:text-white"
+                className="p-1.5 rounded-xl bg-gray-100 text-gray-500 hover:text-gray-900"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -675,7 +667,7 @@ export const AppHeader: React.FC = () => {
 
             {/* Reading Tone Selector */}
             <div className="space-y-1.5">
-              <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Reading Tone</span>
+              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Reading Tone</span>
               <div className="grid grid-cols-4 gap-2">
                 {[
                   { id: 'default' as const, label: 'White', color: 'bg-white border-slate-300' },
@@ -690,8 +682,8 @@ export const AppHeader: React.FC = () => {
                     }}
                     className={`py-2 px-1 rounded-xl border flex flex-col items-center gap-1 text-[11px] font-medium transition-all ${
                       paperTone === t.id
-                        ? 'bg-swift-600/20 border-swift-500 text-white font-semibold'
-                        : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
+                        ? 'bg-red-50 border-red-500 text-red-700 font-semibold'
+                        : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     <span className={`w-3.5 h-3.5 rounded-full border shrink-0 ${t.color}`} />
@@ -702,13 +694,13 @@ export const AppHeader: React.FC = () => {
             </div>
 
             {/* Actions Grid */}
-            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-zinc-800">
+            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-100">
               <button
                 onClick={() => {
                   setMobileDocMenuOpen(false);
                   toggleTTS();
                 }}
-                className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-left flex items-center gap-2.5 text-xs text-white"
+                className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-left flex items-center gap-2.5 text-xs text-gray-800 shadow-2xs"
               >
                 <Volume2 className="w-4 h-4 text-swift-400" />
                 <span>{isTTSOpen ? 'Stop TTS' : 'Read Aloud'}</span>
@@ -719,7 +711,7 @@ export const AppHeader: React.FC = () => {
                   setMobileDocMenuOpen(false);
                   handleSaveAs();
                 }}
-                className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-left flex items-center gap-2.5 text-xs text-white"
+                className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-left flex items-center gap-2.5 text-xs text-gray-800 shadow-2xs"
               >
                 <Save className="w-4 h-4 text-emerald-400" />
                 <span>Save Copy As...</span>
@@ -730,22 +722,13 @@ export const AppHeader: React.FC = () => {
                   setMobileDocMenuOpen(false);
                   toggleFullscreen();
                 }}
-                className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-left flex items-center gap-2.5 text-xs text-white"
+                className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-left flex items-center gap-2.5 text-xs text-gray-800 shadow-2xs"
               >
                 <Expand className="w-4 h-4 text-amber-400" />
                 <span>Fullscreen</span>
               </button>
 
-              <button
-                onClick={() => {
-                  setMobileDocMenuOpen(false);
-                  setActiveModal('settings');
-                }}
-                className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-left flex items-center gap-2.5 text-xs text-white"
-              >
-                <Settings className="w-4 h-4 text-zinc-400" />
-                <span>Settings</span>
-              </button>
+              
             </div>
           </div>
         </div>
