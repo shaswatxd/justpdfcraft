@@ -76,19 +76,9 @@ export const SettingsDialog: React.FC = () => {
                 <div className="space-y-1.5">
                   <label className="text-slate-400 block">Application Theme</label>
                   <div className="flex gap-2">
-                    {['dark', 'light', 'system'].map((t) => (
-                      <button
-                        key={t}
-                        onClick={() => handleUpdate({ theme: t as any })}
-                        className={`px-4 py-2 rounded-xl border capitalize font-medium ${
-                          preferences.theme === t
-                            ? 'bg-swift-500/10 border-swift-500 text-swift-400 font-semibold'
-                            : 'bg-slate-800 border-slate-700 text-slate-300'
-                        }`}
-                      >
-                        {t}
-                      </button>
-                    ))}
+                    <span className="px-4 py-2 rounded-xl border border-red-500/30 bg-red-50 text-red-700 font-semibold text-xs">
+                      Clean Light (Default)
+                    </span>
                   </div>
                 </div>
 

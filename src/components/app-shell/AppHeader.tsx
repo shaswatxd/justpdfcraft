@@ -28,7 +28,6 @@ import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useTTSStore } from '@/stores/ttsStore';
 import { SwiftLogo } from '@/components/common/SwiftLogo';
-import { ThemeToggle } from '@/components/common/ThemeToggle';
 
 export const AppHeader: React.FC = () => {
   const {
@@ -602,8 +601,6 @@ export const AppHeader: React.FC = () => {
           </div>
         )}
 
-
-        <ThemeToggle className="hidden sm:flex mr-1" />
 
         {/* Settings */}
         <button

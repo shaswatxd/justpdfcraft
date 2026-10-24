@@ -372,10 +372,97 @@ html.light .pdf-desk-bg {
   background-color: #e2e8f0 !important;
 }
 
-/* Modal Backdrops in Light Mode */
-html.light [class*="bg-black/"],
-html.light [class*="bg-slate-950/"] {
-  background-color: rgba(15, 23, 42, 0.4) !important;
+/* ==========================================================================
+   UNIVERSAL LIGHT THEME DIALOGS & MODALS
+   Transforms every dialog popup into clean, professional white surface
+   ========================================================================== */
+html.light [role="dialog"],
+html.light .fixed.inset-0 {
+  background-color: rgba(15, 23, 42, 0.45) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+html.light [role="dialog"] > div,
+html.light .fixed.inset-0 > div.animate-scale-in,
+html.light .fixed.inset-0 > div[class*="rounded-2xl"],
+html.light [role="dialog"] [class*="bg-[#000000]"],
+html.light .fixed.inset-0 [class*="bg-[#000000]"] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Modal Inner Header & Footers */
+html.light [role="dialog"] [class*="border-b"],
+html.light [role="dialog"] [class*="border-t"],
+html.light [role="dialog"] [class*="border-slate-800"],
+html.light [role="dialog"] [class*="border-slate-700"] {
+  border-color: #e2e8f0 !important;
+}
+
+html.light [role="dialog"] [class*="bg-[#000000]/"],
+html.light [role="dialog"] [class*="bg-slate-900/"],
+html.light [role="dialog"] [class*="bg-slate-800/"] {
+  background-color: #f8fafc !important;
+}
+
+/* Modal Inner Tiles, Cards & Rows */
+html.light [role="dialog"] [class*="bg-slate-800"],
+html.light [role="dialog"] [class*="bg-slate-850"],
+html.light [role="dialog"] [class*="bg-zinc-900"],
+html.light [role="dialog"] [class*="bg-zinc-950"] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+/* Dashed Drop Areas */
+html.light [role="dialog"] label[class*="border-dashed"],
+html.light [role="dialog"] div[class*="border-dashed"] {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #1e293b !important;
+}
+
+/* Typography inside dialogs */
+html.light [role="dialog"] h1,
+html.light [role="dialog"] h2,
+html.light [role="dialog"] h3,
+html.light [role="dialog"] h4,
+html.light [role="dialog"] [class*="text-white"],
+html.light [role="dialog"] [class*="text-slate-100"],
+html.light [role="dialog"] [class*="text-slate-200"],
+html.light [role="dialog"] [class*="text-zinc-100"],
+html.light [role="dialog"] [class*="text-zinc-200"] {
+  color: #0f172a !important;
+}
+
+html.light [role="dialog"] p,
+html.light [role="dialog"] [class*="text-slate-300"],
+html.light [role="dialog"] [class*="text-slate-400"],
+html.light [role="dialog"] [class*="text-zinc-400"] {
+  color: #475569 !important;
+}
+
+html.light [role="dialog"] [class*="text-slate-500"],
+html.light [role="dialog"] [class*="text-zinc-500"] {
+  color: #64748b !important;
+}
+
+/* Close & secondary buttons */
+html.light [role="dialog"] [class*="hover:bg-slate-800"]:hover,
+html.light [role="dialog"] [class*="hover:bg-slate-700"]:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* Inputs, Textareas & Selects inside dialogs */
+html.light [role="dialog"] input,
+html.light [role="dialog"] select,
+html.light [role="dialog"] textarea {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
 }
 
 /* --------------------------------------------------------------------------

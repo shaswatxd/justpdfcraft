@@ -60,9 +60,11 @@ export const MergeDialog: React.FC = () => {
   const handleMove = (index: number, direction: 'up' | 'down') => {
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
     if (targetIndex < 0 || targetIndex >= files.length) return;
+
     const copy = [...files];
-    const item = copy.splice(index, 1)[0];
-    copy.splice(targetIndex, 0, item);
+    const temp = copy[index];
+    copy[index] = copy[targetIndex];
+    copy[targetIndex] = temp;
     setFiles(copy);
   };
 
@@ -74,8 +76,8 @@ export const MergeDialog: React.FC = () => {
     if (files.length < 2) {
       addToast({
         type: 'warning',
-        title: 'At Least 2 Files Required',
-        message: 'Please add at least two PDF documents to merge.',
+        title: 'Need at least 2 files',
+        message: 'Please add 2 or more PDF files to merge them together.',
       });
       return;
     }
@@ -85,16 +87,16 @@ export const MergeDialog: React.FC = () => {
       const engine = getPDFEngine();
       const mergedBytes = await engine.mergeDocuments(files.map((f) => f.bytes));
 
-      // Load directly into editor
-      await loadDocument(mergedBytes, `Merged_${files[0].name}`);
-      setFiles([]);
+      // Load merged PDF into memory
+      await loadDocument(mergedBytes, 'Merged_Document.pdf');
       setActiveView('editor');
       setActiveModal(null);
+      setFiles([]);
 
       addToast({
         type: 'success',
         title: 'Merge Complete',
-        message: `Merged ${files.length} PDFs into a single document.`,
+        message: `Successfully combined ${files.length} documents into one.`,
       });
     } catch (err: any) {
       addToast({
@@ -108,17 +110,17 @@ export const MergeDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Merge Dialog">
-      <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-in">
+    <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Merge Dialog">
+      <div className="w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-in text-slate-800">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400">
+            <div className="p-2 rounded-xl bg-red-50 text-red-600">
               <Layers className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Merge PDF Documents</h3>
-              <p className="text-xs text-slate-400">Combine multiple PDF files into one continuous document</p>
+              <h3 className="text-base font-bold text-slate-900">Merge PDF Documents</h3>
+              <p className="text-xs text-slate-500">Combine multiple PDF files into one continuous document</p>
             </div>
           </div>
           <button
@@ -126,14 +128,14 @@ export const MergeDialog: React.FC = () => {
               setFiles([]);
               setActiveModal(null);
             }}
-            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4 overflow-y-auto flex-1">
+        <div className="p-6 space-y-4 overflow-y-auto flex-1 bg-white">
           {/* File Picker Button */}
           <label
             onDragOver={(e) => {
@@ -160,9 +162,9 @@ export const MergeDialog: React.FC = () => {
                 setFiles((prev) => [...prev, ...newItems]);
               }
             }}
-            className="border-2 border-dashed border-slate-700 hover:border-blue-500/50 bg-slate-800/40 hover:bg-slate-800/80 p-4 rounded-xl flex items-center justify-center gap-2 cursor-pointer text-xs font-semibold text-slate-300 transition-all"
+            className="border-2 border-dashed border-slate-300 hover:border-red-500 bg-slate-50/70 hover:bg-red-50/20 p-5 rounded-2xl flex items-center justify-center gap-2.5 cursor-pointer text-xs font-semibold text-slate-700 transition-all shadow-xs"
           >
-            <Plus className="w-4 h-4 text-blue-400" />
+            <Plus className="w-4 h-4 text-red-600" />
             <span>Add PDF Files... (or drag & drop PDFs here)</span>
             <input
               type="file"
@@ -179,21 +181,21 @@ export const MergeDialog: React.FC = () => {
           {/* Files List */}
           <div className="space-y-2">
             {files.length === 0 ? (
-              <p className="text-center text-slate-500 text-xs py-8">
+              <p className="text-center text-slate-400 text-xs py-8">
                 No files added yet. Click above to select PDFs to merge.
               </p>
             ) : (
               files.map((file, idx) => (
                 <div
                   key={file.id}
-                  className="flex items-center justify-between bg-slate-800/60 border border-slate-800 p-2.5 rounded-xl text-xs"
+                  className="flex items-center justify-between bg-slate-50 border border-slate-200/90 p-3 rounded-xl text-xs shadow-xs"
                 >
                   <div className="flex items-center gap-3 overflow-hidden">
-                    <span className="font-mono text-slate-500 font-bold w-4">{idx + 1}</span>
-                    <span className="truncate max-w-[200px] text-slate-200 font-medium">
+                    <span className="font-mono text-slate-400 font-bold w-4">{idx + 1}</span>
+                    <span className="truncate max-w-[200px] text-slate-800 font-medium">
                       {file.name}
                     </span>
-                    <span className="text-[10px] text-slate-500">
+                    <span className="text-[10px] text-slate-400">
                       ({(file.bytes.byteLength / 1024).toFixed(0)} KB)
                     </span>
                   </div>
@@ -202,7 +204,7 @@ export const MergeDialog: React.FC = () => {
                     <button
                       onClick={() => handleMove(idx, 'up')}
                       disabled={idx === 0}
-                      className="p-1 hover:bg-slate-700 disabled:opacity-20 rounded text-slate-400"
+                      className="p-1 hover:bg-slate-200 disabled:opacity-20 rounded text-slate-500 hover:text-slate-800 transition-colors"
                       title="Move Up"
                     >
                       <ArrowUp className="w-3.5 h-3.5" />
@@ -210,14 +212,14 @@ export const MergeDialog: React.FC = () => {
                     <button
                       onClick={() => handleMove(idx, 'down')}
                       disabled={idx === files.length - 1}
-                      className="p-1 hover:bg-slate-700 disabled:opacity-20 rounded text-slate-400"
+                      className="p-1 hover:bg-slate-200 disabled:opacity-20 rounded text-slate-500 hover:text-slate-800 transition-colors"
                       title="Move Down"
                     >
                       <ArrowDown className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => handleRemove(file.id)}
-                      className="p-1 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded transition-colors ml-1"
+                      className="p-1 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded transition-colors ml-1"
                       title="Remove"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -230,25 +232,25 @@ export const MergeDialog: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex items-center justify-between">
-          <span className="text-xs text-slate-400">{files.length} document(s)</span>
+        <div className="px-6 py-4 border-t border-slate-200 bg-slate-50/80 flex items-center justify-between">
+          <span className="text-xs text-slate-500">{files.length} document(s)</span>
           <div className="flex gap-2">
             <button
               onClick={() => {
                 setFiles([]);
                 setActiveModal(null);
               }}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleExecuteMerge}
               disabled={isMerging || files.length < 2}
-              className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-blue-900/30 flex items-center gap-1.5 transition-all"
+              className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-500 active:scale-95 disabled:opacity-40 transition-all flex items-center gap-1.5 shadow-md shadow-red-500/20"
             >
               <Layers className="w-3.5 h-3.5" />
-              {isMerging ? 'Merging...' : 'Merge All'}
+              <span>{isMerging ? 'Merging Documents...' : 'Merge All'}</span>
             </button>
           </div>
         </div>
@@ -256,5 +258,3 @@ export const MergeDialog: React.FC = () => {
     </div>
   );
 };
-
-export default MergeDialog;

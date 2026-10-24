@@ -86,32 +86,22 @@ export interface UIState {
   removeToast: (id: string) => void;
 }
 
-const applyThemeToDOM = (theme: ThemeMode = 'light') => {
+const applyThemeToDOM = (_theme: ThemeMode = 'light') => {
   if (typeof document === 'undefined') return;
   const root = document.documentElement;
-  root.classList.remove('light', 'dark', 'oled');
-  if (theme === 'dark') {
-    root.classList.add('dark');
-  } else if (theme === 'oled') {
-    root.classList.add('dark', 'oled');
-  } else {
-    root.classList.add('light');
-  }
+  root.classList.remove('dark', 'oled');
+  root.classList.add('light');
 };
 
 const getInitialTheme = (): ThemeMode => {
-  if (typeof window === 'undefined') return 'light';
-  try {
-    const saved = localStorage.getItem('justpdfcraft_theme') as ThemeMode;
-    if (saved === 'dark' || saved === 'oled') {
-      applyThemeToDOM(saved);
-      return saved;
-    }
-    if (saved === 'light') {
-      applyThemeToDOM('light');
-      return 'light';
-    }
-  } catch {}
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem('justpdfcraft_theme');
+      localStorage.removeItem('swifteditoo_theme');
+      localStorage.removeItem('swiftpdf_theme');
+      localStorage.setItem('justpdfcraft_theme', 'light');
+    } catch {}
+  }
   applyThemeToDOM('light');
   return 'light';
 };
@@ -166,12 +156,12 @@ export const useUIStore = create<UIState>((set) => ({
   activeConvertTab: null,
   setActiveConvertTab: (activeConvertTab) => set({ activeConvertTab }),
 
-  setTheme: (theme: ThemeMode) => {
+  setTheme: (_theme: ThemeMode) => {
     try {
-      localStorage.setItem('justpdfcraft_theme', theme);
+      localStorage.setItem('justpdfcraft_theme', 'light');
     } catch {}
-    applyThemeToDOM(theme);
-    set({ theme });
+    applyThemeToDOM('light');
+    set({ theme: 'light' });
   },
 
   setPaperTone: (paperTone: PaperTone) => {
