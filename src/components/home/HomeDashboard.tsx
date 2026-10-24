@@ -3,16 +3,6 @@ import {
   FolderOpen,
   FilePlus,
   Image as ImageIcon,
-  GraduationCap,
-  Layers,
-  FileArchive,
-  Sliders,
-  PenTool,
-  Scissors,
-  Edit3,
-  RefreshCw,
-  ScanText,
-  Shield,
   RotateCcw,
   X,
 } from 'lucide-react';
@@ -20,7 +10,6 @@ import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore, ModalType } from '@/stores/uiStore';
 import { useToolStore, ToolMode } from '@/stores/toolStore';
 import { ToolCategory } from '@/types/tools';
-import { useRecentToolsStore } from '@/stores/recentToolsStore';
 import { HeroSection } from '@/components/home/HeroSection';
 import { ToolExplorer } from '@/components/home/ToolExplorer';
 import { FAQSection } from '@/components/home/FAQSection';
@@ -37,113 +26,6 @@ function formatTimeAgo(timestamp: number): string {
   return `${Math.floor(diffHours / 24)}d ago`;
 }
 
-/** Compact, labelled starting actions. Deliberately short list (see quick-actions design). */
-const QUICK_ACTIONS: Array<{
-  toolId: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  accent: string;
-  workflow: {
-    modal?: ModalType;
-    viewMode?: 'single' | 'continuous' | 'organize' | 'spread';
-    tool?: ToolMode;
-    label: string;
-    initialTab?: string;
-  } | null;
-}> = [
-  {
-    toolId: 'merge-pdf',
-    label: 'Merge PDF',
-    icon: Layers,
-    accent: 'text-blue-400 border-blue-500/25 bg-blue-500/[0.07] hover:bg-blue-500/15',
-    // Merge collects its own inputs, so it can open the dialog directly
-    workflow: null,
-  },
-  {
-    toolId: 'compress-pdf',
-    label: 'Compress PDF',
-    icon: FileArchive,
-    accent: 'text-emerald-400 border-emerald-500/25 bg-emerald-500/[0.07] hover:bg-emerald-500/15',
-    workflow: { modal: 'compress', label: 'Compress PDF' },
-  },
-  {
-    toolId: 'split-pdf',
-    label: 'Split PDF',
-    icon: Scissors,
-    accent: 'text-rose-400 border-rose-500/25 bg-rose-500/[0.07] hover:bg-rose-500/15',
-    workflow: { modal: 'split', label: 'Split PDF' },
-  },
-  {
-    toolId: 'convert-pdf',
-    label: 'Convert PDF',
-    icon: RefreshCw,
-    accent: 'text-teal-400 border-teal-500/25 bg-teal-500/[0.07] hover:bg-teal-500/15',
-    workflow: { modal: 'convert', label: 'Convert PDF' },
-  },
-  {
-    toolId: 'sign-pdf',
-    label: 'Sign PDF',
-    icon: Edit3,
-    accent: 'text-sky-400 border-sky-500/25 bg-sky-500/[0.07] hover:bg-sky-500/15',
-    workflow: { modal: 'sign', label: 'Sign PDF' },
-  },
-  {
-    toolId: 'target-kb-resizer',
-    label: 'Photo 20–50 KB',
-    icon: Sliders,
-    accent: 'text-amber-400 border-amber-500/25 bg-amber-500/[0.07] hover:bg-amber-500/15',
-    workflow: { modal: 'student-resizer', initialTab: 'resizer', label: 'Exam Photo Resizer' },
-  },
-];
-
-/** Secondary starting points, below the quick actions. */
-const SECONDARY_ACTIONS: Array<{
-  toolId: string;
-  title: string;
-  subtitle: string;
-  icon: React.ComponentType<{ className?: string }>;
-  iconBox: string;
-  hoverBorder: string;
-  run: 'modal:student-calculators' | 'modal:handwriting' | 'modal:ocr' | 'modal:protect';
-}> = [
-  {
-    toolId: 'student-quick-notes',
-    title: 'Student Tools',
-    subtitle: 'CGPA, attendance & more',
-    icon: GraduationCap,
-    iconBox: 'bg-amber-500/10 border-amber-500/25 text-amber-400',
-    hoverBorder: 'hover:border-amber-500/40',
-    run: 'modal:student-calculators',
-  },
-  {
-    toolId: 'handwriting-generator',
-    title: 'Handwriting',
-    subtitle: 'Assignment generator',
-    icon: PenTool,
-    iconBox: 'bg-purple-500/10 border-purple-500/25 text-purple-400',
-    hoverBorder: 'hover:border-purple-500/40',
-    run: 'modal:handwriting',
-  },
-  {
-    toolId: 'ocr-pdf',
-    title: 'Scan & OCR',
-    subtitle: 'Extract text from scans',
-    icon: ScanText,
-    iconBox: 'bg-cyan-500/10 border-cyan-500/25 text-cyan-400',
-    hoverBorder: 'hover:border-cyan-500/40',
-    run: 'modal:ocr',
-  },
-  {
-    toolId: 'protect-pdf',
-    title: 'Protect PDF',
-    subtitle: 'Password & encryption',
-    icon: Shield,
-    iconBox: 'bg-rose-500/10 border-rose-500/25 text-rose-400',
-    hoverBorder: 'hover:border-rose-500/40',
-    run: 'modal:protect',
-  },
-];
-
 export const HomeDashboard: React.FC = () => {
   const {
     loadDocument,
@@ -158,16 +40,13 @@ export const HomeDashboard: React.FC = () => {
   const {
     setActiveModal,
     addToast,
-    setActivePhotoUrl,
     setActiveConvertTab,
     setActiveStudentTab,
-    setActiveImageTab,
     setActiveLegalTab,
     setPendingImageFile,
     setActiveView,
   } = useUIStore();
   const { setTool } = useToolStore();
-  const { trackTool } = useRecentToolsStore();
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const pendingWorkflowRef = useRef<{
@@ -181,57 +60,37 @@ export const HomeDashboard: React.FC = () => {
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<ToolCategory | 'all'>('all');
 
+  // Check for unsaved drafts on mount
   React.useEffect(() => {
     checkAndLoadAvailableDrafts();
   }, [checkAndLoadAvailableDrafts]);
 
-  const handleOpenPdfClick = async (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
+  const handleOpenPdfClick = async () => {
+    // If native File System Access API is supported, use modern dialog that keeps real file handle
     if (isNativeFSSupported()) {
       try {
         const opened = await openWithNativePicker();
         if (opened) {
           setActiveView('editor');
-          addToast({
-            type: 'success',
-            title: 'Document Opened',
-            message: 'Direct disk save enabled via File System Access.',
-          });
           return;
         }
       } catch (err: any) {
-        if (err?.name !== 'AbortError') {
-          console.warn('Native open error:', err);
-        }
+        // User cancelled or aborted picker
+        if (err?.name === 'AbortError') return;
       }
     }
+    // Fallback: standard file input
     pdfInputRef.current?.click();
   };
 
-  React.useEffect(() => {
-    const handleCancel = () => {
-      pendingWorkflowRef.current = null;
-    };
-    const p1 = pdfInputRef.current;
-    const p2 = photoInputRef.current;
-    p1?.addEventListener('cancel', handleCancel);
-    p2?.addEventListener('cancel', handleCancel);
-    return () => {
-      p1?.removeEventListener('cancel', handleCancel);
-      p2?.removeEventListener('cancel', handleCancel);
-    };
-  }, []);
-
   const handleFilePicked = async (file: File) => {
+    const isImage = file.type.startsWith('image/') || /\.(jpe?g|png|webp|gif|bmp)$/i.test(file.name);
     const pending = pendingWorkflowRef.current;
     pendingWorkflowRef.current = null;
 
-    // If user dropped or selected an image, route intelligently based on pending workflow
-    if (file.type.startsWith('image/') || /\.(jpe?g|png|webp|gif|bmp)$/i.test(file.name)) {
-      const url = URL.createObjectURL(file);
-      setActivePhotoUrl(url);
-
-      if (pending?.modal === 'convert') {
+    if (isImage) {
+      // 1. If convert tab was requested
+      if (pending?.modal === 'convert' && pending.initialTab === 'img-to-pdf') {
         setPendingImageFile(file);
         setActiveConvertTab('img-to-pdf');
         setActiveModal('convert');
@@ -243,42 +102,21 @@ export const HomeDashboard: React.FC = () => {
         return;
       }
 
-      if (pending?.modal === 'photo-editor') {
-        setActiveModal('photo-editor');
-        addToast({
-          type: 'success',
-          title: 'Photo Opened in Studio',
-          message: `${file.name} ready for cropping and adjustments.`,
-        });
-        return;
-      }
-
-      if (pending?.modal === 'image-tools') {
-        setPendingImageFile(file);
-        if (pending.initialTab) setActiveImageTab(pending.initialTab);
-        setActiveModal('image-tools');
-        addToast({
-          type: 'success',
-          title: 'Image Tools Ready',
-          message: `${file.name} loaded.`,
-        });
-        return;
-      }
-
       if (pending?.modal) {
-        if ((pending.modal === 'student-calculators' || pending.modal === 'student-resizer') && pending.initialTab) {
+        if (pending.modal === 'student-resizer' && pending.initialTab) {
           setActiveStudentTab(pending.initialTab);
         }
         setActiveModal(pending.modal);
         return;
       }
 
-      // Default fallback when an image is directly dropped/picked on the home dropzone
+      // Default fallback when an image is directly dropped/picked on the home dropzone:
+      // open the lean exact-KB resizer
       setActiveModal('student-resizer');
       addToast({
         type: 'success',
-        title: 'Image Opened in Student Suite',
-        message: `${file.name} loaded. Ready to compress KB, clean signature, or format.`,
+        title: 'Photo Resizer Opened',
+        message: `${file.name} loaded. Ready to resize to target KB.`,
       });
       return;
     }
@@ -297,16 +135,11 @@ export const HomeDashboard: React.FC = () => {
       await loadDocument(new Uint8Array(buffer), file.name, (file as any).path);
 
       if (pending) {
-        // Protect: Never route a PDF document to an image-only modal like photo-editor
-        const isPhotoOnlyModal =
-          pending.modal === 'photo-editor' ||
-          (pending.modal === 'convert' && pending.initialTab === 'img-to-pdf');
+        const isPhotoOnlyModal = pending.modal === 'convert' && pending.initialTab === 'img-to-pdf';
 
         if (pending.modal && !isPhotoOnlyModal) {
-          if ((pending.modal === 'student-calculators' || pending.modal === 'student-resizer') && pending.initialTab) {
+          if (pending.modal === 'student-resizer' && pending.initialTab) {
             setActiveStudentTab(pending.initialTab);
-          } else if (pending.modal === 'image-tools' && pending.initialTab) {
-            setActiveImageTab(pending.initialTab);
           } else if (pending.modal === 'legal' && pending.initialTab) {
             setActiveLegalTab(pending.initialTab);
           } else if (pending.modal === 'convert' && pending.initialTab) {
@@ -354,9 +187,7 @@ export const HomeDashboard: React.FC = () => {
   }) => {
     pendingWorkflowRef.current = workflow;
     const isImageWorkflow =
-      workflow.modal === 'photo-editor' ||
       workflow.modal === 'student-resizer' ||
-      workflow.modal === 'image-tools' ||
       (workflow.modal === 'convert' && workflow.initialTab === 'img-to-pdf');
 
     if (isImageWorkflow) {
@@ -394,21 +225,6 @@ export const HomeDashboard: React.FC = () => {
     if (explorerEl) {
       explorerEl.scrollIntoView({ behavior: 'smooth' });
     }
-  };
-
-  const runQuickAction = (action: (typeof QUICK_ACTIONS)[number]) => {
-    trackTool(action.toolId);
-    if (action.workflow) {
-      triggerWorkflowWithFile(action.workflow);
-    } else {
-      // Merge manages its own multi-file input inside the dialog
-      setActiveModal('merge');
-    }
-  };
-
-  const openSecondary = (run: (typeof SECONDARY_ACTIONS)[number]['run'], toolId: string) => {
-    trackTool(toolId);
-    setActiveModal(run.replace('modal:', '') as ModalType);
   };
 
   return (
@@ -578,58 +394,6 @@ export const HomeDashboard: React.FC = () => {
                 <span>New blank PDF</span>
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* 2. Quick Actions: one intentional row of common tasks (same on mobile & desktop) */}
-        <div className="w-full mt-5 sm:mt-6">
-          <h2 className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 mb-2 text-left px-1">
-            Common tasks
-          </h2>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-6">
-            {QUICK_ACTIONS.map((action) => {
-              const Icon = action.icon;
-              return (
-                <button
-                  key={action.toolId}
-                  type="button"
-                  onClick={() => runQuickAction(action)}
-                  className={`inline-flex items-center justify-center gap-2 border rounded-xl px-3 py-3 text-xs font-semibold transition-all active:scale-[0.98] min-h-[48px] ${action.accent}`}
-                >
-                  <Icon className="w-4 h-4 shrink-0" />
-                  <span className="whitespace-nowrap">{action.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 3. Secondary starting points */}
-        <div className="w-full mt-4">
-          <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
-            {SECONDARY_ACTIONS.map((item) => {
-              const Icon = item.icon;
-              return (
-                <button
-                  key={item.toolId}
-                  type="button"
-                  onClick={() => openSecondary(item.run, item.toolId)}
-                  className={`p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800/90 text-left transition-all active:scale-[0.98] flex flex-col justify-between gap-2 min-h-[76px] ${item.hoverBorder}`}
-                >
-                  <div
-                    className={`w-8 h-8 rounded-xl border flex items-center justify-center ${item.iconBox}`}
-                  >
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-zinc-100">{item.title}</div>
-                    <div className="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">
-                      {item.subtitle}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
           </div>
         </div>
       </HeroSection>

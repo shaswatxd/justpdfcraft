@@ -7,10 +7,10 @@ describe('Master Tools Catalog', () => {
     const imageTools = getToolsByCategory('image');
     const studentTools = getToolsByCategory('student');
 
-    expect(pdfTools.length).toBeGreaterThanOrEqual(15);
-    expect(imageTools.length).toBeGreaterThanOrEqual(7);
-    expect(studentTools.length).toBeGreaterThanOrEqual(14);
-    expect(TOOLS_CATALOG.length).toBeGreaterThanOrEqual(40);
+    expect(pdfTools.length).toBe(20);
+    expect(imageTools.length).toBe(2);
+    expect(studentTools.length).toBe(1);
+    expect(TOOLS_CATALOG.length).toBe(23);
   });
 
   it('should search tools accurately by name, description, or keyword tags', () => {
@@ -18,8 +18,8 @@ describe('Master Tools Catalog', () => {
     expect(compressResults.length).toBeGreaterThan(0);
     expect(compressResults.some((t) => t.id === 'compress-pdf')).toBe(true);
 
-    const cgpaResults = searchTools('cgpa');
-    expect(cgpaResults.some((t) => t.id === 'cgpa-calculator')).toBe(true);
+    const resizerResults = searchTools('resizer');
+    expect(resizerResults.some((t) => t.id === 'target-kb-resizer')).toBe(true);
 
     const ocrResults = searchTools('ocr');
     expect(ocrResults.some((t) => t.id === 'ocr-pdf')).toBe(true);
@@ -28,10 +28,11 @@ describe('Master Tools Catalog', () => {
   it('should filter tools by category when category filter is supplied', () => {
     const studentOnly = searchTools('', 'student');
     expect(studentOnly.every((t) => t.category === 'student')).toBe(true);
-    expect(studentOnly.length).toBeGreaterThanOrEqual(14);
+    expect(studentOnly.length).toBe(1);
 
     const imageOnly = searchTools('', 'image');
     expect(imageOnly.every((t) => t.category === 'image')).toBe(true);
+    expect(imageOnly.length).toBe(2);
   });
 
   it('should include the handwriting generator tool with correct modal action', () => {

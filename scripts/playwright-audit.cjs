@@ -118,53 +118,7 @@ async function runAudit() {
     });
     await page.waitForTimeout(200);
 
-    // 3. Test Student Calculators Full Functional Workflow
-    console.log('🧮 3. Testing Student Calculators Full Functional Workflow...');
-    await page.evaluate(() => {
-      const store = window.__JUSTPDFCRAFT_UI_STORE__.getState();
-      store.setActiveStudentTab('cgpa');
-      store.setActiveModal('student-calculators');
-    });
-    await page.waitForTimeout(500);
-
-    // Verify CGPA Calculation on UI
-    const cgpaRendered = await page.evaluate(() => {
-      return document.body.innerText.includes('CGPA Calculator') && document.body.innerText.includes('Cumulative CGPA');
-    });
-    console.log(`   CGPA view rendered: ${cgpaRendered}`);
-
-    // Switch to Attendance tab & test calculation
-    await page.evaluate(() => {
-      window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveStudentTab('attendance');
-    });
-    await page.waitForTimeout(300);
-    const attendanceRendered = await page.evaluate(() => {
-      return document.body.innerText.includes('Attendance & Bunk Planner') && document.body.innerText.includes('Target Criteria');
-    });
-    console.log(`   Attendance Bunk Planner rendered: ${attendanceRendered}`);
-
-    // Switch to Offline QR Code generator tab
-    await page.evaluate(() => {
-      window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveStudentTab('qr');
-    });
-    await page.waitForTimeout(400);
-
-    // Verify QR Canvas rendered with actual pixel data (100% offline)
-    const qrCanvasHasPixels = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas');
-      if (!canvas) return false;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return false;
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      return imgData.data.some((p) => p !== 0);
-    });
-    console.log(`   Offline QR Code canvas rendered with pixels: ${qrCanvasHasPixels}`);
-
-    // Close calculator modal
-    await page.evaluate(() => {
-      window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal(null);
-    });
-    await page.waitForTimeout(300);
+    // 3. (Student Calculators removed in iLovePDF redesign)
 
     // 4. Test Student Tools (Resizer / Signature Cleaner / DOP banner)
     console.log('📸 4. Testing Student Tools (Resizer, Signature Cleaner, Combiner, DOP)...');
@@ -176,7 +130,7 @@ async function runAudit() {
     await page.waitForTimeout(500);
 
     const resizerVisible = await page.evaluate(() => {
-      return document.body.innerText.includes('Target KB Resizer') || document.body.innerText.includes('Clean Signature');
+      return document.body.innerText.includes('Resizer') || document.body.innerText.includes('Target KB');
     });
     console.log(`   Student Tools Dialog rendered: ${resizerVisible}`);
 
@@ -204,10 +158,9 @@ async function runAudit() {
 
     // 6. Test All Modals for Runtime Stability and Escape Key Reset
     const allModals = [
-      'split', 'merge', 'compress', 'ocr', 'print', 'protect',
+      'split', 'merge', 'compress', 'ocr', 'protect',
       'compare', 'sign', 'convert', 'watermark', 'scan', 'bates',
-      'sanitize', 'batch', 'crop', 'extract-table', 'extract-images',
-      'photo-editor', 'image-tools', 'legal', 'settings', 'shortcuts'
+      'batch', 'crop', 'extract-table', 'legal', 'settings', 'shortcuts'
     ];
 
     console.log(`\n🧪 6. Testing all ${allModals.length} remaining dialogs for clean open/close/reset...`);

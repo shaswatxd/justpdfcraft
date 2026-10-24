@@ -17,8 +17,7 @@ import {
   Sun,
   AlignJustify,
   FileText,
-  GraduationCap,
-  Sliders,
+    Sliders,
   Menu,
   X,
   ChevronDown,
@@ -403,13 +402,7 @@ export const AppHeader: React.FC = () => {
             <Sliders className="w-3.5 h-3.5 text-amber-400" />
             Exam Photo & Sign
           </button>
-          <button
-            onClick={() => setActiveModal('student-calculators')}
-            className="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-1"
-          >
-            <GraduationCap className="w-3.5 h-3.5 text-amber-400" />
-            Student Tools
-          </button>
+          
         </nav>
       )}
 
@@ -646,16 +639,7 @@ export const AppHeader: React.FC = () => {
             <Sliders className="w-3.5 h-3.5" />
             Exam Photo & Signature Suite (20–50 KB)
           </button>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setActiveModal('student-calculators');
-            }}
-            className="w-full py-2 px-3 text-left rounded-lg text-xs font-semibold text-amber-300 hover:bg-slate-800 flex items-center gap-2"
-          >
-            <GraduationCap className="w-3.5 h-3.5" />
-            Student Calculators (CGPA, Attendance, Age)
-          </button>
+          
         </div>
       )}
       {/* Mobile Document Action Drawer Sheet */}

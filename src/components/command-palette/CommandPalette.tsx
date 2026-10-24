@@ -7,7 +7,6 @@ import {
   FileArchive,
   ScanText,
   Shield,
-  Printer,
   Grid,
   Save,
   Plus,
@@ -19,7 +18,6 @@ import {
   FileText,
   Lock,
   Hash,
-  ShieldCheck,
   Layers,
   Crop,
   Edit3,
@@ -31,8 +29,6 @@ import {
   Volume2,
   Crosshair,
   Focus,
-  Image as ImageIcon,
-  Sparkles,
   PenTool,
   RefreshCw,
   Camera,
@@ -204,20 +200,8 @@ export const CommandPalette: React.FC = () => {
       icon: ScanText,
       action: () => setActiveModal('ocr'),
     },
-    {
-      id: 'extract_photos',
-      title: 'Extract Photos & Images from PDF (lossless JPEG, PNG & scans)',
-      category: 'Tools',
-      icon: ImageIcon,
-      action: () => setActiveModal('extract-images'),
-    },
-    {
-      id: 'photo_studio',
-      title: 'Photo Studio & Passport/ID Crop (3.5×4.5cm, Filters, Place in PDF)',
-      category: 'Tools',
-      icon: Sparkles,
-      action: () => setActiveModal('photo-editor'),
-    },
+    
+    
     {
       id: 'e_sign',
       title: 'E-Sign & Digital Signatures (Draw, Type, Upload)',
@@ -241,7 +225,7 @@ export const CommandPalette: React.FC = () => {
     },
     {
       id: 'student_suite',
-      title: 'Student & Exam Suite (Target KB Resizer, Sign Cleaner, DOP)',
+      title: 'Photo & Signature Resizer (Exact Target KB for Exams)',
       category: 'Tools',
       icon: GraduationCap,
       action: () => setActiveModal('student-resizer'),
@@ -281,14 +265,7 @@ export const CommandPalette: React.FC = () => {
       icon: Shield,
       action: () => setActiveModal('protect'),
     },
-    {
-      id: 'print',
-      title: 'Print Document (Ctrl+P)',
-      category: 'Document',
-      icon: Printer,
-      shortcut: 'Ctrl+P',
-      action: () => setActiveModal('print'),
-    },
+    
     {
       id: 'compare',
       title: 'Compare with another PDF',
@@ -331,13 +308,7 @@ export const CommandPalette: React.FC = () => {
       icon: FileText,
       action: () => setActiveModal('bates'),
     },
-    {
-      id: 'sanitize_doc',
-      title: 'Sanitize Document (Purge All Metadata & Hidden Streams)',
-      category: 'Tools',
-      icon: ShieldCheck,
-      action: () => setActiveModal('sanitize'),
-    },
+    
     {
       id: 'batch_process',
       title: 'Batch Processing Hub (Compress, Watermark, Sanitize Multiple Files)',

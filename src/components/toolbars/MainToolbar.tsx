@@ -19,11 +19,9 @@ import {
   FileArchive,
   ScanText,
   Shield,
-  Printer,
   Sidebar,
   Sliders,
   ChevronDown,
-  ShieldCheck,
   Layers,
   Crop as CropIcon,
   Hash,
@@ -36,8 +34,6 @@ import {
   Table,
   Eraser,
   Ruler,
-  Image as ImageIcon,
-  Sparkles,
   Camera,
   RefreshCw,
   GraduationCap,
@@ -132,20 +128,8 @@ export const MainToolbar: React.FC = () => {
       icon: Camera,
       color: 'text-indigo-400',
     },
-    {
-      id: 'extract-images',
-      label: 'Extract Photos & Images from PDF',
-      description: 'Extract lossless JPEGs, PNGs & high-res document scans',
-      icon: ImageIcon,
-      color: 'text-purple-400',
-    },
-    {
-      id: 'photo-editor',
-      label: 'Photo Studio & Passport/ID Crop',
-      description: 'Crop 3.5×4.5cm, rotate, filters & insert back into PDF',
-      icon: Sparkles,
-      color: 'text-pink-400',
-    },
+    
+    
     {
       id: 'extract-table',
       label: 'PDF Table Extractor to Excel & CSV',
@@ -160,13 +144,7 @@ export const MainToolbar: React.FC = () => {
       icon: Unlock,
       color: 'text-rose-400',
     },
-    {
-      id: 'sanitize',
-      label: 'Sanitize & Privacy Scrubber',
-      description: 'Strip hidden metadata, XMP streams & rev history',
-      icon: ShieldCheck,
-      color: 'text-emerald-400',
-    },
+    
     {
       id: 'batch',
       label: 'Batch Automation Hub',
@@ -504,14 +482,7 @@ export const MainToolbar: React.FC = () => {
           <span className="hidden md:inline font-medium">OCR</span>
         </button>
 
-        <button
-          onClick={() => setActiveModal('extract-images')}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-200 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700/60 shrink-0"
-          title="Extract Photos & Edit"
-        >
-          <ImageIcon className="w-3.5 h-3.5 text-purple-400" />
-          <span className="hidden md:inline font-medium">Photos</span>
-        </button>
+        
 
         <button
           onClick={() => setActiveModal('protect')}
@@ -522,14 +493,7 @@ export const MainToolbar: React.FC = () => {
           <span className="hidden md:inline font-medium">Protect</span>
         </button>
 
-        <button
-          onClick={() => setActiveModal('print')}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-200 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700/60 shrink-0"
-          title="Smart Print (Ctrl+P)"
-        >
-          <Printer className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="hidden md:inline font-medium">Print</span>
-        </button>
+        
 
         {/* "More Tools" Dropdown - Contains Sanitize, Batch, Crop, Bates, Compare, etc. */}
         <div className="relative shrink-0" ref={moreToolsMenuRef}>

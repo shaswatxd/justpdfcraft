@@ -207,34 +207,7 @@ async function runFullSuiteAudit() {
       auditReport.push({ tool: 'Compress', status: 'ERROR', details: err.message });
     }
 
-    // 5. Test Sanitize Action
-    console.log('\n🛡️ STEP 5: Testing PDF Sanitize & Metadata Stripper Action...');
-    try {
-      await page.evaluate(() => {
-        window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal('sanitize');
-      });
-      await page.waitForTimeout(400);
-
-      const sanitizeApplied = await page.evaluate(async () => {
-        const btns = Array.from(document.querySelectorAll('button'));
-        const btn = btns.find(b => b.innerText.includes('Sanitize & Clean') || b.innerText.includes('Sanitize Document'));
-        if (btn) {
-          btn.click();
-          return true;
-        }
-        return false;
-      });
-      await page.waitForTimeout(800);
-      const sanitizeResult = await page.evaluate(() => {
-        return document.body.innerText.includes('stripped') || document.body.innerText.includes('Re-Sanitize') || document.body.innerText.includes('Done');
-      });
-      console.log(`   Sanitize PDF executed: ${sanitizeApplied}, result: ${sanitizeResult}`);
-      auditReport.push({ tool: 'Sanitize', status: sanitizeResult ? 'PASS' : 'FAIL' });
-      await page.evaluate(() => window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal(null));
-    } catch (err) {
-      console.error('Sanitize error:', err.message);
-      auditReport.push({ tool: 'Sanitize', status: 'ERROR', details: err.message });
-    }
+    // 5. (Sanitize removed)
 
     // 6. Test Split Action
     console.log('\n✂️ STEP 6: Testing PDF Split Action...');
@@ -366,40 +339,18 @@ async function runFullSuiteAudit() {
       auditReport.push({ tool: 'Sign', status: 'ERROR', details: err.message });
     }
 
-    // 11. Test Student Calculators Full Workflows
-    console.log('\n🎓 STEP 11: Testing Student Calculators Full Workflows...');
-    const calcs = ['cgpa', 'attendance', 'qr', 'age', 'word', 'grade', 'financial'];
-    await page.evaluate(() => {
-      window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal('student-calculators');
-    });
-    for (const c of calcs) {
-      await page.evaluate((tab) => {
-        window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveStudentTab(tab);
-      }, c);
-      await page.waitForTimeout(300);
-      const isOk = await page.evaluate(() => {
-        return !document.body.innerText.includes('Something went wrong') && !document.querySelector('[role="alert"]');
-      });
-      auditReport.push({ tool: `Student Calculator: ${c}`, status: isOk ? 'PASS' : 'FAIL' });
-    }
-    await page.evaluate(() => window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal(null));
+    // 11. (Student Calculators removed)
 
-    // 12. Test Student Tools Full Workflows
-    console.log('\n📷 STEP 12: Testing Student Exam Tools Workflows...');
-    const studentTools = ['resizer', 'photo-combiner', 'signature-cleaner', 'dop-banner'];
+    // 12. Test Student Resizer Workflow
+    console.log('\n📷 STEP 12: Testing Student Resizer Workflow...');
     await page.evaluate(() => {
       window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal('student-resizer');
     });
-    for (const st of studentTools) {
-      await page.evaluate((tab) => {
-        window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveStudentTab(tab);
-      }, st);
-      await page.waitForTimeout(300);
-      const isOk = await page.evaluate(() => {
-        return !document.body.innerText.includes('Something went wrong');
-      });
-      auditReport.push({ tool: `Student Exam Tool: ${st}`, status: isOk ? 'PASS' : 'FAIL' });
-    }
+    await page.waitForTimeout(400);
+    const resizerOk = await page.evaluate(() => {
+      return !document.body.innerText.includes('Something went wrong') && !document.querySelector('[role="alert"]');
+    });
+    auditReport.push({ tool: 'Student Resizer', status: resizerOk ? 'PASS' : 'FAIL' });
     await page.evaluate(() => window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal(null));
 
     // 13. Test Handwriting Generator

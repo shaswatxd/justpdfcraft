@@ -169,7 +169,7 @@ async function runViewerAudit() {
 
     // 6. Test Active Document Tool Dialogs
     console.log('🛠️ 6. Testing Tool Dialogs with Active Document...');
-    const docTools = ['watermark', 'bates', 'sanitize', 'compress', 'split'];
+    const docTools = ['watermark', 'bates', 'compress', 'split'];
     for (const tool of docTools) {
       process.stdout.write(`   Testing doc tool: [${tool}] ... `);
       const beforeErrors = pageErrors.length;

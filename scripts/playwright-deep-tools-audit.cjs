@@ -102,66 +102,20 @@ async function runDeepAudit() {
     });
     console.log(`   Found ${toolCardsCount} interactive elements on Home Dashboard.`);
 
-    // PHASE 2: Deep Functional Testing for Student Tools Dialog
-    console.log('\n--- PHASE 2: Testing Student Tools Dialog tabs & features ---');
+    // PHASE 2: Functional Testing for Student Resizer
+    console.log('\n--- PHASE 2: Testing Student Resizer Dialog ---');
     await page.evaluate(() => {
       window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal('student-resizer');
     });
     await page.waitForTimeout(400);
-
-    const studentTabs = ['resizer', 'photo-combiner', 'signature-cleaner', 'dop-banner'];
-    for (const tab of studentTabs) {
-      process.stdout.write(`   Testing Student Tool tab: [${tab}] ... `);
-      const errCount = pageErrors.length;
-      await page.evaluate((t) => {
-        window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveStudentTab(t);
-      }, tab);
-      await page.waitForTimeout(300);
-
-      // Verify DOM content
-      const tabRendered = await page.evaluate(() => {
-        return !!document.querySelector('input[type="file"]') || !!document.querySelector('canvas') || !!document.querySelector('button');
-      });
-
-      if (pageErrors.length > errCount || !tabRendered) {
-        console.log('❌ ISSUE DETECTED');
-        issuesFound.push({ tab, issue: 'Failed to render cleanly' });
-      } else {
-        console.log('✓ OK');
-      }
-    }
-    await page.evaluate(() => window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal(null));
-    await page.waitForTimeout(200);
-
-    // PHASE 3: Deep Functional Testing for Student Calculators Dialog
-    console.log('\n--- PHASE 3: Testing Student Calculators Dialog sub-calculators ---');
-    await page.evaluate(() => {
-      window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal('student-calculators');
+    const resizerRendered = await page.evaluate(() => {
+      return !!document.querySelector('input[type="file"]') || !!document.querySelector('button');
     });
-    await page.waitForTimeout(400);
-
-    const calcTabs = ['cgpa', 'attendance', 'qr', 'age', 'word', 'grade', 'financial'];
-    for (const tab of calcTabs) {
-      process.stdout.write(`   Testing Calculator tab: [${tab}] ... `);
-      const errCount = pageErrors.length;
-      await page.evaluate((t) => {
-        window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveStudentTab(t);
-      }, tab);
-      await page.waitForTimeout(300);
-
-      const calcRendered = await page.evaluate(() => {
-        return !document.body.innerText.includes('Something went wrong') && !document.querySelector('[role="alert"]');
-      });
-
-      if (pageErrors.length > errCount || !calcRendered) {
-        console.log('❌ ISSUE DETECTED');
-        issuesFound.push({ tab, issue: 'Calculator tab crashed' });
-      } else {
-        console.log('✓ OK');
-      }
-    }
+    console.log('   Student Resizer rendered cleanly: ' + resizerRendered);
     await page.evaluate(() => window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal(null));
     await page.waitForTimeout(200);
+
+    // (PHASE 3: Student Calculators removed)
 
     // PHASE 4: Deep Testing of Handwriting Assignment Generator
     console.log('\n--- PHASE 4: Testing Handwriting Generator ---');
@@ -264,19 +218,7 @@ async function runDeepAudit() {
     console.log(`   Table Extractor rendered table/controls: ${tableExtracted}`);
     await page.evaluate(() => window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal(null));
 
-    // 5.5 Test Sanitize Dialog Execution
-    console.log('   Testing [sanitize] tool execution...');
-    await page.evaluate(() => {
-      window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal('sanitize');
-    });
-    await page.waitForTimeout(400);
-    const sanitizeBtn = await page.evaluate(() => {
-      const btns = Array.from(document.querySelectorAll('button'));
-      const target = btns.find(b => b.innerText.includes('Sanitize Document') || b.innerText.includes('Sanitize PDF'));
-      return !!target;
-    });
-    console.log(`   Sanitize button available: ${sanitizeBtn}`);
-    await page.evaluate(() => window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal(null));
+    // 5.5 (Sanitize removed)
 
     // 5.6 Test Split Dialog Execution
     console.log('   Testing [split] tool execution...');
@@ -318,17 +260,7 @@ async function runDeepAudit() {
     console.log(`   Crop canvas rendered: ${cropCanvas}`);
     await page.evaluate(() => window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal(null));
 
-    // 5.9 Test Extract Images Dialog Execution
-    console.log('   Testing [extract-images] tool execution...');
-    await page.evaluate(() => {
-      window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal('extract-images');
-    });
-    await page.waitForTimeout(600);
-    const extractImagesRendered = await page.evaluate(() => {
-      return document.body.innerText.includes('Extract') || document.body.innerText.includes('Images');
-    });
-    console.log(`   Extract Images dialog rendered: ${extractImagesRendered}`);
-    await page.evaluate(() => window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal(null));
+    // 5.9 (Extract Images removed)
 
     console.log('\n==========================================');
     console.log('🏁 DEEP TOOLS AUDIT SUMMARY');

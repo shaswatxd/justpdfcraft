@@ -8,10 +8,8 @@ export type SidebarTab = 'thumbnails' | 'search' | 'bookmarks' | 'annotations' |
 export type ModalType = 
   | 'compress' 
   | 'ocr' 
-  | 'print' 
   | 'protect' 
   | 'compare' 
-  | 'metadata' 
   | 'settings' 
   | 'merge' 
   | 'split' 
@@ -21,17 +19,11 @@ export type ModalType =
   | 'scan'
   | 'bates'
   | 'page-number'
-  | 'sanitize'
   | 'batch'
   | 'crop'
   | 'extract-table'
-  | 'field-builder'
   | 'shortcuts'
-  | 'extract-images'
-  | 'photo-editor'
   | 'student-resizer'
-  | 'student-calculators'
-  | 'image-tools'
   | 'handwriting'
   | 'legal'
   | null;
@@ -71,8 +63,6 @@ export interface UIState {
   setActiveStudentTab: (tab: string | null) => void;
   activeLegalTab: string | null;
   setActiveLegalTab: (tab: string | null) => void;
-  activeImageTab: string | null;
-  setActiveImageTab: (tab: string | null) => void;
   activeConvertTab: string | null;
   setActiveConvertTab: (tab: string | null) => void;
 
@@ -169,8 +159,6 @@ export const useUIStore = create<UIState>((set) => ({
   setActiveStudentTab: (activeStudentTab) => set({ activeStudentTab }),
   activeLegalTab: null,
   setActiveLegalTab: (activeLegalTab) => set({ activeLegalTab }),
-  activeImageTab: null,
-  setActiveImageTab: (activeImageTab) => set({ activeImageTab }),
   activeConvertTab: null,
   setActiveConvertTab: (activeConvertTab) => set({ activeConvertTab }),
 

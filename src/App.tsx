@@ -51,7 +51,6 @@ function safeLazy(
 // Lazy-loaded dialogs for high-speed bundle loading
 const CompressDialog = safeLazy(() => import('@/components/dialogs/CompressDialog'), 'CompressDialog');
 const OCRDialog = safeLazy(() => import('@/components/dialogs/OCRDialog'), 'OCRDialog');
-const PrintDialog = safeLazy(() => import('@/components/dialogs/PrintDialog'), 'PrintDialog');
 const ProtectDialog = safeLazy(() => import('@/components/dialogs/ProtectDialog'), 'ProtectDialog');
 const CompareDialog = safeLazy(() => import('@/components/dialogs/CompareDialog'), 'CompareDialog');
 const MergeDialog = safeLazy(() => import('@/components/dialogs/MergeDialog'), 'MergeDialog');
@@ -62,16 +61,11 @@ const ConvertDialog = safeLazy(() => import('@/components/dialogs/ConvertDialog'
 const WatermarkDialog = safeLazy(() => import('@/components/dialogs/WatermarkDialog'), 'WatermarkDialog');
 const ScanDialog = safeLazy(() => import('@/components/dialogs/ScanDialog'), 'ScanDialog');
 const BatesNumberingDialog = safeLazy(() => import('@/components/dialogs/BatesNumberingDialog'), 'BatesNumberingDialog');
-const SanitizeDialog = safeLazy(() => import('@/components/dialogs/SanitizeDialog'), 'SanitizeDialog');
 const BatchDialog = safeLazy(() => import('@/components/dialogs/BatchDialog'), 'BatchDialog');
 const CropDialog = safeLazy(() => import('@/components/dialogs/CropDialog'), 'CropDialog');
 const TableExtractDialog = safeLazy(() => import('@/components/dialogs/TableExtractDialog'), 'TableExtractDialog');
-const ExtractImagesDialog = safeLazy(() => import('@/components/dialogs/ExtractImagesDialog'), 'ExtractImagesDialog');
-const PhotoEditorDialog = safeLazy(() => import('@/components/dialogs/PhotoEditorDialog'), 'PhotoEditorDialog');
 const StudentToolsDialog = safeLazy(() => import('@/components/dialogs/StudentToolsDialog'), 'StudentToolsDialog');
-const StudentCalculatorsDialog = safeLazy(() => import('@/components/dialogs/StudentCalculatorsDialog'), 'StudentCalculatorsDialog');
 const HandwritingDialog = safeLazy(() => import('@/components/dialogs/HandwritingDialog'), 'HandwritingDialog');
-const ImageToolsDialog = safeLazy(() => import('@/components/dialogs/ImageToolsDialog'), 'ImageToolsDialog');
 const LegalDialog = safeLazy(() => import('@/components/dialogs/LegalDialog'), 'LegalDialog');
 const ShortcutsDialog = safeLazy(() => import('@/components/dialogs/ShortcutsDialog'), 'ShortcutsDialog');
 
@@ -236,9 +230,7 @@ export const App: React.FC = () => {
             });
           }
         });
-      } else if (ctrl && e.key.toLowerCase() === 'p') {
-        e.preventDefault();
-        setActiveModal('print');
+      
       } else if (ctrl && e.key.toLowerCase() === 'f') {
         e.preventDefault();
         setSidebarTab('search');
@@ -547,8 +539,7 @@ export const App: React.FC = () => {
         <React.Suspense fallback={null}>
           {activeModal === 'compress' && <CompressDialog />}
           {activeModal === 'ocr' && <OCRDialog />}
-          {activeModal === 'print' && <PrintDialog />}
-          {activeModal === 'protect' && <ProtectDialog />}
+                    {activeModal === 'protect' && <ProtectDialog />}
           {activeModal === 'compare' && <CompareDialog />}
           {activeModal === 'merge' && <MergeDialog />}
           {activeModal === 'split' && <SplitDialog />}
@@ -557,17 +548,12 @@ export const App: React.FC = () => {
           {activeModal === 'watermark' && <WatermarkDialog />}
           {activeModal === 'scan' && <ScanDialog />}
           {(activeModal === 'bates' || activeModal === 'page-number') && <BatesNumberingDialog />}
-          {activeModal === 'sanitize' && <SanitizeDialog />}
-          {activeModal === 'batch' && <BatchDialog />}
+                    {activeModal === 'batch' && <BatchDialog />}
           {activeModal === 'crop' && <CropDialog />}
           {activeModal === 'extract-table' && <TableExtractDialog />}
-          {activeModal === 'extract-images' && <ExtractImagesDialog />}
-          {activeModal === 'photo-editor' && <PhotoEditorDialog />}
-          {activeModal === 'student-resizer' && <StudentToolsDialog />}
-          {activeModal === 'student-calculators' && <StudentCalculatorsDialog />}
-          {activeModal === 'handwriting' && <HandwritingDialog />}
-          {activeModal === 'image-tools' && <ImageToolsDialog />}
-          {activeModal === 'legal' && <LegalDialog />}
+                              {activeModal === 'student-resizer' && <StudentToolsDialog />}
+                    {activeModal === 'handwriting' && <HandwritingDialog />}
+                    {activeModal === 'legal' && <LegalDialog />}
           {activeModal === 'settings' && <SettingsDialog />}
           {activeModal === 'shortcuts' && <ShortcutsDialog />}
         </React.Suspense>
