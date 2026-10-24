@@ -1067,7 +1067,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
       {/* Direct In-Place Text Editor Popup */}
       {editingItem && (
         <div
-          className="absolute z-40 bg-black border border-swift-500 p-2 rounded-xl shadow-2xl flex items-center gap-1.5 animate-scale-in max-w-[calc(100vw-1.5rem)]"
+          className="absolute z-40 bg-white border border-gray-200 p-2 rounded-xl shadow-xl flex items-center gap-1.5 animate-scale-in max-w-[calc(100vw-1.5rem)] text-gray-800"
           style={{
             left: `${Math.max(4, Math.min(Math.max(4, width - 270), editingItem.screenRect.x))}px`,
             top: `${Math.max(4, editingItem.screenRect.y < 55 ? editingItem.screenRect.y + editingItem.screenRect.h + 8 : editingItem.screenRect.y - 48)}px`,
@@ -1114,7 +1114,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
       {/* AcroForm Field Builder Popup */}
       {newFieldModal && (
         <div
-          className="absolute z-40 bg-black border border-swift-500 p-3 rounded-xl shadow-2xl flex flex-col gap-2 animate-scale-in text-xs w-64 max-w-[calc(100vw-1.5rem)]"
+          className="absolute z-40 bg-white border border-gray-200 p-3 rounded-xl shadow-xl flex flex-col gap-2 animate-scale-in text-xs w-64 max-w-[calc(100vw-1.5rem)] text-gray-800"
           style={{
             left: `${Math.max(10, Math.min(width - 270, (newFieldModal.rect[0] / dimensions.width) * width))}px`,
             top: `${Math.max(10, height - ((newFieldModal.rect[1] + newFieldModal.rect[3]) / dimensions.height) * height - 80)}px`,
@@ -1806,7 +1806,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
       {/* Inline Text Input Placement Box */}
       {textInputPos && (
         <div
-          className="absolute z-30 bg-black/95 border border-swift-500 p-2 rounded-lg shadow-xl flex items-center gap-2 max-w-[calc(100vw-1.5rem)]"
+          className="absolute z-30 bg-white border border-red-500 p-2 rounded-lg shadow-xl flex items-center gap-2 max-w-[calc(100vw-1.5rem)] text-gray-800"
           style={{
             left: `${Math.max(8, Math.min(Math.max(8, width - 260), textInputPos.x))}px`,
             top: `${Math.max(8, Math.min(height - 50, textInputPos.y < 50 ? textInputPos.y + 20 : textInputPos.y - 45))}px`,
@@ -1849,7 +1849,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
       {/* Inline Sticky Note Placement Card */}
       {pendingNote && (
         <div
-          className="absolute z-40 bg-black/95 border border-amber-400/80 p-3 rounded-xl shadow-2xl flex flex-col gap-2.5 animate-scale-in text-xs w-64 backdrop-blur-md max-w-[calc(100vw-1.5rem)]"
+          className="absolute z-40 bg-white border border-amber-400 p-3 rounded-xl shadow-xl flex flex-col gap-2.5 animate-scale-in text-xs w-64 backdrop-blur-md max-w-[calc(100vw-1.5rem)] text-gray-800"
           style={{
             left: `${Math.max(8, Math.min(Math.max(8, width - 264), pendingNote.clientX - 12))}px`,
             top: `${Math.max(8, Math.min(height - 180, pendingNote.clientY + 14))}px`,
@@ -2015,7 +2015,7 @@ const VirtualPageWrapper: React.FC<{
         />
       ) : (
         <div
-          className="bg-black/40 border border-slate-800/70 rounded-lg shadow-lg flex flex-col items-center justify-center text-slate-500 font-mono text-xs transition-colors"
+          className="bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col items-center justify-center text-gray-400 font-mono text-xs transition-colors"
           style={{ width: `${width}px`, height: `${height}px` }}
         >
           <div className="w-6 h-6 border-2 border-swift-500/40 border-t-swift-400 rounded-full animate-spin mb-2" />

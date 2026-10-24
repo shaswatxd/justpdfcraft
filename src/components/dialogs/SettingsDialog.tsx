@@ -17,22 +17,22 @@ export const SettingsDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Settings Dialog">
-      <div className="w-full max-w-2xl bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-in">
+    <div className="fixed inset-0 z-50 bg-gray-50/50 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Settings Dialog">
+      <div className="w-full max-w-2xl bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-in">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-swift-500/10 text-swift-400">
               <Settings className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Application Settings</h3>
-              <p className="text-xs text-slate-400">Configure JustPDFCraft web workspace and local preferences</p>
+              <h3 className="text-base font-bold text-gray-900">Application Settings</h3>
+              <p className="text-xs text-gray-500">Configure JustPDFCraft web workspace and local preferences</p>
             </div>
           </div>
           <button
             onClick={() => setActiveModal(null)}
-            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
           >
             <X className="w-4 h-4" />
           </button>
@@ -41,7 +41,7 @@ export const SettingsDialog: React.FC = () => {
         {/* Body with Left Nav */}
         <div className="flex-1 flex overflow-hidden">
           {/* Side Nav */}
-          <div className="w-48 bg-slate-950/60 border-r border-slate-800 p-3 space-y-1 text-xs">
+          <div className="w-48 bg-white/60 border-r border-gray-200 p-3 space-y-1 text-xs">
             {[
               { id: 'general', label: 'General & Theme', icon: Monitor },
               { id: 'privacy', label: 'Privacy & Data', icon: ShieldCheck },
@@ -56,8 +56,8 @@ export const SettingsDialog: React.FC = () => {
                   onClick={() => setActiveSection(tab.id as any)}
                   className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl font-medium transition-colors text-left ${
                     isActive
-                      ? 'bg-swift-600 text-white font-semibold'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                      ? 'bg-red-600 text-white font-semibold'
+                      : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
@@ -68,13 +68,13 @@ export const SettingsDialog: React.FC = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="flex-1 p-6 overflow-y-auto space-y-5 text-xs text-slate-300">
+          <div className="flex-1 p-6 overflow-y-auto space-y-5 text-xs text-gray-700">
             {activeSection === 'general' && (
               <div className="space-y-4">
                 <h4 className="font-bold text-sm text-white">Appearance & Display</h4>
                 
                 <div className="space-y-1.5">
-                  <label className="text-slate-400 block">Application Theme</label>
+                  <label className="text-gray-500 block">Application Theme</label>
                   <div className="flex gap-2">
                     <span className="px-4 py-2 rounded-xl border border-red-500/30 bg-red-50 text-red-700 font-semibold text-xs">
                       Clean Light (Default)
@@ -83,11 +83,11 @@ export const SettingsDialog: React.FC = () => {
                 </div>
 
                 <div className="space-y-1.5 pt-2">
-                  <label className="text-slate-400 block">Default View Mode on Open</label>
+                  <label className="text-gray-500 block">Default View Mode on Open</label>
                   <select
                     value={preferences.defaultViewMode}
                     onChange={(e) => handleUpdate({ defaultViewMode: e.target.value as any })}
-                    className="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white w-full max-w-xs"
+                    className="bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-white w-full max-w-xs"
                   >
                     <option value="continuous">Continuous Scroll</option>
                     <option value="single">Single Page</option>
@@ -105,18 +105,18 @@ export const SettingsDialog: React.FC = () => {
                     <ShieldCheck className="w-4 h-4" />
                     <span>Zero Cloud Storage • Zero Document Telemetry</span>
                   </div>
-                  <p className="text-[11px] text-slate-300 leading-relaxed">
+                  <p className="text-[11px] text-gray-700 leading-relaxed">
                     JustPDFCraft operates 100% on this local device. Your PDF documents, text layers, annotations, and form data are never transmitted to external cloud servers.
                   </p>
                 </div>
 
                 <div className="space-y-2 pt-2">
-                  <label className="flex items-center gap-2 cursor-pointer text-slate-300">
+                  <label className="flex items-center gap-2 cursor-pointer text-gray-700">
                     <input
                       type="checkbox"
                       checked={preferences.enableCrashRecovery}
                       onChange={(e) => handleUpdate({ enableCrashRecovery: e.target.checked })}
-                      className="rounded bg-slate-800 border-slate-700 text-swift-500"
+                      className="rounded bg-gray-100 border-gray-300 text-swift-500"
                     />
                     <span>Enable Local Transaction Crash Recovery Checkpoints</span>
                   </label>
@@ -127,16 +127,16 @@ export const SettingsDialog: React.FC = () => {
             {activeSection === 'performance' && (
               <div className="space-y-4">
                 <h4 className="font-bold text-sm text-white">Performance & Hardware</h4>
-                <p className="text-slate-400 text-xs">
+                <p className="text-gray-500 text-xs">
                   JustPDFCraft utilizes asynchronous worker threads and memory-capped canvas caching for ultra-fast responsiveness.
                 </p>
 
                 <div className="space-y-1.5">
-                  <label className="text-slate-400 block">Auto-Save Recovery Interval</label>
+                  <label className="text-gray-500 block">Auto-Save Recovery Interval</label>
                   <select
                     value={preferences.autoSaveIntervalSeconds}
                     onChange={(e) => handleUpdate({ autoSaveIntervalSeconds: Number(e.target.value) })}
-                    className="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white w-full max-w-xs"
+                    className="bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-white w-full max-w-xs"
                   >
                     <option value="30">Every 30 seconds</option>
                     <option value="60">Every 60 seconds (Recommended)</option>
@@ -164,10 +164,10 @@ export const SettingsDialog: React.FC = () => {
                   ].map((s) => (
                     <div
                       key={s.key}
-                      className="bg-slate-800/60 p-2 rounded-lg border border-slate-800 flex items-center justify-between"
+                      className="bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-center justify-between"
                     >
-                      <span className="text-slate-400">{s.desc}</span>
-                      <kbd className="bg-slate-900 border border-slate-700 px-1.5 py-0.5 rounded font-mono text-[10px] text-swift-400">
+                      <span className="text-gray-500">{s.desc}</span>
+                      <kbd className="bg-gray-50 border border-gray-300 px-1.5 py-0.5 rounded font-mono text-[10px] text-swift-400">
                         {s.key}
                       </kbd>
                     </div>
@@ -179,10 +179,10 @@ export const SettingsDialog: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3.5 border-t border-slate-800 bg-[#000000]/60 flex justify-end">
+        <div className="px-6 py-3.5 border-t border-gray-200 bg-white/60 flex justify-end">
           <button
             onClick={() => setActiveModal(null)}
-            className="px-5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs transition-colors"
+            className="px-5 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-white font-semibold text-xs transition-colors"
           >
             Done
           </button>

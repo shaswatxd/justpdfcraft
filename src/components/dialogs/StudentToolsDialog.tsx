@@ -45,12 +45,10 @@ export const StudentToolsDialog: React.FC = () => {
       const url = activePhotoUrl;
       const img = new Image();
       img.onload = () => {
-        console.log("[StudentToolsDialog] img.onload fired! naturalWidth:", img.naturalWidth, img.naturalHeight);
         setResizerImage(img);
         setActivePhotoUrl(null);
       };
-      img.onerror = (e) => {
-        console.error("[StudentToolsDialog] img.onerror fired!", e);
+      img.onerror = () => {
         setActivePhotoUrl(null);
       };
       img.src = url;
@@ -99,34 +97,51 @@ export const StudentToolsDialog: React.FC = () => {
 
     try {
       const cvs = document.createElement('canvas');
-      cvs.width = customWidthPx;
-      cvs.height = customHeightPx;
-      const ctx = cvs.getContext('2d');
-      if (ctx) {
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, customWidthPx, customHeightPx);
-        ctx.drawImage(resizerImage, 0, 0, customWidthPx, customHeightPx);
+      let w = customWidthPx;
+      let h = customHeightPx;
 
-        console.log("[StudentToolsDialog] processResizer calling compressToTargetKb...");
-        const result = await compressToTargetKb(cvs, targetMinKb, targetMaxKb, 'image/jpeg');
-        console.log("[StudentToolsDialog] processResizer result:", result);
-        cvs.width = 0;
-        cvs.height = 0;
-        setResizerResult(result);
+      if (keepAspect && resizerImage.naturalWidth && resizerImage.naturalHeight) {
+        const aspect = resizerImage.naturalWidth / resizerImage.naturalHeight;
+        if (w / h > aspect) {
+          w = Math.round(h * aspect);
+        } else {
+          h = Math.round(w / aspect);
+        }
       }
+
+      cvs.width = w;
+      cvs.height = h;
+      const ctx = cvs.getContext('2d');
+      if (!ctx) return;
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(resizerImage, 0, 0, w, h);
+
+      const res = await compressToTargetKb(cvs, targetMinKb, targetMaxKb, 'image/jpeg');
+      cvs.width = 0;
+      cvs.height = 0;
+      setResizerResult(res);
     } catch (err: any) {
-      console.error(err);
       addToast({
         type: 'error',
-        title: 'Processing Failed',
-        message: err?.message || 'An unexpected error occurred while processing the image.',
+        title: 'Compression Failed',
+        message: err?.message || 'Error resizing image.',
       });
     } finally {
       setIsCompressing(false);
     }
-  }, [resizerImage, customWidthPx, customHeightPx, targetMinKb, targetMaxKb, addToast]);
+  }, [
+    resizerImage,
+    targetMinKb,
+    targetMaxKb,
+    customWidthPx,
+    customHeightPx,
+    keepAspect,
+    addToast,
+  ]);
 
-  // Auto-compress when image loads or dimensions/targets change
+  // Trigger compression automatically when parameters or image changes
   useEffect(() => {
     if (resizerImage) {
       const timer = setTimeout(() => {
@@ -152,28 +167,28 @@ export const StudentToolsDialog: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 md:p-5 bg-black/80 backdrop-blur-md animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-gray-50/50 backdrop-blur-xs animate-in fade-in duration-150"
       role="dialog"
       aria-modal="true"
       aria-label="Photo & Signature Resizer Dialog"
     >
-      <div className="bg-black border-0 sm:border border-slate-700/80 rounded-none sm:rounded-2xl w-full max-w-4xl h-[100dvh] sm:h-[90vh] max-h-[100dvh] sm:max-h-[850px] shadow-2xl flex flex-col overflow-hidden text-slate-100">
+      <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-4xl h-[92dvh] sm:h-[88vh] max-h-[850px] shadow-2xl flex flex-col overflow-hidden text-gray-800 animate-scale-in">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-800 bg-black/90 shrink-0">
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 mr-2">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-swift-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-swift-900/30 shrink-0">
-              <Sliders className="w-4 h-4 sm:w-5 h-5" />
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white shrink-0">
+          <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
+            <div className="w-10 h-10 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-red-600 shrink-0">
+              <Sliders className="w-5 h-5" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm sm:text-base font-bold text-white tracking-tight truncate">
+                <h2 className="text-base font-bold text-gray-900 tracking-tight truncate">
                   Photo &amp; Signature Resizer
                 </h2>
-                <span className="hidden sm:inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full whitespace-nowrap">
+                <span className="hidden sm:inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full whitespace-nowrap">
                   Exact Target KB
                 </span>
               </div>
-              <p className="hidden sm:block text-xs text-slate-400 truncate">
+              <p className="hidden sm:block text-xs text-gray-500 truncate mt-0.5">
                 Resize photo or signature to exact portal limits (20–50 KB, 10–20 KB) for SSC, UPSC, NEET, JEE.
               </p>
             </div>
@@ -183,16 +198,16 @@ export const StudentToolsDialog: React.FC = () => {
               setActiveModal(null);
               setActiveStudentTab(null);
             }}
-            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors shrink-0"
+            className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-700 transition-colors shrink-0"
             title="Close"
             aria-label="Close"
           >
-            <X className="w-4 h-4 sm:w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Main Body — natural scroll flow with NO nested overflow-hidden or fixed heights */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-black/40">
+        {/* Main Body */}
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 bg-white">
           <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 items-start">
             {/* Left Column: Upload & Live Preview */}
             <div className="w-full lg:col-span-6 flex flex-col items-center">
@@ -210,15 +225,15 @@ export const StudentToolsDialog: React.FC = () => {
                       loadImageFromFile(e.dataTransfer.files[0]);
                     }
                   }}
-                  className="w-full min-h-[260px] sm:min-h-[300px] border-2 border-dashed border-slate-700 hover:border-swift-500 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all group bg-black/40 hover:bg-black/80 p-6 text-center"
+                  className="w-full min-h-[300px] border-2 border-dashed border-gray-300 hover:border-red-500 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all group bg-gray-50 hover:bg-red-50/10 p-6 text-center shadow-2xs"
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-swift-500/10 text-swift-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform border border-red-100">
                     <Upload className="w-6 h-6" />
                   </div>
-                  <p className="text-sm font-semibold text-slate-200">
-                    Drop Photo or Signature here, or <span className="text-swift-400 underline">browse</span>
+                  <p className="text-sm font-semibold text-gray-800">
+                    Drop Photo or Signature here, or <span className="text-red-600 underline font-bold">browse</span>
                   </p>
-                  <p className="text-xs text-slate-400 mt-1 max-w-xs">
+                  <p className="text-xs text-gray-500 mt-1 max-w-xs">
                     JPG, PNG, WebP from phone camera or scanner.
                   </p>
                   <input
@@ -240,35 +255,35 @@ export const StudentToolsDialog: React.FC = () => {
                 <div className="w-full flex flex-col items-center gap-3">
                   {/* Status Pill */}
                   {resizerResult && (
-                    <div className="w-full flex flex-wrap items-center justify-between gap-2 p-2 bg-slate-900/60 border border-slate-800 rounded-xl">
+                    <div className="w-full flex flex-wrap items-center justify-between gap-2 p-2.5 bg-gray-50 border border-gray-200 rounded-xl">
                       {resizerResult.inRange ? (
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-semibold">
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-semibold">
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           <span>{resizerResult.finalKb} KB — Passes Portal Check</span>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full text-xs font-semibold">
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-full text-xs font-semibold">
                           <AlertCircle className="w-3.5 h-3.5" />
                           <span>Current: {resizerResult.finalKb} KB (Target: {targetMinKb}–{targetMaxKb} KB)</span>
                         </div>
                       )}
-                      <span className="text-xs text-slate-400 font-mono">
+                      <span className="text-xs text-gray-500 font-mono">
                         {resizerResult.width} × {resizerResult.height} px
                       </span>
                     </div>
                   )}
 
-                  {/* Image Preview Container — scrollable if very tall, but natural size */}
-                  <div className="w-full max-h-[360px] p-2 bg-black border border-slate-800 rounded-xl overflow-auto flex items-center justify-center">
+                  {/* Image Preview Container */}
+                  <div className="w-full max-h-[360px] p-4 bg-gray-50 border border-gray-200 rounded-xl overflow-auto flex items-center justify-center">
                     {resizerResult?.dataUrl ? (
                       <img
                         src={resizerResult.dataUrl}
                         alt="Resized Preview"
-                        className="max-h-[320px] w-auto rounded shadow-lg object-contain"
+                        className="max-h-[300px] w-auto rounded shadow-sm object-contain"
                       />
                     ) : (
-                      <div className="py-12 text-xs text-slate-500 flex items-center gap-2">
-                        <RefreshCw className="w-4 h-4 animate-spin text-swift-400" />
+                      <div className="py-12 text-xs text-gray-500 flex items-center gap-2">
+                        <RefreshCw className="w-4 h-4 animate-spin text-red-600" />
                         <span>Compressing image...</span>
                       </div>
                     )}
@@ -277,7 +292,7 @@ export const StudentToolsDialog: React.FC = () => {
                   {/* Quick Replace Button */}
                   <button
                     onClick={() => resizerInputRef.current?.click()}
-                    className="w-full py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium border border-slate-700/80 flex items-center justify-center gap-2 transition-colors"
+                    className="w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-medium border border-gray-200 flex items-center justify-center gap-2 transition-colors cursor-pointer"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
                     Replace Image
@@ -304,7 +319,7 @@ export const StudentToolsDialog: React.FC = () => {
             <div className="w-full lg:col-span-6 space-y-4">
               {/* 1. Exam Preset Picker */}
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5 block">
+                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5 block">
                   1. Select Exam or Custom Format
                 </label>
                 <select
@@ -313,7 +328,7 @@ export const StudentToolsDialog: React.FC = () => {
                     const found = EXAM_PRESETS.find((p) => p.id === e.target.value);
                     if (found) handleSelectPreset(found);
                   }}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-swift-500"
+                  className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent shadow-2xs font-medium"
                 >
                   {EXAM_PRESETS.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -322,23 +337,23 @@ export const StudentToolsDialog: React.FC = () => {
                   ))}
                 </select>
                 {selectedPresetId && (
-                  <p className="text-[11px] text-slate-400 mt-1.5 bg-slate-800/60 p-2 rounded-lg border border-slate-800">
+                  <p className="text-[11px] text-gray-600 mt-2 bg-amber-50/80 p-2.5 rounded-lg border border-amber-200/80">
                     💡 {EXAM_PRESETS.find((p) => p.id === selectedPresetId)?.notes}
                   </p>
                 )}
               </div>
 
               {/* 2. Target KB Limits */}
-              <div className="bg-black/90 border border-slate-800 rounded-xl p-3.5 sm:p-4 space-y-3">
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-200">Target File Size (KB)</span>
-                  <span className="text-xs font-mono text-swift-400 bg-swift-950/60 px-2 py-0.5 rounded border border-swift-800">
+                  <span className="text-xs font-semibold text-gray-900">Target File Size (KB)</span>
+                  <span className="text-xs font-mono font-semibold text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-200">
                     {targetMinKb} KB – {targetMaxKb} KB
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <span className="text-[10px] text-slate-400 block mb-1">Min Size (KB)</span>
+                    <span className="text-[10px] text-gray-500 block mb-1 font-medium">Min Size (KB)</span>
                     <input
                       type="number"
                       min="2"
@@ -349,11 +364,11 @@ export const StudentToolsDialog: React.FC = () => {
                         setTargetMinKb(val);
                         if (val > targetMaxKb) setTargetMaxKb(val + 5);
                       }}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-swift-500"
+                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-2xs"
                     />
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-400 block mb-1">Max Size (KB)</span>
+                    <span className="text-[10px] text-gray-500 block mb-1 font-medium">Max Size (KB)</span>
                     <input
                       type="number"
                       min={targetMinKb}
@@ -364,29 +379,29 @@ export const StudentToolsDialog: React.FC = () => {
                         setTargetMaxKb(val);
                         if (val < targetMinKb) setTargetMinKb(Math.max(1, val - 5));
                       }}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-swift-500"
+                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-2xs"
                     />
                   </div>
                 </div>
               </div>
 
               {/* 3. Dimensions Controls */}
-              <div className="bg-black/90 border border-slate-800 rounded-xl p-3.5 sm:p-4 space-y-3">
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-200">Dimensions (Pixels)</span>
-                  <label className="flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer">
+                  <span className="text-xs font-semibold text-gray-900">Dimensions (Pixels)</span>
+                  <label className="flex items-center gap-1.5 text-[11px] text-gray-600 cursor-pointer font-medium">
                     <input
                       type="checkbox"
                       checked={keepAspect}
                       onChange={(e) => setKeepAspect(e.target.checked)}
-                      className="rounded border-slate-700 text-swift-600 focus:ring-swift-500 bg-slate-800"
+                      className="rounded border-gray-300 text-red-600 focus:ring-red-500"
                     />
                     Lock Aspect Ratio
                   </label>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <span className="text-[10px] text-slate-400 block mb-1">Width (px)</span>
+                    <span className="text-[10px] text-gray-500 block mb-1 font-medium">Width (px)</span>
                     <input
                       type="number"
                       value={customWidthPx}
@@ -398,11 +413,11 @@ export const StudentToolsDialog: React.FC = () => {
                           setCustomHeightPx(Math.round(w * ratio));
                         }
                       }}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-swift-500"
+                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-2xs"
                     />
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-400 block mb-1">Height (px)</span>
+                    <span className="text-[10px] text-gray-500 block mb-1 font-medium">Height (px)</span>
                     <input
                       type="number"
                       value={customHeightPx}
@@ -414,7 +429,7 @@ export const StudentToolsDialog: React.FC = () => {
                           setCustomWidthPx(Math.round(h * ratio));
                         }
                       }}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-swift-500"
+                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-2xs"
                     />
                   </div>
                 </div>
@@ -425,7 +440,7 @@ export const StudentToolsDialog: React.FC = () => {
                 <button
                   onClick={processResizer}
                   disabled={!resizerImage || isCompressing}
-                  className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all min-h-[44px]"
+                  className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 disabled:opacity-40 text-gray-700 border border-gray-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all min-h-[44px] cursor-pointer"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isCompressing ? 'animate-spin' : ''}`} />
                   Recalculate Compression
@@ -438,7 +453,7 @@ export const StudentToolsDialog: React.FC = () => {
                     }
                   }}
                   disabled={!resizerResult}
-                  className="w-full py-3 bg-gradient-to-r from-swift-600 to-indigo-600 hover:from-swift-500 hover:to-indigo-500 disabled:opacity-40 text-white rounded-xl text-xs font-bold shadow-lg shadow-swift-900/30 flex items-center justify-center gap-2 min-h-[48px] transition-all"
+                  className="w-full py-3 bg-red-600 hover:bg-red-700 active:scale-[0.99] disabled:opacity-40 text-white rounded-xl text-xs font-bold shadow-md shadow-red-500/20 flex items-center justify-center gap-2 min-h-[48px] transition-all cursor-pointer"
                 >
                   <Download className="w-4 h-4" />
                   Download JPG ({resizerResult?.finalKb || 0} KB)

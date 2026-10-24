@@ -623,14 +623,14 @@ export const PageOrganizer: React.FC = () => {
                       : isSelected
                       ? 'bg-red-500/10 border-swift-500 shadow-lg ring-2 ring-swift-500/40'
                       : isCurrent
-                      ? 'bg-gray-100/80 border-swift-500/60 ring-1 ring-swift-500/30'
-                      : 'bg-black border-gray-200 hover:border-gray-300 hover:bg-gray-100/80'
+                      ? 'bg-red-50/70 border-red-500/60 ring-1 ring-red-500/30'
+                      : 'bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-2xs'
                   }`}
                 >
                   {/* Page Number & Checkbox */}
                   <div className="w-full flex items-center justify-between mb-2 px-1">
                     <div className="flex items-center gap-1.5">
-                      <span className={`text-xs font-mono font-bold ${isSelected ? 'text-red-600' : isCurrent ? 'text-white' : 'text-gray-500'}`}>
+                      <span className={`text-xs font-mono font-bold ${isSelected || isCurrent ? 'text-red-600' : 'text-gray-600'}`}>
                         #{i + 1}
                       </span>
                       {isCurrent && (

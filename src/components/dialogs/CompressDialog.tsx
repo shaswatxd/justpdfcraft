@@ -106,22 +106,22 @@ export const CompressDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Compress Dialog">
-      <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden animate-scale-in flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 bg-gray-50/50 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Compress Dialog">
+      <div className="w-full max-w-lg bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden animate-scale-in flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
               <FileArchive className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Smart Compression</h3>
-              <p className="text-xs text-slate-400">Reduce PDF file size locally without cloud uploads</p>
+              <h3 className="text-base font-bold text-gray-900">Smart Compression</h3>
+              <p className="text-xs text-gray-500">Reduce PDF file size locally without cloud uploads</p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
           >
             <X className="w-4 h-4" />
           </button>
@@ -139,15 +139,15 @@ export const CompressDialog: React.FC = () => {
             {/* Content */}
             <div className="p-6 space-y-5 overflow-y-auto flex-1">
               {/* Current Size Card */}
-              <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+              <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-slate-400">Current File Size</p>
+                  <p className="text-xs text-gray-500">Current File Size</p>
                   <p className="text-lg font-bold font-mono text-white">
                     {currentSizeKB > 1024 ? `${currentSizeMB} MB` : `${currentSizeKB} KB`}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-slate-400">Estimated Target</p>
+                  <p className="text-xs text-gray-500">Estimated Target</p>
                   <p className="text-sm font-semibold text-emerald-400">
                     {compressMode === 'target-kb' ? `~${targetKb} KB limit` : estimates[preset].ratio}
                   </p>
@@ -156,7 +156,7 @@ export const CompressDialog: React.FC = () => {
 
               {/* Mode Switch: Presets vs Target KB */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-300">Compression Mode</label>
+                <label className="text-xs font-semibold text-gray-700">Compression Mode</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
@@ -164,7 +164,7 @@ export const CompressDialog: React.FC = () => {
                     className={`p-2.5 rounded-xl border text-xs font-medium transition-all flex items-center justify-center gap-2 ${
                       compressMode === 'preset'
                         ? 'bg-emerald-500/10 border-emerald-500/80 text-white font-semibold'
-                        : 'bg-slate-800/40 border-slate-800 text-slate-400 hover:text-slate-200'
+                        : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-800'
                     }`}
                   >
                     <Sliders className="w-3.5 h-3.5" />
@@ -176,7 +176,7 @@ export const CompressDialog: React.FC = () => {
                     className={`p-2.5 rounded-xl border text-xs font-medium transition-all flex items-center justify-center gap-2 ${
                       compressMode === 'target-kb'
                         ? 'bg-emerald-500/10 border-emerald-500/80 text-white font-semibold'
-                        : 'bg-slate-800/40 border-slate-800 text-slate-400 hover:text-slate-200'
+                        : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-800'
                     }`}
                   >
                     <Target className="w-3.5 h-3.5" />
@@ -188,7 +188,7 @@ export const CompressDialog: React.FC = () => {
               {/* Preset Selector */}
               {compressMode === 'preset' ? (
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-slate-300">Compression Preset</label>
+                  <label className="text-xs font-semibold text-gray-700">Compression Preset</label>
                   <div className="grid grid-cols-2 gap-2">
                     {[
                       { id: 'max_quality', label: 'Max Quality', sub: 'Minimal loss' },
@@ -203,20 +203,20 @@ export const CompressDialog: React.FC = () => {
                         className={`p-3 rounded-xl border text-left transition-all ${
                           preset === p.id
                             ? 'bg-emerald-500/10 border-emerald-500/80 text-white ring-1 ring-emerald-500/40'
-                            : 'bg-slate-800/40 border-slate-800 text-slate-300 hover:bg-slate-800'
+                            : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
                         }`}
                       >
                         <p className="text-xs font-bold">{p.label}</p>
-                        <p className="text-[10px] text-slate-400 mt-0.5">{p.sub}</p>
+                        <p className="text-[10px] text-gray-500 mt-0.5">{p.sub}</p>
                       </button>
                     ))}
                   </div>
                 </div>
               ) : (
                 /* Target KB Mode Controls */
-                <div className="space-y-3 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <div className="space-y-3 bg-gray-50/60 p-4 rounded-xl border border-gray-200">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-semibold text-slate-200">Desired Maximum File Size</label>
+                    <label className="text-xs font-semibold text-gray-800">Desired Maximum File Size</label>
                     <span className="text-xs font-mono font-bold text-emerald-400">{targetKb} KB</span>
                   </div>
 
@@ -230,7 +230,7 @@ export const CompressDialog: React.FC = () => {
                         className={`py-1.5 px-2 rounded-lg text-xs font-mono transition-all border ${
                           targetKb === size
                             ? 'bg-emerald-500/20 border-emerald-500 text-white font-bold'
-                            : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800'
+                            : 'bg-gray-50 border-gray-300/60 text-gray-700 hover:bg-gray-100'
                         }`}
                       >
                         {size >= 1000 ? `${size / 1000} MB` : `${size} KB`}
@@ -240,7 +240,7 @@ export const CompressDialog: React.FC = () => {
 
                   {/* Custom Number Input */}
                   <div className="flex items-center gap-2 pt-1">
-                    <span className="text-xs text-slate-400">Custom Limit:</span>
+                    <span className="text-xs text-gray-500">Custom Limit:</span>
                     <div className="relative flex-1">
                       <input
                         type="number"
@@ -248,14 +248,14 @@ export const CompressDialog: React.FC = () => {
                         max="50000"
                         value={targetKb}
                         onChange={(e) => setTargetKb(Math.max(10, parseInt(e.target.value, 10) || 10))}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono"
+                        className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-1.5 text-xs text-white font-mono"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 font-mono">
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-500 font-mono">
                         KB
                       </span>
                     </div>
                   </div>
-                  <p className="text-[10px] text-slate-400">
+                  <p className="text-[10px] text-gray-500">
                     Engine will automatically tune raster resolution and object streams to reach or stay under {targetKb} KB.
                   </p>
                 </div>
@@ -263,12 +263,12 @@ export const CompressDialog: React.FC = () => {
 
               {/* Options */}
               <div className="space-y-2">
-                <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300 select-none">
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-700 select-none">
                   <input
                     type="checkbox"
                     checked={stripMetadata}
                     onChange={(e) => setStripMetadata(e.target.checked)}
-                    className="rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-0"
+                    className="rounded bg-gray-100 border-gray-300 text-emerald-500 focus:ring-0"
                   />
                   <span>Strip document metadata (Author, Producer, Creation Date)</span>
                 </label>
@@ -277,11 +277,11 @@ export const CompressDialog: React.FC = () => {
               {/* Progress Bar */}
               {isProcessing && (
                 <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-slate-400">
+                  <div className="flex justify-between text-xs text-gray-500">
                     <span>Compressing stream objects & raster data...</span>
                     <span>{progress}%</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-emerald-500 transition-all duration-300"
                       style={{ width: `${progress}%` }}
@@ -297,7 +297,7 @@ export const CompressDialog: React.FC = () => {
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Compression Complete!</span>
                   </div>
-                  <div className="flex justify-between text-xs text-slate-300">
+                  <div className="flex justify-between text-xs text-gray-700">
                     <span>Before: {(result.originalBytes / 1024).toFixed(1)} KB</span>
                     <span className="font-bold text-emerald-400">
                       After: {(result.newBytes / 1024).toFixed(1)} KB (-{result.compressionRatio}%)
@@ -313,7 +313,7 @@ export const CompressDialog: React.FC = () => {
                     </button>
                     <button
                       onClick={handleApplyToActive}
-                      className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold transition-colors"
+                      className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg text-xs font-semibold transition-colors"
                     >
                       Apply in Editor
                     </button>
@@ -324,10 +324,10 @@ export const CompressDialog: React.FC = () => {
 
             {/* Footer */}
             {!result && (
-              <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
+              <div className="px-6 py-4 border-t border-gray-200 bg-white/60 flex justify-end gap-2">
                 <button
                   onClick={handleClose}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white transition-colors"
                 >
                   Cancel
                 </button>

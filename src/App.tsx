@@ -421,17 +421,17 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] flex flex-col bg-black text-slate-100 font-sans overflow-hidden relative">
+    <div className="h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] flex flex-col bg-slate-50 text-gray-900 font-sans overflow-hidden relative">
       {/* Global Window File Drop Overlay */}
       {isWindowDragging && (
-        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex flex-col items-center justify-center pointer-events-none p-6 animate-fade-in select-none">
-          <div className="w-full max-w-lg border-2 border-dashed border-swift-400 bg-swift-500/10 rounded-3xl p-10 flex flex-col items-center text-center space-y-4 shadow-2xl">
-            <div className="w-16 h-16 rounded-2xl bg-swift-500/20 text-swift-400 flex items-center justify-center animate-bounce">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex flex-col items-center justify-center pointer-events-none p-6 animate-fade-in select-none">
+          <div className="w-full max-w-lg border-2 border-dashed border-red-500 bg-white/95 rounded-3xl p-10 flex flex-col items-center text-center space-y-4 shadow-2xl">
+            <div className="w-16 h-16 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center animate-bounce">
               <FileText className="w-8 h-8" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white">Drop PDF or Image to Open</h2>
-              <p className="text-sm text-slate-300 mt-1">
+              <h2 className="text-2xl font-bold text-gray-900">Drop PDF or Image to Open</h2>
+              <p className="text-sm text-gray-600 mt-1">
                 JustPDFCraft will open this file • 100% Offline & Private
               </p>
             </div>

@@ -540,35 +540,35 @@ export const ConvertDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Convert Dialog">
-      <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+    <div className="fixed inset-0 z-50 bg-gray-50/50 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Convert Dialog">
+      <div className="w-full max-w-lg bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-teal-500/10 text-teal-400">
               <RefreshCw className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Convert Formats</h3>
-              <p className="text-xs text-slate-400">Export PDF as high-res images, plain text, or bundle photos into PDF</p>
+              <h3 className="text-base font-bold text-gray-900">Convert Formats</h3>
+              <p className="text-xs text-gray-500">Export PDF as high-res images, plain text, or bundle photos into PDF</p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Mode Switcher */}
-        <div className="flex border-b border-slate-800 bg-[#000000]/40 px-6 pt-2 gap-2 text-xs">
+        <div className="flex border-b border-gray-200 bg-white/40 px-6 pt-2 gap-2 text-xs">
           <button
             onClick={() => setMode('pdf-to-img')}
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
               mode === 'pdf-to-img'
                 ? 'border-teal-500 text-teal-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
             <ImageIcon className="w-3.5 h-3.5" />
@@ -579,7 +579,7 @@ export const ConvertDialog: React.FC = () => {
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
               mode === 'pdf-to-word'
                 ? 'border-teal-500 text-teal-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
             <FileType className="w-3.5 h-3.5" />
@@ -590,7 +590,7 @@ export const ConvertDialog: React.FC = () => {
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
               mode === 'pdf-to-grayscale'
                 ? 'border-teal-500 text-teal-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
             <Moon className="w-3.5 h-3.5" />
@@ -601,7 +601,7 @@ export const ConvertDialog: React.FC = () => {
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
               mode === 'pdf-to-txt'
                 ? 'border-teal-500 text-teal-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
@@ -612,7 +612,7 @@ export const ConvertDialog: React.FC = () => {
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
               mode === 'img-to-pdf'
                 ? 'border-teal-500 text-teal-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
             <Plus className="w-3.5 h-3.5" />
@@ -623,7 +623,7 @@ export const ConvertDialog: React.FC = () => {
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
               mode === 'txt-to-pdf'
                 ? 'border-teal-500 text-teal-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
@@ -646,11 +646,11 @@ export const ConvertDialog: React.FC = () => {
                 <>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs font-semibold text-slate-300 block mb-1">Image Format</label>
+                      <label className="text-xs font-semibold text-gray-700 block mb-1">Image Format</label>
                       <select
                         value={imageFormat}
                         onChange={(e) => setImageFormat(e.target.value as any)}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                        className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white"
                       >
                         <option value="png">PNG (Lossless & Sharp)</option>
                         <option value="jpeg">JPEG (Compressed)</option>
@@ -658,11 +658,11 @@ export const ConvertDialog: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-slate-300 block mb-1">DPI / Resolution</label>
+                      <label className="text-xs font-semibold text-gray-700 block mb-1">DPI / Resolution</label>
                       <select
                         value={resolutionScale}
                         onChange={(e) => setResolutionScale(parseFloat(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                        className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white"
                       >
                         <option value="1.0">Standard 72 DPI (1x)</option>
                         <option value="2.0">High-Res 144 DPI (2x)</option>
@@ -670,7 +670,7 @@ export const ConvertDialog: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-slate-300 block mb-1">Quality</label>
+                      <label className="text-xs font-semibold text-gray-700 block mb-1">Quality</label>
                       <input
                         type="range"
                         min="0.1"
@@ -681,12 +681,12 @@ export const ConvertDialog: React.FC = () => {
                         className="w-full accent-teal-500"
                         disabled={imageFormat === 'png'}
                       />
-                      <div className="text-right text-[10px] text-slate-400">{Math.round(imageQuality * 100)}%</div>
+                      <div className="text-right text-[10px] text-gray-500">{Math.round(imageQuality * 100)}%</div>
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-slate-300 block mb-1">Export Range</label>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Export Range</label>
                     <div className="flex gap-2">
                       <button
                         type="button"
@@ -694,7 +694,7 @@ export const ConvertDialog: React.FC = () => {
                         className={`flex-1 py-2 text-xs font-semibold rounded-xl border transition-colors ${
                           scope === 'current'
                             ? 'bg-teal-500/10 border-teal-500 text-teal-300'
-                            : 'bg-slate-800 border-slate-700 text-slate-400'
+                            : 'bg-gray-100 border-gray-300 text-gray-500'
                         }`}
                       >
                         Current Page ({currentPage})
@@ -705,7 +705,7 @@ export const ConvertDialog: React.FC = () => {
                         className={`flex-1 py-2 text-xs font-semibold rounded-xl border transition-colors ${
                           scope === 'all'
                             ? 'bg-teal-500/10 border-teal-500 text-teal-300'
-                            : 'bg-slate-800 border-slate-700 text-slate-400'
+                            : 'bg-gray-100 border-gray-300 text-gray-500'
                         }`}
                       >
                         All Pages ({pageCount})
@@ -728,9 +728,9 @@ export const ConvertDialog: React.FC = () => {
                 />
               ) : (
                 <>
-                  <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-3">
+                  <div className="bg-gray-50/80 border border-gray-200 rounded-xl p-4 space-y-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-semibold text-slate-200">Export Scope</label>
+                      <label className="text-xs font-semibold text-gray-800">Export Scope</label>
                       <div className="flex gap-2">
                         <button
                           type="button"
@@ -738,7 +738,7 @@ export const ConvertDialog: React.FC = () => {
                           className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                             scope === 'current'
                               ? 'bg-teal-500/20 border-teal-500 text-teal-300'
-                              : 'bg-slate-800 border-slate-700 text-slate-400'
+                              : 'bg-gray-100 border-gray-300 text-gray-500'
                           }`}
                         >
                           Page {currentPage}
@@ -749,7 +749,7 @@ export const ConvertDialog: React.FC = () => {
                           className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                             scope === 'all'
                               ? 'bg-teal-500/20 border-teal-500 text-teal-300'
-                              : 'bg-slate-800 border-slate-700 text-slate-400'
+                              : 'bg-gray-100 border-gray-300 text-gray-500'
                           }`}
                         >
                           All ({pageCount} Pages)
@@ -757,9 +757,9 @@ export const ConvertDialog: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-800/80 text-[11px] text-slate-400 space-y-1.5">
-                      <p className="font-semibold text-slate-300">Conversion Highlights:</p>
-                      <ul className="list-disc list-inside space-y-0.5 text-[10px] text-slate-400">
+                    <div className="pt-3 border-t border-gray-200/80 text-[11px] text-gray-500 space-y-1.5">
+                      <p className="font-semibold text-gray-700">Conversion Highlights:</p>
+                      <ul className="list-disc list-inside space-y-0.5 text-[10px] text-gray-500">
                         <li>Standard ISO/IEC 29500 OpenXML (.docx) format</li>
                         <li>Compatible with Microsoft Word, Google Docs, Apple Pages & LibreOffice</li>
                         <li>100% Client-side conversion without cloud servers or data leakage</li>
@@ -782,9 +782,9 @@ export const ConvertDialog: React.FC = () => {
                 />
               ) : (
                 <>
-                  <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-3">
+                  <div className="bg-gray-50/80 border border-gray-200 rounded-xl p-4 space-y-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-semibold text-slate-200">Export Scope</label>
+                      <label className="text-xs font-semibold text-gray-800">Export Scope</label>
                       <div className="flex gap-2">
                         <button
                           type="button"
@@ -792,7 +792,7 @@ export const ConvertDialog: React.FC = () => {
                           className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                             scope === 'current'
                               ? 'bg-teal-500/20 border-teal-500 text-teal-300'
-                              : 'bg-slate-800 border-slate-700 text-slate-400'
+                              : 'bg-gray-100 border-gray-300 text-gray-500'
                           }`}
                         >
                           Page {currentPage}
@@ -803,7 +803,7 @@ export const ConvertDialog: React.FC = () => {
                           className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                             scope === 'all'
                               ? 'bg-teal-500/20 border-teal-500 text-teal-300'
-                              : 'bg-slate-800 border-slate-700 text-slate-400'
+                              : 'bg-gray-100 border-gray-300 text-gray-500'
                           }`}
                         >
                           All ({pageCount} Pages)
@@ -812,11 +812,11 @@ export const ConvertDialog: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="text-xs font-semibold text-slate-300 block mb-1">DPI / Resolution</label>
+                      <label className="text-xs font-semibold text-gray-700 block mb-1">DPI / Resolution</label>
                       <select
                         value={resolutionScale}
                         onChange={(e) => setResolutionScale(parseFloat(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                        className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white"
                       >
                         <option value="1.0">Standard 72 DPI (Smaller File)</option>
                         <option value="2.0">High-Res 144 DPI (Recommended for Print)</option>
@@ -830,7 +830,7 @@ export const ConvertDialog: React.FC = () => {
                           <span>Converting to Grayscale...</span>
                           <span>{grayscaleProgress.current} / {grayscaleProgress.total} Pages</span>
                         </div>
-                        <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
                           <div
                             className="bg-teal-500 h-full transition-all duration-200"
                             style={{ width: `${Math.round((grayscaleProgress.current / grayscaleProgress.total) * 100)}%` }}
@@ -839,9 +839,9 @@ export const ConvertDialog: React.FC = () => {
                       </div>
                     )}
 
-                    <div className="pt-3 border-t border-slate-800/80 text-[11px] text-slate-400 space-y-1.5">
-                      <p className="font-semibold text-slate-300">Grayscale Highlights:</p>
-                      <ul className="list-disc list-inside space-y-0.5 text-[10px] text-slate-400">
+                    <div className="pt-3 border-t border-gray-200/80 text-[11px] text-gray-500 space-y-1.5">
+                      <p className="font-semibold text-gray-700">Grayscale Highlights:</p>
+                      <ul className="list-disc list-inside space-y-0.5 text-[10px] text-gray-500">
                         <li>ITU-R BT.601 luminance weighting retains maximum text contrast</li>
                         <li>Saves color ink and toner cartridges on home & office printers</li>
                         <li>Meets B&W upload requirements for exams, visas, and government portals</li>
@@ -867,18 +867,18 @@ export const ConvertDialog: React.FC = () => {
                 <>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs font-semibold text-slate-300 block mb-1">Output Format</label>
+                      <label className="text-xs font-semibold text-gray-700 block mb-1">Output Format</label>
                       <select
                         value={textFormat}
                         onChange={(e) => setTextFormat(e.target.value as any)}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                        className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white"
                       >
                         <option value="txt">Plain Text (.txt)</option>
                         <option value="md">Markdown (.md with Page Headers)</option>
                       </select>
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-slate-300 block mb-1">Scope</label>
+                      <label className="text-xs font-semibold text-gray-700 block mb-1">Scope</label>
                       <div className="flex gap-1.5 pt-0.5">
                         <button
                           type="button"
@@ -886,7 +886,7 @@ export const ConvertDialog: React.FC = () => {
                           className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                             scope === 'current'
                               ? 'bg-teal-500/10 border-teal-500 text-teal-300'
-                              : 'bg-slate-800 border-slate-700 text-slate-400'
+                              : 'bg-gray-100 border-gray-300 text-gray-500'
                           }`}
                         >
                           Page {currentPage}
@@ -897,7 +897,7 @@ export const ConvertDialog: React.FC = () => {
                           className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                             scope === 'all'
                               ? 'bg-teal-500/10 border-teal-500 text-teal-300'
-                              : 'bg-slate-800 border-slate-700 text-slate-400'
+                              : 'bg-gray-100 border-gray-300 text-gray-500'
                           }`}
                         >
                           All ({pageCount})
@@ -906,13 +906,13 @@ export const ConvertDialog: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="p-3.5 bg-[#000000]/60 border border-slate-800 rounded-xl text-xs text-slate-400 flex items-center justify-between">
+                  <div className="p-3.5 bg-white/60 border border-gray-200 rounded-xl text-xs text-gray-500 flex items-center justify-between">
                     <span>Extracts text coordinates without uploading any file to external servers.</span>
                     <button
                       type="button"
                       onClick={() => handleExtractText(false)}
                       disabled={isProcessing}
-                      className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg flex items-center gap-1.5 transition-colors"
+                      className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg flex items-center gap-1.5 transition-colors"
                     >
                       {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
                       <span>{copied ? 'Copied' : 'Copy Text'}</span>
@@ -937,7 +937,7 @@ export const ConvertDialog: React.FC = () => {
                     addFiles(e.dataTransfer.files);
                   }
                 }}
-                className="border-2 border-dashed border-slate-700 hover:border-teal-500/50 bg-slate-800/40 p-4 rounded-xl flex items-center justify-center gap-2 cursor-pointer text-xs font-semibold text-slate-300 transition-all"
+                className="border-2 border-dashed border-gray-300 hover:border-teal-500/50 bg-gray-50 p-4 rounded-xl flex items-center justify-center gap-2 cursor-pointer text-xs font-semibold text-gray-700 transition-all"
               >
                 <Plus className="w-4 h-4 text-teal-400" />
                 <span>Select or Drop Images (JPG, PNG, WEBP, BMP, GIF)...</span>
@@ -952,18 +952,18 @@ export const ConvertDialog: React.FC = () => {
 
               <div className="space-y-1.5 max-h-48 overflow-y-auto">
                 {imageFiles.length === 0 ? (
-                  <p className="text-center text-slate-500 text-xs py-4">No images selected yet.</p>
+                  <p className="text-center text-gray-500 text-xs py-4">No images selected yet.</p>
                 ) : (
                   imageFiles.map((img, idx) => (
                     <div
                       key={idx}
-                      className="p-2 rounded-lg bg-slate-800/60 border border-slate-800 flex items-center justify-between text-xs"
+                      className="p-2 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-between text-xs"
                     >
                       <div className="flex items-center gap-2 truncate max-w-[320px]">
                         {img.previewUrl && (
                           <img src={img.previewUrl} alt="thumb" className="w-6 h-6 object-cover rounded" />
                         )}
-                        <span className="truncate text-slate-200">{img.name}</span>
+                        <span className="truncate text-gray-800">{img.name}</span>
                       </div>
                       <button
                         type="button"
@@ -971,7 +971,7 @@ export const ConvertDialog: React.FC = () => {
                           if (img.previewUrl) URL.revokeObjectURL(img.previewUrl);
                           setImageFiles((prev) => prev.filter((_, i) => i !== idx));
                         }}
-                        className="text-slate-500 hover:text-rose-400"
+                        className="text-gray-500 hover:text-rose-400"
                         title="Remove image"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -1001,7 +1001,7 @@ export const ConvertDialog: React.FC = () => {
                 }}
               />
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-slate-300">Document Title</label>
+                <label className="text-xs font-semibold text-gray-700">Document Title</label>
                 <button
                   type="button"
                   onClick={() => textFileInputRef.current?.click()}
@@ -1016,26 +1016,26 @@ export const ConvertDialog: React.FC = () => {
                 value={inputTitle}
                 onChange={(e) => setInputTitle(e.target.value)}
                 placeholder="Document Title"
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white"
               />
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-300">Text / Notes Content</label>
+                <label className="text-xs font-semibold text-gray-700">Text / Notes Content</label>
                 <textarea
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   placeholder="Type or paste your notes, essay, or text here..."
                   rows={8}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white font-mono focus:outline-none focus:border-teal-500"
+                  className="w-full bg-gray-100 border border-gray-300 rounded-xl p-3 text-xs text-white font-mono focus:outline-none focus:border-teal-500"
                 />
               </div>
             </div>
           )}
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
+        <div className="px-6 py-4 border-t border-gray-200 bg-white/60 flex justify-end gap-2">
           <button
             onClick={handleClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white"
           >
             Cancel
           </button>

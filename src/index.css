@@ -238,21 +238,25 @@ html.light .pdf-desk-bg {
    UNIVERSAL LIGHT THEME DIALOGS & MODALS
    Transforms every dialog popup into clean, professional white surface
    ========================================================================== */
-html.light [role="dialog"],
-html.light .fixed.inset-0 {
-  background-color: rgba(15, 23, 42, 0.45) !important;
+/* Modal Backdrop Overlay: soft translucent dark backdrop */
+html.light .fixed.inset-0.z-50,
+html.light .fixed.inset-0[aria-modal="true"] {
+  background-color: rgba(15, 23, 42, 0.5) !important;
   backdrop-filter: blur(4px) !important;
 }
 
+/* Modal Inner Card: Pure Opaque White */
 html.light [role="dialog"] > div,
+html.light [aria-modal="true"] > div,
 html.light .fixed.inset-0 > div.animate-scale-in,
 html.light .fixed.inset-0 > div[class*="rounded-2xl"],
+html.light .fixed.inset-0 > div[class*="rounded-none"],
 html.light [role="dialog"] [class*="bg-[#000000]"],
 html.light .fixed.inset-0 [class*="bg-[#000000]"] {
   background-color: #ffffff !important;
   border-color: #e2e8f0 !important;
   color: #0f172a !important;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2) !important;
 }
 
 /* Modal Inner Header & Footers */

@@ -501,29 +501,29 @@ export const HandwritingDialog: React.FC = () => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Handwriting Dialog">
-      <div className="relative w-full max-w-6xl max-h-[92vh] flex flex-col bg-black border border-slate-700/70 rounded-2xl shadow-2xl overflow-hidden text-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-gray-50/50 backdrop-blur-xs animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Handwriting Dialog">
+      <div className="relative w-full max-w-6xl max-h-[92vh] flex flex-col bg-white border border-gray-300/70 rounded-2xl shadow-2xl overflow-hidden text-gray-900">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-black/90 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white/90 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
               <PenTool className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-white">Handwriting & Assignment Generator</h2>
+                <h2 className="text-lg font-bold text-gray-900">Handwriting & Assignment Generator</h2>
                 <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
                   Student Favorite
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-gray-500">
                 Transform typed text into authentic handwritten notes on ruled, plain, or grid paper with camera scan shadows.
               </p>
             </div>
           </div>
           <button
             onClick={() => setActiveModal(null)}
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-2 text-gray-500 hover:text-white rounded-lg hover:bg-gray-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -536,7 +536,7 @@ export const HandwritingDialog: React.FC = () => {
             {/* Assignment Text Input */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <label className="text-xs font-semibold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5 text-amber-400" />
                   Assignment Content / Notes
                 </label>
@@ -551,7 +551,7 @@ export const HandwritingDialog: React.FC = () => {
                   <span className="text-slate-600">•</span>
                   <button
                     onClick={handleReset}
-                    className="text-xs text-slate-400 hover:text-rose-400 transition-colors flex items-center gap-1 font-medium"
+                    className="text-xs text-gray-500 hover:text-rose-400 transition-colors flex items-center gap-1 font-medium"
                   >
                     <RotateCcw className="w-3 h-3" />
                     Clear
@@ -563,7 +563,7 @@ export const HandwritingDialog: React.FC = () => {
                 onChange={(e) => setText(e.target.value)}
                 rows={9}
                 placeholder="Paste or type your assignment text, lab report, experiment, or essay here..."
-                className="w-full px-3.5 py-2.5 bg-black/70 border border-slate-700/80 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-amber-500 transition-colors placeholder:text-slate-500 font-mono resize-none"
+                className="w-full px-3.5 py-2.5 bg-white/70 border border-gray-300/80 rounded-xl text-gray-800 text-sm focus:outline-none focus:border-amber-500 transition-colors placeholder:text-gray-500 font-mono resize-none"
               />
             </div>
 
@@ -571,14 +571,14 @@ export const HandwritingDialog: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Font Selection */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                <label className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
                   <PenTool className="w-3.5 h-3.5 text-indigo-400" />
                   Handwriting Font
                 </label>
                 <select
                   value={selectedFont}
                   onChange={(e) => setSelectedFont(e.target.value)}
-                  className="w-full px-3 py-2 bg-black/70 border border-slate-700/80 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-amber-500 cursor-pointer"
+                  className="w-full px-3 py-2 bg-white/70 border border-gray-300/80 rounded-xl text-gray-800 text-sm focus:outline-none focus:border-amber-500 cursor-pointer"
                 >
                   {FONTS.map((f) => (
                     <option key={f.id} value={f.family}>
@@ -590,11 +590,11 @@ export const HandwritingDialog: React.FC = () => {
 
               {/* Paper Style */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                <label className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
                   <Layers className="w-3.5 h-3.5 text-teal-400" />
                   Paper Style
                 </label>
-                <div className="grid grid-cols-3 gap-1.5 p-1 bg-black/70 border border-slate-700/80 rounded-xl">
+                <div className="grid grid-cols-3 gap-1.5 p-1 bg-white/70 border border-gray-300/80 rounded-xl">
                   {(['ruled', 'plain', 'grid'] as const).map((type) => (
                     <button
                       key={type}
@@ -603,7 +603,7 @@ export const HandwritingDialog: React.FC = () => {
                       className={`py-1.5 text-xs font-semibold rounded-lg capitalize transition-all ${
                         paperType === type
                           ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                          : 'text-slate-400 hover:text-slate-200'
+                          : 'text-gray-500 hover:text-gray-800'
                       }`}
                     >
                       {type}
@@ -614,13 +614,13 @@ export const HandwritingDialog: React.FC = () => {
             </div>
 
             {/* Ink Color Picker */}
-            <div className="flex flex-col gap-2 p-3 bg-black/40 border border-slate-800 rounded-xl">
+            <div className="flex flex-col gap-2 p-3 bg-white/40 border border-gray-200 rounded-xl">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                <label className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
                   <Palette className="w-3.5 h-3.5 text-sky-400" />
                   Ink Color
                 </label>
-                <span className="text-xs font-mono text-slate-400 uppercase">{inkColor}</span>
+                <span className="text-xs font-mono text-gray-500 uppercase">{inkColor}</span>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
                 {INK_PRESETS.map((preset) => (
@@ -630,7 +630,7 @@ export const HandwritingDialog: React.FC = () => {
                     title={preset.name}
                     onClick={() => setInkColor(preset.color)}
                     className={`w-7 h-7 rounded-full border-2 transition-all flex items-center justify-center ${
-                      inkColor === preset.color ? 'border-amber-400 scale-110 shadow-lg' : 'border-slate-700 hover:border-slate-400'
+                      inkColor === preset.color ? 'border-amber-400 scale-110 shadow-lg' : 'border-gray-300 hover:border-slate-400'
                     }`}
                     style={{ backgroundColor: preset.color }}
                   >
@@ -638,12 +638,12 @@ export const HandwritingDialog: React.FC = () => {
                   </button>
                 ))}
                 <div className="flex items-center gap-1.5 ml-auto">
-                  <span className="text-[11px] text-slate-400">Custom:</span>
+                  <span className="text-[11px] text-gray-500">Custom:</span>
                   <input
                     type="color"
                     value={inkColor}
                     onChange={(e) => setInkColor(e.target.value)}
-                    className="w-7 h-7 rounded-lg cursor-pointer bg-transparent border border-slate-700"
+                    className="w-7 h-7 rounded-lg cursor-pointer bg-transparent border border-gray-300"
                   />
                 </div>
               </div>
@@ -652,8 +652,8 @@ export const HandwritingDialog: React.FC = () => {
             {/* Sliders: Size, Spacing, Scanner */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* Font Size */}
-              <div className="flex flex-col gap-1.5 p-2.5 bg-black/40 border border-slate-800 rounded-xl">
-                <div className="flex justify-between text-xs text-slate-300">
+              <div className="flex flex-col gap-1.5 p-2.5 bg-white/40 border border-gray-200 rounded-xl">
+                <div className="flex justify-between text-xs text-gray-700">
                   <span>Font Size</span>
                   <span className="font-mono text-amber-400">{fontSize}px</span>
                 </div>
@@ -668,8 +668,8 @@ export const HandwritingDialog: React.FC = () => {
               </div>
 
               {/* Line Spacing */}
-              <div className="flex flex-col gap-1.5 p-2.5 bg-black/40 border border-slate-800 rounded-xl">
-                <div className="flex justify-between text-xs text-slate-300">
+              <div className="flex flex-col gap-1.5 p-2.5 bg-white/40 border border-gray-200 rounded-xl">
+                <div className="flex justify-between text-xs text-gray-700">
                   <span>Line Height</span>
                   <span className="font-mono text-amber-400">{lineHeight}px</span>
                 </div>
@@ -684,8 +684,8 @@ export const HandwritingDialog: React.FC = () => {
               </div>
 
               {/* Scanner Shadow */}
-              <div className="flex flex-col gap-1.5 p-2.5 bg-black/40 border border-slate-800 rounded-xl">
-                <div className="flex justify-between text-xs text-slate-300">
+              <div className="flex flex-col gap-1.5 p-2.5 bg-white/40 border border-gray-200 rounded-xl">
+                <div className="flex justify-between text-xs text-gray-700">
                   <span>Scan Shadow</span>
                   <span className="font-mono text-amber-400">{scannerEffect}%</span>
                 </div>
@@ -724,7 +724,7 @@ export const HandwritingDialog: React.FC = () => {
 
               {/* Generation Progress Bar */}
               {isGenerating && (
-                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
                   <div
                     className="bg-amber-400 h-full transition-all duration-300"
                     style={{ width: `${progressPercent}%` }}
@@ -738,7 +738,7 @@ export const HandwritingDialog: React.FC = () => {
                   <div className="flex items-center gap-2.5">
                     <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
                     <div>
-                      <div className="text-sm font-bold text-white">Assignment PDF Generated!</div>
+                      <div className="text-sm font-bold text-gray-900">Assignment PDF Generated!</div>
                       <div className="text-xs text-emerald-400/90">{generatedInfo}</div>
                     </div>
                   </div>
@@ -756,8 +756,8 @@ export const HandwritingDialog: React.FC = () => {
 
           {/* Right Column: Live Responsive Canvas Preview */}
           <div className="lg:col-span-6 flex flex-col gap-3">
-            <div className="flex items-center justify-between bg-black/40 px-3 py-2 rounded-xl border border-slate-800">
-              <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+            <div className="flex items-center justify-between bg-white/40 px-3 py-2 rounded-xl border border-gray-200">
+              <span className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 Live Page Preview
               </span>
@@ -766,19 +766,19 @@ export const HandwritingDialog: React.FC = () => {
                   type="button"
                   disabled={currentPage <= 1}
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  className="p-1 text-slate-400 hover:text-white disabled:opacity-30 rounded hover:bg-slate-800 transition-colors"
+                  className="p-1 text-gray-500 hover:text-white disabled:opacity-30 rounded hover:bg-gray-100 transition-colors"
                   title="Previous Page"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <span className="text-xs font-mono font-semibold text-slate-300">
+                <span className="text-xs font-mono font-semibold text-gray-700">
                   Page {currentPage} of {totalPages}
                 </span>
                 <button
                   type="button"
                   disabled={currentPage >= totalPages}
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  className="p-1 text-slate-400 hover:text-white disabled:opacity-30 rounded hover:bg-slate-800 transition-colors"
+                  className="p-1 text-gray-500 hover:text-white disabled:opacity-30 rounded hover:bg-gray-100 transition-colors"
                   title="Next Page"
                 >
                   <ChevronRight className="w-4 h-4" />
@@ -787,8 +787,8 @@ export const HandwritingDialog: React.FC = () => {
             </div>
 
             {/* Canvas Page Container */}
-            <div className="relative w-full max-h-[520px] bg-black/80 border border-slate-800 rounded-2xl p-4 flex items-center justify-center overflow-auto shadow-inner">
-              <div className="max-w-[360px] sm:max-w-[420px] w-full rounded-xl overflow-hidden shadow-2xl border border-slate-700/50 bg-[#faf9f5]">
+            <div className="relative w-full max-h-[520px] bg-white/80 border border-gray-200 rounded-2xl p-4 flex items-center justify-center overflow-auto shadow-inner">
+              <div className="max-w-[360px] sm:max-w-[420px] w-full rounded-xl overflow-hidden shadow-2xl border border-gray-300/50 bg-[#faf9f5]">
                 <canvas
                   ref={canvasRef}
                   width={1240}
@@ -797,7 +797,7 @@ export const HandwritingDialog: React.FC = () => {
                 />
               </div>
             </div>
-            <p className="text-[11px] text-center text-slate-500">
+            <p className="text-[11px] text-center text-gray-500">
               High-resolution 1240 × 1754 A4 rendering • Word-level natural jitter and camera scanner shadows applied
             </p>
           </div>

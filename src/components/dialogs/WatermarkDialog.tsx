@@ -158,22 +158,22 @@ export const WatermarkDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Watermark Dialog">
-      <div className="w-full max-w-md bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+    <div className="fixed inset-0 z-50 bg-gray-50/50 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Watermark Dialog">
+      <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-rose-500/10 text-rose-400">
               <Stamp className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Document Watermark</h3>
-              <p className="text-xs text-slate-400">Stamp confidential text or logos across pages</p>
+              <h3 className="text-base font-bold text-gray-900">Document Watermark</h3>
+              <p className="text-xs text-gray-500">Stamp confidential text or logos across pages</p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
           >
             <X className="w-4 h-4" />
           </button>
@@ -189,14 +189,14 @@ export const WatermarkDialog: React.FC = () => {
         ) : (
           <>
             {/* Mode Switcher */}
-            <div className="flex border-b border-slate-800 bg-[#000000]/40 px-6 pt-2 gap-2 text-xs">
+            <div className="flex border-b border-gray-200 bg-white/40 px-6 pt-2 gap-2 text-xs">
               <button
                 type="button"
                 onClick={() => setMode('text')}
                 className={`pb-2 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
                   mode === 'text'
                     ? 'border-rose-500 text-rose-400'
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                    : 'border-transparent text-gray-500 hover:text-gray-800'
                 }`}
               >
                 <Type className="w-3.5 h-3.5" />
@@ -208,7 +208,7 @@ export const WatermarkDialog: React.FC = () => {
                 className={`pb-2 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
                   mode === 'image'
                     ? 'border-rose-500 text-rose-400'
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                    : 'border-transparent text-gray-500 hover:text-gray-800'
                 }`}
               >
                 <ImageIcon className="w-3.5 h-3.5" />
@@ -222,7 +222,7 @@ export const WatermarkDialog: React.FC = () => {
                 <>
                   {/* Presets */}
                   <div>
-                    <label className="font-semibold text-slate-300 block mb-1.5">Preset Text</label>
+                    <label className="font-semibold text-gray-700 block mb-1.5">Preset Text</label>
                     <div className="flex flex-wrap gap-1.5">
                       {presets.map((p) => (
                         <button
@@ -232,7 +232,7 @@ export const WatermarkDialog: React.FC = () => {
                           className={`px-2.5 py-1 rounded-lg border font-semibold text-[11px] transition-colors ${
                             text === p
                               ? 'bg-rose-500/20 border-rose-500 text-rose-300'
-                              : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200'
+                              : 'bg-gray-50 border-gray-300 text-gray-500 hover:text-gray-800'
                           }`}
                         >
                           {p}
@@ -243,20 +243,20 @@ export const WatermarkDialog: React.FC = () => {
 
                   {/* Custom Text Input */}
                   <div>
-                    <label className="font-semibold text-slate-300 block mb-1">Watermark Text</label>
+                    <label className="font-semibold text-gray-700 block mb-1">Watermark Text</label>
                     <input
                       type="text"
                       value={text}
                       onChange={(e) => setText(e.target.value)}
                       placeholder="e.g. CONFIDENTIAL"
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold focus:border-rose-500 outline-none"
+                      className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-white font-bold focus:border-rose-500 outline-none"
                     />
                   </div>
 
                   {/* Color & Font Size */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="font-semibold text-slate-300 block mb-1.5">Color</label>
+                      <label className="font-semibold text-gray-700 block mb-1.5">Color</label>
                       <div className="flex gap-2 items-center">
                         {colors.map((c) => (
                           <button
@@ -274,8 +274,8 @@ export const WatermarkDialog: React.FC = () => {
 
                     <div>
                       <div className="flex justify-between mb-1">
-                        <span className="font-semibold text-slate-300">Font Size</span>
-                        <span className="text-slate-400 font-mono">{fontSize}pt</span>
+                        <span className="font-semibold text-gray-700">Font Size</span>
+                        <span className="text-gray-500 font-mono">{fontSize}pt</span>
                       </div>
                       <input
                         type="range"
@@ -293,7 +293,7 @@ export const WatermarkDialog: React.FC = () => {
                 <>
                   {/* Logo Image Upload */}
                   <div>
-                    <label className="font-semibold text-slate-300 block mb-1.5">Logo or Stamp Graphic</label>
+                    <label className="font-semibold text-gray-700 block mb-1.5">Logo or Stamp Graphic</label>
                     <input
                       ref={logoInputRef}
                       type="file"
@@ -304,17 +304,17 @@ export const WatermarkDialog: React.FC = () => {
                     {!logoDataUrl ? (
                       <div
                         onClick={() => logoInputRef.current?.click()}
-                        className="border-2 border-dashed border-slate-700 hover:border-rose-500/50 bg-slate-800/40 p-6 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all"
+                        className="border-2 border-dashed border-gray-300 hover:border-rose-500/50 bg-gray-50 p-6 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all"
                       >
                         <Upload className="w-5 h-5 text-rose-400" />
-                        <span className="text-xs font-semibold text-slate-300">Choose PNG / JPG Logo...</span>
-                        <span className="text-[11px] text-slate-500">Transparent PNG recommended</span>
+                        <span className="text-xs font-semibold text-gray-700">Choose PNG / JPG Logo...</span>
+                        <span className="text-[11px] text-gray-500">Transparent PNG recommended</span>
                       </div>
                     ) : (
-                      <div className="border border-slate-700 bg-[#000000] rounded-xl p-3 flex items-center justify-between">
+                      <div className="border border-gray-300 bg-white rounded-xl p-3 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <img src={logoDataUrl} alt="Logo" className="max-h-12 max-w-[120px] object-contain rounded" />
-                          <span className="text-xs text-slate-300 font-medium">Logo selected</span>
+                          <span className="text-xs text-gray-700 font-medium">Logo selected</span>
                         </div>
                         <button
                           type="button"
@@ -322,7 +322,7 @@ export const WatermarkDialog: React.FC = () => {
                             setLogoDataUrl(null);
                             if (logoInputRef.current) logoInputRef.current.value = '';
                           }}
-                          className="p-1 text-slate-500 hover:text-rose-400 transition-colors"
+                          className="p-1 text-gray-500 hover:text-rose-400 transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -333,8 +333,8 @@ export const WatermarkDialog: React.FC = () => {
                   {/* Logo Width */}
                   <div>
                     <div className="flex justify-between mb-1">
-                      <span className="font-semibold text-slate-300">Logo Size</span>
-                      <span className="text-slate-400 font-mono">{logoWidth}px</span>
+                      <span className="font-semibold text-gray-700">Logo Size</span>
+                      <span className="text-gray-500 font-mono">{logoWidth}px</span>
                     </div>
                     <input
                       type="range"
@@ -353,8 +353,8 @@ export const WatermarkDialog: React.FC = () => {
               <div className="grid grid-cols-2 gap-4 pt-1">
                 <div>
                   <div className="flex justify-between mb-1">
-                    <span className="font-semibold text-slate-300">Opacity</span>
-                    <span className="text-slate-400 font-mono">{Math.round(opacity * 100)}%</span>
+                    <span className="font-semibold text-gray-700">Opacity</span>
+                    <span className="text-gray-500 font-mono">{Math.round(opacity * 100)}%</span>
                   </div>
                   <input
                     type="range"
@@ -368,11 +368,11 @@ export const WatermarkDialog: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-semibold text-slate-300 block mb-1">Rotation</label>
+                  <label className="font-semibold text-gray-700 block mb-1">Rotation</label>
                   <select
                     value={rotation}
                     onChange={(e) => setRotation(parseInt(e.target.value))}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-1.5 text-white"
+                    className="w-full bg-gray-100 border border-gray-300 rounded-xl px-2.5 py-1.5 text-white"
                   >
                     <option value={45}>45° (Diagonal)</option>
                     <option value={0}>0° (Horizontal)</option>
@@ -383,8 +383,8 @@ export const WatermarkDialog: React.FC = () => {
               </div>
 
               {/* Page Range & Cover Page Skip */}
-              <div className="pt-2 border-t border-slate-800">
-                <label className="font-semibold text-slate-300 block mb-1.5">Apply Scope</label>
+              <div className="pt-2 border-t border-gray-200">
+                <label className="font-semibold text-gray-700 block mb-1.5">Apply Scope</label>
                 <div className="grid grid-cols-3 gap-1.5 mb-2">
                   <button
                     type="button"
@@ -392,7 +392,7 @@ export const WatermarkDialog: React.FC = () => {
                     className={`py-1.5 px-2 rounded-lg border text-center font-medium transition-colors ${
                       scope === 'all'
                         ? 'border-rose-500 bg-rose-500/15 text-rose-300'
-                        : 'border-slate-800 bg-slate-800/40 text-slate-400'
+                        : 'border-gray-200 bg-gray-50 text-gray-500'
                     }`}
                   >
                     All ({pageCount})
@@ -403,7 +403,7 @@ export const WatermarkDialog: React.FC = () => {
                     className={`py-1.5 px-2 rounded-lg border text-center font-medium transition-colors ${
                       scope === 'current'
                         ? 'border-rose-500 bg-rose-500/15 text-rose-300'
-                        : 'border-slate-800 bg-slate-800/40 text-slate-400'
+                        : 'border-gray-200 bg-gray-50 text-gray-500'
                     }`}
                   >
                     Page {currentPage}
@@ -414,7 +414,7 @@ export const WatermarkDialog: React.FC = () => {
                     className={`py-1.5 px-2 rounded-lg border text-center font-medium transition-colors ${
                       scope === 'custom'
                         ? 'border-rose-500 bg-rose-500/15 text-rose-300'
-                        : 'border-slate-800 bg-slate-800/40 text-slate-400'
+                        : 'border-gray-200 bg-gray-50 text-gray-500'
                     }`}
                   >
                     Custom
@@ -427,16 +427,16 @@ export const WatermarkDialog: React.FC = () => {
                     value={customRange}
                     onChange={(e) => setCustomRange(e.target.value)}
                     placeholder="e.g. 1-3, 5, 8-end"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-white mb-2"
+                    className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-1.5 text-white mb-2"
                   />
                 )}
 
-                <label className="flex items-center gap-2 text-slate-300 cursor-pointer pt-1">
+                <label className="flex items-center gap-2 text-gray-700 cursor-pointer pt-1">
                   <input
                     type="checkbox"
                     checked={skipCoverPage}
                     onChange={(e) => setSkipCoverPage(e.target.checked)}
-                    className="rounded text-rose-500 bg-slate-800 border-slate-700 focus:ring-0"
+                    className="rounded text-rose-500 bg-gray-100 border-gray-300 focus:ring-0"
                   />
                   <span>Skip first page (e.g. Cover Page)</span>
                 </label>
@@ -444,10 +444,10 @@ export const WatermarkDialog: React.FC = () => {
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
+            <div className="px-6 py-4 border-t border-gray-200 bg-white/60 flex justify-end gap-2">
               <button
                 onClick={handleClose}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white"
               >
                 Cancel
               </button>

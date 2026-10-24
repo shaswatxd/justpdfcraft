@@ -120,11 +120,11 @@ export const MobileEditorToolbar: React.FC = () => {
       {/* 1. Mobile Tool Property Drawer (Color & Stroke Options for Pen/Text/Highlighter) */}
       {showOptions && isAnnotationTool && (
         <div
-          className="md:hidden fixed left-3 right-3 z-40 bg-zinc-950/95 backdrop-blur-2xl border border-zinc-800 rounded-2xl p-3 shadow-2xl animate-in slide-in-from-bottom-2 fade-in duration-150"
+          className="md:hidden fixed left-3 right-3 z-40 bg-white/95 backdrop-blur-2xl border border-gray-200 rounded-2xl p-3 shadow-2xl animate-in slide-in-from-bottom-2 fade-in duration-150"
           style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 108px)' }}
         >
-          <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-zinc-800/80">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+          <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-gray-100">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
               {currentTool === 'draw'
                 ? 'Pen Settings'
                 : currentTool === 'highlight'
@@ -133,7 +133,7 @@ export const MobileEditorToolbar: React.FC = () => {
             </span>
             <button
               onClick={() => setShowOptions(false)}
-              className="p-1 rounded-lg hover:bg-zinc-800 text-gray-500 hover:text-gray-900"
+              className="p-1 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -150,7 +150,7 @@ export const MobileEditorToolbar: React.FC = () => {
                   className={`w-7 h-7 rounded-full border-2 transition-transform flex items-center justify-center ${
                     isSelected
                       ? 'scale-110 border-white shadow-md'
-                      : 'border-zinc-700/60 hover:scale-105'
+                      : 'border-gray-300 hover:scale-105'
                   }`}
                   style={{ backgroundColor: c }}
                   title={c}
@@ -168,8 +168,8 @@ export const MobileEditorToolbar: React.FC = () => {
           </div>
 
           {/* Stroke Width Buttons */}
-          <div className="flex items-center justify-between gap-1.5 pt-1 border-t border-zinc-800/60">
-            <span className="text-[10px] text-gray-400 font-medium">Thickness</span>
+          <div className="flex items-center justify-between gap-1.5 pt-1 border-t border-gray-100">
+            <span className="text-[10px] text-gray-500 font-medium">Thickness</span>
             <div className="flex items-center gap-2">
               {STROKE_SIZES.map((sz) => (
                 <button
@@ -177,8 +177,8 @@ export const MobileEditorToolbar: React.FC = () => {
                   onClick={() => setStrokeWidth(sz)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-mono font-medium border transition-all ${
                     strokeWidth === sz
-                      ? 'bg-blue-600 border-blue-500 text-white'
-                      : 'bg-zinc-900 border-zinc-800 text-gray-500 hover:text-gray-900'
+                      ? 'bg-red-600 border-red-600 text-white'
+                      : 'bg-gray-100 border-gray-200 text-gray-600 hover:text-gray-900 hover:bg-gray-200'
                   }`}
                 >
                   {sz}px
@@ -207,7 +207,7 @@ export const MobileEditorToolbar: React.FC = () => {
           </button>
           <button
             onClick={toggleSidebar}
-            className="text-[11px] font-mono font-semibold text-gray-800 px-1.5 py-1.5 rounded-md hover:bg-zinc-800 hover:text-red-600 min-w-[48px] min-h-[36px] inline-flex items-center justify-center text-center transition-colors"
+            className="text-[11px] font-mono font-semibold text-gray-800 px-1.5 py-1.5 rounded-md hover:bg-gray-100 hover:text-red-600 min-w-[48px] min-h-[36px] inline-flex items-center justify-center text-center transition-colors"
             title="Open Page Thumbnails"
           >
             {currentPage} <span className="text-gray-400">/</span> {pageCount}
@@ -239,7 +239,7 @@ export const MobileEditorToolbar: React.FC = () => {
                 setZoom(Math.min(1.0, Math.max(0.45, Number(fitW.toFixed(2)))));
               }
             }}
-            className="text-[10px] font-mono text-zinc-300 px-1 py-2 hover:text-white"
+            className="text-[10px] font-mono text-gray-700 px-1 py-2 hover:text-gray-900"
             title="Reset Zoom to Fit Width"
           >
             {Math.round(zoom * 100)}%
@@ -391,20 +391,20 @@ export const MobileEditorToolbar: React.FC = () => {
 
       {/* 4. More PDF Tools Bottom Sheet for Mobile */}
       {showMoreToolsSheet && (
-        <div className="md:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col justify-end animate-in fade-in duration-150">
+        <div className="md:hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex flex-col justify-end animate-in fade-in duration-150">
           <div
-            className="w-full bg-zinc-950 border-t border-zinc-800 rounded-t-3xl p-5 max-h-[80dvh] overflow-y-auto space-y-4 animate-in slide-in-from-bottom duration-200"
+            className="w-full bg-white border-t border-gray-200 rounded-t-3xl p-5 max-h-[80dvh] overflow-y-auto space-y-4 animate-in slide-in-from-bottom duration-200 shadow-2xl"
             role="dialog"
             aria-label="More PDF Tools"
           >
-            <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
               <div>
-                <h3 className="text-base font-bold text-white">Document Utilities</h3>
-                <p className="text-xs text-zinc-400">100% private in-browser processing</p>
+                <h3 className="text-base font-bold text-gray-900">Document Utilities</h3>
+                <p className="text-xs text-gray-500">100% private in-browser processing</p>
               </div>
               <button
                 onClick={() => setShowMoreToolsSheet(false)}
-                className="p-1.5 rounded-xl bg-zinc-900 text-gray-500 hover:text-gray-900"
+                className="p-1.5 rounded-xl bg-gray-100 text-gray-500 hover:text-gray-900"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -429,14 +429,14 @@ export const MobileEditorToolbar: React.FC = () => {
                       setShowMoreToolsSheet(false);
                       setActiveModal(item.id as any);
                     }}
-                    className="p-3 rounded-2xl bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 text-left transition-all active:scale-95 flex flex-col justify-between space-y-2"
+                    className="p-3 rounded-2xl bg-gray-50 border border-gray-200 hover:border-red-300 hover:bg-white text-left transition-all active:scale-95 flex flex-col justify-between space-y-2 group shadow-xs"
                   >
-                    <div className="w-8 h-8 rounded-xl bg-zinc-800/80 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-xl bg-white border border-gray-200/60 flex items-center justify-center group-hover:scale-105 transition-transform">
                       <Icon className={`w-4 h-4 ${item.color}`} />
                     </div>
                     <div>
-                      <div className="text-xs font-semibold text-white">{item.label}</div>
-                      <div className="text-[10px] text-zinc-400 mt-0.5">{item.desc}</div>
+                      <div className="text-xs font-semibold text-gray-900">{item.label}</div>
+                      <div className="text-[10px] text-gray-500 mt-0.5">{item.desc}</div>
                     </div>
                   </button>
                 );

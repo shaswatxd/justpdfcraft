@@ -132,22 +132,22 @@ export const SplitDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Split Dialog">
-      <div className="w-full max-w-md bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+    <div className="fixed inset-0 z-50 bg-gray-50/50 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Split Dialog">
+      <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400">
               <Scissors className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Split PDF</h3>
-              <p className="text-xs text-slate-400">Extract pages or split into multiple PDF files</p>
+              <h3 className="text-base font-bold text-gray-900">Split PDF</h3>
+              <p className="text-xs text-gray-500">Extract pages or split into multiple PDF files</p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
           >
             <X className="w-4 h-4" />
           </button>
@@ -165,19 +165,19 @@ export const SplitDialog: React.FC = () => {
             {/* Content */}
             <div className="p-6 space-y-4">
               {/* Document Header Pill */}
-              <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-xl flex items-center justify-between text-xs">
+              <div className="p-3 bg-gray-50/90 border border-gray-200 rounded-xl flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2 truncate min-w-0 mr-2">
                   <FileText className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span className="font-medium text-slate-200 truncate">{fileName || 'Document.pdf'}</span>
+                  <span className="font-medium text-gray-800 truncate">{fileName || 'Document.pdf'}</span>
                 </div>
-                <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 font-mono text-[11px] shrink-0">
+                <span className="px-2 py-0.5 rounded-md bg-gray-100 text-gray-500 font-mono text-[11px] shrink-0">
                   {pageCount} {pageCount === 1 ? 'page' : 'pages'}
                 </span>
               </div>
 
               {/* Visual Split Alternative */}
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs">
-                <span className="text-slate-400 text-[11px]">Want to preview pages visually?</span>
+                <span className="text-gray-500 text-[11px]">Want to preview pages visually?</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -193,7 +193,7 @@ export const SplitDialog: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-slate-300">Split Mode</label>
+                <label className="text-xs font-semibold text-gray-700">Split Mode</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
@@ -201,7 +201,7 @@ export const SplitDialog: React.FC = () => {
                     className={`p-2.5 rounded-xl border text-xs font-medium transition-all ${
                       splitMode === 'ranges'
                         ? 'bg-amber-500/10 border-amber-500/80 text-white'
-                        : 'bg-slate-800/40 border-slate-800 text-slate-400'
+                        : 'bg-gray-50 border-gray-200 text-gray-500'
                     }`}
                   >
                     Custom Ranges
@@ -212,7 +212,7 @@ export const SplitDialog: React.FC = () => {
                     className={`p-2.5 rounded-xl border text-xs font-medium transition-all ${
                       splitMode === 'individual'
                         ? 'bg-amber-500/10 border-amber-500/80 text-white'
-                        : 'bg-slate-800/40 border-slate-800 text-slate-400'
+                        : 'bg-gray-50 border-gray-200 text-gray-500'
                     }`}
                   >
                     Every Single Page
@@ -222,15 +222,15 @@ export const SplitDialog: React.FC = () => {
 
               {splitMode === 'ranges' && (
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-300">Enter Page Ranges</label>
+                  <label className="text-xs font-semibold text-gray-700">Enter Page Ranges</label>
                   <input
                     type="text"
                     value={rangeInput}
                     onChange={(e) => setRangeInput(e.target.value)}
                     placeholder="e.g. 1-2, 3-5"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                    className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white"
                   />
-                  <p className="text-[10px] text-slate-400">
+                  <p className="text-[10px] text-gray-500">
                     Document contains {pageCount} pages. Each comma-separated range creates a new PDF.
                   </p>
                 </div>
@@ -238,10 +238,10 @@ export const SplitDialog: React.FC = () => {
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
+            <div className="px-6 py-4 border-t border-gray-200 bg-white/60 flex justify-end gap-2">
               <button
                 onClick={handleClose}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white"
               >
                 Cancel
               </button>

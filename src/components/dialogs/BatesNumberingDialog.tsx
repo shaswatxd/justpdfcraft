@@ -187,26 +187,26 @@ export const BatesNumberingDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Bates Numbering Dialog">
-      <div className="w-full max-w-xl bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+    <div className="fixed inset-0 z-50 bg-gray-50/50 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Bates Numbering Dialog">
+      <div className="w-full max-w-xl bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-swift-500/10 text-swift-400">
               <Hash className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">
+              <h3 className="text-base font-bold text-gray-900">
                 {activeModal === 'page-number' ? 'Add Page Numbers & Headers' : 'Bates Numbering & Header/Footer'}
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-gray-500">
                 Compliance sequential numbering, dynamic headers, and page counters
               </p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
           >
             <X className="w-4 h-4" />
           </button>
@@ -222,7 +222,7 @@ export const BatesNumberingDialog: React.FC = () => {
         ) : (
           <>
             {/* Tab Selection */}
-            <div className="flex border-b border-slate-800 bg-[#000000]/40 px-6">
+            <div className="flex border-b border-gray-200 bg-white/40 px-6">
           <button
             type="button"
             onClick={() => {
@@ -232,7 +232,7 @@ export const BatesNumberingDialog: React.FC = () => {
             className={`py-3 px-4 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${
               mode === 'bates'
                 ? 'border-swift-500 text-swift-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
             <Hash className="w-3.5 h-3.5" />
@@ -247,7 +247,7 @@ export const BatesNumberingDialog: React.FC = () => {
             className={`py-3 px-4 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${
               mode === 'headerfooter'
                 ? 'border-swift-500 text-swift-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
@@ -259,85 +259,85 @@ export const BatesNumberingDialog: React.FC = () => {
         <div className="p-6 space-y-4 text-xs max-h-[65vh] overflow-y-auto">
           {/* Mode-specific Fields */}
           {mode === 'bates' ? (
-            <div className="grid grid-cols-2 gap-3 bg-slate-800/40 p-3.5 rounded-xl border border-slate-800">
+            <div className="grid grid-cols-2 gap-3 bg-gray-50 p-3.5 rounded-xl border border-gray-200">
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Prefix</label>
+                <label className="font-semibold text-gray-700 block mb-1">Prefix</label>
                 <input
                   type="text"
                   value={prefix}
                   onChange={(e) => setPrefix(e.target.value)}
                   placeholder="e.g. CASE-, EXHIBIT-"
-                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-gray-800 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
                 />
               </div>
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Suffix</label>
+                <label className="font-semibold text-gray-700 block mb-1">Suffix</label>
                 <input
                   type="text"
                   value={suffix}
                   onChange={(e) => setSuffix(e.target.value)}
                   placeholder="e.g. -CONF, -PROD"
-                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-gray-800 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
                 />
               </div>
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Start Number</label>
+                <label className="font-semibold text-gray-700 block mb-1">Start Number</label>
                 <input
                   type="number"
                   min={1}
                   value={startNumber}
                   onChange={(e) => setStartNumber(Math.max(1, parseInt(e.target.value, 10) || 1))}
-                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-gray-800 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
                 />
               </div>
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Zero Padding (Digits)</label>
+                <label className="font-semibold text-gray-700 block mb-1">Zero Padding (Digits)</label>
                 <input
                   type="number"
                   min={1}
                   max={12}
                   value={digitsCount}
                   onChange={(e) => setDigitsCount(Math.max(1, parseInt(e.target.value, 10) || 6))}
-                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-gray-800 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
                 />
               </div>
             </div>
           ) : (
-            <div className="space-y-3 bg-slate-800/40 p-3.5 rounded-xl border border-slate-800">
+            <div className="space-y-3 bg-gray-50 p-3.5 rounded-xl border border-gray-200">
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Header / Footer Text</label>
+                <label className="font-semibold text-gray-700 block mb-1">Header / Footer Text</label>
                 <input
                   type="text"
                   value={hfTemplate}
                   onChange={(e) => setHfTemplate(e.target.value)}
                   placeholder="e.g. Page {page} of {totalPages}"
-                  className="w-full bg-[#000000] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-gray-800 text-xs focus:ring-1 focus:ring-swift-500 outline-none"
                 />
               </div>
 
               <div>
-                <label className="font-medium text-slate-400 block mb-1 text-[11px]">
+                <label className="font-medium text-gray-500 block mb-1 text-[11px]">
                   Dynamic Macros (Click to insert):
                 </label>
                 <div className="flex flex-wrap gap-1.5">
                   <button
                     type="button"
                     onClick={() => setHfTemplate((t) => `${t} {page}`)}
-                    className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-swift-400 border border-slate-700 rounded text-[11px] font-mono"
+                    className="px-2 py-0.5 bg-gray-100 hover:bg-gray-200 text-swift-400 border border-gray-300 rounded text-[11px] font-mono"
                   >
                     + {'{page}'}
                   </button>
                   <button
                     type="button"
                     onClick={() => setHfTemplate((t) => `${t} {totalPages}`)}
-                    className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-swift-400 border border-slate-700 rounded text-[11px] font-mono"
+                    className="px-2 py-0.5 bg-gray-100 hover:bg-gray-200 text-swift-400 border border-gray-300 rounded text-[11px] font-mono"
                   >
                     + {'{totalPages}'}
                   </button>
                   <button
                     type="button"
                     onClick={() => setHfTemplate((t) => `${t} {date}`)}
-                    className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-swift-400 border border-slate-700 rounded text-[11px] font-mono"
+                    className="px-2 py-0.5 bg-gray-100 hover:bg-gray-200 text-swift-400 border border-gray-300 rounded text-[11px] font-mono"
                   >
                     + {'{date}'}
                   </button>
@@ -345,7 +345,7 @@ export const BatesNumberingDialog: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-medium text-slate-400 block mb-1 text-[11px]">Presets:</label>
+                <label className="font-medium text-gray-500 block mb-1 text-[11px]">Presets:</label>
                 <div className="flex flex-wrap gap-1.5">
                   {presets.map((p) => (
                     <button
@@ -354,8 +354,8 @@ export const BatesNumberingDialog: React.FC = () => {
                       onClick={() => setHfTemplate(p)}
                       className={`px-2 py-1 rounded border text-[11px] font-medium transition-colors ${
                         hfTemplate === p
-                          ? 'bg-swift-600/30 border-swift-500 text-swift-300'
-                          : 'bg-[#000000]/60 border-slate-700 text-slate-400 hover:text-slate-200'
+                          ? 'bg-red-600/30 border-swift-500 text-swift-300'
+                          : 'bg-white/60 border-gray-300 text-gray-500 hover:text-gray-800'
                       }`}
                     >
                       {p}
@@ -368,10 +368,10 @@ export const BatesNumberingDialog: React.FC = () => {
 
           {/* Placement Position Grid */}
           <div>
-            <label className="font-semibold text-slate-300 block mb-1.5">
+            <label className="font-semibold text-gray-700 block mb-1.5">
               Placement Position (6 Quadrants)
             </label>
-            <div className="grid grid-cols-3 gap-2 bg-[#000000]/60 p-3 rounded-xl border border-slate-800">
+            <div className="grid grid-cols-3 gap-2 bg-white/60 p-3 rounded-xl border border-gray-200">
               {positions.map((pos) => {
                 const isSelected = position === pos.id;
                 return (
@@ -381,8 +381,8 @@ export const BatesNumberingDialog: React.FC = () => {
                     onClick={() => setPosition(pos.id)}
                     className={`py-2 px-2.5 rounded-lg border text-center font-medium text-[11px] transition-all flex items-center justify-center gap-1.5 ${
                       isSelected
-                        ? 'bg-swift-600 text-white border-swift-500 shadow-md ring-1 ring-swift-400'
-                        : 'bg-[#000000] border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                        ? 'bg-red-600 text-white border-swift-500 shadow-md ring-1 ring-swift-400'
+                        : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-100 hover:text-gray-800'
                     }`}
                   >
                     {isSelected && <Check className="w-3 h-3" />}
@@ -396,11 +396,11 @@ export const BatesNumberingDialog: React.FC = () => {
           {/* Font & Color Styling */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="font-semibold text-slate-300 block mb-1">Font Family</label>
+              <label className="font-semibold text-gray-700 block mb-1">Font Family</label>
               <select
                 value={fontFamily}
                 onChange={(e) => setFontFamily(e.target.value as any)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 text-xs outline-none"
+                className="w-full bg-gray-100 border border-gray-300 rounded-lg px-2 py-1.5 text-gray-800 text-xs outline-none"
               >
                 <option value="Helvetica">Helvetica (Sans)</option>
                 <option value="TimesRoman">Times Roman (Serif)</option>
@@ -408,11 +408,11 @@ export const BatesNumberingDialog: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="font-semibold text-slate-300 block mb-1">Font Size</label>
+              <label className="font-semibold text-gray-700 block mb-1">Font Size</label>
               <select
                 value={fontSize}
                 onChange={(e) => setFontSize(parseInt(e.target.value, 10))}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 text-xs outline-none"
+                className="w-full bg-gray-100 border border-gray-300 rounded-lg px-2 py-1.5 text-gray-800 text-xs outline-none"
               >
                 <option value="8">8 pt</option>
                 <option value="9">9 pt</option>
@@ -423,11 +423,11 @@ export const BatesNumberingDialog: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="font-semibold text-slate-300 block mb-1">Margin</label>
+              <label className="font-semibold text-gray-700 block mb-1">Margin</label>
               <select
                 value={margin}
                 onChange={(e) => setMargin(parseInt(e.target.value, 10))}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 text-xs outline-none"
+                className="w-full bg-gray-100 border border-gray-300 rounded-lg px-2 py-1.5 text-gray-800 text-xs outline-none"
               >
                 <option value="16">16 pt (Compact)</option>
                 <option value="20">20 pt (Standard)</option>
@@ -439,7 +439,7 @@ export const BatesNumberingDialog: React.FC = () => {
 
           {/* Color Presets */}
           <div>
-            <label className="font-semibold text-slate-300 block mb-1.5">Color</label>
+            <label className="font-semibold text-gray-700 block mb-1.5">Color</label>
             <div className="flex items-center gap-2">
               {colors.map((c) => (
                 <button
@@ -447,7 +447,7 @@ export const BatesNumberingDialog: React.FC = () => {
                   type="button"
                   onClick={() => setColor(c.hex)}
                   className={`w-6 h-6 rounded-full border transition-all flex items-center justify-center ${
-                    color === c.hex ? 'scale-125 border-white shadow' : 'border-slate-700 hover:scale-110'
+                    color === c.hex ? 'scale-125 border-white shadow' : 'border-gray-300 hover:scale-110'
                   }`}
                   style={{ backgroundColor: c.hex }}
                   title={c.label}
@@ -462,15 +462,15 @@ export const BatesNumberingDialog: React.FC = () => {
 
           {/* Page Scope */}
           <div>
-            <label className="font-semibold text-slate-300 block mb-1.5">Page Range</label>
+            <label className="font-semibold text-gray-700 block mb-1.5">Page Range</label>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setPageScope('all')}
                 className={`flex-1 py-1.5 rounded-lg border text-[11px] font-medium transition-colors ${
                   pageScope === 'all'
-                    ? 'bg-swift-600/30 border-swift-500 text-swift-300'
-                    : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200'
+                    ? 'bg-red-600/30 border-swift-500 text-swift-300'
+                    : 'bg-gray-50 border-gray-300 text-gray-500 hover:text-gray-800'
                 }`}
               >
                 All Pages ({pageCount})
@@ -480,8 +480,8 @@ export const BatesNumberingDialog: React.FC = () => {
                 onClick={() => setPageScope('current')}
                 className={`flex-1 py-1.5 rounded-lg border text-[11px] font-medium transition-colors ${
                   pageScope === 'current'
-                    ? 'bg-swift-600/30 border-swift-500 text-swift-300'
-                    : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200'
+                    ? 'bg-red-600/30 border-swift-500 text-swift-300'
+                    : 'bg-gray-50 border-gray-300 text-gray-500 hover:text-gray-800'
                 }`}
               >
                 Current Page ({currentPage})
@@ -491,8 +491,8 @@ export const BatesNumberingDialog: React.FC = () => {
                 onClick={() => setPageScope('custom')}
                 className={`flex-1 py-1.5 rounded-lg border text-[11px] font-medium transition-colors ${
                   pageScope === 'custom'
-                    ? 'bg-swift-600/30 border-swift-500 text-swift-300'
-                    : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200'
+                    ? 'bg-red-600/30 border-swift-500 text-swift-300'
+                    : 'bg-gray-50 border-gray-300 text-gray-500 hover:text-gray-800'
                 }`}
               >
                 Custom Range
@@ -504,15 +504,15 @@ export const BatesNumberingDialog: React.FC = () => {
                 value={customRange}
                 onChange={(e) => setCustomRange(e.target.value)}
                 placeholder="e.g. 1-3, 5, 8"
-                className="w-full mt-2 bg-[#000000] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs outline-none"
+                className="w-full mt-2 bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-gray-800 text-xs outline-none"
               />
             )}
           </div>
 
           {/* Live Preview Card */}
-          <div className="bg-[#000000] p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+          <div className="bg-white p-3 rounded-xl border border-gray-200 flex items-center justify-between">
             <div>
-              <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">
+              <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider block">
                 Sample Stamp Output
               </span>
               <div
@@ -522,18 +522,18 @@ export const BatesNumberingDialog: React.FC = () => {
                 {getSampleText()}
               </div>
             </div>
-            <span className="text-[10px] text-slate-500 bg-slate-800/80 px-2 py-1 rounded border border-slate-700 font-medium">
+            <span className="text-[10px] text-gray-500 bg-gray-100 px-2 py-1 rounded border border-gray-300 font-medium">
               Position: {positions.find((p) => p.id === position)?.label}
             </span>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3.5 bg-[#000000]/60 border-t border-slate-800 flex items-center justify-end gap-2.5">
+        <div className="px-6 py-3.5 bg-white/60 border-t border-gray-200 flex items-center justify-end gap-2.5">
           <button
             type="button"
             onClick={handleClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white hover:bg-gray-100 transition-colors"
           >
             Cancel
           </button>
@@ -541,7 +541,7 @@ export const BatesNumberingDialog: React.FC = () => {
             type="button"
             onClick={handleApply}
             disabled={isApplying}
-            className="px-5 py-2 rounded-xl text-xs font-semibold bg-swift-600 hover:bg-swift-500 text-white shadow-lg shadow-swift-600/20 transition-all flex items-center gap-1.5 disabled:opacity-50"
+            className="px-5 py-2 rounded-xl text-xs font-semibold bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-swift-600/20 transition-all flex items-center gap-1.5 disabled:opacity-50"
           >
             {isApplying ? (
               <>

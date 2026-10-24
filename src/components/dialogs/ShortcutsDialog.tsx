@@ -82,59 +82,59 @@ export const ShortcutsDialog: React.FC = () => {
   return (
     <div
       onClick={() => setActiveModal(null)}
-      className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
+      className="fixed inset-0 z-50 bg-gray-50/50 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-3xl bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-in"
+        className="w-full max-w-3xl bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-in"
       >
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-[#000000]/90">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-white/90">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-swift-500/10 text-swift-400">
               <Keyboard className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
                 <span>Keyboard Shortcuts & Power Controls</span>
-                <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300">
+                <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-gray-100 border border-gray-300 text-gray-700">
                   Cheat Sheet
                 </span>
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-gray-500">
                 Turbocharge your PDF workflow with pro desktop hotkeys
               </p>
             </div>
           </div>
           <button
             onClick={() => setActiveModal(null)}
-            className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Filter Bar & Tabs */}
-        <div className="p-4 border-b border-slate-800 flex flex-col sm:flex-row gap-3 items-center justify-between bg-[#000000]/60">
+        <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row gap-3 items-center justify-between bg-white/60">
           <div className="relative w-full sm:w-72">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <input
               type="text"
               placeholder="Search shortcuts (e.g. zoom, pen, ocr)..."
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
               autoFocus
-              className="w-full pl-9 pr-3 py-1.5 bg-slate-800/80 border border-slate-700 rounded-lg text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-swift-500"
+              className="w-full pl-9 pr-3 py-1.5 bg-gray-100 border border-gray-300 rounded-lg text-xs text-gray-800 placeholder-slate-500 focus:outline-none focus:border-swift-500"
             />
           </div>
 
-          <div className="flex items-center gap-1 w-full sm:w-auto bg-slate-800/60 p-1 rounded-lg border border-slate-700/60 text-xs">
+          <div className="flex items-center gap-1 w-full sm:w-auto bg-gray-50 p-1 rounded-lg border border-gray-300/60 text-xs">
             <button
               onClick={() => setActiveTab('all')}
               className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
                 activeTab === 'all'
-                  ? 'bg-swift-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-red-600 text-white shadow-sm'
+                  : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               All ({ALL_SHORTCUTS.length})
@@ -143,8 +143,8 @@ export const ShortcutsDialog: React.FC = () => {
               onClick={() => setActiveTab('nav')}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-medium transition-colors ${
                 activeTab === 'nav'
-                  ? 'bg-swift-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-red-600 text-white shadow-sm'
+                  : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               <Monitor className="w-3 h-3" />
@@ -154,8 +154,8 @@ export const ShortcutsDialog: React.FC = () => {
               onClick={() => setActiveTab('tools')}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-medium transition-colors ${
                 activeTab === 'tools'
-                  ? 'bg-swift-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-red-600 text-white shadow-sm'
+                  : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               <PenTool className="w-3 h-3" />
@@ -165,8 +165,8 @@ export const ShortcutsDialog: React.FC = () => {
               onClick={() => setActiveTab('doc')}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-medium transition-colors ${
                 activeTab === 'doc'
-                  ? 'bg-swift-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-red-600 text-white shadow-sm'
+                  : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               <Files className="w-3 h-3" />
@@ -178,7 +178,7 @@ export const ShortcutsDialog: React.FC = () => {
         {/* Shortcuts List */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-2">
           {filteredShortcuts.length === 0 ? (
-            <div className="text-center py-12 text-slate-500 text-xs">
+            <div className="text-center py-12 text-gray-500 text-xs">
               No shortcuts found matching "{filter}".
             </div>
           ) : (
@@ -186,10 +186,10 @@ export const ShortcutsDialog: React.FC = () => {
               {filteredShortcuts.map((sc, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800 hover:border-slate-700/80 transition-colors"
+                  className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-300/80 transition-colors"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-xs text-slate-300 font-medium truncate">
+                    <span className="text-xs text-gray-700 font-medium truncate">
                       {sc.description}
                     </span>
                     {sc.badge && (
@@ -202,13 +202,13 @@ export const ShortcutsDialog: React.FC = () => {
                   <div className="flex items-center gap-1 shrink-0">
                     {sc.keys.map((k, kIdx) =>
                       k === 'or' ? (
-                        <span key={kIdx} className="text-[10px] text-slate-500 px-0.5">
+                        <span key={kIdx} className="text-[10px] text-gray-500 px-0.5">
                           or
                         </span>
                       ) : (
                         <kbd
                           key={kIdx}
-                          className="px-1.5 py-0.5 bg-slate-900/90 border border-slate-700 rounded text-[11px] font-mono font-semibold text-slate-200 shadow-sm"
+                          className="px-1.5 py-0.5 bg-gray-50/90 border border-gray-300 rounded text-[11px] font-mono font-semibold text-gray-800 shadow-sm"
                         >
                           {k}
                         </kbd>
@@ -222,11 +222,11 @@ export const ShortcutsDialog: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-slate-800 bg-[#000000]/80 flex items-center justify-between text-xs text-slate-400">
-          <span>Tip: Press <kbd className="font-mono text-slate-300 bg-slate-800 px-1 py-0.5 rounded border border-slate-700">?</kbd> or <kbd className="font-mono text-slate-300 bg-slate-800 px-1 py-0.5 rounded border border-slate-700">F1</kbd> anytime to open this guide</span>
+        <div className="px-6 py-3 border-t border-gray-200 bg-white/80 flex items-center justify-between text-xs text-gray-500">
+          <span>Tip: Press <kbd className="font-mono text-gray-700 bg-gray-100 px-1 py-0.5 rounded border border-gray-300">?</kbd> or <kbd className="font-mono text-gray-700 bg-gray-100 px-1 py-0.5 rounded border border-gray-300">F1</kbd> anytime to open this guide</span>
           <button
             onClick={() => setActiveModal(null)}
-            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg font-medium transition-colors"
+            className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-medium transition-colors"
           >
             Close
           </button>

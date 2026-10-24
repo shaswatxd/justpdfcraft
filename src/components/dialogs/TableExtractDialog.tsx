@@ -118,24 +118,24 @@ export const TableExtractDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in" role="dialog" aria-modal="true" aria-label="Table Extract Dialog">
-      <div className="bg-[#000000] border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm p-4 animate-fade-in" role="dialog" aria-modal="true" aria-label="Table Extract Dialog">
+      <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-[#000000]/80">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white/80">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-swift-500/10 rounded-xl text-swift-400 border border-swift-500/20">
               <Table className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-semibold text-white text-base">PDF Table Extractor to Excel & CSV</h2>
-              <p className="text-xs text-slate-400">
+              <h2 className="font-semibold text-gray-900 text-base">PDF Table Extractor to Excel & CSV</h2>
+              <p className="text-xs text-gray-500">
                 Reconstruct tabular data from document text coordinates and export cleanly.
               </p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -151,16 +151,16 @@ export const TableExtractDialog: React.FC = () => {
         ) : (
           <>
             {/* Page Selector & Toolbar */}
-            <div className="flex items-center justify-between px-6 py-3 bg-[#000000]/40 border-b border-slate-800 gap-4 flex-wrap">
+            <div className="flex items-center justify-between px-6 py-3 bg-white/40 border-b border-gray-200 gap-4 flex-wrap">
               <div className="flex items-center gap-3">
                 {/* Scope Mode Segmented Button */}
-                <div className="flex items-center bg-slate-800/80 p-0.5 rounded-lg border border-slate-700/60 text-xs">
+                <div className="flex items-center bg-gray-100 p-0.5 rounded-lg border border-gray-300/60 text-xs">
                   <button
                     onClick={() => setScopeMode('current')}
                     className={`px-3 py-1 rounded-md transition-all font-medium ${
                       scopeMode === 'current'
-                        ? 'bg-swift-600 text-white shadow'
-                        : 'text-slate-400 hover:text-white'
+                        ? 'bg-red-600 text-white shadow'
+                        : 'text-gray-500 hover:text-white'
                     }`}
                   >
                     Page {selectedPage}
@@ -169,8 +169,8 @@ export const TableExtractDialog: React.FC = () => {
                     onClick={() => setScopeMode('all')}
                     className={`px-3 py-1 rounded-md transition-all flex items-center gap-1.5 font-medium ${
                       scopeMode === 'all'
-                        ? 'bg-swift-600 text-white shadow'
-                        : 'text-slate-400 hover:text-white'
+                        ? 'bg-red-600 text-white shadow'
+                        : 'text-gray-500 hover:text-white'
                     }`}
                   >
                     <Layers className="w-3.5 h-3.5" />
@@ -183,18 +183,18 @@ export const TableExtractDialog: React.FC = () => {
                     <button
                       disabled={selectedPage <= 1}
                       onClick={() => setSelectedPage((p) => Math.max(1, p - 1))}
-                      className="p-1 hover:bg-slate-800 disabled:opacity-30 rounded text-slate-300"
+                      className="p-1 hover:bg-gray-100 disabled:opacity-30 rounded text-gray-700"
                       title="Previous Page"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <span className="text-xs font-mono font-medium px-1 text-slate-200">
+                    <span className="text-xs font-mono font-medium px-1 text-gray-800">
                       {selectedPage} / {pageCount}
                     </span>
                     <button
                       disabled={selectedPage >= pageCount}
                       onClick={() => setSelectedPage((p) => Math.min(pageCount, p + 1))}
-                      className="p-1 hover:bg-slate-800 disabled:opacity-30 rounded text-slate-300"
+                      className="p-1 hover:bg-gray-100 disabled:opacity-30 rounded text-gray-700"
                       title="Next Page"
                     >
                       <ChevronRight className="w-4 h-4" />
@@ -204,7 +204,7 @@ export const TableExtractDialog: React.FC = () => {
 
                 <button
                   onClick={() => (scopeMode === 'current' ? loadTable(selectedPage) : loadAllTables())}
-                  className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white ml-1 border border-transparent hover:border-slate-700"
+                  className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-white ml-1 border border-transparent hover:border-gray-300"
                   title="Refresh extraction"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-swift-400' : ''}`} />
@@ -212,7 +212,7 @@ export const TableExtractDialog: React.FC = () => {
               </div>
 
               {tableData && tableData.rowCount > 0 && (
-                <div className="text-xs text-slate-400 font-mono">
+                <div className="text-xs text-gray-500 font-mono">
                   Detected: <span className="text-swift-400 font-semibold">{tableData.rowCount}</span> rows ×{' '}
                   <span className="text-swift-400 font-semibold">{tableData.colCount}</span> columns
                 </div>
@@ -220,14 +220,14 @@ export const TableExtractDialog: React.FC = () => {
             </div>
 
             {/* Table Content Preview */}
-            <div className="flex-1 overflow-auto p-6 bg-[#000000]/70">
+            <div className="flex-1 overflow-auto p-6 bg-white/70">
               {isLoading ? (
-                <div className="h-64 flex flex-col items-center justify-center text-slate-400 gap-3">
+                <div className="h-64 flex flex-col items-center justify-center text-gray-500 gap-3">
                   <div className="w-8 h-8 border-2 border-swift-500 border-t-transparent rounded-full animate-spin" />
                   <p className="text-xs">Analyzing page text coordinates & clustering grid...</p>
                 </div>
               ) : !tableData || tableData.rowCount === 0 ? (
-                <div className="h-64 flex flex-col items-center justify-center text-slate-500 gap-2">
+                <div className="h-64 flex flex-col items-center justify-center text-gray-500 gap-2">
                   <Table className="w-10 h-10 stroke-1" />
                   <p className="text-sm font-medium">No distinct tabular data detected on Page {selectedPage}</p>
                   <p className="text-xs max-w-sm text-center text-slate-600">
@@ -235,34 +235,34 @@ export const TableExtractDialog: React.FC = () => {
                   </p>
                 </div>
               ) : (
-                <div className="border border-slate-800 rounded-lg overflow-hidden shadow-inner max-w-full">
+                <div className="border border-gray-200 rounded-lg overflow-hidden shadow-inner max-w-full">
                   <table className="w-full text-left text-xs border-collapse font-mono">
                     <thead>
-                      <tr className="bg-slate-800/80 border-b border-slate-700 text-slate-300">
-                        <th className="p-2 w-10 text-center text-slate-500 border-r border-slate-700/60 font-semibold">
+                      <tr className="bg-gray-100 border-b border-gray-300 text-gray-700">
+                        <th className="p-2 w-10 text-center text-gray-500 border-r border-gray-300/60 font-semibold">
                           #
                         </th>
                         {tableData.rows[0].map((_, colIdx) => (
                           <th
                             key={colIdx}
-                            className="p-2.5 font-semibold text-slate-200 border-r border-slate-700/60 last:border-r-0"
+                            className="p-2.5 font-semibold text-gray-800 border-r border-gray-300/60 last:border-r-0"
                           >
                             Col {colIdx + 1}
                           </th>
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60 bg-[#000000]/40">
+                    <tbody className="divide-y divide-slate-800/60 bg-white/40">
                       {tableData.rows.map((row, rIdx) => (
                         <tr
                           key={rIdx}
-                          className={rIdx === 0 ? 'bg-slate-800/30 font-semibold text-slate-200' : 'hover:bg-slate-800/20 text-slate-300'}
+                          className={rIdx === 0 ? 'bg-gray-100/30 font-semibold text-gray-800' : 'hover:bg-gray-100/20 text-gray-700'}
                         >
-                          <td className="p-2 text-center text-slate-500 border-r border-slate-800 bg-[#000000]/60">
+                          <td className="p-2 text-center text-gray-500 border-r border-gray-200 bg-white/60">
                             {rIdx + 1}
                           </td>
                           {row.map((cell, cIdx) => (
-                            <td key={cIdx} className="p-2.5 border-r border-slate-800/60 last:border-r-0 truncate max-w-xs">
+                            <td key={cIdx} className="p-2.5 border-r border-gray-200/60 last:border-r-0 truncate max-w-xs">
                               {cell || <span className="text-slate-600 italic">-</span>}
                             </td>
                           ))}
@@ -275,13 +275,13 @@ export const TableExtractDialog: React.FC = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-800 bg-[#000000]/80">
+            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-white/80">
               <button
                 onClick={() => {
                   setTableData(null);
                   setActiveModal(null);
                 }}
-                className="px-4 py-2 hover:bg-slate-800 rounded-xl text-xs font-medium text-slate-300 transition-colors"
+                className="px-4 py-2 hover:bg-gray-100 rounded-xl text-xs font-medium text-gray-700 transition-colors"
               >
                 Close
               </button>
@@ -290,7 +290,7 @@ export const TableExtractDialog: React.FC = () => {
                 <button
                   disabled={!tableData || tableData.rowCount === 0}
                   onClick={handleCopyExcel}
-                  className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 rounded-xl text-xs font-medium text-slate-200 border border-slate-700 transition-colors"
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-gray-100 hover:bg-gray-200 disabled:opacity-40 rounded-xl text-xs font-medium text-gray-800 border border-gray-300 transition-colors"
                   title="Copy TSV directly into Excel / Google Sheets"
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -300,7 +300,7 @@ export const TableExtractDialog: React.FC = () => {
                 <button
                   disabled={!tableData || tableData.rowCount === 0}
                   onClick={handleDownloadCsv}
-                  className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 rounded-xl text-xs font-medium text-slate-200 border border-slate-700 transition-colors"
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-gray-100 hover:bg-gray-200 disabled:opacity-40 rounded-xl text-xs font-medium text-gray-800 border border-gray-300 transition-colors"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>.CSV</span>
@@ -309,7 +309,7 @@ export const TableExtractDialog: React.FC = () => {
                 <button
                   disabled={!tableData || tableData.rowCount === 0}
                   onClick={handleDownloadXlsx}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 rounded-xl text-xs font-medium text-white shadow-md shadow-emerald-900/30 transition-colors font-semibold"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 rounded-xl text-xs font-medium text-gray-900 shadow-md shadow-emerald-900/30 transition-colors font-semibold"
                   title="Download Microsoft Excel .xlsx workbook"
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5" />

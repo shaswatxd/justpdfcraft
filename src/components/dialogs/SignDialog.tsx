@@ -308,17 +308,17 @@ export const SignDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Sign Dialog">
-      <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+    <div className="fixed inset-0 z-50 bg-gray-50/50 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Sign Dialog">
+      <div className="w-full max-w-lg bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-sky-500/10 text-sky-400">
               <PenTool className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">E-Sign Document</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="text-base font-bold text-gray-900">E-Sign Document</h3>
+              <p className="text-xs text-gray-500">
                 {documentId
                   ? `Draw, type, upload, or stamp saved signatures on Page ${currentPage}`
                   : 'Open a PDF document to sign and stamp'}
@@ -336,7 +336,7 @@ export const SignDialog: React.FC = () => {
             </button>
             <button
               onClick={handleClose}
-              className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
             >
               <X className="w-4 h-4" />
             </button>
@@ -353,7 +353,7 @@ export const SignDialog: React.FC = () => {
         ) : (
           <>
             {/* Tab Switcher */}
-            <div className="flex border-b border-slate-800 bg-[#000000]/40 px-6 pt-2 gap-2 text-xs">
+            <div className="flex border-b border-gray-200 bg-white/40 px-6 pt-2 gap-2 text-xs">
               {[
                 { id: 'draw', label: 'Draw', icon: PenTool },
                 { id: 'type', label: 'Type', icon: Type },
@@ -369,7 +369,7 @@ export const SignDialog: React.FC = () => {
                     className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
                       isActive
                         ? 'border-sky-500 text-sky-400'
-                        : 'border-transparent text-slate-400 hover:text-slate-200'
+                        : 'border-transparent text-gray-500 hover:text-gray-800'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -384,7 +384,7 @@ export const SignDialog: React.FC = () => {
               {/* Draw Tab */}
               {activeTab === 'draw' && (
                 <div className="space-y-3">
-                  <div className="border border-slate-700 rounded-xl bg-[#000000] overflow-hidden relative shadow-inner">
+                  <div className="border border-gray-300 rounded-xl bg-white overflow-hidden relative shadow-inner">
                     <canvas
                       ref={canvasRef}
                       width={460}
@@ -403,11 +403,11 @@ export const SignDialog: React.FC = () => {
                     )}
                   </div>
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-slate-500">Ink: Swift Blue (#0C8DE9)</span>
+                    <span className="text-gray-500">Ink: Swift Blue (#0C8DE9)</span>
                     <button
                       type="button"
                       onClick={clearCanvas}
-                      className="flex items-center gap-1 text-slate-400 hover:text-rose-400 transition-colors"
+                      className="flex items-center gap-1 text-gray-500 hover:text-rose-400 transition-colors"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       Clear Pad
@@ -420,17 +420,17 @@ export const SignDialog: React.FC = () => {
               {activeTab === 'type' && (
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs font-semibold text-slate-300 block mb-1.5">Type your full name</label>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1.5">Type your full name</label>
                     <input
                       type="text"
                       value={typedName}
                       onChange={(e) => setTypedName(e.target.value)}
                       placeholder="e.g. John Doe"
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:border-sky-500 outline-none"
+                      className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-sm text-white focus:border-sky-500 outline-none"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-300 block mb-1.5">Handwriting Style</label>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1.5">Handwriting Style</label>
                     <div className="grid grid-cols-2 gap-2">
                       {[
                         { id: 'cursive', label: 'Classic Script' },
@@ -443,7 +443,7 @@ export const SignDialog: React.FC = () => {
                           className={`p-3 rounded-xl border text-center transition-all ${
                             typedFont === f.id
                               ? 'border-sky-500 bg-sky-500/10 text-sky-300'
-                              : 'border-slate-800 bg-slate-800/40 text-slate-400'
+                              : 'border-gray-200 bg-gray-50 text-gray-500'
                           }`}
                         >
                           <span className="text-lg italic font-serif" style={{ fontFamily: f.id }}>
@@ -469,15 +469,15 @@ export const SignDialog: React.FC = () => {
                   {!uploadDataUrl ? (
                     <div
                       onClick={() => uploadInputRef.current?.click()}
-                      className="border-2 border-dashed border-slate-700 hover:border-sky-500/50 bg-slate-800/40 p-8 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all"
+                      className="border-2 border-dashed border-gray-300 hover:border-sky-500/50 bg-gray-50 p-8 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all"
                     >
                       <Upload className="w-6 h-6 text-sky-400" />
-                      <span className="text-xs font-semibold text-slate-200">Upload Signature Image</span>
-                      <span className="text-[11px] text-slate-500">Supports PNG, JPG, or WEBP photo of signature</span>
+                      <span className="text-xs font-semibold text-gray-800">Upload Signature Image</span>
+                      <span className="text-[11px] text-gray-500">Supports PNG, JPG, or WEBP photo of signature</span>
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <div className="border border-slate-700 rounded-xl bg-[#000000] p-4 flex items-center justify-center min-h-[120px] relative">
+                      <div className="border border-gray-300 rounded-xl bg-white p-4 flex items-center justify-center min-h-[120px] relative">
                         <img
                           src={uploadDataUrl}
                           alt="Uploaded Signature"
@@ -485,12 +485,12 @@ export const SignDialog: React.FC = () => {
                         />
                       </div>
                       <div className="flex items-center justify-between text-xs">
-                        <label className="flex items-center gap-2 text-slate-300 cursor-pointer">
+                        <label className="flex items-center gap-2 text-gray-700 cursor-pointer">
                           <input
                             type="checkbox"
                             checked={removeBg}
                             onChange={(e) => setRemoveBg(e.target.checked)}
-                            className="rounded text-sky-500 bg-slate-800 border-slate-700 focus:ring-0"
+                            className="rounded text-sky-500 bg-gray-100 border-gray-300 focus:ring-0"
                           />
                           <span>Remove white background (transparent stamp)</span>
                         </label>
@@ -500,7 +500,7 @@ export const SignDialog: React.FC = () => {
                             setUploadDataUrl(null);
                             if (uploadInputRef.current) uploadInputRef.current.value = '';
                           }}
-                          className="text-slate-400 hover:text-rose-400 flex items-center gap-1"
+                          className="text-gray-500 hover:text-rose-400 flex items-center gap-1"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                           <span>Remove</span>
@@ -515,18 +515,18 @@ export const SignDialog: React.FC = () => {
               {activeTab === 'saved' && (
                 <div className="space-y-3 max-h-60 overflow-y-auto">
                   {savedSignatures.length === 0 ? (
-                    <p className="text-center text-slate-500 text-xs py-8">
+                    <p className="text-center text-gray-500 text-xs py-8">
                       No saved signatures yet. Create a signature in Draw, Type, or Upload to save it locally.
                     </p>
                   ) : (
                     savedSignatures.map((sig) => (
                       <div
                         key={sig.id}
-                        className="p-3 bg-slate-800/60 border border-slate-800 rounded-xl flex items-center justify-between hover:bg-slate-800 transition-colors"
+                        className="p-3 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-between hover:bg-gray-100 transition-colors"
                       >
                         <div className="flex items-center gap-3">
                           <img src={sig.dataUrl} alt="Signature" className="h-10 bg-white/90 rounded px-2" />
-                          <span className="text-xs font-semibold text-slate-200">{sig.title}</span>
+                          <span className="text-xs font-semibold text-gray-800">{sig.title}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <button
@@ -542,7 +542,7 @@ export const SignDialog: React.FC = () => {
                               localDb.deleteSignature(sig.id);
                               setSavedSignatures(localDb.getSavedSignatures());
                             }}
-                            className="p-1 hover:text-rose-400 text-slate-500"
+                            className="p-1 hover:text-rose-400 text-gray-500"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -554,8 +554,8 @@ export const SignDialog: React.FC = () => {
               )}
 
               {/* Placement Selector */}
-              <div className="pt-2 border-t border-slate-800/80">
-                <label className="text-[11px] font-semibold text-slate-400 block mb-1.5">
+              <div className="pt-2 border-t border-gray-200/80">
+                <label className="text-[11px] font-semibold text-gray-500 block mb-1.5">
                   Page Placement Position
                 </label>
                 <div className="grid grid-cols-4 gap-1.5 text-xs">
@@ -572,7 +572,7 @@ export const SignDialog: React.FC = () => {
                       className={`py-1.5 px-2 rounded-lg border text-center text-[11px] transition-colors ${
                         placement === p.id
                           ? 'border-sky-500 bg-sky-500/15 text-sky-300 font-semibold'
-                          : 'border-slate-800 bg-slate-800/40 text-slate-400 hover:text-slate-200'
+                          : 'border-gray-200 bg-gray-50 text-gray-500 hover:text-gray-800'
                       }`}
                     >
                       {p.label}
@@ -584,10 +584,10 @@ export const SignDialog: React.FC = () => {
 
             {/* Footer */}
             {activeTab !== 'saved' && (
-              <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
+              <div className="px-6 py-4 border-t border-gray-200 bg-white/60 flex justify-end gap-2">
                 <button
                   onClick={handleClose}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white"
                 >
                   Cancel
                 </button>

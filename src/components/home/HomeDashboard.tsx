@@ -264,22 +264,22 @@ export const HomeDashboard: React.FC = () => {
       <HeroSection>
         {/* Unsaved Session Crash Recovery Banner */}
         {availableDrafts && availableDrafts.length > 0 && (
-          <div className="w-full mb-4 p-3.5 sm:p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left animate-in fade-in slide-in-from-top-2">
+          <div className="w-full mb-4 p-3.5 sm:p-4 rounded-2xl bg-amber-50  border border-amber-300  flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left animate-in fade-in slide-in-from-top-2">
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0 text-amber-600 dark:text-amber-400 mt-0.5">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0 text-amber-600  mt-0.5">
                 <RotateCcw className="w-4 h-4" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h4 className="text-xs sm:text-sm font-semibold text-amber-900 dark:text-amber-100">
+                  <h4 className="text-xs sm:text-sm font-semibold text-amber-900 ">
                     Unsaved session recovered
                   </h4>
-                  <span className="px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[10px] font-mono">
+                  <span className="px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-700  text-[10px] font-mono">
                     {availableDrafts.length} {availableDrafts.length === 1 ? 'draft' : 'drafts'}
                   </span>
                 </div>
-                <p className="text-[11px] sm:text-xs text-amber-700/80 dark:text-amber-200/70 mt-0.5">
-                  <span className="text-amber-900 dark:text-amber-100 font-medium">{availableDrafts[0].fileName}</span> •{' '}
+                <p className="text-[11px] sm:text-xs text-amber-700/80  mt-0.5">
+                  <span className="text-amber-900  font-medium">{availableDrafts[0].fileName}</span> •{' '}
                   {(availableDrafts[0].byteLength / 1024).toFixed(0)} KB • auto-saved to this
                   browser {formatTimeAgo(availableDrafts[0].timestamp)}
                 </p>
@@ -317,7 +317,7 @@ export const HomeDashboard: React.FC = () => {
                       message: 'Cleaned up all recovery drafts.',
                     });
                   }}
-                  className="px-2 py-1 rounded text-[11px] text-amber-700 hover:text-amber-900 dark:text-amber-200/70 dark:hover:text-amber-100 transition-colors"
+                  className="px-2 py-1 rounded text-[11px] text-amber-700 hover:text-amber-900   transition-colors"
                   title="Discard all recovery drafts"
                 >
                   Dismiss all
@@ -334,7 +334,7 @@ export const HomeDashboard: React.FC = () => {
                     message: 'Unsaved draft removed from storage.',
                   });
                 }}
-                className="p-1.5 rounded-lg hover:bg-amber-500/10 text-amber-700 hover:text-amber-900 dark:text-amber-200/70 dark:hover:text-amber-100 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-amber-500/10 text-amber-700 hover:text-amber-900   transition-colors"
                 title="Discard this draft"
                 aria-label="Discard this draft"
               >

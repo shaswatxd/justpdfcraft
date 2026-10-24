@@ -118,17 +118,17 @@ export const AreaOCRDialog: React.FC<AreaOCRModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in" role="dialog" aria-modal="true" aria-label="Area OCR Dialog">
-      <div className="bg-[#000000] border border-slate-800 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm p-4 animate-fade-in" role="dialog" aria-modal="true" aria-label="Area OCR Dialog">
+      <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-[#000000]/80">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white/80">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-swift-500/10 rounded-xl text-swift-400 border border-swift-500/20">
               <ScanText className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-white text-base">Area Text Extractor</h3>
+                <h3 className="font-semibold text-gray-900 text-base">Area Text Extractor</h3>
                 {isDigital ? (
                   <span className="flex items-center gap-1 text-[10px] font-medium bg-emerald-500/15 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">
                     <Zap className="w-2.5 h-2.5 text-emerald-400" />
@@ -141,29 +141,29 @@ export const AreaOCRDialog: React.FC<AreaOCRModalProps> = ({
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-gray-500">
                 Hindi & English bilingual text recognition with DRM bypass.
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Toolbar Controls: Language Selector + Quick Re-scan */}
-        <div className="flex items-center justify-between px-6 py-2.5 bg-[#000000]/60 border-b border-slate-800/80 text-xs">
+        <div className="flex items-center justify-between px-6 py-2.5 bg-white/60 border-b border-gray-200/80 text-xs">
           <div className="flex items-center gap-2">
             <Globe className="w-3.5 h-3.5 text-swift-400" />
-            <span className="text-slate-400 font-medium">OCR Language:</span>
+            <span className="text-gray-500 font-medium">OCR Language:</span>
             <select
               value={selectedLang}
               disabled={isReExtracting}
               onChange={(e) => handleLanguageChange(e.target.value)}
-              className="bg-[#000000] border border-slate-700 hover:border-slate-600 rounded-lg px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-swift-500 font-medium cursor-pointer transition-colors shadow-sm disabled:opacity-50"
+              className="bg-white border border-gray-300 hover:border-slate-600 rounded-lg px-2.5 py-1 text-xs text-gray-800 focus:outline-none focus:border-swift-500 font-medium cursor-pointer transition-colors shadow-sm disabled:opacity-50"
             >
               {OCR_LANGUAGES.map((l) => (
                 <option key={l.code} value={l.code}>
@@ -177,7 +177,7 @@ export const AreaOCRDialog: React.FC<AreaOCRModalProps> = ({
             <button
               onClick={() => onReExtract(selectedLang)}
               disabled={isReExtracting}
-              className="flex items-center gap-1 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-300 rounded-lg text-[11px] font-medium border border-slate-700 transition-colors"
+              className="flex items-center gap-1 px-2.5 py-1 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-gray-700 rounded-lg text-[11px] font-medium border border-gray-300 transition-colors"
             >
               <RefreshCw className={`w-3 h-3 ${isReExtracting ? 'animate-spin text-swift-400' : ''}`} />
               <span>{isReExtracting ? 'Scanning...' : 'Re-scan'}</span>
@@ -187,16 +187,16 @@ export const AreaOCRDialog: React.FC<AreaOCRModalProps> = ({
 
         {/* Content Preview & Editor */}
         <div className="p-6 space-y-3">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
+          <div className="flex items-center justify-between text-xs text-gray-500 font-mono">
             <div className="flex items-center gap-3">
               <span>
                 Words: <strong className="text-swift-400">{currentWordCount}</strong>
               </span>
               <span>
-                Chars: <strong className="text-slate-300">{currentCharCount}</strong>
+                Chars: <strong className="text-gray-700">{currentCharCount}</strong>
               </span>
             </div>
-            <span className="text-[11px] text-slate-500">Editable preview (Devanagari + Latin supported)</span>
+            <span className="text-[11px] text-gray-500">Editable preview (Devanagari + Latin supported)</span>
           </div>
 
           <div className="relative">
@@ -205,10 +205,10 @@ export const AreaOCRDialog: React.FC<AreaOCRModalProps> = ({
               disabled={isReExtracting}
               onChange={(e) => setText(e.target.value)}
               placeholder="Extracted text will appear here..."
-              className="w-full h-52 bg-[#000000] border border-slate-800 rounded-xl p-3.5 text-xs text-slate-200 font-sans resize-none focus:outline-none focus:border-swift-500 leading-relaxed selection:bg-swift-500/30 shadow-inner disabled:opacity-50"
+              className="w-full h-52 bg-white border border-gray-200 rounded-xl p-3.5 text-xs text-gray-800 font-sans resize-none focus:outline-none focus:border-swift-500 leading-relaxed selection:bg-swift-500/30 shadow-inner disabled:opacity-50"
             />
             {isReExtracting && (
-              <div className="absolute inset-0 bg-[#000000]/70 backdrop-blur-xs flex flex-col items-center justify-center gap-2 rounded-xl text-xs text-swift-400">
+              <div className="absolute inset-0 bg-white/70 backdrop-blur-xs flex flex-col items-center justify-center gap-2 rounded-xl text-xs text-swift-400">
                 <RefreshCw className="w-6 h-6 animate-spin" />
                 <span>Recognizing Hindi & English characters...</span>
               </div>
@@ -217,10 +217,10 @@ export const AreaOCRDialog: React.FC<AreaOCRModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-800 bg-[#000000]/80">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-white/80">
           <button
             onClick={onClose}
-            className="px-4 py-2 hover:bg-slate-800 rounded-xl text-xs font-medium text-slate-300 transition-colors"
+            className="px-4 py-2 hover:bg-gray-100 rounded-xl text-xs font-medium text-gray-700 transition-colors"
           >
             Close
           </button>
@@ -228,7 +228,7 @@ export const AreaOCRDialog: React.FC<AreaOCRModalProps> = ({
           <div className="flex items-center gap-2.5">
             <button
               onClick={handleListen}
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-swift-400 hover:text-swift-300 rounded-xl text-xs font-medium border border-slate-700 transition-colors"
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-swift-400 hover:text-swift-300 rounded-xl text-xs font-medium border border-gray-300 transition-colors"
               title="Listen to extracted text read aloud"
             >
               <Volume2 className="w-3.5 h-3.5" />
@@ -237,7 +237,7 @@ export const AreaOCRDialog: React.FC<AreaOCRModalProps> = ({
 
             <button
               onClick={handleDownloadTxt}
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-medium text-slate-200 border border-slate-700 transition-colors"
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-medium text-gray-800 border border-gray-300 transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Download .txt</span>
@@ -245,7 +245,7 @@ export const AreaOCRDialog: React.FC<AreaOCRModalProps> = ({
 
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-4 py-2 bg-swift-600 hover:bg-swift-500 rounded-xl text-xs font-medium text-white shadow-md transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-xl text-xs font-medium text-gray-900 shadow-md transition-colors"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-green-300" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied!' : 'Copy to Clipboard'}</span>

@@ -115,11 +115,11 @@ export const SelectionHUD: React.FC<SelectionHUDProps> = ({
         top: `${position.y}px`,
         transform: 'translate(-50%, -100%) translateY(-10px)',
       }}
-      className="z-50 flex items-center gap-1 bg-black/95 backdrop-blur-md border border-slate-700/80 px-2 py-1.5 rounded-xl shadow-2xl animate-scale-in text-slate-200 select-none"
+      className="z-50 flex items-center gap-1 bg-white/95 backdrop-blur-md border border-gray-200 px-2 py-1.5 rounded-xl shadow-xl animate-scale-in text-gray-800 select-none"
       onClick={(e) => e.stopPropagation()}
     >
       {/* Quick Color Highlighting */}
-      <div className="flex items-center gap-1 pr-1.5 border-r border-slate-700/80">
+      <div className="flex items-center gap-1 pr-1.5 border-r border-gray-200">
         <button
           onClick={() => handleHighlight('#eab308')}
           className="w-4 h-4 rounded-full bg-yellow-400 hover:scale-125 transition-transform border border-yellow-200/40"
@@ -145,7 +145,7 @@ export const SelectionHUD: React.FC<SelectionHUDProps> = ({
       {/* Underline */}
       <button
         onClick={handleUnderline}
-        className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-300 hover:text-white transition-colors"
+        className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-gray-900 transition-colors"
         title="Underline"
       >
         <Underline className="w-3.5 h-3.5" />
@@ -154,7 +154,7 @@ export const SelectionHUD: React.FC<SelectionHUDProps> = ({
       {/* Strikethrough */}
       <button
         onClick={handleStrike}
-        className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-300 hover:text-white transition-colors"
+        className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-gray-900 transition-colors"
         title="Strikethrough"
       >
         <Strikethrough className="w-3.5 h-3.5" />
@@ -165,7 +165,7 @@ export const SelectionHUD: React.FC<SelectionHUDProps> = ({
       {/* Copy */}
       <button
         onClick={handleCopy}
-        className="flex items-center gap-1 px-2 py-1 hover:bg-slate-800 rounded-lg text-xs font-medium text-slate-200 transition-colors"
+        className="flex items-center gap-1 px-2 py-1 hover:bg-gray-100 rounded-lg text-xs font-medium text-gray-800 transition-colors"
         title="Copy Selected Text"
       >
         {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -175,7 +175,7 @@ export const SelectionHUD: React.FC<SelectionHUDProps> = ({
       {/* Search in Doc */}
       <button
         onClick={handleSearch}
-        className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-300 hover:text-white transition-colors"
+        className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-gray-900 transition-colors"
         title="Find in Document"
       >
         <Search className="w-3.5 h-3.5" />
@@ -184,7 +184,7 @@ export const SelectionHUD: React.FC<SelectionHUDProps> = ({
       {/* Read Aloud Selection */}
       <button
         onClick={handleSpeak}
-        className="flex items-center gap-1 px-2 py-1 hover:bg-slate-800 rounded-lg text-xs font-medium text-swift-400 hover:text-swift-300 transition-colors"
+        className="flex items-center gap-1 px-2 py-1 hover:bg-gray-100 rounded-lg text-xs font-medium text-red-600 hover:text-red-700 transition-colors"
         title="Listen to selection read aloud"
       >
         <Volume2 className="w-3.5 h-3.5" />
@@ -194,7 +194,7 @@ export const SelectionHUD: React.FC<SelectionHUDProps> = ({
       {/* Direct In-Place Edit */}
       <button
         onClick={handleEdit}
-        className="flex items-center gap-1 px-2 py-1 bg-swift-600/80 hover:bg-swift-600 rounded-lg text-[11px] font-medium text-white transition-colors"
+        className="flex items-center gap-1 px-2 py-1 bg-red-600 hover:bg-red-700 rounded-lg text-[11px] font-semibold text-white transition-colors shadow-2xs"
         title="Edit Text in Place"
       >
         <Edit3 className="w-3 h-3" />

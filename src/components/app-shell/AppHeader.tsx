@@ -218,7 +218,7 @@ export const AppHeader: React.FC = () => {
         {documentId && activeView === 'home' && (
           <button
             onClick={() => setActiveView('editor')}
-            className="flex items-center gap-1.5 px-2.5 py-1 bg-swift-600 hover:bg-swift-500 text-white rounded-lg text-xs font-semibold shadow-sm transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-all cursor-pointer"
             title="Return to your active document in the editor"
           >
             <FileText className="w-3.5 h-3.5" />

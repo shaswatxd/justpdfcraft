@@ -123,17 +123,17 @@ export const TTSPlayerHUD: React.FC = () => {
 
   return (
     <div className="fixed bottom-6 right-8 z-50 animate-slide-up select-none">
-      <div className="bg-black/95 backdrop-blur-md border border-slate-700/80 rounded-2xl shadow-2xl p-4 w-96 flex flex-col gap-3 text-slate-200">
+      <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl shadow-xl p-4 w-96 flex flex-col gap-3 text-gray-800">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+        <div className="flex items-center justify-between border-b border-gray-100 pb-2">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-swift-500/20 text-swift-400 rounded-lg">
+            <div className="p-1.5 bg-red-50 text-red-600 border border-red-100 rounded-lg">
               <Volume2 className="w-4 h-4" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+              <h4 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
                 Read Aloud
-                <span className="text-[10px] font-normal text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded-full">
+                <span className="text-[10px] font-normal text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full">
                   Page {currentPage} of {pageCount}
                 </span>
               </h4>
@@ -141,7 +141,7 @@ export const TTSPlayerHUD: React.FC = () => {
           </div>
           <button
             onClick={() => setTTSOpen(false)}
-            className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-1 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
             title="Close Read Aloud HUD (Ctrl+Shift+U)"
           >
             <X className="w-4 h-4" />
@@ -149,16 +149,16 @@ export const TTSPlayerHUD: React.FC = () => {
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+        <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
           <div
-            className="bg-swift-500 h-full transition-all duration-200 rounded-full"
+            className="bg-red-600 h-full transition-all duration-200 rounded-full"
             style={{ width: `${readProgress}%` }}
           />
         </div>
 
         {/* Live Reading Sentence Snippet */}
         {isPlaying && activeSnippet && (
-          <div className="bg-black/70 border border-slate-800/80 rounded-xl px-2.5 py-1.5 text-[11px] text-slate-300 italic line-clamp-2 leading-relaxed">
+          <div className="bg-gray-50 border border-gray-200 rounded-xl px-2.5 py-1.5 text-[11px] text-gray-700 italic line-clamp-2 leading-relaxed">
             "{activeSnippet}"
           </div>
         )}
@@ -169,7 +169,7 @@ export const TTSPlayerHUD: React.FC = () => {
             <button
               onClick={handlePrevPage}
               disabled={currentPage <= 1}
-              className="p-2 hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent rounded-lg text-slate-300 transition-colors"
+              className="p-2 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent rounded-lg text-gray-600 hover:text-gray-900 transition-colors"
               title="Previous Page"
             >
               <SkipBack className="w-4 h-4" />
@@ -178,7 +178,7 @@ export const TTSPlayerHUD: React.FC = () => {
             {isPlaying && !isPaused ? (
               <button
                 onClick={pause}
-                className="p-2.5 bg-swift-600 hover:bg-swift-500 text-white rounded-xl shadow-lg transition-transform active:scale-95"
+                className="p-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-md shadow-red-500/20 transition-transform active:scale-95"
                 title="Pause (Space)"
               >
                 <Pause className="w-4 h-4 fill-white" />
@@ -187,7 +187,7 @@ export const TTSPlayerHUD: React.FC = () => {
               <button
                 onClick={handlePlay}
                 disabled={isLoadingText}
-                className="p-2.5 bg-swift-600 hover:bg-swift-500 text-white rounded-xl shadow-lg transition-transform active:scale-95 disabled:opacity-50"
+                className="p-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-md shadow-red-500/20 transition-transform active:scale-95 disabled:opacity-50"
                 title="Play Current Page"
               >
                 <Play className="w-4 h-4 fill-white ml-0.5" />
@@ -197,7 +197,7 @@ export const TTSPlayerHUD: React.FC = () => {
             <button
               onClick={stop}
               disabled={!isPlaying && !isPaused}
-              className="p-2 hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent rounded-lg text-slate-300 transition-colors"
+              className="p-2 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent rounded-lg text-gray-600 hover:text-gray-900 transition-colors"
               title="Stop Reading"
             >
               <Square className="w-3.5 h-3.5" />
@@ -206,7 +206,7 @@ export const TTSPlayerHUD: React.FC = () => {
             <button
               onClick={handleNextPage}
               disabled={currentPage >= pageCount}
-              className="p-2 hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent rounded-lg text-slate-300 transition-colors"
+              className="p-2 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent rounded-lg text-gray-600 hover:text-gray-900 transition-colors"
               title="Next Page"
             >
               <SkipForward className="w-4 h-4" />
@@ -216,18 +216,18 @@ export const TTSPlayerHUD: React.FC = () => {
           {/* Speed Multiplier & Voices */}
           <div className="flex items-center gap-2">
             {/* Speed Selector */}
-            <div className="flex items-center gap-1 bg-slate-800/80 px-2 py-1 rounded-lg border border-slate-700/60 text-xs">
-              <Gauge className="w-3 h-3 text-slate-400" />
+            <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-lg border border-gray-200 text-xs">
+              <Gauge className="w-3 h-3 text-gray-500" />
               <select
                 value={speechRate}
                 onChange={(e) => setSpeechRate(Number(e.target.value))}
                 className="bg-transparent text-slate-200 outline-none font-mono text-[11px] cursor-pointer"
               >
-                <option value={0.75} className="bg-black">0.75x</option>
-                <option value={1.0} className="bg-black">1.0x</option>
-                <option value={1.25} className="bg-black">1.25x</option>
-                <option value={1.5} className="bg-black">1.5x</option>
-                <option value={2.0} className="bg-black">2.0x</option>
+                <option value={0.75} className="bg-white text-gray-900">0.75x</option>
+                <option value={1.0} className="bg-white text-gray-900">1.0x</option>
+                <option value={1.25} className="bg-white text-gray-900">1.25x</option>
+                <option value={1.5} className="bg-white text-gray-900">1.5x</option>
+                <option value={2.0} className="bg-white text-gray-900">2.0x</option>
               </select>
             </div>
           </div>
@@ -236,14 +236,14 @@ export const TTSPlayerHUD: React.FC = () => {
         {/* Voice Selector */}
         {availableVoices.length > 0 && (
           <div className="flex items-center gap-2 bg-slate-800/40 px-2.5 py-1.5 rounded-lg border border-slate-800 text-[11px]">
-            <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <User className="w-3.5 h-3.5 text-gray-500 shrink-0" />
             <select
               value={selectedVoiceURI || ''}
               onChange={(e) => setSelectedVoiceURI(e.target.value)}
-              className="bg-transparent text-slate-300 outline-none w-full truncate cursor-pointer"
+              className="bg-transparent text-gray-600 hover:text-gray-900 outline-none w-full truncate cursor-pointer"
             >
               {availableVoices.map((v) => (
-                <option key={v.voiceURI} value={v.voiceURI} className="bg-black">
+                <option key={v.voiceURI} value={v.voiceURI} className="bg-white text-gray-900">
                   {v.name} ({v.lang})
                 </option>
               ))}

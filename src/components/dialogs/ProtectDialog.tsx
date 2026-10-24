@@ -143,24 +143,24 @@ export const ProtectDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Protect Dialog">
-      <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+    <div className="fixed inset-0 z-50 bg-gray-50/50 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Protect Dialog">
+      <div className="w-full max-w-lg bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-rose-500/10 text-rose-400">
               <Shield className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Security & Permissions Center</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="text-base font-bold text-gray-900">Security & Permissions Center</h3>
+              <p className="text-xs text-gray-500">
                 Unlock restricted PDFs or apply standard password protection
               </p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -176,14 +176,14 @@ export const ProtectDialog: React.FC = () => {
         ) : (
           <>
             {/* Tab Selector */}
-            <div className="px-6 pt-3 border-b border-slate-800 flex gap-4">
+            <div className="px-6 pt-3 border-b border-gray-200 flex gap-4">
           <button
             type="button"
             onClick={() => setActiveTab('unlock')}
             className={`pb-2.5 text-xs font-semibold border-b-2 flex items-center gap-1.5 transition-colors ${
               activeTab === 'unlock'
                 ? 'border-emerald-500 text-emerald-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
             <Unlock className="w-3.5 h-3.5" />
@@ -195,7 +195,7 @@ export const ProtectDialog: React.FC = () => {
             className={`pb-2.5 text-xs font-semibold border-b-2 flex items-center gap-1.5 transition-colors ${
               activeTab === 'protect'
                 ? 'border-rose-500 text-rose-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
             <Lock className="w-3.5 h-3.5" />
@@ -212,10 +212,10 @@ export const ProtectDialog: React.FC = () => {
                   <Sparkles className="w-4 h-4 text-emerald-400" />
                   <span>1-Click Universal Permission Stripper</span>
                 </div>
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <p className="text-xs text-gray-700 leading-relaxed">
                   Bypass owner restrictions, print disablement flags, content copy locks, and form editing limits. Re-encodes the PDF without the encryption dictionary so it becomes 100% free and open in all viewers.
                 </p>
-                <div className="pt-2 flex flex-col gap-1.5 text-[11px] text-slate-400">
+                <div className="pt-2 flex flex-col gap-1.5 text-[11px] text-gray-500">
                   <div className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                     <span>Enables High-Resolution Printing & Content Copying</span>
@@ -253,7 +253,7 @@ export const ProtectDialog: React.FC = () => {
                   type="button"
                   disabled={isProcessing}
                   onClick={() => handleUniversalUnlock(true)}
-                  className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200 hover:text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 border border-slate-700 transition-colors"
+                  className="py-2.5 px-4 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-gray-800 hover:text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 border border-gray-300 transition-colors"
                 >
                   <Download className="w-4 h-4 text-emerald-400" />
                   <span>Export Unlocked Copy</span>
@@ -264,7 +264,7 @@ export const ProtectDialog: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white transition-colors"
                 >
                   Close
                 </button>
@@ -273,44 +273,44 @@ export const ProtectDialog: React.FC = () => {
           ) : (
             <div className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Set Document Password</label>
+                <label className="text-xs font-semibold text-gray-700">Set Document Password</label>
                 <input
                   type="password"
                   value={userPassword}
                   onChange={(e) => setUserPassword(e.target.value)}
                   placeholder="Enter secure password"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-rose-500"
+                  className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-rose-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Confirm Password</label>
+                <label className="text-xs font-semibold text-gray-700">Confirm Password</label>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-enter password"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-rose-500"
+                  className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-rose-500"
                 />
               </div>
 
-              <div className="space-y-2 pt-2 border-t border-slate-800">
-                <label className="text-xs font-semibold text-slate-400 block">Permissions Restrictions</label>
-                <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none">
+              <div className="space-y-2 pt-2 border-t border-gray-200">
+                <label className="text-xs font-semibold text-gray-500 block">Permissions Restrictions</label>
+                <label className="flex items-center gap-2 text-xs text-gray-700 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={restrictPrinting}
                     onChange={(e) => setRestrictPrinting(e.target.checked)}
-                    className="rounded bg-slate-800 border-slate-700 text-rose-500 focus:ring-0"
+                    className="rounded bg-gray-100 border-gray-300 text-rose-500 focus:ring-0"
                   />
                   <span>Disallow High-Resolution Printing</span>
                 </label>
-                <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none">
+                <label className="flex items-center gap-2 text-xs text-gray-700 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={restrictEditing}
                     onChange={(e) => setRestrictEditing(e.target.checked)}
-                    className="rounded bg-slate-800 border-slate-700 text-rose-500 focus:ring-0"
+                    className="rounded bg-gray-100 border-gray-300 text-rose-500 focus:ring-0"
                   />
                   <span>Disallow Content Modification</span>
                 </label>
@@ -320,7 +320,7 @@ export const ProtectDialog: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white"
                 >
                   Cancel
                 </button>

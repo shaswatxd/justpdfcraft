@@ -208,17 +208,17 @@ export const CompareDialog: React.FC = () => {
   );
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Compare Dialog">
-      <div className="w-full max-w-4xl bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
+    <div className="fixed inset-0 z-50 bg-gray-50/50 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Compare Dialog">
+      <div className="w-full max-w-4xl bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400">
               <GitCompare className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Compare Two PDFs</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="text-base font-bold text-gray-900">Compare Two PDFs</h3>
+              <p className="text-xs text-gray-500">
                 Interactive Before/After visual swipe comparison & text difference analysis
               </p>
             </div>
@@ -235,7 +235,7 @@ export const CompareDialog: React.FC = () => {
               setDocBId(null);
               setActiveModal(null);
             }}
-            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
           >
             <X className="w-4 h-4" />
           </button>
@@ -255,14 +255,14 @@ export const CompareDialog: React.FC = () => {
               {/* File Selectors & Mode Switcher */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <div className="grid grid-cols-2 gap-3 flex-1">
-                  <div className="p-2.5 bg-slate-800/50 border border-slate-700/80 rounded-xl">
+                  <div className="p-2.5 bg-gray-50 border border-gray-300/80 rounded-xl">
                     <span className="text-[10px] uppercase font-bold text-cyan-400 block mb-0.5">Version A (Original)</span>
-                    <p className="text-xs font-semibold text-white truncate">{fileName || 'Current PDF'}</p>
+                    <p className="text-xs font-semibold text-gray-900 truncate">{fileName || 'Current PDF'}</p>
                   </div>
-                  <div className="p-2.5 bg-slate-800/50 border border-slate-700/80 rounded-xl flex items-center justify-between gap-2">
+                  <div className="p-2.5 bg-gray-50 border border-gray-300/80 rounded-xl flex items-center justify-between gap-2">
                     <div className="overflow-hidden min-w-0">
                       <span className="text-[10px] uppercase font-bold text-purple-400 block mb-0.5">Version B (Revision)</span>
-                      <p className="text-xs font-semibold text-white truncate">
+                      <p className="text-xs font-semibold text-gray-900 truncate">
                         {docBName || 'Select revision PDF...'}
                       </p>
                     </div>
@@ -280,13 +280,13 @@ export const CompareDialog: React.FC = () => {
 
                 {/* View Mode Toggle */}
                 {compareResult && (
-                  <div className="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700 shrink-0">
+                  <div className="flex items-center bg-gray-100 p-1 rounded-xl border border-gray-300 shrink-0">
                     <button
                       onClick={() => setCompareMode('swipe')}
                       className={`px-2.5 py-1 text-xs rounded-lg font-medium flex items-center gap-1.5 transition-colors ${
                         compareMode === 'swipe'
                           ? 'bg-purple-600 text-white shadow-sm'
-                          : 'text-slate-400 hover:text-slate-200'
+                          : 'text-gray-500 hover:text-gray-800'
                       }`}
                     >
                       <SplitSquareVertical className="w-3.5 h-3.5" />
@@ -297,7 +297,7 @@ export const CompareDialog: React.FC = () => {
                       className={`px-2.5 py-1 text-xs rounded-lg font-medium flex items-center gap-1.5 transition-colors ${
                         compareMode === 'report'
                           ? 'bg-purple-600 text-white shadow-sm'
-                          : 'text-slate-400 hover:text-slate-200'
+                          : 'text-gray-500 hover:text-gray-800'
                       }`}
                     >
                       <FileText className="w-3.5 h-3.5" />
@@ -308,7 +308,7 @@ export const CompareDialog: React.FC = () => {
               </div>
 
               {isComparing && (
-                <div className="py-12 text-center text-slate-400 flex flex-col items-center gap-3">
+                <div className="py-12 text-center text-gray-500 flex flex-col items-center gap-3">
                   <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
                   <p className="text-xs font-medium">Analyzing documents and generating visual diff layers...</p>
                 </div>
@@ -321,23 +321,23 @@ export const CompareDialog: React.FC = () => {
                   {compareMode === 'swipe' && (
                     <div className="space-y-3">
                       {/* Comparison Toolbar: Page Selector & Status */}
-                      <div className="flex items-center justify-between bg-slate-850 p-2.5 rounded-xl border border-slate-800 text-xs">
+                      <div className="flex items-center justify-between bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-xs">
                         <div className="flex items-center gap-2 font-mono">
                           <button
                             onClick={() => setActiveComparePage((p) => Math.max(0, p - 1))}
                             disabled={activeComparePage <= 0}
-                            className="p-1 hover:bg-slate-800 disabled:opacity-30 rounded text-slate-300"
+                            className="p-1 hover:bg-gray-100 disabled:opacity-30 rounded text-gray-700"
                             title="Previous Page"
                           >
                             <ChevronLeft className="w-4 h-4" />
                           </button>
-                          <span className="text-slate-200 font-semibold">
+                          <span className="text-gray-800 font-semibold">
                             Page {activeComparePage + 1} of {maxPages}
                           </span>
                           <button
                             onClick={() => setActiveComparePage((p) => Math.min(maxPages - 1, p + 1))}
                             disabled={activeComparePage >= maxPages - 1}
-                            className="p-1 hover:bg-slate-800 disabled:opacity-30 rounded text-slate-300"
+                            className="p-1 hover:bg-gray-100 disabled:opacity-30 rounded text-gray-700"
                             title="Next Page"
                           >
                             <ChevronRight className="w-4 h-4" />
@@ -357,16 +357,16 @@ export const CompareDialog: React.FC = () => {
                             </span>
                           )}
 
-                          <span className="text-[11px] text-slate-400 font-mono">
+                          <span className="text-[11px] text-gray-500 font-mono">
                             Slider: {Math.round(sliderPos)}%
                           </span>
                         </div>
                       </div>
 
                       {/* Interactive Visual Swipe Viewport */}
-                      <div className="bg-[#000000]/80 rounded-2xl p-4 border border-slate-800 flex flex-col items-center justify-center min-h-[380px] overflow-auto">
+                      <div className="bg-white/80 rounded-2xl p-4 border border-gray-200 flex flex-col items-center justify-center min-h-[380px] overflow-auto">
                         {isRenderingPages && (
-                          <div className="py-12 flex items-center gap-2 text-slate-400 text-xs">
+                          <div className="py-12 flex items-center gap-2 text-gray-500 text-xs">
                             <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
                             <span>Rendering page comparison canvases...</span>
                           </div>
@@ -377,7 +377,7 @@ export const CompareDialog: React.FC = () => {
                           onPointerDown={handlePointerDown}
                           onPointerMove={handlePointerMove}
                           onPointerUp={handlePointerUp}
-                          className="relative rounded-lg border border-slate-700/80 overflow-hidden shadow-2xl bg-white select-none cursor-ew-resize"
+                          className="relative rounded-lg border border-gray-300/80 overflow-hidden shadow-2xl bg-white select-none cursor-ew-resize"
                           style={{
                             width: canvasDims ? `${canvasDims.width}px` : '500px',
                             height: canvasDims ? `${canvasDims.height}px` : '700px',
@@ -392,7 +392,7 @@ export const CompareDialog: React.FC = () => {
                             }}
                           >
                             <canvas ref={canvasRefA} className="w-full h-full block object-contain" />
-                            <div className="absolute top-2.5 left-2.5 bg-[#000000]/90 backdrop-blur text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-cyan-500/40 shadow-lg select-none pointer-events-none">
+                            <div className="absolute top-2.5 left-2.5 bg-white/90 backdrop-blur text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-cyan-500/40 shadow-lg select-none pointer-events-none">
                               Version A (Original)
                             </div>
                           </div>
@@ -405,7 +405,7 @@ export const CompareDialog: React.FC = () => {
                             }}
                           >
                             <canvas ref={canvasRefB} className="w-full h-full block object-contain" />
-                            <div className="absolute top-2.5 right-2.5 bg-[#000000]/90 backdrop-blur text-purple-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-purple-500/40 shadow-lg select-none pointer-events-none">
+                            <div className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur text-purple-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-purple-500/40 shadow-lg select-none pointer-events-none">
                               Version B (Revision)
                             </div>
                           </div>
@@ -415,13 +415,13 @@ export const CompareDialog: React.FC = () => {
                             className="absolute top-0 bottom-0 w-[2px] bg-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.9)] z-20 pointer-events-none"
                             style={{ left: `${sliderPos}%` }}
                           >
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-[#000000] border-2 border-purple-400 flex items-center justify-center text-purple-300 shadow-2xl text-[10px] font-bold select-none">
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white border-2 border-purple-400 flex items-center justify-center text-purple-300 shadow-2xl text-[10px] font-bold select-none">
                               ◀▶
                             </div>
                           </div>
                         </div>
 
-                        <p className="text-[11px] text-slate-500 mt-3 text-center">
+                        <p className="text-[11px] text-gray-500 mt-3 text-center">
                           Click & drag the vertical divider line horizontally across the page to reveal differences between Version A and Version B.
                         </p>
                       </div>
@@ -431,8 +431,8 @@ export const CompareDialog: React.FC = () => {
                   {/* Text Diff Report Mode */}
                   {compareMode === 'report' && (
                     <div className="space-y-4 pt-1">
-                      <div className="flex items-center justify-between bg-slate-800/60 p-3 rounded-xl border border-slate-800 text-xs">
-                        <span className="text-slate-300">
+                      <div className="flex items-center justify-between bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs">
+                        <span className="text-gray-700">
                           Total pages: <span className="font-mono text-white">{compareResult.pageCountA}</span> vs{' '}
                           <span className="font-mono text-white">{compareResult.pageCountB}</span>
                         </span>
@@ -454,11 +454,11 @@ export const CompareDialog: React.FC = () => {
                         {compareResult.pageResults.map((p) => (
                           <div
                             key={p.pageNumber}
-                            className="p-3 bg-slate-800/40 border border-slate-800 rounded-xl space-y-2"
+                            className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-2"
                           >
                             <div className="flex items-center justify-between text-xs font-semibold">
-                              <span className="text-slate-200">Page {p.pageNumber}</span>
-                              <span className={p.hasVisualDiff ? 'text-amber-400' : 'text-slate-500'}>
+                              <span className="text-gray-800">Page {p.pageNumber}</span>
+                              <span className={p.hasVisualDiff ? 'text-amber-400' : 'text-gray-500'}>
                                 {p.hasVisualDiff ? 'Difference detected' : 'No changes'}
                               </span>
                             </div>
@@ -494,8 +494,8 @@ export const CompareDialog: React.FC = () => {
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-3.5 border-t border-slate-800 bg-[#000000]/60 flex items-center justify-between text-xs">
-              <span className="text-slate-500 text-[11px]">
+            <div className="px-6 py-3.5 border-t border-gray-200 bg-white/60 flex items-center justify-between text-xs">
+              <span className="text-gray-500 text-[11px]">
                 {compareResult ? 'Comparison engine: 100% offline vector layout & pixel alignment' : ''}
               </span>
               <button
@@ -510,7 +510,7 @@ export const CompareDialog: React.FC = () => {
                   setDocBId(null);
                   setActiveModal(null);
                 }}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition-colors"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-800 hover:text-white transition-colors"
               >
                 Close
               </button>

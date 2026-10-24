@@ -146,7 +146,7 @@ const SidebarPageThumbnail: React.FC<SidebarPageThumbnailProps> = ({
       >
         {/* Crisp Page Preview Canvas */}
         <div
-          className={`bg-white rounded-md border border-slate-600/60 shadow flex items-center justify-center overflow-hidden relative transition-transform duration-150 group-hover:scale-[1.01] ${
+          className={`bg-white rounded-md border border-gray-200 shadow-sm flex items-center justify-center overflow-hidden relative transition-transform duration-150 group-hover:scale-[1.01] ${
             isLandscape ? 'w-48 h-32' : 'w-36 h-48'
           }`}
         >
@@ -169,7 +169,7 @@ const SidebarPageThumbnail: React.FC<SidebarPageThumbnailProps> = ({
           <div className="flex items-center gap-1.5">
             <span
               className={`font-mono text-xs font-bold px-1.5 py-0.5 rounded-md ${
-                isCurrent ? 'bg-swift-600 text-white' : 'bg-slate-800 text-slate-300 group-hover:text-white'
+                isCurrent ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700 group-hover:bg-gray-200'
               }`}
             >
               #{pageIndex + 1}
@@ -187,7 +187,7 @@ const SidebarPageThumbnail: React.FC<SidebarPageThumbnailProps> = ({
                   e.stopPropagation();
                   onRotateCW();
                 }}
-                className="p-1 hover:bg-slate-700 text-slate-400 hover:text-swift-400 rounded transition-colors"
+                className="p-1 hover:bg-gray-100 text-gray-400 hover:text-red-600 rounded transition-colors"
                 title="Rotate 90° CW"
               >
                 <RotateCw className="w-3 h-3" />
@@ -200,7 +200,7 @@ const SidebarPageThumbnail: React.FC<SidebarPageThumbnailProps> = ({
                   e.stopPropagation();
                   onDuplicate();
                 }}
-                className="p-1 hover:bg-slate-700 text-slate-400 hover:text-emerald-400 rounded transition-colors"
+                className="p-1 hover:bg-gray-100 text-gray-400 hover:text-emerald-600 rounded transition-colors"
                 title="Duplicate page"
               >
                 <Copy className="w-3 h-3" />
@@ -213,7 +213,7 @@ const SidebarPageThumbnail: React.FC<SidebarPageThumbnailProps> = ({
                   e.stopPropagation();
                   onDelete();
                 }}
-                className="p-1 hover:bg-rose-900/40 text-slate-400 hover:text-rose-400 rounded transition-colors"
+                className="p-1 hover:bg-red-50 text-gray-400 hover:text-red-600 rounded transition-colors"
                 title="Delete page"
               >
                 <Trash2 className="w-3 h-3" />
@@ -240,12 +240,10 @@ const SidebarPageThumbnail: React.FC<SidebarPageThumbnailProps> = ({
       className={`group relative flex items-center gap-3 p-2 rounded-xl cursor-pointer transition-all ${
         isDragOver ? 'border-t-2 border-swift-400 bg-swift-500/10' : ''
       } ${
-        isCurrent
-          ? 'bg-swift-600/20 border border-swift-500/60 shadow-sm text-swift-400 font-medium'
-          : 'hover:bg-slate-800/60 border border-transparent text-slate-300'
+        isCurrent ? 'bg-red-50 border border-red-300 shadow-2xs text-red-600 font-medium' : 'hover:bg-gray-100 border border-transparent text-gray-700'
       }`}
     >
-      <div className="w-14 h-20 bg-white rounded-md border border-slate-600/60 flex items-center justify-center overflow-hidden shadow shrink-0 relative">
+      <div className="w-14 h-20 bg-white rounded-md border border-gray-200 flex items-center justify-center overflow-hidden shadow shrink-0 relative">
         <canvas
           ref={canvasRef}
           className={`w-full h-full object-contain block ${isRendered ? 'opacity-100' : 'opacity-0'}`}
@@ -258,7 +256,7 @@ const SidebarPageThumbnail: React.FC<SidebarPageThumbnailProps> = ({
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className={`font-semibold text-xs truncate ${isCurrent ? 'text-swift-400 font-bold' : 'text-slate-100'}`}>
+        <p className={`font-semibold text-xs truncate ${isCurrent ? 'text-red-600 font-bold' : 'text-gray-900'}`}>
           Page {pageIndex + 1}
         </p>
         <p className="text-[10px] text-slate-400 font-mono">
@@ -291,9 +289,7 @@ const OutlineNode: React.FC<OutlineNodeProps> = ({ item, currentPage, onNavigate
         }}
         style={{ paddingLeft: `${level * 12 + 6}px` }}
         className={`group flex items-center gap-1.5 py-1.5 px-2 rounded-lg cursor-pointer text-xs transition-colors ${
-          isSelected
-            ? 'bg-swift-600/30 text-swift-300 font-semibold border border-swift-500/30'
-            : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+          isSelected ? 'bg-red-50 text-red-600 font-semibold border border-red-200' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
         }`}
       >
         {hasChildren ? (
@@ -302,7 +298,7 @@ const OutlineNode: React.FC<OutlineNodeProps> = ({ item, currentPage, onNavigate
               e.stopPropagation();
               setIsExpanded(!isExpanded);
             }}
-            className="p-0.5 hover:bg-slate-700/60 rounded text-slate-400 hover:text-slate-200"
+            className="p-0.5 hover:bg-gray-200 rounded text-gray-500 hover:text-gray-900"
           >
             {isExpanded ? (
               <ChevronDown className="w-3 h-3" />
@@ -447,7 +443,7 @@ export const Sidebar: React.FC = () => {
       {/* Mobile Drawer Backdrop - Positioned below AppHeader */}
       <div
         onClick={toggleSidebar}
-        className="md:hidden fixed top-14 inset-x-0 bottom-0 z-40 bg-black/75 backdrop-blur-sm animate-fade-in"
+        className="md:hidden fixed top-14 inset-x-0 bottom-0 z-40 bg-slate-900/40 backdrop-blur-xs animate-fade-in"
       />
 
       <aside className="w-72 max-w-[85vw] md:w-64 bg-white border-r border-gray-200 flex flex-col select-none z-50 fixed top-14 bottom-0 left-0 md:relative md:top-auto md:bottom-auto md:left-auto md:z-auto shadow-xl md:shadow-none h-[calc(100dvh-3.5rem)] md:h-full">
@@ -461,15 +457,13 @@ export const Sidebar: React.FC = () => {
                 key={tab.id}
                 onClick={() => setSidebarTab(tab.id)}
                 className={`flex-1 h-full py-2 px-1 rounded flex items-center justify-center gap-1 text-[11px] font-medium transition-colors relative min-h-[40px] ${
-                  isActive
-                    ? 'bg-slate-800 text-swift-400 font-semibold shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                  isActive ? 'bg-white text-red-600 font-semibold shadow-xs border border-gray-200' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5 shrink-0" />
                 <span className="hidden xs:inline sm:inline">{tab.label}</span>
                 {typeof tab.badge === 'number' && tab.badge > 0 && (
-                  <span className="bg-swift-500/30 text-swift-300 text-[9px] px-1 py-px rounded-full font-mono font-bold">
+                  <span className="bg-red-50 text-red-600 text-[9px] px-1 py-px rounded-full font-mono font-bold">
                     {tab.badge}
                   </span>
                 )}
@@ -480,7 +474,7 @@ export const Sidebar: React.FC = () => {
           {/* Mobile Drawer Close Button */}
           <button
             onClick={toggleSidebar}
-            className="md:hidden p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white shrink-0 ml-1"
+            className="md:hidden p-2 rounded-lg bg-gray-100 text-gray-500 hover:text-gray-900 shrink-0 ml-1"
             title="Close Sidebar"
             aria-label="Close Sidebar"
           >
@@ -497,8 +491,8 @@ export const Sidebar: React.FC = () => {
         {activeSidebarTab === 'annotations' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                <MessageSquare className="w-3.5 h-3.5 text-swift-400" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-600 flex items-center gap-1.5">
+                <MessageSquare className="w-3.5 h-3.5 text-red-600" />
                 <span>Annotations</span>
               </h3>
               <span className="text-[10px] font-mono text-slate-500">
@@ -510,9 +504,9 @@ export const Sidebar: React.FC = () => {
             ) : docAnnotations.length > 0 ? (
               <div className="space-y-2">
                 {docAnnotations.map(ann => (
-                  <div key={ann.id} onClick={() => setCurrentPage(ann.pageIndex + 1)} className="p-2 bg-slate-800/40 hover:bg-slate-800/80 rounded-xl border border-slate-800 cursor-pointer transition-colors">
+                  <div key={ann.id} onClick={() => setCurrentPage(ann.pageIndex + 1)} className="p-2 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-200 cursor-pointer transition-colors">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-slate-200 capitalize">{ann.type}</span>
+                      <span className="text-xs font-semibold text-gray-800 capitalize">{ann.type}</span>
                       <span className="text-[10px] font-mono text-slate-500">Page {ann.pageIndex + 1}</span>
                     </div>
                   </div>
@@ -528,17 +522,15 @@ export const Sidebar: React.FC = () => {
         {activeSidebarTab === 'thumbnails' && (
           <div className="space-y-2">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[11px] font-semibold uppercase text-slate-400 tracking-wider">
+              <p className="text-[11px] font-semibold uppercase text-gray-500 tracking-wider">
                 Pages ({pageCount})
               </p>
-              <div className="flex items-center bg-slate-800/80 p-0.5 rounded-lg border border-slate-700/80">
+              <div className="flex items-center bg-gray-100 p-0.5 rounded-lg border border-gray-200">
                 <button
                   type="button"
                   onClick={() => setThumbnailDisplayMode('cards')}
                   className={`p-1 rounded transition-colors ${
-                    thumbnailDisplayMode === 'cards'
-                      ? 'bg-swift-600 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-white'
+                    thumbnailDisplayMode === 'cards' ? 'bg-white text-gray-900 shadow-2xs font-medium' : 'text-gray-500 hover:text-gray-900'
                   }`}
                   title="Large Page Cards (Acrobat-style view)"
                 >
@@ -548,9 +540,7 @@ export const Sidebar: React.FC = () => {
                   type="button"
                   onClick={() => setThumbnailDisplayMode('compact')}
                   className={`p-1 rounded transition-colors ${
-                    thumbnailDisplayMode === 'compact'
-                      ? 'bg-swift-600 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-white'
+                    thumbnailDisplayMode === 'compact' ? 'bg-white text-gray-900 shadow-2xs font-medium' : 'text-gray-500 hover:text-gray-900'
                   }`}
                   title="Compact List View"
                 >
@@ -624,11 +614,11 @@ export const Sidebar: React.FC = () => {
                   value={localQuery}
                   onChange={(e) => setLocalQuery(e.target.value)}
                   placeholder="Find in document..."
-                  className="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-swift-500 pr-7"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-red-500 pr-7"
                 />
                 <button
                   type="submit"
-                  className="absolute right-2 top-2 text-slate-400 hover:text-swift-400"
+                  className="absolute right-2 top-2 text-gray-400 hover:text-red-600"
                 >
                   <Search className="w-3.5 h-3.5" />
                 </button>
@@ -644,7 +634,7 @@ export const Sidebar: React.FC = () => {
                     <button
                       type="button"
                       onClick={prevSearchMatch}
-                      className="p-1 hover:bg-slate-800 rounded text-slate-300"
+                      className="p-1 hover:bg-gray-100 rounded text-gray-600 hover:text-gray-900"
                       title="Previous match"
                     >
                       <ChevronLeft className="w-3.5 h-3.5" />
@@ -652,7 +642,7 @@ export const Sidebar: React.FC = () => {
                     <button
                       type="button"
                       onClick={nextSearchMatch}
-                      className="p-1 hover:bg-slate-800 rounded text-slate-300"
+                      className="p-1 hover:bg-gray-100 rounded text-gray-600 hover:text-gray-900"
                       title="Next match"
                     >
                       <ChevronRight className="w-3.5 h-3.5" />
@@ -687,7 +677,7 @@ export const Sidebar: React.FC = () => {
                   className={`p-2 rounded cursor-pointer border transition-colors ${
                     currentSearchMatch === idx
                       ? 'bg-amber-500/20 border-amber-500/40 text-amber-200'
-                      : 'bg-slate-800/40 border-slate-800 hover:bg-slate-800 text-slate-300'
+                      : 'bg-gray-50 border-gray-200 hover:bg-gray-100 text-gray-700'
                   }`}
                 >
                   <div className="flex justify-between font-mono text-[10px] text-slate-400 mb-1">
@@ -718,7 +708,7 @@ export const Sidebar: React.FC = () => {
 
               {/* Add bookmark button / form */}
               {isAddingBm ? (
-                <div className="p-2 bg-slate-800/80 rounded-xl border border-slate-700 space-y-2 mb-2">
+                <div className="p-2 bg-gray-50 rounded-xl border border-gray-200 space-y-2 mb-2">
                   <input
                     type="text"
                     placeholder={`Title (default: Page ${currentPage})`}
@@ -739,13 +729,13 @@ export const Sidebar: React.FC = () => {
                       }
                     }}
                     autoFocus
-                    className="w-full px-2.5 py-1 text-xs bg-black border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-swift-500"
+                    className="w-full px-2.5 py-1.5 text-xs bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-red-500"
                   />
                   <div className="flex items-center justify-end gap-1.5">
                     <button
                       type="button"
                       onClick={() => setIsAddingBm(false)}
-                      className="px-2 py-0.5 text-[10px] text-slate-400 hover:text-slate-200 rounded"
+                      className="px-2 py-0.5 text-[10px] text-gray-500 hover:text-gray-700 rounded"
                     >
                       Cancel
                     </button>
@@ -761,7 +751,7 @@ export const Sidebar: React.FC = () => {
                           message: `Page ${currentPage} bookmarked.`,
                         });
                       }}
-                      className="px-2.5 py-1 text-[10px] font-semibold bg-swift-600 hover:bg-swift-500 text-white rounded-md"
+                      className="px-2.5 py-1 text-[10px] font-semibold bg-red-600 hover:bg-red-700 text-white rounded-md"
                     >
                       Save
                     </button>
@@ -771,7 +761,7 @@ export const Sidebar: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsAddingBm(true)}
-                  className="w-full py-1.5 px-2 mb-2 rounded-lg border border-dashed border-slate-700 hover:border-amber-500/60 hover:bg-amber-500/10 text-slate-300 hover:text-amber-300 text-xs flex items-center justify-center gap-1.5 transition-colors"
+                  className="w-full py-1.5 px-2 mb-2 rounded-lg border border-dashed border-gray-300 hover:border-amber-400 hover:bg-amber-50/50 text-gray-600 hover:text-amber-700 text-xs flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5 text-amber-400" />
                   <span>Bookmark Page {currentPage}</span>
@@ -780,7 +770,7 @@ export const Sidebar: React.FC = () => {
 
               {/* User bookmarks list */}
               {userBookmarks.length > 0 ? (
-                <div className="space-y-1 bg-black/60 p-2 rounded-xl border border-slate-800">
+                <div className="space-y-1 bg-gray-50 p-2 rounded-xl border border-gray-200">
                   {userBookmarks.map((bm) => (
                     <div
                       key={bm.id}
@@ -797,7 +787,7 @@ export const Sidebar: React.FC = () => {
                       className={`group flex items-center justify-between gap-2 py-1.5 px-2 rounded-lg cursor-pointer text-xs transition-colors ${
                         currentPage === bm.pageIndex + 1
                           ? 'bg-amber-500/20 text-amber-200 border border-amber-500/40 font-semibold'
-                          : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                       }`}
                     >
                       <div className="flex items-center gap-1.5 min-w-0">
@@ -838,7 +828,7 @@ export const Sidebar: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <Bookmark className="w-3.5 h-3.5 text-swift-400" />
+                  <Bookmark className="w-3.5 h-3.5 text-red-600" />
                   <span>Table of Contents</span>
                 </h3>
                 {documentOutline && documentOutline.length > 0 && (
@@ -849,7 +839,7 @@ export const Sidebar: React.FC = () => {
               </div>
 
               {documentOutline && documentOutline.length > 0 ? (
-                <div className="space-y-1 bg-black/60 p-2 rounded-xl border border-slate-800">
+                <div className="space-y-1 bg-gray-50 p-2 rounded-xl border border-gray-200">
                   {documentOutline.map((item, idx) => (
                     <OutlineNode
                       key={`${item.title}_${idx}`}
@@ -869,7 +859,7 @@ export const Sidebar: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <div className="p-3 rounded-xl bg-slate-800/30 border border-slate-800 text-center space-y-1">
+                <div className="p-3 rounded-xl bg-gray-50 border border-gray-200 text-center space-y-1">
                   <BookOpen className="w-5 h-5 text-slate-500 mx-auto" />
                   <p className="text-[11px] font-medium text-slate-400">No embedded outline</p>
                   <p className="text-[10px] text-slate-500">
@@ -884,10 +874,10 @@ export const Sidebar: React.FC = () => {
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                 Document Properties
               </h3>
-              <div className="space-y-2 bg-slate-800/40 p-3 rounded-xl border border-slate-800 text-[11px]">
+              <div className="space-y-2 bg-gray-50 p-3 rounded-xl border border-gray-200 text-[11px]">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Total Pages:</span>
-                  <span className="font-mono text-white">{pageCount}</span>
+                  <span className="font-mono text-gray-900 font-semibold">{pageCount}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">File Size:</span>
@@ -935,14 +925,14 @@ export const Sidebar: React.FC = () => {
       {/* Thumbnail Right-Click Context Menu */}
       {contextMenu && (
         <div
-          className="fixed z-50 bg-black border border-slate-700 rounded-xl shadow-2xl p-1 w-44 animate-scale-in text-xs"
+          className="fixed z-50 bg-white border border-gray-200 rounded-xl shadow-xl p-1 w-44 animate-scale-in text-xs text-gray-800"
           style={{
             left: `${Math.min(window.innerWidth - 180, contextMenu.x)}px`,
             top: `${Math.min(window.innerHeight - 200, contextMenu.y)}px`,
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="px-2 py-1 text-[10px] uppercase font-bold text-slate-400 border-b border-slate-800">
+          <div className="px-2 py-1 text-[10px] uppercase font-bold text-gray-500 border-b border-gray-100">
             Page {contextMenu.pageIndex + 1} Actions
           </div>
           <button
@@ -950,7 +940,7 @@ export const Sidebar: React.FC = () => {
               rotatePage(contextMenu.pageIndex, 90);
               setContextMenu(null);
             }}
-            className="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-slate-200 transition-colors text-left"
+            className="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-gray-100 rounded-lg text-gray-700 hover:text-gray-900 transition-colors text-left"
           >
             <RotateCw className="w-3.5 h-3.5 text-swift-400" />
             <span>Rotate 90° CW</span>
@@ -960,7 +950,7 @@ export const Sidebar: React.FC = () => {
               rotatePage(contextMenu.pageIndex, -90);
               setContextMenu(null);
             }}
-            className="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-slate-200 transition-colors text-left"
+            className="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-gray-100 rounded-lg text-gray-700 hover:text-gray-900 transition-colors text-left"
           >
             <RotateCcw className="w-3.5 h-3.5 text-swift-400" />
             <span>Rotate 90° CCW</span>
@@ -970,7 +960,7 @@ export const Sidebar: React.FC = () => {
               duplicatePage(contextMenu.pageIndex);
               setContextMenu(null);
             }}
-            className="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-slate-200 transition-colors text-left"
+            className="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-gray-100 rounded-lg text-gray-700 hover:text-gray-900 transition-colors text-left"
           >
             <Copy className="w-3.5 h-3.5 text-emerald-400" />
             <span>Duplicate Page</span>
@@ -982,7 +972,7 @@ export const Sidebar: React.FC = () => {
               setContextMenu(null);
             }}
             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors text-left ${
-              pageCount <= 1 ? 'opacity-40 cursor-not-allowed text-slate-500' : 'hover:bg-rose-950/40 text-rose-400'
+              pageCount <= 1 ? 'opacity-40 cursor-not-allowed text-gray-400' : 'hover:bg-red-50 text-red-600'
             }`}
           >
             <Trash2 className="w-3.5 h-3.5" />

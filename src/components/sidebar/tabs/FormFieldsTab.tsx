@@ -85,13 +85,13 @@ export const FormFieldsTab: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-slate-900 text-slate-200 text-xs overflow-hidden">
+    <div className="flex-1 flex flex-col h-full bg-white text-gray-800 text-xs overflow-hidden">
       {/* Header Bar */}
-      <div className="p-3 border-b border-slate-800 flex items-center justify-between">
+      <div className="p-3 border-b border-gray-200 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <FileText className="w-4 h-4 text-swift-400" />
-          <span className="font-semibold text-slate-200">Interactive Forms</span>
-          <span className="bg-slate-800 text-swift-400 px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold">
+          <FileText className="w-4 h-4 text-red-600" />
+          <span className="font-semibold text-gray-800">Interactive Forms</span>
+          <span className="bg-red-50 text-red-600 px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold">
             {formFields.length}
           </span>
         </div>
@@ -99,9 +99,7 @@ export const FormFieldsTab: React.FC = () => {
         <button
           onClick={toggleHighlightFormFields}
           className={`p-1 rounded transition-colors flex items-center gap-1 ${
-            highlightFormFields
-              ? 'bg-swift-500/20 text-swift-400 hover:bg-swift-500/30'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+            highlightFormFields ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'
           }`}
           title={highlightFormFields ? 'Hide Field Highlights on Canvas' : 'Show Field Highlights on Canvas'}
         >
@@ -111,19 +109,19 @@ export const FormFieldsTab: React.FC = () => {
 
       {formFields.length === 0 ? (
         <div className="flex-1 p-6 flex flex-col items-center justify-center text-center">
-          <Layers className="w-10 h-10 text-slate-600 mb-3" />
-          <p className="font-medium text-slate-300 mb-1">No Form Fields Found</p>
-          <p className="text-[11px] text-slate-500 leading-relaxed">
+          <Layers className="w-10 h-10 text-gray-300 mb-3" />
+          <p className="font-medium text-gray-700 mb-1">No Form Fields Found</p>
+          <p className="text-[11px] text-gray-500 leading-relaxed">
             This PDF does not contain interactive AcroForm inputs. You can still use the toolbar text tool to insert content anywhere.
           </p>
         </div>
       ) : (
         <>
           {/* Action Ribbon */}
-          <div className="p-2.5 bg-slate-950/60 border-b border-slate-800 grid grid-cols-3 gap-1.5">
+          <div className="p-2.5 bg-gray-50 border-b border-gray-200 grid grid-cols-3 gap-1.5">
             <button
               onClick={handleFlatten}
-              className="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded flex items-center justify-center gap-1 transition-colors"
+              className="py-1.5 px-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-lg flex items-center justify-center gap-1 transition-colors shadow-2xs"
               title="Permanently burn values into page content (Flatten)"
             >
               <Lock className="w-3 h-3 text-amber-400" />
@@ -131,7 +129,7 @@ export const FormFieldsTab: React.FC = () => {
             </button>
             <button
               onClick={handleClear}
-              className="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded flex items-center justify-center gap-1 transition-colors"
+              className="py-1.5 px-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-lg flex items-center justify-center gap-1 transition-colors shadow-2xs"
               title="Clear all fields"
             >
               <RotateCcw className="w-3 h-3 text-rose-400" />
@@ -139,7 +137,7 @@ export const FormFieldsTab: React.FC = () => {
             </button>
             <button
               onClick={handleExportJSON}
-              className="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded flex items-center justify-center gap-1 transition-colors"
+              className="py-1.5 px-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-lg flex items-center justify-center gap-1 transition-colors shadow-2xs"
               title="Download filled data as JSON"
             >
               <Download className="w-3 h-3 text-emerald-400" />
@@ -153,10 +151,10 @@ export const FormFieldsTab: React.FC = () => {
               return (
                 <div
                   key={`${field.name}_${idx}`}
-                  className="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/60 hover:border-slate-600 transition-colors"
+                  className="p-2.5 rounded-xl bg-gray-50/80 border border-gray-200 hover:border-gray-300 transition-colors shadow-2xs"
                 >
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-semibold text-slate-200 truncate flex items-center gap-1.5" title={field.name}>
+                    <span className="font-semibold text-gray-800 truncate flex items-center gap-1.5" title={field.name}>
                       {field.type === 'checkbox' ? (
                         <CheckSquare className="w-3 h-3 text-swift-400 shrink-0" />
                       ) : field.type === 'dropdown' ? (
@@ -169,7 +167,7 @@ export const FormFieldsTab: React.FC = () => {
 
                     <button
                       onClick={() => setCurrentPage(field.pageIndex + 1)}
-                      className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-700 hover:bg-swift-600 text-slate-300 hover:text-white transition-colors shrink-0"
+                      className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-gray-200 hover:bg-red-600 text-gray-700 hover:text-white transition-colors shrink-0"
                       title={`Jump to Page ${field.pageIndex + 1}`}
                     >
                       P.{field.pageIndex + 1}
@@ -183,9 +181,9 @@ export const FormFieldsTab: React.FC = () => {
                         type="checkbox"
                         checked={Boolean(field.value)}
                         onChange={(e) => updateFormField(field.name, e.target.checked)}
-                        className="rounded bg-slate-900 border-slate-700 text-swift-500 focus:ring-swift-500 w-3.5 h-3.5"
+                        className="rounded bg-white border-gray-300 text-red-600 focus:ring-red-500 w-3.5 h-3.5"
                       />
-                      <span className="text-slate-400 text-[11px]">
+                      <span className="text-gray-600 text-[11px]">
                         {field.value ? 'Checked' : 'Unchecked'}
                       </span>
                     </label>
@@ -193,7 +191,7 @@ export const FormFieldsTab: React.FC = () => {
                     <select
                       value={String(field.value)}
                       onChange={(e) => updateFormField(field.name, e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 focus:outline-none focus:border-swift-500 text-[11px]"
+                      className="w-full bg-white border border-gray-300 rounded-lg px-2 py-1 text-gray-800 focus:outline-none focus:border-red-500 text-[11px]"
                     >
                       {field.options?.map((opt) => (
                         <option key={opt} value={opt}>
@@ -207,7 +205,7 @@ export const FormFieldsTab: React.FC = () => {
                       value={String(field.value || '')}
                       onChange={(e) => updateFormField(field.name, e.target.value)}
                       placeholder="Type value..."
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 focus:outline-none focus:border-swift-500 text-[11px]"
+                      className="w-full bg-white border border-gray-300 rounded-lg px-2 py-1 text-gray-800 focus:outline-none focus:border-red-500 text-[11px]"
                     />
                   )}
                 </div>

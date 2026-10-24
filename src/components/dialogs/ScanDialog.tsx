@@ -195,17 +195,17 @@ export const ScanDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Scan Dialog">
-      <div className="w-full max-w-lg bg-[#000000] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+    <div className="fixed inset-0 z-50 bg-gray-50/50 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Scan Dialog">
+      <div className="w-full max-w-lg bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-orange-500/10 text-orange-400">
               <Camera className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Smart Document Scanner</h3>
-              <p className="text-xs text-slate-400">Scan via live camera or photos with auto-contrast binarization</p>
+              <h3 className="text-base font-bold text-gray-900">Smart Document Scanner</h3>
+              <p className="text-xs text-gray-500">Scan via live camera or photos with auto-contrast binarization</p>
             </div>
           </div>
           <button
@@ -213,14 +213,14 @@ export const ScanDialog: React.FC = () => {
               stopCameraStream();
               setActiveModal(null);
             }}
-            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Mode Switcher */}
-        <div className="flex border-b border-slate-800 bg-[#000000]/40 px-6 pt-2 gap-2 text-xs">
+        <div className="flex border-b border-gray-200 bg-white/40 px-6 pt-2 gap-2 text-xs">
           <button
             type="button"
             onClick={() => {
@@ -230,7 +230,7 @@ export const ScanDialog: React.FC = () => {
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
               inputMode === 'upload'
                 ? 'border-orange-500 text-orange-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
             <Upload className="w-3.5 h-3.5" />
@@ -245,7 +245,7 @@ export const ScanDialog: React.FC = () => {
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
               inputMode === 'camera'
                 ? 'border-orange-500 text-orange-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
             <Camera className="w-3.5 h-3.5" />
@@ -266,16 +266,16 @@ export const ScanDialog: React.FC = () => {
           {/* Current Capture / Video Viewport */}
           {inputMode === 'camera' && !currentSnapshot ? (
             <div className="space-y-3">
-              <div className="border border-slate-800 rounded-xl bg-black overflow-hidden relative min-h-[220px] flex items-center justify-center">
+              <div className="border border-gray-200 rounded-xl bg-white overflow-hidden relative min-h-[220px] flex items-center justify-center">
                 {cameraError ? (
-                  <div className="p-6 text-center text-slate-400 flex flex-col items-center gap-2">
+                  <div className="p-6 text-center text-gray-500 flex flex-col items-center gap-2">
                     <VideoOff className="w-8 h-8 text-rose-400" />
                     <p className="font-semibold text-rose-300">Camera Unavailable</p>
-                    <p className="text-[11px] text-slate-400 max-w-xs">{cameraError}</p>
+                    <p className="text-[11px] text-gray-500 max-w-xs">{cameraError}</p>
                     <button
                       type="button"
                       onClick={() => setInputMode('upload')}
-                      className="mt-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs"
+                      className="mt-2 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg text-xs"
                     >
                       Switch to File Upload
                     </button>
@@ -291,7 +291,7 @@ export const ScanDialog: React.FC = () => {
                     />
                     {/* Viewfinder Target Frame Overlay */}
                     <div className="absolute inset-4 border-2 border-dashed border-orange-500/60 pointer-events-none rounded-lg flex items-center justify-center">
-                      <div className="text-[10px] text-orange-300/80 bg-black/60 px-2 py-0.5 rounded font-mono">
+                      <div className="text-[10px] text-orange-300/80 bg-white/60 px-2 py-0.5 rounded font-mono">
                         Align document within guide
                       </div>
                     </div>
@@ -316,18 +316,18 @@ export const ScanDialog: React.FC = () => {
             /* Upload Mode Selection */
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-slate-700 hover:border-orange-500/50 bg-slate-800/40 hover:bg-slate-800/80 p-8 rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all"
+              className="border-2 border-dashed border-gray-300 hover:border-orange-500/50 bg-gray-50 hover:bg-gray-100 p-8 rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all"
             >
               <div className="p-3 bg-orange-500/10 rounded-full text-orange-400">
                 <Upload className="w-6 h-6" />
               </div>
-              <p className="font-semibold text-slate-200">Select Document Photo or Receipt</p>
-              <p className="text-[11px] text-slate-400">Supports JPG, PNG, WEBP camera images</p>
+              <p className="font-semibold text-gray-800">Select Document Photo or Receipt</p>
+              <p className="text-[11px] text-gray-500">Supports JPG, PNG, WEBP camera images</p>
             </div>
           ) : (
             /* Snapshot Preview with Filter */
             <div className="space-y-4">
-              <div className="border border-slate-800 rounded-xl bg-[#000000] p-2 flex items-center justify-center max-h-60 overflow-hidden relative">
+              <div className="border border-gray-200 rounded-xl bg-white p-2 flex items-center justify-center max-h-60 overflow-hidden relative">
                 <img
                   src={currentSnapshot}
                   alt="Scan Preview"
@@ -344,7 +344,7 @@ export const ScanDialog: React.FC = () => {
                     setCurrentSnapshot(null);
                     if (inputMode === 'camera') startCameraStream();
                   }}
-                  className="absolute top-2 right-2 p-1.5 bg-slate-800/80 hover:bg-slate-700 rounded-lg text-slate-300 flex items-center gap-1 text-[11px]"
+                  className="absolute top-2 right-2 p-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 flex items-center gap-1 text-[11px]"
                   title="Retake or change photo"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
@@ -354,7 +354,7 @@ export const ScanDialog: React.FC = () => {
 
               {/* Filter Mode Selector */}
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-300 block">Enhancement Filter</label>
+                <label className="font-semibold text-gray-700 block">Enhancement Filter</label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { id: 'document', label: 'Document (B&W)', sub: 'Clean Crisp Text' },
@@ -368,11 +368,11 @@ export const ScanDialog: React.FC = () => {
                       className={`p-2.5 rounded-xl border text-center transition-all ${
                         filterMode === m.id
                           ? 'bg-orange-500/10 border-orange-500 text-orange-300'
-                          : 'bg-slate-800/40 border-slate-800 text-slate-400'
+                          : 'bg-gray-50 border-gray-200 text-gray-500'
                       }`}
                     >
                       <p className="font-bold">{m.label}</p>
-                      <p className="text-[10px] text-slate-500 mt-0.5">{m.sub}</p>
+                      <p className="text-[10px] text-gray-500 mt-0.5">{m.sub}</p>
                     </button>
                   ))}
                 </div>
@@ -383,7 +383,7 @@ export const ScanDialog: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleAddPageToBatch}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold rounded-lg flex items-center gap-1.5"
                 >
                   <Plus className="w-3.5 h-3.5 text-orange-400" />
                   <span>Queue as Page & Scan Next</span>
@@ -394,13 +394,13 @@ export const ScanDialog: React.FC = () => {
 
           {/* Scanned Pages Batch Tray */}
           {scannedPages.length > 0 && (
-            <div className="pt-2 border-t border-slate-800">
-              <label className="font-semibold text-slate-300 block mb-1.5">
+            <div className="pt-2 border-t border-gray-200">
+              <label className="font-semibold text-gray-700 block mb-1.5">
                 Batch Pages ({scannedPages.length})
               </label>
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {scannedPages.map((pg, idx) => (
-                  <div key={idx} className="relative shrink-0 border border-slate-700 rounded-lg p-1 bg-[#000000]">
+                  <div key={idx} className="relative shrink-0 border border-gray-300 rounded-lg p-1 bg-white">
                     <img src={pg} alt={`Page ${idx + 1}`} className="w-14 h-18 object-cover rounded" />
                     <button
                       type="button"
@@ -410,7 +410,7 @@ export const ScanDialog: React.FC = () => {
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
-                    <span className="text-[10px] text-slate-400 block text-center mt-0.5 font-mono">P.{idx + 1}</span>
+                    <span className="text-[10px] text-gray-500 block text-center mt-0.5 font-mono">P.{idx + 1}</span>
                   </div>
                 ))}
               </div>
@@ -419,13 +419,13 @@ export const ScanDialog: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-800 bg-[#000000]/60 flex justify-end gap-2">
+        <div className="px-6 py-4 border-t border-gray-200 bg-white/60 flex justify-end gap-2">
           <button
             onClick={() => {
               stopCameraStream();
               setActiveModal(null);
             }}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white"
           >
             Cancel
           </button>

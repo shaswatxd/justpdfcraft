@@ -11,36 +11,19 @@ import {
   Save,
   Plus,
   ArrowUpDown,
-  GitCompare,
   ZoomIn,
   ZoomOut,
   X,
-  FileText,
-  Lock,
-  Hash,
-  Layers,
-  Crop,
-  Edit3,
-  Unlock,
-  Expand,
-  Bookmark,
-  HelpCircle,
-  Ruler,
   Volume2,
-  Crosshair,
-  Focus,
   PenTool,
   RefreshCw,
-  Camera,
   Scissors,
   Files,
-  Table,
-  Droplets,
   GraduationCap,
+  Expand,
 } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
-import { useToolStore } from '@/stores/toolStore';
 import { useTTSStore } from '@/stores/ttsStore';
 
 export interface CommandItem {
@@ -59,24 +42,18 @@ export const CommandPalette: React.FC = () => {
     setActiveModal,
     setSidebarTab,
     toggleFullscreen,
-    toggleLaserPointer,
-    toggleSpotlight,
   } = useUIStore();
   const {
     currentPage,
     rotateSelectedPages,
-    deleteSelectedPages,
+    deletePage,
     insertBlankPageAt,
     reverseAllPages,
     setZoom,
     setViewMode,
     saveCurrentDocument,
     closeCurrentDocument,
-    flattenDocumentForms,
-    clearAllForms,
-    addUserBookmark,
   } = useDocumentStore();
-  const { setTool } = useToolStore();
   const { toggleTTS } = useTTSStore();
 
   const [query, setQuery] = useState('');
@@ -99,9 +76,9 @@ export const CommandPalette: React.FC = () => {
 
   useEffect(() => {
     if (isCommandPaletteOpen) {
+      setTimeout(() => inputRef.current?.focus(), 50);
       setQuery('');
       setSelectedIndex(0);
-      setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [isCommandPaletteOpen]);
 
@@ -109,265 +86,133 @@ export const CommandPalette: React.FC = () => {
 
   const commands: CommandItem[] = [
     {
-      id: 'fullscreen_presentation',
-      title: 'Fullscreen Presentation & Reading Mode',
-      category: 'View',
-      icon: Expand,
-      shortcut: 'F11 / Ctrl+L',
-      action: () => toggleFullscreen(),
-    },
-    {
-      id: 'laser_pointer',
-      title: 'Glowing Laser Pointer (Presentation Mode)',
-      category: 'View',
-      icon: Crosshair,
-      shortcut: 'L',
-      action: () => toggleLaserPointer(),
-    },
-    {
-      id: 'spotlight_focus',
-      title: 'Spotlight Reading Focus Beam',
-      category: 'View',
-      icon: Focus,
-      shortcut: 'S',
-      action: () => toggleSpotlight(),
-    },
-    {
-      id: 'add_user_bookmark',
-      title: `Bookmark Page ${currentPage} (My Study Bookmarks)`,
-      category: 'Document',
-      icon: Bookmark,
-      shortcut: 'Ctrl+B',
-      action: () => addUserBookmark(`Bookmark Page ${currentPage}`, currentPage - 1),
-    },
-    {
-      id: 'keyboard_shortcuts_modal',
-      title: 'Keyboard Shortcuts Cheat Sheet & Power Controls',
-      category: 'Document',
-      icon: HelpCircle,
-      shortcut: '? / F1',
-      action: () => setActiveModal('shortcuts'),
-    },
-    {
-      id: 'measure_tool',
-      title: 'Measure & Dimension Ruler Tool (CAD-grade precision)',
+      id: 'merge',
+      title: 'Merge Multiple PDFs into One Document',
       category: 'Tools',
-      icon: Ruler,
-      shortcut: 'M',
-      action: () => setTool('measure'),
+      icon: Files,
+      action: () => setActiveModal('merge'),
     },
     {
-      id: 'read_aloud_tts',
-      title: 'Read Aloud / Text-to-Speech (TTS Audio Playback)',
+      id: 'split',
+      title: 'Split & Extract Pages from PDF',
       category: 'Tools',
-      icon: Volume2,
-      shortcut: 'Ctrl+Shift+U',
-      action: () => toggleTTS(),
-    },
-    {
-      id: 'edit_text_inplace',
-      title: 'Edit Existing PDF Text (Direct In-Place Editing)',
-      category: 'Tools',
-      icon: Edit3,
-      action: () => setTool('edit_text'),
-    },
-    {
-      id: 'universal_unlock',
-      title: 'Unlock PDF & Strip Permissions (Bypass Owner/Copy/Print Locks)',
-      category: 'Tools',
-      icon: Unlock,
-      action: () => setActiveModal('protect'),
-    },
-    {
-      id: 'save',
-      title: 'Save Document (Ctrl+S)',
-      category: 'Document',
-      icon: Save,
-      shortcut: 'Ctrl+S',
-      action: () => saveCurrentDocument(),
+      icon: Scissors,
+      action: () => setActiveModal('split'),
     },
     {
       id: 'compress',
-      title: 'Compress PDF under target size',
+      title: 'Smart PDF Compression (Reduce File Size)',
       category: 'Tools',
       icon: FileArchive,
       action: () => setActiveModal('compress'),
     },
     {
       id: 'ocr',
-      title: 'OCR Document — Extract searchable text (Hindi + English)',
+      title: 'OCR & Text Recognition (Convert Scans to Searchable)',
       category: 'Tools',
       icon: ScanText,
       action: () => setActiveModal('ocr'),
     },
-    
-    
     {
-      id: 'e_sign',
-      title: 'E-Sign & Digital Signatures (Draw, Type, Upload)',
-      category: 'Tools',
-      icon: PenTool,
-      action: () => setActiveModal('sign'),
-    },
-    {
-      id: 'convert_format',
-      title: 'Convert PDF to Images / Text & Images to PDF',
+      id: 'convert',
+      title: 'Convert Document Format (PDF ↔ Images, Word, Text)',
       category: 'Tools',
       icon: RefreshCw,
       action: () => setActiveModal('convert'),
     },
     {
-      id: 'camera_scan',
-      title: 'Camera Document Scanner (Webcam / Document Camera)',
+      id: 'protect',
+      title: 'Password Protect & Encrypt PDF (AES-256)',
       category: 'Tools',
-      icon: Camera,
-      action: () => setActiveModal('scan'),
+      icon: Shield,
+      action: () => setActiveModal('protect'),
     },
     {
-      id: 'student_suite',
-      title: 'Photo & Signature Resizer (Exact Target KB for Exams)',
+      id: 'sign',
+      title: 'E-Sign Document (Digital Signature)',
+      category: 'Tools',
+      icon: PenTool,
+      action: () => setActiveModal('sign'),
+    },
+    {
+      id: 'student_resizer',
+      title: 'Exam Photo & Signature Resizer (Exact Target KB)',
       category: 'Tools',
       icon: GraduationCap,
       action: () => setActiveModal('student-resizer'),
     },
     {
-      id: 'extract_table_data',
-      title: 'Extract PDF Tables to Excel (TSV) & CSV',
-      category: 'Tools',
-      icon: Table,
-      action: () => setActiveModal('extract-table'),
+      id: 'save',
+      title: 'Save Current Document',
+      category: 'Document',
+      icon: Save,
+      shortcut: 'Ctrl+S',
+      action: () => saveCurrentDocument(),
     },
     {
-      id: 'watermark_doc',
-      title: 'Watermark Document (Confidential, Draft, Custom)',
-      category: 'Tools',
-      icon: Droplets,
-      action: () => setActiveModal('watermark'),
-    },
-    {
-      id: 'merge_docs',
-      title: 'Merge Multiple PDFs into Single Document',
-      category: 'Tools',
-      icon: Files,
-      action: () => setActiveModal('merge'),
-    },
-    {
-      id: 'split_doc',
-      title: 'Split & Extract Pages from Document',
-      category: 'Tools',
-      icon: Scissors,
-      action: () => setActiveModal('split'),
-    },
-    {
-      id: 'protect',
-      title: 'Protect Document with Password',
-      category: 'Tools',
-      icon: Shield,
-      action: () => setActiveModal('protect'),
-    },
-    
-    {
-      id: 'compare',
-      title: 'Compare with another PDF',
-      category: 'Tools',
-      icon: GitCompare,
-      action: () => setActiveModal('compare'),
-    },
-    {
-      id: 'forms_panel',
-      title: 'Open Interactive Forms Panel',
-      category: 'Tools',
-      icon: FileText,
-      action: () => setSidebarTab('forms'),
-    },
-    {
-      id: 'flatten_forms',
-      title: 'Flatten Form Fields (Permanently Burn Values)',
-      category: 'Tools',
-      icon: Lock,
-      action: () => flattenDocumentForms(),
-    },
-    {
-      id: 'clear_forms',
-      title: 'Clear All Form Fields',
-      category: 'Tools',
-      icon: RotateCcw,
-      action: () => clearAllForms(),
-    },
-    {
-      id: 'bates_numbering',
-      title: 'Add Bates Numbering (Legal Indexing & Sequencing)',
-      category: 'Tools',
-      icon: Hash,
-      action: () => setActiveModal('bates'),
-    },
-    {
-      id: 'header_footer',
-      title: 'Insert Page Numbers & Headers/Footers ("Page X of Y")',
-      category: 'Tools',
-      icon: FileText,
-      action: () => setActiveModal('bates'),
-    },
-    
-    {
-      id: 'batch_process',
-      title: 'Batch Processing Hub (Compress, Watermark, Sanitize Multiple Files)',
-      category: 'Tools',
-      icon: Layers,
-      action: () => setActiveModal('batch'),
-    },
-    {
-      id: 'crop_pages',
-      title: 'Crop Pages & Trim Margins (Adjust Page Dimensions)',
-      category: 'Tools',
-      icon: Crop,
-      action: () => setActiveModal('crop'),
-    },
-    {
-      id: 'organize',
-      title: 'Open Page Organizer Grid',
-      category: 'View',
+      id: 'view_organize',
+      title: 'Switch to Visual Page Organizer Grid',
+      category: 'Pages',
       icon: Grid,
       action: () => setViewMode('organize'),
     },
     {
       id: 'rotate_cw',
-      title: `Rotate Page ${currentPage} Clockwise (90°)`,
+      title: 'Rotate Page 90° Clockwise',
       category: 'Pages',
       icon: RotateCw,
+      shortcut: 'R',
       action: () => rotateSelectedPages(90),
     },
     {
       id: 'rotate_ccw',
-      title: `Rotate Page ${currentPage} Counter-Clockwise (-90°)`,
+      title: 'Rotate Page 90° Counter-Clockwise',
       category: 'Pages',
       icon: RotateCcw,
+      shortcut: 'Shift+R',
       action: () => rotateSelectedPages(-90),
-    },
-    {
-      id: 'insert_blank',
-      title: `Insert Blank Page after Page ${currentPage}`,
-      category: 'Pages',
-      icon: Plus,
-      action: () => insertBlankPageAt(currentPage),
-    },
-    {
-      id: 'reverse_pages',
-      title: 'Reverse Page Order of All Pages',
-      category: 'Pages',
-      icon: ArrowUpDown,
-      action: () => reverseAllPages(),
     },
     {
       id: 'delete_page',
       title: `Delete Page ${currentPage}`,
       category: 'Pages',
       icon: Trash2,
-      action: () => deleteSelectedPages(),
+      shortcut: 'Del',
+      action: () => deletePage(currentPage - 1),
+    },
+    {
+      id: 'insert_blank',
+      title: 'Insert Blank Page After Current',
+      category: 'Pages',
+      icon: Plus,
+      action: () => insertBlankPageAt(currentPage),
+    },
+    {
+      id: 'reverse_pages',
+      title: 'Reverse Page Order of Entire Document',
+      category: 'Pages',
+      icon: ArrowUpDown,
+      action: () => reverseAllPages(),
+    },
+    {
+      id: 'tts_read',
+      title: 'Read Aloud with Text-to-Speech (TTS)',
+      category: 'View',
+      icon: Volume2,
+      shortcut: 'Ctrl+Shift+U',
+      action: () => toggleTTS(),
+    },
+    {
+      id: 'fullscreen',
+      title: 'Toggle Fullscreen Presentation Mode',
+      category: 'View',
+      icon: Expand,
+      shortcut: 'F11',
+      action: () => toggleFullscreen(),
     },
     {
       id: 'search_doc',
-      title: 'Search in Document (Ctrl+F)',
+      title: 'Search in Document',
       category: 'Document',
       icon: Search,
       shortcut: 'Ctrl+F',
@@ -391,7 +236,7 @@ export const CommandPalette: React.FC = () => {
     },
     {
       id: 'close_doc',
-      title: 'Close Document (Ctrl+W)',
+      title: 'Close Document',
       category: 'Document',
       icon: X,
       shortcut: 'Ctrl+W',
@@ -429,16 +274,16 @@ export const CommandPalette: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-label="Command Palette"
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center pt-24 p-4"
+      className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-start justify-center pt-20 p-4 animate-in fade-in duration-150"
       onClick={() => setCommandPaletteOpen(false)}
     >
       <div
-        className="w-full max-w-xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in"
+        className="w-full max-w-xl bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in text-gray-800"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Header */}
-        <div className="flex items-center px-4 py-3.5 border-b border-slate-800 gap-3">
-          <Search className="w-5 h-5 text-swift-400" />
+        <div className="flex items-center px-4 py-3.5 border-b border-gray-100 gap-3 bg-white">
+          <Search className="w-5 h-5 text-red-600 shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -448,19 +293,19 @@ export const CommandPalette: React.FC = () => {
               setSelectedIndex(0);
             }}
             onKeyDown={handleKeyDown}
-            placeholder="Type a command or search action (e.g. compress, rotate, ocr)..."
+            placeholder="Type a command or search action (e.g. compress, merge, ocr)..."
             aria-label="Search commands"
-            className="flex-1 bg-transparent border-none text-slate-100 placeholder-slate-500 text-sm focus:outline-none"
+            className="flex-1 bg-transparent border-none text-gray-900 placeholder:text-gray-400 text-sm focus:outline-none"
           />
-          <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] text-slate-400 font-mono">
+          <kbd className="px-1.5 py-0.5 rounded bg-gray-100 border border-gray-200 text-[10px] text-gray-500 font-mono">
             ESC
           </kbd>
         </div>
 
         {/* Results List */}
-        <div className="max-h-80 overflow-y-auto p-2 divide-y divide-slate-800/40">
+        <div className="max-h-80 overflow-y-auto p-2 divide-y divide-gray-100">
           {filtered.length === 0 ? (
-            <div className="py-8 text-center text-slate-500 text-xs">
+            <div className="py-8 text-center text-gray-500 text-xs">
               No matching commands found.
             </div>
           ) : (
@@ -474,18 +319,18 @@ export const CommandPalette: React.FC = () => {
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer text-xs transition-colors ${
                     isSelected
-                      ? 'bg-swift-600 text-white font-medium'
-                      : 'text-slate-300 hover:bg-slate-800/60'
+                      ? 'bg-red-600 text-white font-medium'
+                      : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${isSelected ? 'text-white' : 'text-slate-400'}`} />
+                    <Icon className={`w-4 h-4 ${isSelected ? 'text-white' : 'text-gray-400'}`} />
                     <span>{cmd.title}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span
                       className={`text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                        isSelected ? 'bg-swift-700 text-white' : 'bg-slate-800 text-slate-400'
+                        isSelected ? 'bg-red-700 text-white' : 'bg-gray-100 text-gray-500'
                       }`}
                     >
                       {cmd.category}
@@ -494,8 +339,8 @@ export const CommandPalette: React.FC = () => {
                       <kbd
                         className={`text-[10px] font-mono px-1 py-0.5 rounded border ${
                           isSelected
-                            ? 'border-swift-400 bg-swift-700 text-white'
-                            : 'border-slate-700 bg-slate-800 text-slate-400'
+                            ? 'border-red-400 bg-red-700 text-white'
+                            : 'border-gray-200 bg-gray-100 text-gray-500'
                         }`}
                       >
                         {cmd.shortcut}
