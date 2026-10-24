@@ -32,7 +32,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'FileArchive',
     color: 'text-emerald-400',
     badge: 'popular',
-    tags: ['compress', 'shrink', 'reduce', 'resize', 'resizer', 'pdf resizer', 'mb', 'kb', 'optimize', 'size'],
+    tags: ['compress', 'shrink', 'reduce', 'resize', 'resizer', 'pdf resizer', 'mb', 'kb', 'optimize', 'size', 'reduce pdf size', 'smaller file size', 'make pdf smaller'],
     action: { type: 'workflow', modal: 'compress', label: 'Compress PDF' },
   },
   {
@@ -279,7 +279,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     category: 'image',
     iconName: 'Sliders',
     color: 'text-amber-400',
-    tags: ['resizer', 'target kb', 'compress kb', 'exam photo', 'ssc', 'upsc', 'neet', 'jee'],
+    tags: ['resizer', 'target kb', 'compress kb', 'exam photo', 'ssc', 'upsc', 'neet', 'jee', 'photo 50kb', 'signature 20kb', 'resize photo', 'reduce photo size', 'kb limit'],
     action: { type: 'modal', modal: 'student-resizer', initialTab: 'resizer' },
   },
   {
@@ -556,10 +556,13 @@ export const searchTools = (query: string, category?: ToolCategory | 'all'): Too
       return false;
     }
     if (!q) return true;
-    return (
-      tool.name.toLowerCase().includes(q) ||
-      tool.shortDesc.toLowerCase().includes(q) ||
-      tool.tags.some((t) => t.toLowerCase().includes(q))
-    );
+    // Split the query into individual words so natural multi-word searches like
+    // "photo 50 kb", "reduce pdf size", "pages reorder" or "signature background"
+    // match every term somewhere in the tool's name, description, category or tags.
+    const tokens = q.split(/[\s,]+/).filter(Boolean);
+    const searchable =
+      `${tool.name} ${tool.shortDesc} ${tool.category} ${tool.tags.join(' ')}`.toLowerCase();
+    if (tokens.length === 0) return true;
+    return tokens.every((token) => searchable.includes(token));
   });
 };

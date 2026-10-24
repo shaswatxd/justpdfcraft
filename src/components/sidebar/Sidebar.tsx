@@ -452,7 +452,7 @@ export const Sidebar: React.FC = () => {
 
       <aside className="w-72 max-w-[85vw] md:w-64 bg-black border-r border-slate-800 flex flex-col select-none z-50 fixed top-14 bottom-0 left-0 md:relative md:top-auto md:bottom-auto md:left-auto md:z-auto shadow-2xl md:shadow-none h-[calc(100dvh-3.5rem)] md:h-full">
         {/* Tab Switcher */}
-        <div className="h-10 border-b border-slate-800 flex items-center px-2 gap-1 bg-black/60 shrink-0">
+        <div className="h-11 border-b border-slate-800 flex items-center px-2 gap-1 bg-black/60 shrink-0">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeSidebarTab === tab.id;
@@ -460,7 +460,7 @@ export const Sidebar: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setSidebarTab(tab.id)}
-                className={`flex-1 py-1 px-1 rounded flex items-center justify-center gap-1 text-[11px] font-medium transition-colors relative ${
+                className={`flex-1 h-full py-2 px-1 rounded flex items-center justify-center gap-1 text-[11px] font-medium transition-colors relative min-h-[40px] ${
                   isActive
                     ? 'bg-slate-800 text-swift-400 font-semibold shadow-sm'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
@@ -480,8 +480,9 @@ export const Sidebar: React.FC = () => {
           {/* Mobile Drawer Close Button */}
           <button
             onClick={toggleSidebar}
-            className="md:hidden p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white shrink-0 ml-1"
+            className="md:hidden p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white shrink-0 ml-1"
             title="Close Sidebar"
+            aria-label="Close Sidebar"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -816,8 +817,9 @@ export const Sidebar: React.FC = () => {
                             deleteUserBookmark(bm.id);
                             addToast({ type: 'info', title: 'Bookmark Removed' });
                           }}
-                          className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-red-500/20 hover:text-red-400 text-slate-400 rounded transition-opacity"
+                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 -m-0.5 min-h-[32px] min-w-[32px] hover:bg-red-500/20 hover:text-red-400 text-slate-400 rounded transition-opacity"
                           title="Delete bookmark"
+                          aria-label={`Delete bookmark ${bm.title}`}
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>

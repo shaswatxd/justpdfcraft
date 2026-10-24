@@ -1244,19 +1244,37 @@ const ExamPasswordGeneratorView: React.FC = () => {
     let chars = upper + lower + nums;
     if (includeSymbols) chars += symbols;
 
-    let res = '';
-    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
-      const randomValues = new Uint32Array(length);
-      window.crypto.getRandomValues(randomValues);
-      for (let i = 0; i < length; i++) {
-        res += chars.charAt(randomValues[i] % chars.length);
+    const randInt = (max: number): number => {
+      if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
+        const buf = new Uint32Array(1);
+        window.crypto.getRandomValues(buf);
+        return buf[0] % max;
       }
-    } else {
-      for (let i = 0; i < length; i++) {
-        res += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
+      return Math.floor(Math.random() * max);
+    };
+
+    // Build a random string, then guarantee at least one character from every
+    // selected category — exam portals reject passwords without a digit (and
+    // often a symbol), and pure randomness cannot guarantee that.
+    const resChars: string[] = [];
+    for (let i = 0; i < length; i++) {
+      resChars.push(chars.charAt(randInt(chars.length)));
     }
-    setPassword(res);
+    const requiredPools: string[] = [upper, lower, nums];
+    if (includeSymbols) requiredPools.push(symbols);
+    if (length >= requiredPools.length) {
+      requiredPools.forEach((pool, i) => {
+        resChars[resChars.length - 1 - i] = pool.charAt(randInt(pool.length));
+      });
+    }
+    // Shuffle so the guaranteed characters are not clustered at the tail
+    for (let i = resChars.length - 1; i > 0; i--) {
+      const j = randInt(i + 1);
+      const tmp = resChars[i];
+      resChars[i] = resChars[j];
+      resChars[j] = tmp;
+    }
+    setPassword(resChars.join(''));
   };
 
   useEffect(() => {

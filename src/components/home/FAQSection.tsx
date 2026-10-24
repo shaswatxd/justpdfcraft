@@ -25,7 +25,7 @@ const FAQS: FAQItem[] = [
   {
     question: 'Is JustPDFCraft completely free to use?',
     answer:
-      'Yes, JustPDFCraft is completely free. All 20+ PDF tools, handwritten assignment generator, image compressors, paper whiteners, and 14 student productivity calculators are unlimited and free without subscriptions or forced watermarks.',
+      'Yes, JustPDFCraft is completely free. The full PDF toolset, the handwritten assignment generator, image compressors, signature cleaners, and all student calculators and planners are available without subscriptions or forced watermarks.',
   },
   {
     question: 'What file formats are supported?',
@@ -35,7 +35,7 @@ const FAQS: FAQItem[] = [
   {
     question: 'How large can a file be?',
     answer:
-      'Because all processing is performed locally on your device, file sizes are limited only by your computer or smartphone’s available RAM. Documents up to several hundred megabytes and hundreds of pages have been tested and process smoothly.',
+      'Because all processing happens locally on your device, file size is limited mainly by your device’s memory. Large documents may process slowly on older phones. None of your files are uploaded, so working online or offline makes no difference to privacy.',
   },
   {
     question: 'Do I need to create an account or log in?',

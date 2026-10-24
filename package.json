@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "audit:playwright": "node scripts/playwright-audit.cjs && node scripts/playwright-viewer-audit.cjs",
+    "audit:responsive": "node scripts/playwright-responsive-audit.cjs",
     "audit:full": "node scripts/playwright-full-suite-audit.cjs"
   },
   "keywords": [

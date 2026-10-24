@@ -248,15 +248,15 @@ textarea::placeholder {
   background-color: #000000 !important;
 }
 
-/* Tool cards styling for deep AMOLED contrast */
-.group[role="button"],
-.group.relative.flex.flex-col {
+/* Tool card styling for deep AMOLED contrast (scoped to the home dashboard
+   catalogue cards — previously matched ANY .group with these structural
+   classes anywhere in the app). */
+#home-dashboard .group[role="button"] {
   background-color: #050507 !important;
   border-color: #18181b !important;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
-.group[role="button"]:hover,
-.group.relative.flex.flex-col:hover {
+#home-dashboard .group[role="button"]:hover {
   background-color: #0c0c0f !important;
   border-color: #27272a !important;
   transform: translateY(-2px);

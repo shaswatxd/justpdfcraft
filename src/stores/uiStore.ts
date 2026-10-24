@@ -44,7 +44,7 @@ export interface ToastMessage {
   durationMs?: number;
 }
 
-interface UIState {
+export interface UIState {
   theme: ThemeMode;
   isSidebarOpen: boolean;
   activeSidebarTab: SidebarTab;

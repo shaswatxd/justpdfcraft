@@ -2,29 +2,25 @@ import React, { useRef, useState } from 'react';
 import {
   FolderOpen,
   FilePlus,
-  FileText,
   Image as ImageIcon,
   GraduationCap,
-  Flame,
   Layers,
   FileArchive,
   Sliders,
   PenTool,
   Scissors,
-  CheckCircle2,
   Edit3,
-  RotateCcw,
-  X,
+  RefreshCw,
   ScanText,
   Shield,
-  Crop,
-  RefreshCw,
-  Eraser,
+  RotateCcw,
+  X,
 } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore, ModalType } from '@/stores/uiStore';
 import { useToolStore, ToolMode } from '@/stores/toolStore';
 import { ToolCategory } from '@/types/tools';
+import { useRecentToolsStore } from '@/stores/recentToolsStore';
 import { HeroSection } from '@/components/home/HeroSection';
 import { ToolExplorer } from '@/components/home/ToolExplorer';
 import { FAQSection } from '@/components/home/FAQSection';
@@ -40,6 +36,113 @@ function formatTimeAgo(timestamp: number): string {
   if (diffHours < 24) return `${diffHours}h ago`;
   return `${Math.floor(diffHours / 24)}d ago`;
 }
+
+/** Compact, labelled starting actions. Deliberately short list (see quick-actions design). */
+const QUICK_ACTIONS: Array<{
+  toolId: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  accent: string;
+  workflow: {
+    modal?: ModalType;
+    viewMode?: 'single' | 'continuous' | 'organize' | 'spread';
+    tool?: ToolMode;
+    label: string;
+    initialTab?: string;
+  } | null;
+}> = [
+  {
+    toolId: 'merge-pdf',
+    label: 'Merge PDF',
+    icon: Layers,
+    accent: 'text-blue-400 border-blue-500/25 bg-blue-500/[0.07] hover:bg-blue-500/15',
+    // Merge collects its own inputs, so it can open the dialog directly
+    workflow: null,
+  },
+  {
+    toolId: 'compress-pdf',
+    label: 'Compress PDF',
+    icon: FileArchive,
+    accent: 'text-emerald-400 border-emerald-500/25 bg-emerald-500/[0.07] hover:bg-emerald-500/15',
+    workflow: { modal: 'compress', label: 'Compress PDF' },
+  },
+  {
+    toolId: 'split-pdf',
+    label: 'Split PDF',
+    icon: Scissors,
+    accent: 'text-rose-400 border-rose-500/25 bg-rose-500/[0.07] hover:bg-rose-500/15',
+    workflow: { modal: 'split', label: 'Split PDF' },
+  },
+  {
+    toolId: 'convert-pdf',
+    label: 'Convert PDF',
+    icon: RefreshCw,
+    accent: 'text-teal-400 border-teal-500/25 bg-teal-500/[0.07] hover:bg-teal-500/15',
+    workflow: { modal: 'convert', label: 'Convert PDF' },
+  },
+  {
+    toolId: 'sign-pdf',
+    label: 'Sign PDF',
+    icon: Edit3,
+    accent: 'text-sky-400 border-sky-500/25 bg-sky-500/[0.07] hover:bg-sky-500/15',
+    workflow: { modal: 'sign', label: 'Sign PDF' },
+  },
+  {
+    toolId: 'target-kb-resizer',
+    label: 'Photo 20–50 KB',
+    icon: Sliders,
+    accent: 'text-amber-400 border-amber-500/25 bg-amber-500/[0.07] hover:bg-amber-500/15',
+    workflow: { modal: 'student-resizer', initialTab: 'resizer', label: 'Exam Photo Resizer' },
+  },
+];
+
+/** Secondary starting points, below the quick actions. */
+const SECONDARY_ACTIONS: Array<{
+  toolId: string;
+  title: string;
+  subtitle: string;
+  icon: React.ComponentType<{ className?: string }>;
+  iconBox: string;
+  hoverBorder: string;
+  run: 'modal:student-calculators' | 'modal:handwriting' | 'modal:ocr' | 'modal:protect';
+}> = [
+  {
+    toolId: 'student-quick-notes',
+    title: 'Student Tools',
+    subtitle: 'CGPA, attendance & more',
+    icon: GraduationCap,
+    iconBox: 'bg-amber-500/10 border-amber-500/25 text-amber-400',
+    hoverBorder: 'hover:border-amber-500/40',
+    run: 'modal:student-calculators',
+  },
+  {
+    toolId: 'handwriting-generator',
+    title: 'Handwriting',
+    subtitle: 'Assignment generator',
+    icon: PenTool,
+    iconBox: 'bg-purple-500/10 border-purple-500/25 text-purple-400',
+    hoverBorder: 'hover:border-purple-500/40',
+    run: 'modal:handwriting',
+  },
+  {
+    toolId: 'ocr-pdf',
+    title: 'Scan & OCR',
+    subtitle: 'Extract text from scans',
+    icon: ScanText,
+    iconBox: 'bg-cyan-500/10 border-cyan-500/25 text-cyan-400',
+    hoverBorder: 'hover:border-cyan-500/40',
+    run: 'modal:ocr',
+  },
+  {
+    toolId: 'protect-pdf',
+    title: 'Protect PDF',
+    subtitle: 'Password & encryption',
+    icon: Shield,
+    iconBox: 'bg-rose-500/10 border-rose-500/25 text-rose-400',
+    hoverBorder: 'hover:border-rose-500/40',
+    run: 'modal:protect',
+  },
+];
 
 export const HomeDashboard: React.FC = () => {
   const {
@@ -64,6 +167,7 @@ export const HomeDashboard: React.FC = () => {
     setActiveView,
   } = useUIStore();
   const { setTool } = useToolStore();
+  const { trackTool } = useRecentToolsStore();
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const pendingWorkflowRef = useRef<{
@@ -74,8 +178,7 @@ export const HomeDashboard: React.FC = () => {
     initialTab?: string;
   } | null>(null);
 
-  const [isDraggingPdf, setIsDraggingPdf] = useState(false);
-  const [isDraggingPhoto, setIsDraggingPhoto] = useState(false);
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<ToolCategory | 'all'>('all');
 
   React.useEffect(() => {
@@ -170,7 +273,7 @@ export const HomeDashboard: React.FC = () => {
         return;
       }
 
-      // Default fallback when an image is directly dropped/picked on home dropzone
+      // Default fallback when an image is directly dropped/picked on the home dropzone
       setActiveModal('student-resizer');
       addToast({
         type: 'success',
@@ -263,21 +366,10 @@ export const HomeDashboard: React.FC = () => {
     }
   };
 
-  const handlePdfDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    setIsDraggingPdf(false);
+    setIsDraggingFile(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFilePicked(e.dataTransfer.files[0]);
-    }
-  };
-
-  const handlePhotoDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDraggingPhoto(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      if (!pendingWorkflowRef.current) {
-        pendingWorkflowRef.current = { modal: 'photo-editor', label: 'Photo Studio' };
-      }
       handleFilePicked(e.dataTransfer.files[0]);
     }
   };
@@ -304,8 +396,26 @@ export const HomeDashboard: React.FC = () => {
     }
   };
 
+  const runQuickAction = (action: (typeof QUICK_ACTIONS)[number]) => {
+    trackTool(action.toolId);
+    if (action.workflow) {
+      triggerWorkflowWithFile(action.workflow);
+    } else {
+      // Merge manages its own multi-file input inside the dialog
+      setActiveModal('merge');
+    }
+  };
+
+  const openSecondary = (run: (typeof SECONDARY_ACTIONS)[number]['run'], toolId: string) => {
+    trackTool(toolId);
+    setActiveModal(run.replace('modal:', '') as ModalType);
+  };
+
   return (
-    <div className="flex-1 overflow-y-auto bg-black flex flex-col items-center pb-24 sm:pb-12">
+    <div
+      id="home-dashboard"
+      className="flex-1 overflow-y-auto bg-black flex flex-col items-center pb-28 md:pb-12"
+    >
       {/* Hidden File Inputs: Document & Photo */}
       <input
         ref={pdfInputRef}
@@ -332,29 +442,27 @@ export const HomeDashboard: React.FC = () => {
         }}
       />
 
-      {/* Hero Section with Dedicated Document & Photo Workspaces */}
-      <HeroSection
-        onSelectCategory={handleCategorySelect}
-        onOpenExamSuite={() => setActiveModal('student-resizer')}
-      >
+      <HeroSection>
         {/* Unsaved Session Crash Recovery Banner */}
         {availableDrafts && availableDrafts.length > 0 && (
-          <div className="w-full mb-4 p-3.5 sm:p-4 rounded-2xl bg-amber-950/30 border border-amber-500/40 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left animate-in fade-in slide-in-from-top-2 shadow-xl shadow-amber-950/20">
+          <div className="w-full mb-4 p-3.5 sm:p-4 rounded-2xl bg-amber-950/30 border border-amber-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left animate-in fade-in slide-in-from-top-2">
             <div className="flex items-start gap-3">
               <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0 text-amber-400 mt-0.5">
                 <RotateCcw className="w-4 h-4" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h4 className="text-xs sm:text-sm font-semibold text-zinc-100">
-                    Unsaved Session Recovered
+                  <h4 className="text-xs sm:text-sm font-semibold text-amber-100">
+                    Unsaved session recovered
                   </h4>
-                  <span className="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono">
+                  <span className="px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono">
                     {availableDrafts.length} {availableDrafts.length === 1 ? 'draft' : 'drafts'}
                   </span>
                 </div>
-                <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">
-                  <span className="text-zinc-200 font-medium">{availableDrafts[0].fileName}</span> • {(availableDrafts[0].byteLength / 1024).toFixed(0)} KB • Auto-saved to OPFS {formatTimeAgo(availableDrafts[0].timestamp)}
+                <p className="text-[11px] sm:text-xs text-amber-200/70 mt-0.5">
+                  <span className="text-amber-100 font-medium">{availableDrafts[0].fileName}</span> •{' '}
+                  {(availableDrafts[0].byteLength / 1024).toFixed(0)} KB • auto-saved to this
+                  browser {formatTimeAgo(availableDrafts[0].timestamp)}
                 </p>
               </div>
             </div>
@@ -373,10 +481,10 @@ export const HomeDashboard: React.FC = () => {
                     });
                   }
                 }}
-                className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs flex items-center gap-1.5 transition-all shadow-xs"
+                className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs flex items-center gap-1.5 transition-all"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>Restore Session</span>
+                <span>Restore</span>
               </button>
               {availableDrafts.length > 1 && (
                 <button
@@ -390,10 +498,10 @@ export const HomeDashboard: React.FC = () => {
                       message: 'Cleaned up all recovery drafts.',
                     });
                   }}
-                  className="px-2 py-1 rounded text-[11px] text-zinc-400 hover:text-zinc-200 transition-colors"
+                  className="px-2 py-1 rounded text-[11px] text-amber-200/70 hover:text-amber-100 transition-colors"
                   title="Discard all recovery drafts"
                 >
-                  Dismiss All
+                  Dismiss all
                 </button>
               )}
               <button
@@ -407,8 +515,9 @@ export const HomeDashboard: React.FC = () => {
                     message: 'Unsaved draft removed from storage.',
                   });
                 }}
-                className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-amber-500/10 text-amber-200/70 hover:text-amber-100 transition-colors"
                 title="Discard this draft"
+                aria-label="Discard this draft"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -416,586 +525,117 @@ export const HomeDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* Dedicated Mobile-First Touch Workspace (Android & Mobile Browsers) */}
-        <div className="block md:hidden w-full space-y-3.5 select-none text-left">
-          {/* Mobile Privacy & Local Mode Banner */}
-          <div className="flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-blue-950/40 via-zinc-900 to-emerald-950/30 border border-zinc-800 shadow-md">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs font-semibold text-zinc-100">100% Private Mobile Suite</span>
-            </div>
-            <span className="text-[10px] font-mono text-zinc-400 bg-zinc-900/90 px-2 py-0.5 rounded-full border border-zinc-800">
-              No Uploads
-            </span>
-          </div>
-
-          {/* Mobile Card 1: PDF Document Studio */}
-          <div className="rounded-2xl p-4 bg-zinc-950/90 border border-blue-500/30 shadow-xl relative overflow-hidden">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-400 flex items-center justify-center shrink-0">
-                <FileText className="w-5 h-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-bold text-white leading-tight">PDF Document Studio</h3>
-                <p className="text-[11px] text-zinc-400 truncate mt-0.5">Edit, sign, compress & convert PDFs</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
+        {/* 1. Primary Action: unified Open / Select file panel */}
+        <div
+          onDragOver={(e) => {
+            e.preventDefault();
+            setIsDraggingFile(true);
+          }}
+          onDragLeave={() => setIsDraggingFile(false)}
+          onDrop={handleDrop}
+          className={`relative w-full border-2 border-dashed rounded-2xl p-4 sm:p-6 transition-all duration-200 ${
+            isDraggingFile
+              ? 'border-swift-400 bg-swift-500/[0.08]'
+              : 'border-zinc-800 bg-zinc-950/60 hover:border-zinc-700'
+          }`}
+        >
+          <div className="flex flex-col gap-3">
+            {/* Primary row: open a PDF / photo */}
+            <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
               <button
                 type="button"
-                onClick={handleOpenPdfClick}
-                className="flex-1 py-2.5 px-3 bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-950/50 transition-all"
+                onClick={() => handleOpenPdfClick()}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-swift-600 hover:bg-swift-500 active:scale-[0.99] text-white font-semibold rounded-xl text-sm shadow-lg shadow-swift-950/40 transition-all min-h-[48px]"
               >
-                <FolderOpen className="w-4 h-4" />
-                <span>Open PDF File</span>
+                <FolderOpen className="w-5 h-5" />
+                <span>Open a PDF</span>
               </button>
               <button
                 type="button"
-                onClick={createBlankDocument}
-                className="py-2.5 px-3 bg-zinc-900 hover:bg-zinc-800 active:scale-[0.98] text-zinc-300 font-medium rounded-xl text-xs border border-zinc-800 transition-all"
-                title="Create Blank Document"
+                onClick={() => {
+                  pendingWorkflowRef.current = null;
+                  photoInputRef.current?.click();
+                }}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-semibold rounded-xl text-sm shadow-lg shadow-emerald-950/40 transition-all min-h-[48px]"
               >
-                <FilePlus className="w-4 h-4 text-zinc-400" />
-              </button>
-            </div>
-
-            {/* Quick 1-tap chips */}
-            <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-zinc-900 overflow-x-auto scrollbar-none">
-              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider shrink-0">Quick:</span>
-              <button
-                type="button"
-                onClick={() => triggerWorkflowWithFile({ modal: 'compress', label: 'PDF Compress' })}
-                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
-              >
-                Compress
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveModal('merge')}
-                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
-              >
-                Merge
-              </button>
-              <button
-                type="button"
-                onClick={() => triggerWorkflowWithFile({ modal: 'sign', label: 'Sign PDF' })}
-                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
-              >
-                Sign
-              </button>
-              <button
-                type="button"
-                onClick={() => triggerWorkflowWithFile({ modal: 'split', label: 'Split PDF' })}
-                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
-              >
-                Split
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Card 2: Photos & Exam Resizer */}
-          <div className="rounded-2xl p-4 bg-zinc-950/90 border border-emerald-500/30 shadow-xl relative overflow-hidden">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
                 <ImageIcon className="w-5 h-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-bold text-white leading-tight">Photos & Exam Suite</h3>
-                <p className="text-[11px] text-zinc-400 truncate mt-0.5">Target 20–50 KB, passport crop & images</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  pendingWorkflowRef.current = { modal: 'photo-editor', label: 'Photo Studio' };
-                  photoInputRef.current?.click();
-                }}
-                className="flex-1 py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 transition-all"
-              >
-                <ImageIcon className="w-4 h-4" />
-                <span>Select Photo / Image</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveModal('student-resizer')}
-                className="py-2.5 px-3 bg-amber-500/10 hover:bg-amber-500/20 active:scale-[0.98] text-amber-300 font-semibold rounded-xl text-xs border border-amber-500/30 transition-all flex items-center gap-1.5"
-                title="Exam Resizer"
-              >
-                <Sliders className="w-3.5 h-3.5 text-amber-400" />
-                <span>20–50 KB</span>
+                <span>Select a photo</span>
               </button>
             </div>
+            <p className="text-xs text-zinc-500 text-center">
+              PDF, JPG, PNG, WebP, GIF, BMP — files are processed in your browser, nothing is
+              uploaded. Drag &amp; drop works here too.
+            </p>
 
-            {/* Quick 1-tap chips */}
-            <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-zinc-900 overflow-x-auto scrollbar-none">
-              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider shrink-0">Quick:</span>
+            {/* Secondary row: blank document (desktop-labelled, available everywhere) */}
+            <div className="flex justify-center pt-1">
               <button
                 type="button"
-                onClick={() => setActiveModal('student-resizer')}
-                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-amber-300 text-[11px] font-medium shrink-0 active:scale-95"
+                onClick={() => createBlankDocument()}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-xl text-xs font-medium transition-all min-h-[44px]"
               >
-                Exam 20–50 KB
+                <FilePlus className="w-3.5 h-3.5 text-zinc-400" />
+                <span>New blank PDF</span>
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveConvertTab('img-to-pdf');
-                  setActiveModal('convert');
-                }}
-                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
-              >
-                Image to PDF
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveModal('photo-editor')}
-                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-emerald-300 text-[11px] font-medium shrink-0 active:scale-95"
-              >
-                Edit Photo
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveImageTab('bulk-compress');
-                  setActiveModal('image-tools');
-                }}
-                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
-              >
-                Compress
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveImageTab('converter');
-                  setActiveModal('image-tools');
-                }}
-                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
-              >
-                JPG ⇄ PNG
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  pendingWorkflowRef.current = { modal: 'photo-editor', label: 'Photo Studio' };
-                  photoInputRef.current?.click();
-                }}
-                className="px-3 py-1.5 min-h-[40px] inline-flex items-center rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-300 text-[11px] font-medium shrink-0 active:scale-95"
-              >
-                Passport Crop
-              </button>
-            </div>
-          </div>
-
-          {/* 4 App-Like Shortcut Cards (2x2 Grid) */}
-          <div className="grid grid-cols-2 gap-2.5 pt-1">
-            <button
-              type="button"
-              onClick={() => {
-                setActiveStudentTab('cgpa');
-                setActiveModal('student-calculators');
-              }}
-              className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800/90 hover:border-amber-500/40 text-left transition-all active:scale-[0.98] shadow-md flex flex-col justify-between space-y-2"
-            >
-              <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                <GraduationCap className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="text-xs font-bold text-white">Student Tools</div>
-                <div className="text-[10px] text-zinc-400 mt-0.5">CGPA & Attendance</div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveModal('handwriting')}
-              className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800/90 hover:border-purple-500/40 text-left transition-all active:scale-[0.98] shadow-md flex flex-col justify-between space-y-2"
-            >
-              <div className="w-8 h-8 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
-                <PenTool className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="text-xs font-bold text-white">Handwriting</div>
-                <div className="text-[10px] text-zinc-400 mt-0.5">Assignment Notes</div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveModal('ocr')}
-              className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800/90 hover:border-cyan-500/40 text-left transition-all active:scale-[0.98] shadow-md flex flex-col justify-between space-y-2"
-            >
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-                <ScanText className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="text-xs font-bold text-white">Scan & OCR</div>
-                <div className="text-[10px] text-zinc-400 mt-0.5">Extract Text</div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveModal('protect')}
-              className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800/90 hover:border-rose-500/40 text-left transition-all active:scale-[0.98] shadow-md flex flex-col justify-between space-y-2"
-            >
-              <div className="w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
-                <Shield className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="text-xs font-bold text-white">Protect PDF</div>
-                <div className="text-[10px] text-zinc-400 mt-0.5">Encrypt & Lock</div>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Two Separate Workspaces: Document (PDF) & Photo (Images) - Desktop Only */}
-        <div className="hidden md:grid md:grid-cols-2 gap-3.5 sm:gap-4 w-full">
-          {/* Card 1: PDF Document */}
-          <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setIsDraggingPdf(true);
-            }}
-            onDragLeave={() => setIsDraggingPdf(false)}
-            onDrop={handlePdfDrop}
-            onClick={handleOpenPdfClick}
-            className={`group relative cursor-pointer border-2 border-dashed rounded-2xl p-4 sm:p-6 text-center transition-all duration-300 flex flex-col justify-between ${
-              isDraggingPdf
-                ? 'border-blue-400 bg-blue-500/10 dropzone-dragging scale-[1.01]'
-                : 'border-zinc-800 hover:border-blue-500/50 bg-zinc-950/70 hover:bg-zinc-900/40 shadow-xl'
-            }`}
-          >
-            <div className="flex flex-col items-center space-y-2.5 sm:space-y-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
-                <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
-              </div>
-              <div>
-                <p className="text-sm sm:text-base font-semibold text-zinc-100 tracking-tight">
-                  PDF Documents
-                </p>
-                <p className="text-[11px] sm:text-xs text-zinc-400 font-normal mt-0.5">
-                  Drop your PDF here, or <span className="text-blue-400 underline underline-offset-2">browse files</span>
-                </p>
-              </div>
-
-              <div className="flex flex-wrap items-center justify-center gap-2 pt-0.5 w-full">
-                <button
-                  type="button"
-                  onClick={handleOpenPdfClick}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-xl shadow-md shadow-blue-950/50 flex items-center justify-center gap-1.5 text-xs transition-all hover:-translate-y-0.5"
-                >
-                  <FolderOpen className="w-3.5 h-3.5" />
-                  <span>Browse Document</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    createBlankDocument();
-                  }}
-                  className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 hover:border-zinc-700 font-medium rounded-xl flex items-center justify-center gap-1.5 text-xs transition-all hover:-translate-y-0.5"
-                >
-                  <FilePlus className="w-3.5 h-3.5 text-zinc-400" />
-                  <span>New Blank PDF</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Quick action triggers for PDF */}
-            <div className="pt-3 mt-3 border-t border-zinc-900 flex flex-wrap items-center justify-center gap-1.5 text-[10px] sm:text-[11px] text-zinc-400">
-              <span className="text-zinc-500 font-medium">Quick PDF:</span>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  triggerWorkflowWithFile({ modal: 'compress', label: 'PDF Compress' });
-                }}
-                className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors"
-              >
-                Compress
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  triggerWorkflowWithFile({ modal: 'sign', label: 'Sign PDF' });
-                }}
-                className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors"
-              >
-                Sign
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveModal('merge');
-                }}
-                className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors"
-              >
-                Merge
-              </button>
-            </div>
-          </div>
-
-          {/* Card 2: Photo & Images */}
-          <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setIsDraggingPhoto(true);
-            }}
-            onDragLeave={() => setIsDraggingPhoto(false)}
-            onDrop={handlePhotoDrop}
-            onClick={() => {
-              pendingWorkflowRef.current = { modal: 'photo-editor', label: 'Photo Studio' };
-              photoInputRef.current?.click();
-            }}
-            className={`group relative cursor-pointer border-2 border-dashed rounded-2xl p-4 sm:p-6 text-center transition-all duration-300 flex flex-col justify-between ${
-              isDraggingPhoto
-                ? 'border-emerald-400 bg-emerald-500/10 dropzone-dragging scale-[1.01]'
-                : 'border-zinc-800 hover:border-emerald-500/50 bg-zinc-950/70 hover:bg-zinc-900/40 shadow-xl'
-            }`}
-          >
-            <div className="flex flex-col items-center space-y-2.5 sm:space-y-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
-                <ImageIcon className="w-5 h-5 sm:w-6 sm:h-6" />
-              </div>
-              <div>
-                <p className="text-sm sm:text-base font-semibold text-zinc-100 tracking-tight">
-                  Photos & Images
-                </p>
-                <p className="text-[11px] sm:text-xs text-zinc-400 font-normal mt-0.5">
-                  Drop JPG, PNG, WebP here, or <span className="text-emerald-400 underline underline-offset-2">browse photo</span>
-                </p>
-              </div>
-
-              <div className="flex flex-wrap items-center justify-center gap-2 pt-0.5 w-full">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    pendingWorkflowRef.current = { modal: 'photo-editor', label: 'Photo Studio' };
-                    photoInputRef.current?.click();
-                  }}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-xl shadow-md shadow-emerald-950/50 flex items-center justify-center gap-1.5 text-xs transition-all hover:-translate-y-0.5"
-                >
-                  <ImageIcon className="w-3.5 h-3.5" />
-                  <span>Browse Photo</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveModal('student-resizer');
-                  }}
-                  className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 hover:border-zinc-700 font-medium rounded-xl flex items-center justify-center gap-1.5 text-xs transition-all hover:-translate-y-0.5"
-                >
-                  <GraduationCap className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Exam Resizer</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Quick action triggers for Photo */}
-            <div className="pt-3 mt-3 border-t border-zinc-900 flex flex-col items-center gap-1.5 text-[10px] sm:text-[11px] text-zinc-400">
-              <div className="flex flex-wrap items-center justify-center gap-1.5">
-                <span className="text-zinc-500 font-medium">Edit Tools:</span>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    pendingWorkflowRef.current = { modal: 'photo-editor', label: 'Photo Studio' };
-                    photoInputRef.current?.click();
-                  }}
-                  className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors inline-flex items-center gap-1"
-                >
-                  <Crop className="w-3 h-3 text-emerald-400" />
-                  Crop &amp; Filters
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    triggerWorkflowWithFile({ modal: 'image-tools', initialTab: 'bulk-compress', label: 'Image Compressor' });
-                  }}
-                  className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors inline-flex items-center gap-1"
-                >
-                  <FileArchive className="w-3 h-3 text-teal-400" />
-                  Compress
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    triggerWorkflowWithFile({ modal: 'image-tools', initialTab: 'converter', label: 'Format Converter' });
-                  }}
-                  className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors inline-flex items-center gap-1"
-                >
-                  <RefreshCw className="w-3 h-3 text-sky-400" />
-                  JPG ⇄ PNG
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    triggerWorkflowWithFile({ modal: 'student-resizer', initialTab: 'combiner', label: 'Photo + Sign Combiner' });
-                  }}
-                  className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors inline-flex items-center gap-1"
-                >
-                  <Layers className="w-3 h-3 text-blue-400" />
-                  Sign Combine
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    triggerWorkflowWithFile({ modal: 'student-resizer', initialTab: 'clean-sign', label: 'Signature Cleaner' });
-                  }}
-                  className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors inline-flex items-center gap-1"
-                >
-                  <Eraser className="w-3 h-3 text-rose-400" />
-                  Sign Clean
-                </button>
-              </div>
-              <div className="flex flex-wrap items-center justify-center gap-1.5">
-                <span className="text-zinc-500 font-medium">Quick Photo:</span>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveModal('student-resizer');
-                }}
-                className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors"
-              >
-                20–50 KB
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  triggerWorkflowWithFile({ modal: 'convert', initialTab: 'img-to-pdf', label: 'Image to PDF' });
-                }}
-                className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors"
-              >
-                To PDF
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  pendingWorkflowRef.current = { modal: 'photo-editor', label: 'Photo Studio' };
-                  photoInputRef.current?.click();
-                }}
-                className="px-2 py-0.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors"
-              >
-                Passport Crop
-              </button>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* Top Line: Most Important & Popular Tools (Desktop Only) */}
-        <div className="mt-4 sm:mt-5 w-full hidden md:flex flex-col items-center">
-          <div className="w-full flex items-center justify-start lg:justify-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 px-1 scrollbar-none">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 shadow-xs">
-              <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-              <span className="hidden sm:inline">Important Tools:</span>
-              <span className="sm:hidden">Top:</span>
-            </span>
+        {/* 2. Quick Actions: one intentional row of common tasks (same on mobile & desktop) */}
+        <div className="w-full mt-5 sm:mt-6">
+          <h2 className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 mb-2 text-left px-1">
+            Common tasks
+          </h2>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-6">
+            {QUICK_ACTIONS.map((action) => {
+              const Icon = action.icon;
+              return (
+                <button
+                  key={action.toolId}
+                  type="button"
+                  onClick={() => runQuickAction(action)}
+                  className={`inline-flex items-center justify-center gap-2 border rounded-xl px-3 py-3 text-xs font-semibold transition-all active:scale-[0.98] min-h-[48px] ${action.accent}`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span className="whitespace-nowrap">{action.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-            <button
-              type="button"
-              onClick={() => setActiveModal('merge')}
-              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-white border border-zinc-800/90 hover:border-blue-500/50 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
-            >
-              <Layers className="w-3.5 h-3.5 text-blue-400" />
-              <span>Merge PDF</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => triggerWorkflowWithFile({ modal: 'compress', label: 'Compress PDF' })}
-              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-white border border-zinc-800/90 hover:border-emerald-500/50 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
-            >
-              <FileArchive className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Compress PDF</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setActiveStudentTab('resizer');
-                setActiveModal('student-resizer');
-              }}
-              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-amber-300 border border-amber-500/30 hover:border-amber-500/60 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
-            >
-              <Sliders className="w-3.5 h-3.5 text-amber-400" />
-              <span>20–50 KB Resizer</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveModal('handwriting')}
-              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-purple-300 border border-purple-500/30 hover:border-purple-500/60 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
-            >
-              <PenTool className="w-3.5 h-3.5 text-purple-400" />
-              <span>Handwritten Notes</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => triggerWorkflowWithFile({ modal: 'split', label: 'Split PDF' })}
-              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-white border border-zinc-800/90 hover:border-rose-500/50 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
-            >
-              <Scissors className="w-3.5 h-3.5 text-rose-400" />
-              <span>Split PDF</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setActiveConvertTab('img-to-pdf');
-                setActiveModal('convert');
-              }}
-              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-white border border-zinc-800/90 hover:border-teal-500/50 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
-            >
-              <FilePlus className="w-3.5 h-3.5 text-teal-400" />
-              <span>Image to PDF</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setActiveStudentTab('attendance');
-                setActiveModal('student-calculators');
-              }}
-              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-white border border-zinc-800/90 hover:border-green-500/50 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
-            >
-              <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />
-              <span>Attendance Bunk</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => triggerWorkflowWithFile({ modal: 'sign', label: 'Sign PDF' })}
-              className="px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 hover:text-white border border-zinc-800/90 hover:border-sky-500/50 transition-all flex items-center gap-1.5 text-xs font-medium whitespace-nowrap shadow-xs hover:-translate-y-0.5"
-            >
-              <Edit3 className="w-3.5 h-3.5 text-sky-400" />
-              <span>Sign PDF</span>
-            </button>
+        {/* 3. Secondary starting points */}
+        <div className="w-full mt-4">
+          <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+            {SECONDARY_ACTIONS.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.toolId}
+                  type="button"
+                  onClick={() => openSecondary(item.run, item.toolId)}
+                  className={`p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800/90 text-left transition-all active:scale-[0.98] flex flex-col justify-between gap-2 min-h-[76px] ${item.hoverBorder}`}
+                >
+                  <div
+                    className={`w-8 h-8 rounded-xl border flex items-center justify-center ${item.iconBox}`}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-zinc-100">{item.title}</div>
+                    <div className="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">
+                      {item.subtitle}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </HeroSection>
 
-      {/* Main Container */}
-      <div className="w-full max-w-6xl xl:max-w-7xl px-3 sm:px-6 lg:px-8 space-y-8 sm:space-y-12 my-4 sm:my-8">
-
-
-        {/* Master Tool Explorer with Search, Category Tabs, Recents & Favorites */}
+      {/* Complete catalogue: search, recents, favourites & every category */}
+      <div className="w-full max-w-6xl xl:max-w-7xl px-3 py-4 space-y-8 my-4 sm:my-8 flex-1">
         <ToolExplorer
           activeCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}

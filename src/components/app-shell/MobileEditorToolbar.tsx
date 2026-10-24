@@ -119,7 +119,10 @@ export const MobileEditorToolbar: React.FC = () => {
     <>
       {/* 1. Mobile Tool Property Drawer (Color & Stroke Options for Pen/Text/Highlighter) */}
       {showOptions && isAnnotationTool && (
-        <div className="md:hidden fixed bottom-[108px] left-3 right-3 z-40 bg-zinc-950/95 backdrop-blur-2xl border border-zinc-800 rounded-2xl p-3 shadow-2xl animate-in slide-in-from-bottom-2 fade-in duration-150">
+        <div
+          className="md:hidden fixed left-3 right-3 z-40 bg-zinc-950/95 backdrop-blur-2xl border border-zinc-800 rounded-2xl p-3 shadow-2xl animate-in slide-in-from-bottom-2 fade-in duration-150"
+          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 108px)' }}
+        >
           <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-zinc-800/80">
             <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
               {currentTool === 'draw'
@@ -186,8 +189,12 @@ export const MobileEditorToolbar: React.FC = () => {
         </div>
       )}
 
-      {/* 2. Floating Quick Bottom HUD (Page Stepper, Zoom, Grid, Save) */}
-      <div className="md:hidden fixed bottom-[58px] left-2 right-2 z-30 flex items-center justify-between gap-1.5 pointer-events-none">
+      {/* 2. Floating Quick Bottom HUD (Page Stepper, Zoom, Grid) — sits above the dock + safe area */}
+      <div
+        data-testid="mobile-editor-hud"
+        className="md:hidden fixed left-2 right-2 z-30 flex items-center justify-between gap-1.5 pointer-events-none"
+        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 58px)' }}
+      >
         {/* Left: Page Stepper Pill */}
         <div className="pointer-events-auto bg-black/90 backdrop-blur-xl border border-zinc-800/90 rounded-2xl px-2 py-1 flex items-center gap-1 shadow-xl">
           <button

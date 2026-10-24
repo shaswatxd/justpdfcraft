@@ -2557,6 +2557,16 @@ export const PDFViewer: React.FC = () => {
     };
   }, [zoom, kineticScale, setZoom]);
 
+  // Clear pending zoom-debounce / scroll timers on unmount so they never fire
+  // after the viewer (or its document) is gone.
+  useEffect(() => {
+    return () => {
+      if (zoomDebounceRef.current) clearTimeout(zoomDebounceRef.current);
+      if (programmaticScrollTimerRef.current)
+        clearTimeout(programmaticScrollTimerRef.current);
+    };
+  }, []);
+
   if (isLoading) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center bg-black text-slate-400 gap-3">
@@ -2612,6 +2622,7 @@ export const PDFViewer: React.FC = () => {
         onPointerDown={handleContainerPointerDown}
         onPointerMove={handleContainerPointerMove}
         onPointerUp={handleContainerPointerUp}
+        style={{ touchAction: 'pan-x pan-y' }}
         className={`flex-1 overflow-auto bg-black flex flex-col items-center p-2.5 sm:p-6 pb-24 md:pb-6 select-none relative pdf-desk-bg ${
           isPanning ? 'cursor-grabbing' : (isSpacePressed || currentTool === 'hand') ? 'cursor-grab' : ''
         }`}

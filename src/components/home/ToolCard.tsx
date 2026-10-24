@@ -53,12 +53,11 @@ import {
 import { ToolDefinition } from '@/types/tools';
 import { useFavoritesStore } from '@/stores/favoritesStore';
 import { useRecentToolsStore } from '@/stores/recentToolsStore';
-import { useUIStore } from '@/stores/uiStore';
+import { useUIStore, UIState } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useToolStore } from '@/stores/toolStore';
-import { analytics } from '@/utils/analytics';
 
-const ICON_MAP: Record<string, LucideIcon> = {
+export const ICON_MAP: Record<string, LucideIcon> = {
   Layers,
   Scissors,
   FileArchive,
@@ -175,19 +174,49 @@ interface ToolCardProps {
   onSelectWorkflowFile?: (workflow: any) => void;
 }
 
+/**
+ * Shared tool launcher: routes a ToolAction to the right modal / editor workflow.
+ * Used by the home tool cards and the Recently Used strip so both behave
+ * identically (initial tabs, view modes, editor tools).
+ */
+export const launchToolAction = (
+  tool: ToolDefinition,
+  ui: UIState,
+  docStore: { setViewMode: (v: 'single' | 'continuous' | 'organize' | 'spread') => void },
+  tools: { setTool: (t: any) => void },
+  onSelectWorkflowFile?: (workflow: any) => void
+) => {
+  const act = tool.action;
+  if (act.type === 'modal') {
+    if ((act.modal === 'student-calculators' || act.modal === 'student-resizer') && act.initialTab) {
+      ui.setActiveStudentTab(act.initialTab);
+    } else if (act.modal === 'image-tools' && act.initialTab) {
+      ui.setActiveImageTab(act.initialTab);
+    } else if (act.modal === 'legal' && act.initialTab) {
+      ui.setActiveLegalTab(act.initialTab);
+    } else if (act.modal === 'convert' && act.initialTab) {
+      ui.setActiveConvertTab(act.initialTab);
+    }
+    ui.setActiveModal(act.modal);
+  } else if (act.type === 'workflow') {
+    if (onSelectWorkflowFile) {
+      onSelectWorkflowFile(act);
+    }
+  } else if (act.type === 'viewMode') {
+    docStore.setViewMode(act.viewMode);
+    ui.setActiveView('editor');
+  } else if (act.type === 'tool') {
+    tools.setTool(act.tool);
+    ui.setActiveView('editor');
+  }
+};
+
 export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }) => {
   const { isFavorite, toggleFavorite } = useFavoritesStore();
   const { trackTool } = useRecentToolsStore();
-  const {
-    setActiveModal,
-    setActiveStudentTab,
-    setActiveImageTab,
-    setActiveLegalTab,
-    setActiveConvertTab,
-    setActiveView,
-  } = useUIStore();
-  const { setViewMode } = useDocumentStore();
-  const { setTool } = useToolStore();
+  const ui = useUIStore();
+  const docStore = useDocumentStore();
+  const tools = useToolStore();
 
   const IconComponent = ICON_MAP[tool.iconName] || Sparkles;
   const isFav = isFavorite(tool.id);
@@ -204,37 +233,13 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
     }
 
     trackTool(tool.id);
-    analytics.trackEvent('tool_opened', { toolId: tool.id, category: tool.category });
 
-    const act = tool.action;
-    if (act.type === 'modal') {
-      if ((act.modal === 'student-calculators' || act.modal === 'student-resizer') && act.initialTab) {
-        setActiveStudentTab(act.initialTab);
-      } else if (act.modal === 'image-tools' && act.initialTab) {
-        setActiveImageTab(act.initialTab);
-      } else if (act.modal === 'legal' && act.initialTab) {
-        setActiveLegalTab(act.initialTab);
-      } else if (act.modal === 'convert' && act.initialTab) {
-        setActiveConvertTab(act.initialTab);
-      }
-      setActiveModal(act.modal);
-    } else if (act.type === 'workflow') {
-      if (onSelectWorkflowFile) {
-        onSelectWorkflowFile(act);
-      }
-    } else if (act.type === 'viewMode') {
-      setViewMode(act.viewMode);
-      setActiveView('editor');
-    } else if (act.type === 'tool') {
-      setTool(act.tool);
-      setActiveView('editor');
-    }
+    launchToolAction(tool, ui, docStore, tools, onSelectWorkflowFile);
   };
 
   const handleFavoriteToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     toggleFavorite(tool.id);
-    analytics.trackEvent(isFav ? 'tool_unfavorited' : 'tool_favorited', { toolId: tool.id });
   };
 
   return (
@@ -270,7 +275,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
           <button
             type="button"
             onClick={handleFavoriteToggle}
-            className={`fav-btn p-3 -m-2 rounded-lg transition-all ${
+            className={`fav-btn p-3.5 -m-2 rounded-lg transition-all ${
               isFav
                 ? 'opacity-100 text-rose-500 bg-rose-500/10'
                 : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-zinc-500 hover:text-rose-400 hover:bg-zinc-800'

@@ -167,7 +167,7 @@ const editorMode = await page.evaluate(() => !!document.querySelector('nav[aria-
 editorMode ? ok('PDF loaded → editor dock (bottom bar swap) active') : warn('PDF did NOT open (editor dock missing)');
 
 /* ---- 3. Page stepper + zoom + grid (floating HUD) ---- */
-const hud = page.locator('div.fixed.bottom-\\[58px\\]');
+const hud = page.locator('div[data-testid="mobile-editor-hud"]');
 const hCount = await hud.count();
 hCount > 0 ? ok('floating page/zoom HUD present') : warn('floating HUD NOT found');
 

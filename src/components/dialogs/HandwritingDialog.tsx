@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { PDFDocument } from 'pdf-lib';
 import { useUIStore } from '@/stores/uiStore';
-import { analytics } from '@/utils/analytics';
 
 interface FontOption {
   id: string;
@@ -454,13 +453,6 @@ export const HandwritingDialog: React.FC = () => {
 
       setGeneratedBlob(blob);
       setGeneratedInfo(`${total} page${total > 1 ? 's' : ''} • ${(blob.size / 1024).toFixed(1)} KB`);
-
-      analytics.trackEvent('processing_completed', {
-        toolId: 'handwriting-generator',
-        pages: total,
-        font: selectedFont,
-        paper: paperType,
-      });
 
       addToast({
         type: 'success',
