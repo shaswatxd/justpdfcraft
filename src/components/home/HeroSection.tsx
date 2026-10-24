@@ -7,31 +7,31 @@ interface HeroSectionProps {
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ children }) => {
   return (
-    <section className="w-full max-w-6xl xl:max-w-7xl mx-auto flex flex-col items-center text-center px-3 sm:px-6 lg:px-8">
-      <h1 className="mt-4 sm:mt-8 text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight max-w-3xl">
+    <section className="w-full max-w-7xl mx-auto flex flex-col items-center text-center px-4 sm:px-6 lg:px-8 pt-4 pb-2">
+      <h1 className="mt-2 sm:mt-6 text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight max-w-3xl">
         Every tool you need to work with PDFs in one place
       </h1>
-      <p className="mt-2.5 text-sm sm:text-base text-slate-600 dark:text-zinc-400 leading-relaxed max-w-2xl font-normal">
+      <p className="mt-3 text-sm sm:text-base text-gray-600 leading-relaxed max-w-2xl font-normal">
         All are 100% free and easy to use! Merge, split, compress, convert, edit, and sign PDFs with just a few clicks. Processed 100% privately in your browser.
       </p>
-      <div className="mt-3.5 flex flex-wrap items-center justify-center gap-2 text-[11px] sm:text-xs">
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5 text-xs">
         <span
-          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300 font-medium"
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 font-semibold"
           title="Your documents never leave this browser tab."
         >
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
           Files never leave your device
         </span>
         <span
-          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/70 text-slate-600 dark:text-zinc-300 font-medium shadow-xs"
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-gray-200 bg-white text-gray-600 font-semibold shadow-2xs"
           title="Tools keep working without an internet connection."
         >
-          <WifiOff className="w-3.5 h-3.5 text-slate-500 dark:text-zinc-400" />
+          <WifiOff className="w-3.5 h-3.5 text-gray-500" />
           Works offline
         </span>
       </div>
 
-      {children && <div className="w-full mt-5 sm:mt-7">{children}</div>}
+      {children && <div className="w-full mt-6 sm:mt-8">{children}</div>}
     </section>
   );
 };

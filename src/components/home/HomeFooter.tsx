@@ -46,13 +46,15 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
   };
 
   return (
-    <footer className="w-full bg-slate-100/90 border-t border-slate-200 text-slate-600 text-xs mt-12 py-12 px-6 select-none">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
+    <footer className="w-full bg-slate-100/70 border-t border-slate-200 text-slate-600 text-xs mt-12 py-12 px-4 sm:px-6 lg:px-8 select-none">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
         {/* Column 1: Brand & Mission */}
         <div className="md:col-span-1 space-y-3">
-          <div className="flex items-center gap-2">
-            <SwiftLogo className="w-6 h-6 shrink-0" />
-            <span className="font-bold text-base tracking-tight text-slate-900">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-white shadow-md shadow-red-500/20">
+              <SwiftLogo className="w-4 h-4 shrink-0 text-white fill-white" />
+            </div>
+            <span className="font-extrabold text-base tracking-tight text-slate-900">
               Just<span className="text-red-600">PDFCraft</span>
             </span>
           </div>

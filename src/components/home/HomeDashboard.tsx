@@ -343,7 +343,7 @@ export const HomeDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* 1. Primary Action: iLovePDF-style Select PDF files button */}
+        {/* 1. Primary Action: Select PDF files button */}
         <div
           onDragOver={(e) => {
             e.preventDefault();
@@ -354,19 +354,19 @@ export const HomeDashboard: React.FC = () => {
           className={`relative w-full max-w-xl mx-auto border-2 border-dashed rounded-3xl p-6 sm:p-8 transition-all duration-200 ${
             isDraggingFile
               ? 'border-red-500 bg-red-500/[0.08]'
-              : 'border-slate-300 dark:border-zinc-800 bg-white dark:bg-zinc-950/60 hover:border-red-400 dark:hover:border-zinc-700 shadow-sm hover:shadow-md'
+              : 'border-gray-300 bg-white hover:border-red-500 shadow-xs hover:shadow-md'
           }`}
         >
           <div className="flex flex-col items-center text-center gap-3">
             <button
               type="button"
               onClick={() => handleOpenPdfClick()}
-              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-red-500 hover:bg-red-600 active:scale-[0.99] text-white font-bold rounded-2xl text-base sm:text-lg shadow-lg shadow-red-500/25 transition-all min-h-[52px]"
+              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white font-bold rounded-2xl text-base sm:text-lg shadow-lg shadow-red-500/25 transition-all min-h-[52px] cursor-pointer"
             >
               <FolderOpen className="w-6 h-6" />
               <span>Select PDF files</span>
             </button>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-zinc-500">
+            <p className="text-xs sm:text-sm text-gray-500 font-medium">
               or drop PDFs here • 100% private, files never leave your browser
             </p>
 
@@ -375,9 +375,9 @@ export const HomeDashboard: React.FC = () => {
               <button
                 type="button"
                 onClick={() => createBlankDocument()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-slate-600 dark:text-zinc-300 border border-slate-200 dark:border-zinc-800 rounded-xl text-xs font-medium transition-all"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 rounded-xl text-xs font-semibold transition-all cursor-pointer"
               >
-                <FilePlus className="w-3.5 h-3.5 text-slate-500 dark:text-zinc-400" />
+                <FilePlus className="w-3.5 h-3.5 text-gray-500" />
                 <span>New blank PDF</span>
               </button>
             </div>

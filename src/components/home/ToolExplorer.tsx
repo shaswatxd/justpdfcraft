@@ -26,9 +26,9 @@ const CATALOG_BY_ID: Record<string, ToolDefinition> = Object.fromEntries(
 const ALL_TOOLS_COUNT = TOOLS_CATALOG.length;
 
 const CATEGORY_LABELS: Record<ToolCategory, string> = {
-  pdf: 'PDF & document tools',
-  image: 'Photo & image tools',
-  student: 'Student & study tools',
+  pdf: 'PDF & Document Tools',
+  image: 'Photo & Image Tools',
+  student: 'Student & Study Tools',
 };
 
 interface ToolExplorerProps {
@@ -64,7 +64,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
     return list;
   }, [searchQuery, activeCategory, showOnlyFavorites, showOnlyPopular, favorites]);
 
-  // Locally recorded recent tools — only this user's real usage, never pre-seeded.
+  // Locally recorded recent tools — only this user's real usage
   const recentTools = useMemo(() => {
     if (!recentToolIds.length) return [];
     return recentToolIds
@@ -81,43 +81,43 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
   return (
     <section
       id="tool-explorer"
-      className="w-full max-w-6xl xl:max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 space-y-5 sm:space-y-8"
+      className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-6"
     >
       {/* Recently Used — appears only when the user has local history */}
       {recentTools.length > 0 && !searchQuery && !showOnlyFavorites && (
-        <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-3 sm:p-4">
-          <div className="flex items-center justify-between gap-2 mb-1.5 px-0.5">
-            <h2 className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-400">
-              <History className="w-3.5 h-3.5 text-swift-400" />
+        <div className="rounded-2xl border border-gray-200 bg-white p-3.5 sm:p-4 shadow-xs">
+          <div className="flex items-center justify-between gap-2 mb-2 px-1">
+            <h2 className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gray-500">
+              <History className="w-3.5 h-3.5 text-red-500" />
               Recently used
             </h2>
             <button
               type="button"
               onClick={clearRecents}
-              className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900 transition-colors min-h-[36px]"
-              title="Clear your recent tools history (stored only in this browser)"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors"
+              title="Clear your recent tools history"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>Clear</span>
             </button>
           </div>
-          <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
+          <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
             {recentTools.map((tool) => {
               const Icon = ICON_MAP[tool.iconName] || Flame;
               const isFav = favorites.includes(tool.id);
               return (
                 <div
                   key={tool.id}
-                  className="shrink-0 inline-flex items-stretch rounded-xl border border-zinc-800 bg-zinc-900/70 hover:bg-zinc-900 transition-colors text-left"
+                  className="shrink-0 inline-flex items-stretch rounded-xl border border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300 transition-all text-left shadow-2xs"
                 >
                   <button
                     type="button"
                     onClick={() => launchRecent(tool)}
-                    className="inline-flex items-center gap-2 pl-2.5 pr-2 py-2"
+                    className="inline-flex items-center gap-2 pl-3 pr-2 py-2"
                     title={`Open ${tool.name}`}
                   >
                     <Icon className={`w-4 h-4 ${tool.color}`} />
-                    <span className="text-xs font-semibold text-zinc-200 whitespace-nowrap">
+                    <span className="text-xs font-semibold text-gray-800 whitespace-nowrap">
                       {tool.name}
                     </span>
                   </button>
@@ -127,12 +127,8 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
                       e.stopPropagation();
                       toggleFavorite(tool.id);
                     }}
-                    className="p-2 mr-1 rounded-lg text-zinc-600 hover:text-rose-400 transition-colors"
-                    aria-label={
-                      isFav
-                        ? `Remove ${tool.name} from favorites`
-                        : `Add ${tool.name} to favorites`
-                    }
+                    className="p-2 mr-1 rounded-lg text-gray-400 hover:text-rose-500 transition-colors"
+                    aria-label={isFav ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`}
                     title={isFav ? 'Remove from favorites' : 'Add to favorites'}
                   >
                     <Heart className={`w-3.5 h-3.5 ${isFav ? 'fill-rose-500 text-rose-500' : ''}`} />
@@ -144,24 +140,24 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
         </div>
       )}
 
-      {/* Search & Category Filter Header Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-zinc-950/80 p-2 sm:p-2.5 rounded-2xl border border-zinc-800/80 shadow-lg">
-        {/* Live Search Input — prominent and thumb friendly */}
-        <div className="relative flex-1 md:max-w-sm">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+      {/* Search & Category Filter Header Bar (BillGenHai Theme) */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5 bg-white p-3 sm:p-4 rounded-2xl border border-gray-200 shadow-xs">
+        {/* Live Search Input */}
+        <div className="relative flex-1 md:max-w-md">
+          <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="search"
             enterKeyHint="search"
-            placeholder={`Search all ${ALL_TOOLS_COUNT} tools…`}
+            placeholder={`Search all ${ALL_TOOLS_COUNT} PDF & document tools…`}
             aria-label="Search tools"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 focus:border-swift-500 rounded-xl pl-9 pr-9 py-3 sm:py-2.5 text-base sm:text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-swift-500 transition-all font-sans"
+            className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-xl pl-10 pr-9 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white focus:border-transparent transition-all placeholder:text-gray-400 font-sans shadow-2xs"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="p-2 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-200 absolute right-2 top-1/2 -translate-y-1/2"
+              className="p-1.5 hover:bg-gray-200 rounded-lg text-gray-400 hover:text-gray-700 absolute right-2.5 top-1/2 -translate-y-1/2"
               aria-label="Clear search"
               title="Clear search"
             >
@@ -170,8 +166,8 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
           )}
         </div>
 
-        {/* Category Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+        {/* Category Filter Tabs */}
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
           {[
             { id: 'all' as const, label: 'All Tools', icon: LayoutGrid },
             { id: 'pdf' as const, label: 'PDF', icon: FileText },
@@ -189,10 +185,10 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
                   onCategoryChange(tab.id);
                 }}
                 aria-pressed={isActive}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all select-none min-h-[44px] ${
+                className={`whitespace-nowrap px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
                   isActive
-                    ? 'bg-swift-600 text-white font-semibold shadow-md shadow-swift-950/50'
-                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'
+                    ? 'bg-red-600 text-white shadow-md shadow-red-500/20'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200/80 shadow-2xs'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -208,13 +204,13 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
               setShowOnlyFavorites((prev) => !prev);
             }}
             aria-pressed={showOnlyFavorites}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all select-none min-h-[44px] ${
+            className={`whitespace-nowrap px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
               showOnlyFavorites
-                ? 'bg-rose-600 text-white font-semibold shadow-md shadow-rose-950/50'
-                : 'text-zinc-400 hover:text-rose-300 hover:bg-zinc-900/60'
+                ? 'bg-rose-600 text-white shadow-md shadow-rose-500/20'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200/80 shadow-2xs'
             }`}
           >
-            <Heart className={`w-3.5 h-3.5 ${showOnlyFavorites ? 'fill-current text-white' : 'text-rose-400'}`} />
+            <Heart className={`w-3.5 h-3.5 ${showOnlyFavorites ? 'fill-current text-white' : 'text-rose-500'}`} />
             <span>Favorites ({favorites.length})</span>
           </button>
 
@@ -225,45 +221,45 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
               setShowOnlyPopular((prev) => !prev);
             }}
             aria-pressed={showOnlyPopular}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all select-none min-h-[44px] ${
+            className={`whitespace-nowrap px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
               showOnlyPopular
-                ? 'bg-amber-600 text-white font-semibold shadow-md shadow-amber-950/50'
-                : 'text-zinc-400 hover:text-amber-300 hover:bg-zinc-900/60'
+                ? 'bg-amber-600 text-white shadow-md shadow-amber-500/20'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200/80 shadow-2xs'
             }`}
           >
-            <Flame className={`w-3.5 h-3.5 ${showOnlyPopular ? 'fill-current text-white' : 'text-amber-400'}`} />
+            <Flame className={`w-3.5 h-3.5 ${showOnlyPopular ? 'fill-current text-white' : 'text-amber-500'}`} />
             <span>Popular</span>
           </button>
         </div>
       </div>
 
-      {/* Tools Grid Section */}
-      <div className="space-y-4">
+      {/* Tools Grid Section (BillGenHai Theme) */}
+      <div className="space-y-4 pt-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm sm:text-base font-semibold text-zinc-200 flex items-center gap-2">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 flex items-center gap-2">
             {showOnlyFavorites
-              ? 'Your favorite tools'
+              ? 'Your Favorite Tools'
               : searchQuery
               ? `Results for "${searchQuery}"`
               : activeCategory === 'all'
-              ? 'All tools'
+              ? 'All Tools'
               : CATEGORY_LABELS[activeCategory]}
-            <span className="text-[11px] font-normal text-zinc-400 px-2 py-0.5 rounded-full bg-zinc-900 border border-zinc-800">
+            <span className="text-xs font-semibold text-gray-500 px-2.5 py-0.5 rounded-full bg-gray-100 border border-gray-200">
               {filteredTools.length} {filteredTools.length === 1 ? 'tool' : 'tools'}
             </span>
           </h2>
         </div>
 
         {filteredTools.length === 0 ? (
-          <div className="py-12 px-4 rounded-2xl bg-zinc-900/40 border border-zinc-800 text-center space-y-3">
-            <div className="w-11 h-11 rounded-2xl bg-zinc-800 text-zinc-500 mx-auto flex items-center justify-center">
-              <Search className="w-5 h-5" />
+          <div className="py-16 px-4 rounded-2xl bg-white border border-gray-200 text-center space-y-3 shadow-xs">
+            <div className="w-12 h-12 rounded-2xl bg-gray-100 text-gray-500 mx-auto flex items-center justify-center">
+              <Search className="w-6 h-6" />
             </div>
-            <h4 className="text-sm font-semibold text-zinc-300">No matching tools found</h4>
-            <p className="text-xs text-zinc-500 max-w-sm mx-auto">
+            <h4 className="text-base font-bold text-gray-900">No matching tools found</h4>
+            <p className="text-xs sm:text-sm text-gray-500 max-w-sm mx-auto">
               {showOnlyFavorites
                 ? "You haven't favorited any tools yet. Tap the heart on any card to save it here."
-                : `Nothing matches "${searchQuery}". Try "compress", "photo 50 kb", "merge", "cgpa", "signature" or "reorder".`}
+                : `Nothing matches "${searchQuery}". Try searching for "compress", "photo 50 kb", "merge", "pdf to word", or "organize".`}
             </p>
             {(searchQuery || showOnlyFavorites) && (
               <button
@@ -271,14 +267,14 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
                   setSearchQuery('');
                   setShowOnlyFavorites(false);
                 }}
-                className="px-4 py-2.5 bg-swift-600 hover:bg-swift-500 text-white rounded-xl text-xs font-semibold transition-colors shadow-md min-h-[44px]"
+                className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-red-500/20 active:scale-95 cursor-pointer"
               >
                 Show all tools
               </button>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 py-2">
             {filteredTools.map((tool) => (
               <ToolCard
                 key={tool.id}

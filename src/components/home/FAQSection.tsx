@@ -39,8 +39,8 @@ export const FAQSection: React.FC = () => {
   return (
     <section className="w-full max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center gap-2 mb-6">
-        <HelpCircle className="w-5 h-5 text-swift-400" />
-        <h3 className="text-lg font-bold text-slate-100">Frequently Asked Questions</h3>
+        <HelpCircle className="w-5 h-5 text-red-600" />
+        <h3 className="text-lg sm:text-xl font-bold text-gray-900">Frequently Asked Questions</h3>
       </div>
 
       <div className="space-y-3">
@@ -49,23 +49,23 @@ export const FAQSection: React.FC = () => {
           return (
             <div
               key={index}
-              className="border border-slate-800/80 rounded-xl bg-slate-900/40 overflow-hidden transition-all duration-200"
+              className="border border-gray-200 rounded-2xl bg-white overflow-hidden shadow-xs transition-all duration-200"
             >
               <button
                 type="button"
                 onClick={() => toggleIndex(index)}
-                className="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-slate-800/40 transition-colors"
+                className="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-gray-50 transition-colors"
                 aria-expanded={isOpen}
               >
-                <span className="text-sm font-semibold text-slate-200">{faq.question}</span>
+                <span className="text-sm sm:text-base font-bold text-gray-900">{faq.question}</span>
                 <ChevronDown
-                  className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${
-                    isOpen ? 'rotate-180 text-swift-400' : ''
+                  className={`w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 ${
+                    isOpen ? 'rotate-180 text-red-600' : ''
                   }`}
                 />
               </button>
               {isOpen && (
-                <div className="px-5 pb-4 pt-1 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-800/40">
+                <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-gray-600 leading-relaxed border-t border-gray-100">
                   {faq.answer}
                 </div>
               )}

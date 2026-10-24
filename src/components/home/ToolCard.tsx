@@ -108,64 +108,79 @@ export const ICON_MAP: Record<string, LucideIcon> = {
 
 const COLOR_THEMES: Record<string, { bg: string; border: string; text: string }> = {
   'text-blue-400': {
-    bg: 'bg-blue-500/10 group-hover:bg-blue-500/15',
-    border: 'border-blue-500/20 group-hover:border-blue-500/35',
-    text: 'text-blue-400',
+    bg: 'bg-blue-50 group-hover:bg-blue-100/70',
+    border: 'border-blue-200/80',
+    text: 'text-blue-600',
   },
   'text-amber-400': {
-    bg: 'bg-amber-500/10 group-hover:bg-amber-500/15',
-    border: 'border-amber-500/20 group-hover:border-amber-500/35',
-    text: 'text-amber-400',
+    bg: 'bg-amber-50 group-hover:bg-amber-100/70',
+    border: 'border-amber-200/80',
+    text: 'text-amber-600',
   },
   'text-amber-500': {
-    bg: 'bg-amber-500/10 group-hover:bg-amber-500/15',
-    border: 'border-amber-500/20 group-hover:border-amber-500/35',
-    text: 'text-amber-400',
+    bg: 'bg-amber-50 group-hover:bg-amber-100/70',
+    border: 'border-amber-200/80',
+    text: 'text-amber-600',
   },
   'text-yellow-400': {
-    bg: 'bg-yellow-500/10 group-hover:bg-yellow-500/15',
-    border: 'border-yellow-500/20 group-hover:border-yellow-500/35',
-    text: 'text-yellow-400',
+    bg: 'bg-yellow-50 group-hover:bg-yellow-100/70',
+    border: 'border-yellow-200/80',
+    text: 'text-yellow-600',
   },
   'text-emerald-400': {
-    bg: 'bg-emerald-500/10 group-hover:bg-emerald-500/15',
-    border: 'border-emerald-500/20 group-hover:border-emerald-500/35',
-    text: 'text-emerald-400',
+    bg: 'bg-emerald-50 group-hover:bg-emerald-100/70',
+    border: 'border-emerald-200/80',
+    text: 'text-emerald-600',
   },
   'text-teal-400': {
-    bg: 'bg-teal-500/10 group-hover:bg-teal-500/15',
-    border: 'border-teal-500/20 group-hover:border-teal-500/35',
-    text: 'text-teal-400',
+    bg: 'bg-teal-50 group-hover:bg-teal-100/70',
+    border: 'border-teal-200/80',
+    text: 'text-teal-600',
   },
   'text-purple-400': {
-    bg: 'bg-purple-500/10 group-hover:bg-purple-500/15',
-    border: 'border-purple-500/20 group-hover:border-purple-500/35',
-    text: 'text-purple-400',
+    bg: 'bg-purple-50 group-hover:bg-purple-100/70',
+    border: 'border-purple-200/80',
+    text: 'text-purple-600',
   },
-  'text-pink-400': {
-    bg: 'bg-pink-500/10 group-hover:bg-pink-500/15',
-    border: 'border-pink-500/20 group-hover:border-pink-500/35',
-    text: 'text-pink-400',
+  'text-violet-400': {
+    bg: 'bg-violet-50 group-hover:bg-violet-100/70',
+    border: 'border-violet-200/80',
+    text: 'text-violet-600',
   },
-  'text-cyan-400': {
-    bg: 'bg-cyan-500/10 group-hover:bg-cyan-500/15',
-    border: 'border-cyan-500/20 group-hover:border-cyan-500/35',
-    text: 'text-cyan-400',
-  },
-  'text-sky-400': {
-    bg: 'bg-sky-500/10 group-hover:bg-sky-500/15',
-    border: 'border-sky-500/20 group-hover:border-sky-500/35',
-    text: 'text-sky-400',
-  },
-  'text-indigo-400': {
-    bg: 'bg-indigo-500/10 group-hover:bg-indigo-500/15',
-    border: 'border-indigo-500/20 group-hover:border-indigo-500/35',
-    text: 'text-indigo-400',
+  'text-rose-500': {
+    bg: 'bg-rose-50 group-hover:bg-rose-100/70',
+    border: 'border-rose-200/80',
+    text: 'text-rose-600',
   },
   'text-rose-400': {
-    bg: 'bg-rose-500/10 group-hover:bg-rose-500/15',
-    border: 'border-rose-500/20 group-hover:border-rose-500/35',
-    text: 'text-rose-400',
+    bg: 'bg-rose-50 group-hover:bg-rose-100/70',
+    border: 'border-rose-200/80',
+    text: 'text-rose-600',
+  },
+  'text-red-400': {
+    bg: 'bg-red-50 group-hover:bg-red-100/70',
+    border: 'border-red-200/80',
+    text: 'text-red-600',
+  },
+  'text-indigo-400': {
+    bg: 'bg-indigo-50 group-hover:bg-indigo-100/70',
+    border: 'border-indigo-200/80',
+    text: 'text-indigo-600',
+  },
+  'text-sky-400': {
+    bg: 'bg-sky-50 group-hover:bg-sky-100/70',
+    border: 'border-sky-200/80',
+    text: 'text-sky-600',
+  },
+  'text-sky-300': {
+    bg: 'bg-sky-50 group-hover:bg-sky-100/70',
+    border: 'border-sky-200/80',
+    text: 'text-sky-600',
+  },
+  'text-orange-400': {
+    bg: 'bg-orange-50 group-hover:bg-orange-100/70',
+    border: 'border-orange-200/80',
+    text: 'text-orange-600',
   },
 };
 
@@ -176,8 +191,6 @@ interface ToolCardProps {
 
 /**
  * Shared tool launcher: routes a ToolAction to the right modal / editor workflow.
- * Used by the home tool cards and the Recently Used strip so both behave
- * identically (initial tabs, view modes, editor tools).
  */
 export const launchToolAction = (
   tool: ToolDefinition,
@@ -219,9 +232,9 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
   const IconComponent = ICON_MAP[tool.iconName] || Sparkles;
   const isFav = isFavorite(tool.id);
   const theme = COLOR_THEMES[tool.color] || {
-    bg: 'bg-slate-800/60 group-hover:bg-slate-800/90',
-    border: 'border-slate-700/60 group-hover:border-slate-600',
-    text: 'text-slate-300',
+    bg: 'bg-slate-50 group-hover:bg-slate-100',
+    border: 'border-slate-200/80',
+    text: 'text-slate-700',
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -231,7 +244,6 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
     }
 
     trackTool(tool.id);
-
     launchToolAction(tool, ui, docStore, tools, onSelectWorkflowFile);
   };
 
@@ -251,12 +263,12 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
           handleClick(e as any);
         }
       }}
-      className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-zinc-950 hover:bg-zinc-900/60 border border-zinc-900 hover:border-zinc-800 shadow-sm hover:shadow-xl hover:shadow-black/25 active:scale-[0.99] transition-all duration-200 cursor-pointer select-none text-left"
+      className="group relative flex flex-col justify-between p-5 rounded-2xl bg-white hover:bg-slate-50/70 border border-slate-200 hover:border-slate-300 shadow-xs hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-200 cursor-pointer select-none text-left"
     >
       {/* Top row: Icon, Badge (if any), Favorite */}
       <div className="flex items-center justify-between gap-3 mb-3">
         <div
-          className="w-10 h-10 rounded-xl bg-zinc-900/90 group-hover:bg-zinc-800 border border-zinc-800/80 group-hover:border-zinc-700 flex items-center justify-center transition-all duration-200 shadow-xs"
+          className={`w-11 h-11 rounded-xl ${theme.bg} border ${theme.border} flex items-center justify-center transition-all duration-200 shadow-2xs`}
         >
           <IconComponent className={`w-5 h-5 ${theme.text}`} />
         </div>
@@ -264,7 +276,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
         <div className="flex items-center gap-1.5">
           {tool.badge && (
             <span
-              className="px-2 py-0.5 rounded-md text-[10px] font-mono font-medium uppercase tracking-wider bg-zinc-900 border border-zinc-800 text-zinc-400"
+              className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-slate-100 border border-slate-200 text-slate-600"
             >
               {tool.badge}
             </span>
@@ -273,10 +285,10 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
           <button
             type="button"
             onClick={handleFavoriteToggle}
-            className={`fav-btn p-3.5 -m-2 rounded-lg transition-all ${
+            className={`fav-btn p-2 rounded-lg transition-all ${
               isFav
-                ? 'opacity-100 text-rose-500 bg-rose-500/10'
-                : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-zinc-500 hover:text-rose-400 hover:bg-zinc-800'
+                ? 'opacity-100 text-rose-500 bg-rose-50'
+                : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-slate-400 hover:text-rose-500 hover:bg-slate-100'
             }`}
             title={isFav ? 'Remove from favorites' : 'Add to favorites'}
             aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
@@ -288,20 +300,20 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
 
       {/* Title & Description */}
       <div className="space-y-1.5">
-        <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-white transition-colors leading-snug">
+        <h3 className="text-sm font-bold text-slate-900 group-hover:text-red-600 transition-colors leading-snug">
           {tool.name}
         </h3>
-        <p className="text-xs text-zinc-400/90 leading-relaxed line-clamp-2 min-h-[32px]">
+        <p className="text-xs text-slate-500 leading-relaxed line-clamp-2 min-h-[32px]">
           {tool.shortDesc}
         </p>
       </div>
 
       {/* Bottom Footer: Category & Open Action */}
-      <div className="mt-3.5 pt-2.5 border-t border-zinc-900 flex items-center justify-between text-xs text-zinc-500">
-        <span className="text-[11px] font-medium capitalize text-zinc-500 group-hover:text-zinc-400 transition-colors">
+      <div className="mt-3.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+        <span className="text-[11px] font-medium capitalize text-slate-500 group-hover:text-slate-700 transition-colors">
           {tool.category} Tool
         </span>
-        <span className="text-xs font-semibold text-swift-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-hover:translate-x-0.5 transition-all flex items-center gap-1">
+        <span className="text-xs font-semibold text-red-600 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-hover:translate-x-0.5 transition-all flex items-center gap-1">
           Open <ArrowRight className="w-3.5 h-3.5" />
         </span>
       </div>

@@ -19,16 +19,16 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #000000;
+    background: #f8fafc;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #242428;
+    background: #cbd5e1;
     border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #3a3a42;
+    background: #94a3b8;
   }
 }
 
@@ -145,144 +145,6 @@
     max-width: 100% !important;
     height: auto !important;
   }
-}
-
-/* ==========================================================================
-   THEME 1: PURE AMOLED BLACK (#000000 TRUE PITCH BLACK & HIGH CONTRAST)
-   ========================================================================== */
-html,
-html.dark,
-html.oled,
-body,
-#root {
-  background-color: #000000 !important;
-  color: #f1f5f9;
-}
-
-/* Gradients with slate backgrounds turn to pure black */
-html.dark [class*="bg-gradient-to-b from-slate-"],
-html.oled [class*="bg-gradient-to-b from-slate-"],
-[class*="bg-gradient-to-b from-slate-"] {
-  background-image: none !important;
-  background-color: #000000 !important;
-}
-
-/* True Pitch Black Surfaces */
-header,
-aside,
-nav,
-footer,
-.MainToolbar,
-[class*="MainToolbar"],
-.DocumentTabBar,
-[class*="DocumentTabBar"],
-[class*="ContextPropertiesBar"],
-html.dark [class*="bg-slate-900"],
-html.dark [class*="bg-slate-950"],
-html.oled [class*="bg-slate-900"],
-html.oled [class*="bg-slate-950"] {
-  background-color: #000000 !important;
-}
-
-/* Elevated sleek dark surfaces & cards */
-html.dark [class*="bg-slate-800"],
-html.dark [class*="bg-slate-850"],
-html.oled [class*="bg-slate-800"],
-html.oled [class*="bg-slate-850"] {
-  background-color: #070708 !important;
-}
-
-/* Crisp high-contrast AMOLED borders */
-html.dark [class*="border-slate-"],
-html.oled [class*="border-slate-"] {
-  border-color: #1c1c1f !important;
-}
-
-/* Interactive hover surfaces */
-html.dark [class*="hover:bg-slate-800"]:hover,
-html.dark [class*="hover:bg-slate-700"]:hover,
-html.oled [class*="hover:bg-slate-800"]:hover,
-html.oled [class*="hover:bg-slate-700"]:hover {
-  background-color: #141416 !important;
-}
-
-/* Form Inputs, Dropdowns & Textareas */
-input[type="text"],
-input[type="password"],
-input[type="number"],
-input[type="search"],
-select,
-textarea {
-  background-color: #080808 !important;
-  border-color: #242428 !important;
-  color: #f8fafc !important;
-}
-
-/* Hide the native WebKit clear "✕" on search inputs — a custom clear button is rendered by ToolExplorer */
-input[type="search"]::-webkit-search-cancel-button,
-input[type="search"]::-webkit-search-decoration {
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: #64748b !important;
-}
-
-/* Dialogs & Modals */
-[role="dialog"],
-.fixed > [class*="bg-slate-900"],
-.fixed > [class*="bg-slate-950"],
-[class*="rounded-2xl"][class*="bg-slate-900"],
-[class*="rounded-3xl"][class*="bg-slate-900"],
-[class*="rounded-2xl"][class*="bg-slate-800"],
-[class*="rounded-3xl"][class*="bg-slate-800"] {
-  background-color: #050505 !important;
-  border-color: #222226 !important;
-}
-
-/* Modal Backdrops - Deep blur & rich dark shade */
-[class*="bg-black/"],
-[class*="bg-slate-950/"] {
-  background-color: rgba(0, 0, 0, 0.88) !important;
-}
-
-/* PDF Viewer Canvas Desk & Organizer Viewport */
-.PDFViewerDesk,
-#pdf-viewer-viewport,
-.pdf-desk-bg {
-  background-color: #000000 !important;
-}
-
-/* Tool card styling for deep AMOLED contrast (scoped to the home dashboard
-   catalogue cards — previously matched ANY .group with these structural
-   classes anywhere in the app). */
-#home-dashboard .group[role="button"] {
-  background-color: #050507 !important;
-  border-color: #18181b !important;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-#home-dashboard .group[role="button"]:hover {
-  background-color: #0c0c0f !important;
-  border-color: #27272a !important;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.05);
-}
-
-/* Animated AMOLED Dropzone Glow */
-@keyframes amoledPulse {
-  0%, 100% {
-    border-color: rgba(56, 189, 248, 0.4);
-    box-shadow: 0 0 30px -5px rgba(56, 189, 248, 0.12);
-  }
-  50% {
-    border-color: rgba(56, 189, 248, 0.8);
-    box-shadow: 0 0 45px 0px rgba(56, 189, 248, 0.22);
-  }
-}
-.dropzone-dragging {
-  animation: amoledPulse 2s infinite ease-in-out;
 }
 
 /* ==========================================================================

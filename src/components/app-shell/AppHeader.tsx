@@ -155,7 +155,7 @@ export const AppHeader: React.FC = () => {
   };
 
   return (
-    <header className="h-14 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/80 px-4 sm:px-6 flex items-center justify-between text-slate-200 select-none z-30 gap-3 sticky top-0">
+    <header className="h-16 bg-white/95 backdrop-blur-md border-b border-gray-200 px-4 sm:px-6 lg:px-8 flex items-center justify-between text-gray-800 select-none z-30 gap-3 sticky top-0 shadow-2xs">
       {/* ======================================================== */}
       {/* Left: Home / Back, Brand Logo & Undo/Redo */}
       {/* ======================================================== */}
@@ -186,16 +186,23 @@ export const AppHeader: React.FC = () => {
           </div>
         ) : null}
 
-        {/* Desktop or Home Brand Logo */}
+        {/* Desktop or Home Brand Logo (BillGenHai Theme) */}
         <button
           onClick={handleGoHome}
-          className={`${isDocumentOpen ? 'hidden lg:flex' : 'flex'} items-center gap-2 hover:opacity-90 transition-opacity select-none focus:outline-none`}
+          className={`${isDocumentOpen ? 'hidden lg:flex' : 'flex'} items-center gap-2.5 hover:opacity-95 transition-opacity select-none focus:outline-none`}
           title={isDocumentOpen ? 'Back to Home Dashboard' : 'JustPDFCraft'}
         >
-          <SwiftLogo className="w-6 h-6 shrink-0" />
-          <span className="font-bold text-sm tracking-tight text-slate-100">
-            Just<span className="text-swift-400">PDFCraft</span>
-          </span>
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-white shadow-md shadow-red-500/20 group-hover:scale-105 transition-transform">
+            <SwiftLogo className="w-5 h-5 shrink-0 text-white fill-white" />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="font-extrabold text-base sm:text-lg text-gray-900 tracking-tight">
+              Just<span className="text-red-600">PDFCraft</span>
+            </span>
+            <span className="hidden sm:inline-block bg-red-100 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+              100% Free
+            </span>
+          </div>
         </button>
 
         {isDocumentOpen && (
@@ -374,30 +381,30 @@ export const AppHeader: React.FC = () => {
         </div>
       )}
 
-      {/* When in Home Dashboard: iLovePDF-style Top Navigation Links */}
+      {/* When in Home Dashboard: Top Navigation Links (BillGenHai Theme) */}
       {!isDocumentOpen && (
-        <nav className="hidden lg:flex items-center gap-1 text-xs font-bold select-none">
+        <nav className="hidden lg:flex items-center gap-1.5 text-xs font-bold select-none">
           <button
             onClick={() => setActiveModal('merge')}
-            className="px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors uppercase tracking-wider"
+            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-red-600 hover:bg-red-50/70 transition-colors uppercase tracking-wide cursor-pointer"
           >
             Merge PDF
           </button>
           <button
             onClick={() => setActiveModal('split')}
-            className="px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors uppercase tracking-wider"
+            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-red-600 hover:bg-red-50/70 transition-colors uppercase tracking-wide cursor-pointer"
           >
             Split PDF
           </button>
           <button
             onClick={() => setActiveModal('compress')}
-            className="px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors uppercase tracking-wider"
+            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-red-600 hover:bg-red-50/70 transition-colors uppercase tracking-wide cursor-pointer"
           >
             Compress PDF
           </button>
           <button
             onClick={() => setActiveModal('convert')}
-            className="px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors uppercase tracking-wider"
+            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-red-600 hover:bg-red-50/70 transition-colors uppercase tracking-wide cursor-pointer"
           >
             Convert PDF
           </button>
@@ -406,7 +413,7 @@ export const AppHeader: React.FC = () => {
               const el = document.getElementById('tool-explorer');
               el?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors uppercase tracking-wider"
+            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-red-600 hover:bg-red-50/70 transition-colors uppercase tracking-wide cursor-pointer"
           >
             All PDF Tools
           </button>
