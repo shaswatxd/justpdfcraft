@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { migrateLegacyStorageKey } from '@/utils/legacy-storage';
 
 export type PaperTone = 'default' | 'sepia' | 'dark' | 'mint';
 export type ActiveView = 'home' | 'editor';
@@ -88,11 +89,21 @@ if (typeof window !== 'undefined') {
   } catch {}
 }
 
+const PAPER_TONES: PaperTone[] = ['default', 'sepia', 'dark', 'mint'];
+
+// One-time migration: carry the paper tone over from old brand keys, then read
+// only the current key below.
+if (typeof window !== 'undefined') {
+  migrateLegacyStorageKey(['swifteditoo_papertone', 'swiftpdf_papertone'], 'justpdfcraft_papertone', {
+    validate: (raw) => PAPER_TONES.includes(raw as PaperTone),
+  });
+}
+
 const getInitialPaperTone = (): PaperTone => {
   if (typeof window === 'undefined') return 'default';
   try {
-    const saved = (localStorage.getItem('justpdfcraft_papertone') || localStorage.getItem('swifteditoo_papertone') || localStorage.getItem('swiftpdf_papertone')) as PaperTone;
-    if (['default', 'sepia', 'dark', 'mint'].includes(saved)) {
+    const saved = localStorage.getItem('justpdfcraft_papertone') as PaperTone | null;
+    if (saved && PAPER_TONES.includes(saved)) {
       return saved;
     }
   } catch {}

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { migrateLegacyStorageKey, isJsonArrayOf } from '@/utils/legacy-storage';
 import { DocumentMetadata, PageDimensions, FormFieldData, DocumentOutlineItem } from '@core/pdf/engine.interface';
 import { getPDFEngine } from '@core/pdf/engine.factory';
 import { localDb } from '@core/db/database';
@@ -34,6 +35,18 @@ export interface UserBookmark {
 const BOOKMARKS_STORAGE_PREFIX = 'justpdfcraft_bm_';
 const LEGACY_BOOKMARKS_STORAGE_PREFIX = 'swifteditoo_bm_';
 
+const isUserBookmark = (item: unknown): item is UserBookmark => {
+  if (typeof item !== 'object' || item === null) return false;
+  const b = item as Record<string, unknown>;
+  return (
+    typeof b.id === 'string' &&
+    typeof b.title === 'string' &&
+    typeof b.pageIndex === 'number' &&
+    Number.isFinite(b.pageIndex) &&
+    typeof b.createdAt === 'string'
+  );
+};
+
 function getBookmarkStorageKey(filePath: string | null, fileName: string | null, legacy: boolean = false): string | null {
   const key = filePath || fileName;
   const prefix = legacy ? LEGACY_BOOKMARKS_STORAGE_PREFIX : BOOKMARKS_STORAGE_PREFIX;
@@ -44,9 +57,13 @@ export function loadBookmarksFromStorage(filePath: string | null, fileName: stri
   try {
     if (typeof localStorage === 'undefined') return [];
     const key = getBookmarkStorageKey(filePath, fileName);
-    const legacyKey = getBookmarkStorageKey(filePath, fileName, true);
     if (!key) return [];
-    const saved = localStorage.getItem(key) || (legacyKey ? localStorage.getItem(legacyKey) : null);
+    // One-time migration from the swifteditoo brand key, then read the current key only
+    const legacyKey = getBookmarkStorageKey(filePath, fileName, true);
+    if (legacyKey) {
+      migrateLegacyStorageKey(legacyKey, key, { validate: isJsonArrayOf(isUserBookmark) });
+    }
+    const saved = localStorage.getItem(key);
     if (saved) {
       return JSON.parse(saved);
     }

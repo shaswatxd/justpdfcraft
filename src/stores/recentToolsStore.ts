@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { migrateLegacyStorageKey, isJsonStringArray } from '@/utils/legacy-storage';
 
 interface RecentToolsState {
   recentToolIds: string[];
@@ -20,7 +21,8 @@ const OLD_RECENTS_SEEDS = [
 const getInitialRecents = (): string[] => {
   if (typeof window === 'undefined') return [];
   try {
-    localStorage.removeItem('swifteditoo_recent_tools');
+    // One-time migration from the swifteditoo brand, then read the current key
+    migrateLegacyStorageKey('swifteditoo_recent_tools', STORAGE_KEY, { validate: isJsonStringArray });
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);

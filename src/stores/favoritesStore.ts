@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { migrateLegacyStorageKey, isJsonStringArray } from '@/utils/legacy-storage';
 
 interface FavoritesState {
   favorites: string[];
@@ -20,8 +21,8 @@ const OLD_DEFAULT_SEEDS = [
 const getInitialFavorites = (): string[] => {
   if (typeof window === 'undefined') return [];
   try {
-    // Clean up legacy storage key
-    localStorage.removeItem('swifteditoo_favorites');
+    // One-time migration from the swifteditoo brand, then read the current key
+    migrateLegacyStorageKey('swifteditoo_favorites', STORAGE_KEY, { validate: isJsonStringArray });
 
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
