@@ -1,5 +1,5 @@
 /**
- * SwiftPDF — PDFEngine Master Abstraction Interface
+ * JustPDFCraft - PDFEngine Master Abstraction Interface
  * 
  * Strict boundary between UI / application services and underlying PDF libraries.
  * Can be implemented by FallbackPDFEngine (pdf-lib + PDF.js) or Commercial SDK (Apryse, Nutrient).

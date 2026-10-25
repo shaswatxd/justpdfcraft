@@ -1,6 +1,6 @@
-# SwiftPDF Optical Character Recognition (OCR)
+# JustPDFCraft Optical Character Recognition (OCR)
 
-SwiftPDF integrates **Tesseract.js** in dedicated background Web Worker threads to provide on-device character recognition for scanned and image-heavy PDF files.
+JustPDFCraft integrates **Tesseract.js** in dedicated background Web Worker threads to provide on-device character recognition for scanned and image-heavy PDF files.
 
 ## OCR Pipeline
 

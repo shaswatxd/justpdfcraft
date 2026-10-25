@@ -1,4 +1,4 @@
-# SwiftPDF System Architecture
+# JustPDFCraft System Architecture
 
 ## Architectural Principles
 
@@ -33,11 +33,5 @@
   - OCRService (Tesseract worker threadpool)
   - DocumentComparator (Structural & text page diffing)
   - PrintLayoutEngine (N-up layout, booklet sequence, safety validation)
-  - LocalDatabaseService (SQLite / local persistence)
-
-[Native Shell & OS Integration (Tauri 2)]
-  - Window control & native decorators
-  - Atomic filesystem write operations
-  - Security path canonicalization & magic byte verification
-  - Windows Shell Explorer reveal
+  - LocalDatabaseService (OPFS / local persistence)
 ```

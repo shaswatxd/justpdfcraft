@@ -15,7 +15,7 @@ describe('FallbackPDFEngine Text Extraction & Search', () => {
 
     // Page 1 with text
     const page1 = doc.addPage([600, 800]);
-    page1.drawText('SwiftPDF Fast Desktop Engine', {
+    page1.drawText('JustPDFCraft Fast Desktop Engine', {
       x: 50,
       y: 700,
       size: 20,
@@ -49,7 +49,7 @@ describe('FallbackPDFEngine Text Extraction & Search', () => {
 
     const page1Text = await engine.extractPageText(documentId, 0);
     expect(page1Text.pageIndex).toBe(0);
-    expect(page1Text.text).toContain('SwiftPDF');
+    expect(page1Text.text).toContain('JustPDFCraft');
     expect(page1Text.text).toContain('INV-2026-001');
 
     const page2Text = await engine.extractPageText(documentId, 1);
@@ -63,10 +63,10 @@ describe('FallbackPDFEngine Text Extraction & Search', () => {
     const pdfBytes = await createSamplePdfWithText();
     const { documentId } = await engine.openDocument(pdfBytes);
 
-    const results = await engine.searchDocument(documentId, 'swiftpdf', false);
+    const results = await engine.searchDocument(documentId, 'justpdfcraft', false);
     expect(results.length).toBeGreaterThanOrEqual(1);
     expect(results[0].pageIndex).toBe(0);
-    expect(results[0].textSnippet.toLowerCase()).toContain('swiftpdf');
+    expect(results[0].textSnippet.toLowerCase()).toContain('justpdfcraft');
 
     const invResults = await engine.searchDocument(documentId, 'inv-2026', false);
     expect(invResults.length).toBeGreaterThanOrEqual(1);

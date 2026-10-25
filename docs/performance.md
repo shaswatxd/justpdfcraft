@@ -1,4 +1,4 @@
-# SwiftPDF Performance Guidelines
+# JustPDFCraft Performance Guidelines
 
 ## Target Metrics
 

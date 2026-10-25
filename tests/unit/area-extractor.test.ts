@@ -23,7 +23,7 @@ describe('Area Text Extractor & High-Precision Dual Engine', () => {
         y: 700,
       },
       {
-        str: 'SwiftPDF max power extraction is active',
+        str: 'JustPDFCraft max power extraction is active',
         dir: 'ltr',
         width: 260,
         height: 14,

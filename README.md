@@ -32,9 +32,6 @@
 
 ### 🎓 Student & Exam Utilities
 - **Target KB Photo Resizer**: Binary-search compression to exact portal limits (e.g. 20–50 KB, 50–100 KB).
-- **Paper Signature Whitener**: High-pass filter turns gray mobile photos of signatures on lined paper into pure white backgrounds.
-- **DOP & Name Banner**: Candidate photo stamp generator for SSC, UPSC, and State PSCs.
-- **Photo & Signature Combiner**: Stacked or side-by-side photo + signature sheet with exact dimension constraints.
 - **CGPA & SGPA Calculators**: Cumulative and semester GPA with credit weighting and goal projection.
 - **Attendance & Bunk Planner**: Find how many classes you can skip or must attend to hit 75%.
 - **Percentage Calculator & Age Eligibility**: Exact date calculations for exam notifications.

@@ -7,7 +7,7 @@ import { PDFDocument } from 'pdf-lib';
 const TINY_PNG_BASE64 =
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 
-describe('SwiftPDF Photo & Image Extraction Engine', () => {
+describe('JustPDFCraft Photo & Image Extraction Engine', () => {
   let engine: FallbackPDFEngine;
 
   beforeEach(() => {

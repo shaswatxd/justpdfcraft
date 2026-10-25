@@ -147,7 +147,6 @@ interface DocumentState {
   closeCurrentDocument: () => Promise<void>;
   switchTab: (tabId: string) => void;
   closeTab: (tabId: string) => Promise<void>;
-  closeOtherTabs: (tabId: string) => Promise<void>;
   setCurrentPage: (page: number) => void;
   setZoom: (zoom: number | ((prev: number) => number)) => void;
   setViewMode: (mode: 'single' | 'continuous' | 'organize' | 'spread') => void;
@@ -565,6 +564,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         fileName: nextTab.fileName,
         filePath: nextTab.filePath,
         fileBytes: nextTab.fileBytes,
+        fileHandle: nextTab.fileHandle || null,
         metadata: nextTab.metadata,
         pageCount: nextTab.pageCount,
         currentPage: nextTab.currentPage,
@@ -580,18 +580,14 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         undoStack: nextTab.undoStack,
         redoStack: nextTab.redoStack,
         isDirty: nextTab.isDirty,
+        // Don't leak the closed document's search state into the reactivated tab
+        searchQuery: '',
+        searchResults: [],
+        currentSearchMatch: 0,
+        isSearching: false,
       });
     } else {
       set({ tabs: remainingTabs });
-    }
-  },
-
-  closeOtherTabs: async (keepTabId: string) => {
-    const { tabs } = get();
-    for (const t of tabs) {
-      if (t.id !== keepTabId) {
-        await get().closeTab(t.id);
-      }
     }
   },
 
@@ -739,7 +735,11 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
 
     set({ undoStack: newUndo, redoStack: newRedo });
     await loadDocument(previous.bytes, fileName, filePath || undefined);
-    set({ isDirty: true });
+    // Mark both the global flag and the active tab's dirty indicator
+    set((state) => ({
+      isDirty: true,
+      tabs: state.tabs.map((t) => (t.id === state.activeTabId ? { ...t, isDirty: true } : t)),
+    }));
   },
 
   redo: async () => {
@@ -755,7 +755,11 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
 
     set({ undoStack: newUndo, redoStack: newRedo });
     await loadDocument(next.bytes, fileName, filePath || undefined);
-    set({ isDirty: true });
+    // Mark both the global flag and the active tab's dirty indicator
+    set((state) => ({
+      isDirty: true,
+      tabs: state.tabs.map((t) => (t.id === state.activeTabId ? { ...t, isDirty: true } : t)),
+    }));
   },
 
   rotateSelectedPages: async (degrees: number) => {

@@ -1,5 +1,5 @@
 /**
- * SwiftPDF — Precision PDF Image & Photo Extractor
+ * JustPDFCraft - Precision PDF Image & Photo Extractor
  * 
  * Provides extraction of:
  * 1. Embedded Image XObjects (raw lossy-free JPEGs via /DCTDecode and PNGs via /FlateDecode)

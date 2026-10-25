@@ -13,7 +13,7 @@ describe('Advanced Workflows: Sticky Notes, Watermarks & Convert Capabilities', 
     const doc = await PDFDocument.create();
     for (let i = 0; i < pageCount; i++) {
       const page = doc.addPage([595.28, 841.89]);
-      page.drawText(`Page ${i + 1} Content - SwiftPDF Document Analysis`, {
+      page.drawText(`Page ${i + 1} Content - JustPDFCraft Document Analysis`, {
         x: 50,
         y: 800,
         size: 14,

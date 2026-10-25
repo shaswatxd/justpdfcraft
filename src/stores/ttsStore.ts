@@ -9,7 +9,6 @@ interface TTSState {
   availableVoices: SpeechSynthesisVoice[];
   readProgress: number; // 0 to 100%
   totalWords: number;
-  currentWordIndex: number;
   activeSnippet: string;
 
   setTTSOpen: (open: boolean) => void;
@@ -84,7 +83,6 @@ export const useTTSStore = create<TTSState>((set, get) => ({
   availableVoices: [],
   readProgress: 0,
   totalWords: 0,
-  currentWordIndex: 0,
   activeSnippet: '',
 
   setTTSOpen: (open: boolean) => {
@@ -158,7 +156,6 @@ export const useTTSStore = create<TTSState>((set, get) => ({
       isPaused: false,
       readProgress: 0,
       totalWords,
-      currentWordIndex: 0,
       activeSnippet: utteranceQueue[0] || '',
     });
 
@@ -255,6 +252,6 @@ export const useTTSStore = create<TTSState>((set, get) => ({
     utteranceQueue = [];
     currentQueueIndex = 0;
     queueOnEndCallback = null;
-    set({ isPlaying: false, isPaused: false, readProgress: 0, currentWordIndex: 0, activeSnippet: '' });
+    set({ isPlaying: false, isPaused: false, readProgress: 0, activeSnippet: '' });
   },
 }));

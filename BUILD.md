@@ -1,6 +1,6 @@
-# Building SwiftPDF
+# Building JustPDFCraft
 
-This document describes how to build SwiftPDF for development, testing, and production distribution.
+This document describes how to build JustPDFCraft for development, testing, and production distribution.
 
 ---
 
@@ -8,9 +8,6 @@ This document describes how to build SwiftPDF for development, testing, and prod
 
 - **Node.js**: v18.0.0 or higher (v20+ recommended)
 - **npm**: v9.0.0 or higher
-- **Rust toolchain** (optional for desktop binary bundling):
-  - Rust 1.75+ (via `rustup`)
-  - Windows C++ Build Tools (MSVC) or WebView2 runtime
 
 ---
 
@@ -40,10 +37,4 @@ Compiles and tree-shakes assets to `/dist`:
 ```bash
 npm run build
 ```
-
-### 5. Desktop Application Packaging (Tauri 2)
-Builds the standalone native Windows installer (`.msi` / `.exe`):
-```bash
-npm run tauri build
-```
-The resulting installer is generated in `src-tauri/target/release/bundle/`.
+The output in `dist/` is what the GitHub Pages deployment workflow publishes.

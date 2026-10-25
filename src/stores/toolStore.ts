@@ -32,7 +32,6 @@ interface ToolState {
   opacity: number;
   fontSize: number;
   fontFamily: 'Helvetica' | 'TimesRoman' | 'Courier';
-  selectedStamp: string;
   dynamicStampConfig: DynamicStampConfig;
   eraserRadius: number;
   
@@ -54,7 +53,6 @@ interface ToolState {
   setOpacity: (opacity: number) => void;
   setFontSize: (size: number) => void;
   setFontFamily: (font: 'Helvetica' | 'TimesRoman' | 'Courier') => void;
-  setSelectedStamp: (stamp: string) => void;
   setDynamicStampConfig: (config: Partial<DynamicStampConfig>) => void;
   setEraserRadius: (radius: number) => void;
   setMeasureUnit: (unit: 'mm' | 'cm' | 'in' | 'pt') => void;
@@ -72,7 +70,6 @@ export const useToolStore = create<ToolState>((set) => ({
   opacity: 1.0,
   fontSize: 14,
   fontFamily: 'Helvetica',
-  selectedStamp: 'RECEIVED',
   dynamicStampConfig: DEFAULT_DYNAMIC_STAMP,
   eraserRadius: 16,
   measureUnit: 'mm',
@@ -88,11 +85,9 @@ export const useToolStore = create<ToolState>((set) => ({
   setOpacity: (opacity) => set({ opacity }),
   setFontSize: (fontSize) => set({ fontSize }),
   setFontFamily: (fontFamily) => set({ fontFamily }),
-  setSelectedStamp: (selectedStamp) => set({ selectedStamp }),
   setDynamicStampConfig: (partial) =>
     set((state) => ({
       dynamicStampConfig: { ...state.dynamicStampConfig, ...partial },
-      selectedStamp: partial.preset || state.dynamicStampConfig.preset,
       color: partial.color || state.color,
     })),
   setEraserRadius: (eraserRadius) => set({ eraserRadius }),

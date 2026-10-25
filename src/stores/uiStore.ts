@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 
-export type ThemeMode = 'dark' | 'light' | 'oled';
 export type PaperTone = 'default' | 'sepia' | 'dark' | 'mint';
 export type ActiveView = 'home' | 'editor';
 
@@ -37,7 +36,6 @@ export interface ToastMessage {
 }
 
 export interface UIState {
-  theme: ThemeMode;
   isSidebarOpen: boolean;
   activeSidebarTab: SidebarTab;
   isPropertiesPanelOpen: boolean;
@@ -66,7 +64,6 @@ export interface UIState {
   activeConvertTab: string | null;
   setActiveConvertTab: (tab: string | null) => void;
 
-  setTheme: (theme: ThemeMode) => void;
   setPaperTone: (tone: PaperTone) => void;
   setActiveView: (view: ActiveView) => void;
   toggleSidebar: () => void;
@@ -86,25 +83,15 @@ export interface UIState {
   removeToast: (id: string) => void;
 }
 
-const applyThemeToDOM = (_theme: ThemeMode = 'light') => {
-  if (typeof document === 'undefined') return;
-  const root = document.documentElement;
-  root.classList.remove('dark', 'oled');
-  root.classList.add('light');
-};
-
-const getInitialTheme = (): ThemeMode => {
-  if (typeof window !== 'undefined') {
-    try {
-      localStorage.removeItem('justpdfcraft_theme');
-      localStorage.removeItem('swifteditoo_theme');
-      localStorage.removeItem('swiftpdf_theme');
-      localStorage.setItem('justpdfcraft_theme', 'light');
-    } catch {}
-  }
-  applyThemeToDOM('light');
-  return 'light';
-};
+// One-time cleanup of legacy theme keys from pre-rebrand migrations
+// (the app ships a fixed clean-light theme; no runtime theme switching)
+if (typeof window !== 'undefined') {
+  try {
+    localStorage.removeItem('justpdfcraft_theme');
+    localStorage.removeItem('swifteditoo_theme');
+    localStorage.removeItem('swiftpdf_theme');
+  } catch {}
+}
 
 const getInitialPaperTone = (): PaperTone => {
   if (typeof window === 'undefined') return 'default';
@@ -118,7 +105,6 @@ const getInitialPaperTone = (): PaperTone => {
 };
 
 export const useUIStore = create<UIState>((set) => ({
-  theme: getInitialTheme(),
   paperTone: getInitialPaperTone(),
   activeView: 'home',
   setActiveView: (activeView) => set({ activeView }),
@@ -155,14 +141,6 @@ export const useUIStore = create<UIState>((set) => ({
   setActiveLegalTab: (activeLegalTab) => set({ activeLegalTab }),
   activeConvertTab: null,
   setActiveConvertTab: (activeConvertTab) => set({ activeConvertTab }),
-
-  setTheme: (_theme: ThemeMode) => {
-    try {
-      localStorage.setItem('justpdfcraft_theme', 'light');
-    } catch {}
-    applyThemeToDOM('light');
-    set({ theme: 'light' });
-  },
 
   setPaperTone: (paperTone: PaperTone) => {
     try {

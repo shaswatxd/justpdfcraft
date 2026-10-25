@@ -12,19 +12,12 @@ export default defineConfig({
       '@core': path.resolve(__dirname, './core'),
     },
   },
-  // Prevent vite from obscuring rust errors
-  clearScreen: false,
-  // Tauri expects a fixed port, fail if that port is not available
   server: {
     port: 1420,
-    strictPort: true,
   },
   build: {
     target: 'esnext',
-    // Don't minify debug builds
-    minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
-    // Produce sourcemaps for debug builds
-    sourcemap: !!process.env.TAURI_DEBUG,
+    minify: 'esbuild',
     chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {
@@ -32,7 +25,7 @@ export default defineConfig({
           'pdf-engine': ['pdf-lib', '@pdfsmaller/pdf-encrypt'],
           'pdf-viewer': ['pdfjs-dist'],
           'icons': ['lucide-react'],
-          'vendor': ['react', 'react-dom', 'zustand', 'clsx', 'tailwind-merge'],
+          'vendor': ['react', 'react-dom', 'zustand'],
         },
       },
     },

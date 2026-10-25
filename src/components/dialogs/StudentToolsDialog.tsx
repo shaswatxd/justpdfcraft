@@ -10,8 +10,6 @@ import {
 } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import {
-  EXAM_PRESETS,
-  ExamPreset,
   compressToTargetKb,
   CompressTargetResult,
 } from '@core/image/student-resizer';
@@ -28,7 +26,6 @@ export const StudentToolsDialog: React.FC = () => {
   const isOpen = activeModal === 'student-resizer';
 
   const [resizerImage, setResizerImage] = useState<HTMLImageElement | null>(null);
-  const [selectedPresetId, setSelectedPresetId] = useState<string>('ssc-photo');
   const [targetMinKb, setTargetMinKb] = useState<number>(20);
   const [targetMaxKb, setTargetMaxKb] = useState<number>(50);
   const [customWidthPx, setCustomWidthPx] = useState<number>(200);
@@ -79,15 +76,6 @@ export const StudentToolsDialog: React.FC = () => {
       });
     };
     img.src = url;
-  };
-
-  // Handle Preset Change
-  const handleSelectPreset = (preset: ExamPreset) => {
-    setSelectedPresetId(preset.id);
-    setTargetMinKb(preset.minKb);
-    setTargetMaxKb(preset.maxKb);
-    setCustomWidthPx(preset.widthPx);
-    setCustomHeightPx(preset.heightPx);
   };
 
   // Process Resizer Compression
@@ -189,7 +177,7 @@ export const StudentToolsDialog: React.FC = () => {
                 </span>
               </div>
               <p className="hidden sm:block text-xs text-gray-500 truncate mt-0.5">
-                Resize photo or signature to exact portal limits (20–50 KB, 10–20 KB) for SSC, UPSC, NEET, JEE.
+                Resize any photo or signature to your exact target file size (KB) and pixel dimensions.
               </p>
             </div>
           </div>
@@ -317,33 +305,7 @@ export const StudentToolsDialog: React.FC = () => {
 
             {/* Right Column: Settings & Download */}
             <div className="w-full lg:col-span-6 space-y-4">
-              {/* 1. Exam Preset Picker */}
-              <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5 block">
-                  1. Select Exam or Custom Format
-                </label>
-                <select
-                  value={selectedPresetId}
-                  onChange={(e) => {
-                    const found = EXAM_PRESETS.find((p) => p.id === e.target.value);
-                    if (found) handleSelectPreset(found);
-                  }}
-                  className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent shadow-2xs font-medium"
-                >
-                  {EXAM_PRESETS.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} ({p.minKb}–{p.maxKb} KB)
-                    </option>
-                  ))}
-                </select>
-                {selectedPresetId && (
-                  <p className="text-[11px] text-gray-600 mt-2 bg-amber-50/80 p-2.5 rounded-lg border border-amber-200/80">
-                    💡 {EXAM_PRESETS.find((p) => p.id === selectedPresetId)?.notes}
-                  </p>
-                )}
-              </div>
-
-              {/* 2. Target KB Limits */}
+              {/* Target KB Limits */}
               <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-gray-900">Target File Size (KB)</span>
@@ -385,7 +347,7 @@ export const StudentToolsDialog: React.FC = () => {
                 </div>
               </div>
 
-              {/* 3. Dimensions Controls */}
+              {/* Dimensions Controls */}
               <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-gray-900">Dimensions (Pixels)</span>
@@ -449,7 +411,7 @@ export const StudentToolsDialog: React.FC = () => {
                 <button
                   onClick={() => {
                     if (resizerResult) {
-                      triggerDownload(resizerResult.dataUrl, `JustPDFCraft_${selectedPresetId}_${Date.now()}.jpg`);
+                      triggerDownload(resizerResult.dataUrl, `JustPDFCraft_resized_${Date.now()}.jpg`);
                     }
                   }}
                   disabled={!resizerResult}

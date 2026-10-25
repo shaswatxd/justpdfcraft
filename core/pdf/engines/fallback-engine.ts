@@ -1716,7 +1716,7 @@ export class FallbackPDFEngine implements PDFEngine {
     const currentProducer = doc.pdfLibDoc.getProducer();
     if (currentProducer) {
       strippedFields.push('Producer');
-      doc.pdfLibDoc.setProducer('SwiftPDF Sanitizer');
+      doc.pdfLibDoc.setProducer('JustPDFCraft Sanitizer');
     }
 
     const currentKeywords = doc.pdfLibDoc.getKeywords();
@@ -1766,7 +1766,7 @@ export class FallbackPDFEngine implements PDFEngine {
       author: undefined,
       subject: undefined,
       creator: undefined,
-      producer: 'SwiftPDF Sanitizer',
+      producer: 'JustPDFCraft Sanitizer',
       creationDate: undefined,
       modificationDate: undefined,
     };

@@ -1,6 +1,6 @@
-# Contributing to SwiftPDF
+# Contributing to JustPDFCraft
 
-We welcome contributions to SwiftPDF!
+We welcome contributions to JustPDFCraft!
 
 ## Development Workflow
 

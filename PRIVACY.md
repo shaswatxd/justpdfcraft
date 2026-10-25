@@ -1,12 +1,12 @@
-# SwiftPDF Privacy Policy
+# JustPDFCraft Privacy Policy
 
 **Effective Date:** 2026
 
-SwiftPDF is built on the philosophy that **your documents belong to you alone**.
+JustPDFCraft is built on the philosophy that **your documents belong to you alone**.
 
 ## 1. Zero Cloud Document Telemetry
-- SwiftPDF does NOT upload your PDF files to any remote server or cloud service.
-- SwiftPDF does NOT scan, index, or analyze the contents of your documents for advertising, marketing, or tracking purposes.
+- JustPDFCraft does NOT upload your PDF files to any remote server or cloud service.
+- JustPDFCraft does NOT scan, index, or analyze the contents of your documents for advertising, marketing, or tracking purposes.
 
 ## 2. On-Device Processing
 - All rendering, editing, page reorganization, compression, and OCR text extraction happen on your local computer using local compute resources.

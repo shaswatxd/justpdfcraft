@@ -4,8 +4,6 @@ interface FavoritesState {
   favorites: string[];
   isFavorite: (toolId: string) => boolean;
   toggleFavorite: (toolId: string) => void;
-  addFavorite: (toolId: string) => void;
-  removeFavorite: (toolId: string) => void;
 }
 
 const STORAGE_KEY = 'justpdfcraft_favorites';
@@ -59,27 +57,6 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
       const updated = exists
         ? state.favorites.filter((id) => id !== toolId)
         : [...state.favorites, toolId];
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      } catch {}
-      return { favorites: updated };
-    });
-  },
-
-  addFavorite: (toolId: string) => {
-    set((state) => {
-      if (state.favorites.includes(toolId)) return state;
-      const updated = [...state.favorites, toolId];
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      } catch {}
-      return { favorites: updated };
-    });
-  },
-
-  removeFavorite: (toolId: string) => {
-    set((state) => {
-      const updated = state.favorites.filter((id) => id !== toolId);
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       } catch {}

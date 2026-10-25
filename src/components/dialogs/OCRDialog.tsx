@@ -26,11 +26,19 @@ export const OCRDialog: React.FC = () => {
   const { documentId, fileName, currentPage, pageCount, loadDocument, closeCurrentDocument } = useDocumentStore();
 
   const handleClose = () => {
+    // Signal any in-flight OCR loop to stop before dismissing the dialog
+    if (isProcessing) {
+      cancelledRef.current = true;
+    }
     setActiveModal(null);
     if (activeView === 'home') {
       closeCurrentDocument();
     }
   };
+
+  // Set when the dialog is dismissed mid-run so worker loops abort instead of
+  // burning CPU and toasting "finished" long after the dialog has been closed.
+  const cancelledRef = useRef(false);
 
   const [language, setLanguage] = useState('eng');
   const [scope, setScope] = useState<'current' | 'all' | 'custom'>('current');
@@ -108,6 +116,7 @@ export const OCRDialog: React.FC = () => {
     }
 
     setIsProcessing(true);
+    cancelledRef.current = false;
     setProgress(5);
     setStatusText('Preparing text extraction engine...');
     setExtractedText('');
@@ -162,6 +171,7 @@ export const OCRDialog: React.FC = () => {
       if (mode === 'fast_stream') {
         setProgress(15);
         for (let i = 0; i < pagesToProcess.length; i++) {
+          if (cancelledRef.current) break;
           const pIdx = pagesToProcess[i];
           setStatusText(`Reading digital text stream from page ${pIdx + 1}...`);
           setProgress(Math.round(20 + (i / pagesToProcess.length) * 70));
@@ -182,6 +192,17 @@ export const OCRDialog: React.FC = () => {
           } else {
             textOutput += `=== PAGE ${pIdx + 1} ===\n[No digital text stream found on this page. Switch to "Deep Visual OCR" to recognize scanned text or bypass DRM restrictions.]\n\n`;
           }
+        }
+
+        if (cancelledRef.current) {
+          setStatusText('OCR cancelled.');
+          setProgress(0);
+          addToast({
+            type: 'info',
+            title: 'OCR Cancelled',
+            message: 'Text extraction was cancelled.',
+          });
+          return;
         }
 
         setProgress(100);
@@ -231,6 +252,7 @@ export const OCRDialog: React.FC = () => {
       const totalToRun = pagesToProcess.length;
 
       for (let i = 0; i < totalToRun; i++) {
+        if (cancelledRef.current) break;
         const pIdx = pagesToProcess[i];
         const pageNum = pIdx + 1;
         const pagePercent = Math.round((i / totalToRun) * 100);
@@ -283,6 +305,24 @@ export const OCRDialog: React.FC = () => {
         setProgress(Math.round(((i + 1) / totalToRun) * 100));
       }
 
+      if (cancelledRef.current) {
+        // Keep partial progressive results on screen, just finalize metrics
+        setStatusText('OCR cancelled.');
+        const partialWords = results.reduce((acc, r) => acc + r.wordCount, 0);
+        const partialConfs = results.map((r) => r.confidence).filter((c) => c > 0);
+        if (partialConfs.length > 0) {
+          setAvgConfidence(Math.round(partialConfs.reduce((a, b) => a + b, 0) / partialConfs.length));
+        }
+        setTotalWords(Math.max(totalWords, partialWords));
+        setProgress(0);
+        addToast({
+          type: 'info',
+          title: 'OCR Cancelled',
+          message: `Stopped early. Partial results (${results.length} page(s)) retained.`,
+        });
+        return;
+      }
+
       if (results.length === 0) {
         throw new Error('Unable to render page canvases for visual text recognition.');
       }
@@ -317,6 +357,7 @@ export const OCRDialog: React.FC = () => {
     const collectedResults: OCRPageResult[] = [];
 
     for (let i = 0; i < pagesToProcess.length; i++) {
+      if (cancelledRef.current) break;
       const pIdx = pagesToProcess[i];
       const pageTextResult = await engine.extractPageText(documentId!, pIdx);
       const rawText = (pageTextResult.text || '').trim();
@@ -329,6 +370,15 @@ export const OCRDialog: React.FC = () => {
         wordCount: rawText.split(/\s+/).filter(Boolean).length,
         charCount: rawText.length,
       });
+    }
+
+    if (cancelledRef.current) {
+      addToast({
+        type: 'info',
+        title: 'OCR Cancelled',
+        message: 'Text extraction was cancelled.',
+      });
+      return;
     }
 
     setProgress(100);

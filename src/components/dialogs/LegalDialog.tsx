@@ -115,7 +115,7 @@ export const LegalDialog: React.FC = () => {
               </p>
               <h4 className="text-base font-bold text-gray-900">1. Client-Side Document Processing</h4>
               <p>
-                All PDF manipulations (merging, splitting, compression, direct text editing, OCR, watermarking, page organization) and image transformations (target KB resizing, signature whitening, DOP strip generation) execute strictly within your local browser environment using JavaScript and WebAssembly.
+                All PDF manipulations (merging, splitting, compression, direct text editing, OCR, watermarking, page organization) and image transformations (target KB resizing) execute strictly within your local browser environment using JavaScript and WebAssembly.
                 <strong> None of your documents, photos, or signatures are ever transmitted to or stored on our servers.</strong>
               </p>
               <h4 className="text-base font-bold text-gray-900">2. Local Storage Usage</h4>
@@ -154,7 +154,7 @@ export const LegalDialog: React.FC = () => {
             <div className="space-y-4">
               <h3 className="text-lg font-bold text-gray-900">Legal & Exam Portal Disclaimer</h3>
               <p>
-                JustPDFCraft provides automated digital tools (such as target KB photo compressors, signature whiteners, and DOP strip generators) to help students and candidates format files according to published exam notifications.
+                JustPDFCraft provides automated digital tools (such as target KB photo compressors) to help students and candidates format files according to published exam notifications.
               </p>
               <p>
                 JustPDFCraft is an independent productivity platform and is <strong>not affiliated with, endorsed by, or sponsored by</strong> any government testing agency or examination board (such as SSC, UPSC, NTA, IBPS, CBSE, or State Public Service Commissions).

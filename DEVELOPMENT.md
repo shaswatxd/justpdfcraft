@@ -1,4 +1,4 @@
-# SwiftPDF Developer Guide
+# JustPDFCraft Developer Guide
 
 ## Coding Standards & Conventions
 
@@ -19,8 +19,7 @@
 - `core/ocr/`: OCR worker lifecycle and language pack management.
 - `core/print/`: Smart print layout and preflight safety checks.
 - `core/compare/`: PDF comparison algorithms.
-- `core/db/`: Local-first SQLite / persistence for recents, favorites, and recovery checkpoints.
+- `core/db/`: Local-first persistence (OPFS-backed) for recents, favorites, and recovery checkpoints.
 - `src/components/`: Reusable, modular UI components.
 - `src/stores/`: Zustand state management.
-- `src-tauri/`: Native Rust desktop shell and secure file system bridge.
 - `tests/`: Automated unit and integration tests.

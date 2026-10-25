@@ -366,28 +366,28 @@ async function runFullSuiteAudit() {
     auditReport.push({ tool: 'Handwriting Generator', status: hwCanvas ? 'PASS' : 'FAIL' });
     await page.evaluate(() => window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal(null));
 
-    // 14. Test Photo Editor & Studio
-    console.log('\n🖼️ STEP 14: Testing Photo Editor Studio...');
+    // 14. Test Camera Document Scanner (real image-tool dialog)
+    console.log('\n🖼️ STEP 14: Testing Camera Document Scanner...');
     await page.evaluate(() => {
-      window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal('photo-editor');
+      window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal('scan');
     });
     await page.waitForTimeout(400);
     const photoEditorOk = await page.evaluate(() => {
-      return document.body.innerText.includes('Photo & Document Image Studio') || document.body.innerText.includes('Upload Photo');
+      return document.body.innerText.includes('Snap Photo') || document.body.innerText.includes('Select Document Photo');
     });
-    auditReport.push({ tool: 'Photo Editor Studio', status: photoEditorOk ? 'PASS' : 'FAIL' });
+    auditReport.push({ tool: 'Camera Document Scanner', status: photoEditorOk ? 'PASS' : 'FAIL' });
     await page.evaluate(() => window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal(null));
 
-    // 15. Test Image Tools (Format Converter & Bulk Compress)
-    console.log('\n📦 STEP 15: Testing Image Suite Tools...');
+    // 15. Test Shortcuts Dialog (help & power controls)
+    console.log('\n⌨️ STEP 15: Testing Shortcuts Dialog...');
     await page.evaluate(() => {
-      window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal('image-tools');
+      window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal('shortcuts');
     });
     await page.waitForTimeout(400);
     const imageSuiteOk = await page.evaluate(() => {
-      return document.body.innerText.includes('Image Suite') && document.body.innerText.includes('Format');
+      return document.body.innerText.includes('Keyboard Shortcuts') && document.body.innerText.includes('Command Palette');
     });
-    auditReport.push({ tool: 'Image Suite Tools', status: imageSuiteOk ? 'PASS' : 'FAIL' });
+    auditReport.push({ tool: 'Shortcuts Dialog', status: imageSuiteOk ? 'PASS' : 'FAIL' });
     await page.evaluate(() => window.__JUSTPDFCRAFT_UI_STORE__.getState().setActiveModal(null));
 
     // 16. Test Batch Operations

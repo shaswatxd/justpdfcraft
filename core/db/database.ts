@@ -1,6 +1,6 @@
 /**
  * Local Database & Metadata Persistence Service
- * Local-First: Stores recent files, favorites, app preferences, signatures, and recovery checkpoints.
+ * Local-First: Stores recent files, signatures, and other metadata in localStorage.
  */
 
 export interface RecentDocRecord {
@@ -23,40 +23,9 @@ export interface SavedSignatureRecord {
   createdAt: number;
 }
 
-export interface RecoveryCheckpoint {
-  id: string;
-  originalPath: string;
-  fileName: string;
-  timestamp: number;
-  status: 'pending' | 'restored' | 'discarded';
-  dataBase64?: string;
-}
-
-export interface AppPreferences {
-  theme: 'system' | 'light' | 'dark';
-  accentColor: string;
-  defaultZoom: number;
-  defaultViewMode: 'single' | 'continuous' | 'organize';
-  enableCrashRecovery: boolean;
-  enableAnonymousDiagnostics: boolean;
-  autoSaveIntervalSeconds: number;
-}
-
 const STORAGE_KEYS = {
   RECENTS: 'swiftpdf_recent_documents',
   SIGNATURES: 'swiftpdf_saved_signatures',
-  CHECKPOINTS: 'swiftpdf_recovery_checkpoints',
-  SETTINGS: 'swiftpdf_app_settings',
-};
-
-const DEFAULT_SETTINGS: AppPreferences = {
-  theme: 'dark',
-  accentColor: '#0C8DE9',
-  defaultZoom: 1.0,
-  defaultViewMode: 'continuous',
-  enableCrashRecovery: true,
-  enableAnonymousDiagnostics: false,
-  autoSaveIntervalSeconds: 60,
 };
 
 const memoryStore = new Map<string, string>();
@@ -102,7 +71,7 @@ export class LocalDatabaseService {
   addRecentDocument(doc: Omit<RecentDocRecord, 'id' | 'lastOpenedAt'>): RecentDocRecord {
     const list = this.getRecentDocuments();
     const existingIndex = list.findIndex((d) => d.filePath === doc.filePath);
-    
+
     const record: RecentDocRecord = {
       ...doc,
       id: existingIndex >= 0 ? list[existingIndex].id : `rec_${Date.now()}`,
@@ -117,24 +86,6 @@ export class LocalDatabaseService {
     const truncated = filtered.slice(0, 50);
     safeStorage.setItem(STORAGE_KEYS.RECENTS, JSON.stringify(truncated));
     return record;
-  }
-
-  toggleFavorite(filePath: string): void {
-    const list = this.getRecentDocuments();
-    const doc = list.find((d) => d.filePath === filePath);
-    if (doc) {
-      doc.isFavorite = !doc.isFavorite;
-      safeStorage.setItem(STORAGE_KEYS.RECENTS, JSON.stringify(list));
-    }
-  }
-
-  removeRecentDocument(filePath: string): void {
-    const list = this.getRecentDocuments().filter((d) => d.filePath !== filePath);
-    safeStorage.setItem(STORAGE_KEYS.RECENTS, JSON.stringify(list));
-  }
-
-  clearRecentDocuments(): void {
-    safeStorage.removeItem(STORAGE_KEYS.RECENTS);
   }
 
   // Saved Signatures
@@ -162,52 +113,6 @@ export class LocalDatabaseService {
   deleteSignature(id: string): void {
     const list = this.getSavedSignatures().filter((s) => s.id !== id);
     safeStorage.setItem(STORAGE_KEYS.SIGNATURES, JSON.stringify(list));
-  }
-
-  // Recovery Checkpoints (Crash Protection)
-  saveRecoveryCheckpoint(checkpoint: Omit<RecoveryCheckpoint, 'id' | 'timestamp' | 'status'>): RecoveryCheckpoint {
-    const list = this.getRecoveryCheckpoints();
-    const rec: RecoveryCheckpoint = {
-      ...checkpoint,
-      id: `recov_${Date.now()}`,
-      timestamp: Date.now(),
-      status: 'pending',
-    };
-    // Keep max 5 recovery records
-    const updated = [rec, ...list.filter((c) => c.originalPath !== checkpoint.originalPath)].slice(0, 5);
-    safeStorage.setItem(STORAGE_KEYS.CHECKPOINTS, JSON.stringify(updated));
-    return rec;
-  }
-
-  getRecoveryCheckpoints(): RecoveryCheckpoint[] {
-    try {
-      const data = safeStorage.getItem(STORAGE_KEYS.CHECKPOINTS);
-      return data ? JSON.parse(data) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  clearRecoveryCheckpoint(originalPath: string): void {
-    const list = this.getRecoveryCheckpoints().filter((c) => c.originalPath !== originalPath);
-    safeStorage.setItem(STORAGE_KEYS.CHECKPOINTS, JSON.stringify(list));
-  }
-
-  // App Settings
-  getSettings(): AppPreferences {
-    try {
-      const data = safeStorage.getItem(STORAGE_KEYS.SETTINGS);
-      return data ? { ...DEFAULT_SETTINGS, ...JSON.parse(data) } : DEFAULT_SETTINGS;
-    } catch {
-      return DEFAULT_SETTINGS;
-    }
-  }
-
-  updateSettings(settings: Partial<AppPreferences>): AppPreferences {
-    const current = this.getSettings();
-    const updated = { ...current, ...settings };
-    safeStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated));
-    return updated;
   }
 }
 

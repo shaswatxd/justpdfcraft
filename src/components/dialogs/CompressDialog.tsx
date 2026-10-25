@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FileArchive, CheckCircle2, Download, X, Sparkles, Sliders, Target } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
@@ -17,6 +17,15 @@ export const CompressDialog: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<CompressResult | null>(null);
+
+  // Reset stale metrics whenever the dialog is (re)opened so no old results leak between sessions
+  useEffect(() => {
+    if (activeModal === 'compress') {
+      setResult(null);
+      setProgress(0);
+      setIsProcessing(false);
+    }
+  }, [activeModal]);
 
   if (activeModal !== 'compress') return null;
 
@@ -121,7 +130,7 @@ export const CompressDialog: React.FC = () => {
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-800"
           >
             <X className="w-4 h-4" />
           </button>
@@ -142,13 +151,13 @@ export const CompressDialog: React.FC = () => {
               <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 flex items-center justify-between">
                 <div>
                   <p className="text-xs text-gray-500">Current File Size</p>
-                  <p className="text-lg font-bold font-mono text-white">
+                  <p className="text-lg font-bold font-mono text-gray-900">
                     {currentSizeKB > 1024 ? `${currentSizeMB} MB` : `${currentSizeKB} KB`}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-gray-500">Estimated Target</p>
-                  <p className="text-sm font-semibold text-emerald-400">
+                  <p className="text-sm font-semibold text-emerald-600">
                     {compressMode === 'target-kb' ? `~${targetKb} KB limit` : estimates[preset].ratio}
                   </p>
                 </div>
@@ -163,7 +172,7 @@ export const CompressDialog: React.FC = () => {
                     onClick={() => setCompressMode('preset')}
                     className={`p-2.5 rounded-xl border text-xs font-medium transition-all flex items-center justify-center gap-2 ${
                       compressMode === 'preset'
-                        ? 'bg-emerald-500/10 border-emerald-500/80 text-white font-semibold'
+                        ? 'bg-emerald-500/10 border-emerald-500 text-emerald-700 font-semibold'
                         : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-800'
                     }`}
                   >
@@ -175,7 +184,7 @@ export const CompressDialog: React.FC = () => {
                     onClick={() => setCompressMode('target-kb')}
                     className={`p-2.5 rounded-xl border text-xs font-medium transition-all flex items-center justify-center gap-2 ${
                       compressMode === 'target-kb'
-                        ? 'bg-emerald-500/10 border-emerald-500/80 text-white font-semibold'
+                        ? 'bg-emerald-500/10 border-emerald-500 text-emerald-700 font-semibold'
                         : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-800'
                     }`}
                   >
@@ -202,7 +211,7 @@ export const CompressDialog: React.FC = () => {
                         onClick={() => setPreset(p.id as any)}
                         className={`p-3 rounded-xl border text-left transition-all ${
                           preset === p.id
-                            ? 'bg-emerald-500/10 border-emerald-500/80 text-white ring-1 ring-emerald-500/40'
+                            ? 'bg-emerald-500/10 border-emerald-500 text-emerald-700 ring-1 ring-emerald-500/40'
                             : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
                         }`}
                       >
@@ -217,7 +226,7 @@ export const CompressDialog: React.FC = () => {
                 <div className="space-y-3 bg-gray-50/60 p-4 rounded-xl border border-gray-200">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-semibold text-gray-800">Desired Maximum File Size</label>
-                    <span className="text-xs font-mono font-bold text-emerald-400">{targetKb} KB</span>
+                    <span className="text-xs font-mono font-bold text-emerald-600">{targetKb} KB</span>
                   </div>
 
                   {/* Quick Preset Buttons */}
@@ -229,7 +238,7 @@ export const CompressDialog: React.FC = () => {
                         onClick={() => setTargetKb(size)}
                         className={`py-1.5 px-2 rounded-lg text-xs font-mono transition-all border ${
                           targetKb === size
-                            ? 'bg-emerald-500/20 border-emerald-500 text-white font-bold'
+                            ? 'bg-emerald-500/20 border-emerald-500 text-emerald-700 font-bold'
                             : 'bg-gray-50 border-gray-300/60 text-gray-700 hover:bg-gray-100'
                         }`}
                       >
@@ -248,7 +257,7 @@ export const CompressDialog: React.FC = () => {
                         max="50000"
                         value={targetKb}
                         onChange={(e) => setTargetKb(Math.max(10, parseInt(e.target.value, 10) || 10))}
-                        className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-1.5 text-xs text-white font-mono"
+                        className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-1.5 text-xs text-gray-900 font-mono"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-500 font-mono">
                         KB
@@ -327,14 +336,14 @@ export const CompressDialog: React.FC = () => {
               <div className="px-6 py-4 border-t border-gray-200 bg-white/60 flex justify-end gap-2">
                 <button
                   onClick={handleClose}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white transition-colors"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleCompress}
                   disabled={isProcessing}
-                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-emerald-900/30 flex items-center gap-1.5 transition-all"
+                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-emerald-800/30 flex items-center gap-1.5 transition-all"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   {isProcessing ? 'Processing...' : 'Start Compression'}

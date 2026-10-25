@@ -42,6 +42,7 @@ export const CommandPalette: React.FC = () => {
     setActiveModal,
     setSidebarTab,
     toggleFullscreen,
+    addToast,
   } = useUIStore();
   const {
     currentPage,
@@ -51,8 +52,10 @@ export const CommandPalette: React.FC = () => {
     reverseAllPages,
     setZoom,
     setViewMode,
-    saveCurrentDocument,
+    saveDirectly,
     closeCurrentDocument,
+    fileHandle,
+    fileName,
   } = useDocumentStore();
   const { toggleTTS } = useTTSStore();
 
@@ -147,7 +150,19 @@ export const CommandPalette: React.FC = () => {
       category: 'Document',
       icon: Save,
       shortcut: 'Ctrl+S',
-      action: () => saveCurrentDocument(),
+      action: () => {
+        saveDirectly().then((saved) => {
+          if (saved) {
+            addToast({
+              type: 'success',
+              title: fileHandle ? 'Saved Directly to Disk' : 'File Saved',
+              message: fileHandle
+                ? `Saved directly to ${fileName}`
+                : 'File saved and downloaded successfully.',
+            });
+          }
+        });
+      },
     },
     {
       id: 'view_organize',
@@ -274,6 +289,7 @@ export const CommandPalette: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-label="Command Palette"
+      data-command-palette="true"
       className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-start justify-center pt-20 p-4 animate-in fade-in duration-150"
       onClick={() => setCommandPaletteOpen(false)}
     >

@@ -73,7 +73,6 @@ export const App: React.FC = () => {
   const {
     documentId,
     loadDocument,
-    saveCurrentDocument,
     closeCurrentDocument,
     undo,
     redo,
@@ -128,7 +127,13 @@ export const App: React.FC = () => {
     const handleBackdropClick = (e: MouseEvent) => {
       // Only a click that lands exactly on the dialog's own backdrop layer closes it;
       // clicks anywhere inside the panel bubble up from child elements.
-      if (e.target instanceof Element && e.target.matches('div[role="dialog"][aria-modal="true"]')) {
+      // The Command Palette opts out (data-command-palette) so dismissing the palette
+      // never closes a real document dialog that may be open behind it.
+      if (
+        e.target instanceof Element &&
+        e.target.matches('div[role="dialog"][aria-modal="true"]') &&
+        !e.target.hasAttribute('data-command-palette')
+      ) {
         setActiveModal(null);
       }
     };
@@ -252,7 +257,9 @@ export const App: React.FC = () => {
       } else if (ctrl && e.key.toLowerCase() === 'w') {
         e.preventDefault();
         closeCurrentDocument();
-      } else if (!ctrl && !e.altKey) {
+      } else if (!ctrl && !e.altKey && !activeModal && documentId) {
+        // Single-key tool shortcuts only apply to the open document workspace
+        // (never while a modal dialog is on top or on the home dashboard)
         const key = e.key.toLowerCase();
         if (key === 'v') setTool('select');
         else if (key === 'h') setTool('hand');
@@ -267,7 +274,6 @@ export const App: React.FC = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [
-    saveCurrentDocument,
     closeCurrentDocument,
     undo,
     redo,
@@ -290,6 +296,8 @@ export const App: React.FC = () => {
     fileHandle,
     fileName,
     setActiveView,
+    activeModal,
+    documentId,
   ]);
 
   const [isWindowDragging, setIsWindowDragging] = React.useState(false);

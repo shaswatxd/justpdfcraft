@@ -72,15 +72,15 @@ export const AppHeader: React.FC = () => {
     setPageInput(String(currentPage));
   }, [currentPage]);
 
-  // Close tone dropdown on outside click
+  // Close tone dropdown on any outside interaction (mouse, touch, pen)
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e: PointerEvent) => {
       if (toneDropdownRef.current && !toneDropdownRef.current.contains(e.target as Node)) {
         setToneOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('pointerdown', handleClickOutside);
+    return () => document.removeEventListener('pointerdown', handleClickOutside);
   }, []);
 
   const handleCommitPage = () => {
@@ -350,7 +350,7 @@ export const AppHeader: React.FC = () => {
           {/* Zoom */}
           <div className="flex items-center bg-gray-100/90 p-0.5 rounded-lg border border-gray-200 text-xs">
             <button
-              onClick={() => setZoom((z) => Math.max(0.25, z - 0.15))}
+              onClick={() => setZoom((z) => Math.max(0.2, z - 0.15))}
               className="p-1 hover:bg-slate-700 rounded text-slate-300 transition-colors"
               title="Zoom Out (Ctrl+-)"
               aria-label="Zoom out"
@@ -475,8 +475,8 @@ export const AppHeader: React.FC = () => {
                   onClick={() => setToneOpen((o) => !o)}
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                     toneOpen
-                      ? 'bg-slate-700 text-white border-slate-600'
-                      : 'bg-slate-800 hover:bg-slate-700 border-slate-700/80 text-slate-300 hover:text-white'
+                      ? 'bg-gray-100 text-gray-900 border-gray-300'
+                      : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'
                   }`}
                   title="Ergonomic Reading Tone (White, Sepia, Dark, Mint)"
                 >
@@ -496,8 +496,8 @@ export const AppHeader: React.FC = () => {
                 </button>
 
                 {toneOpen && (
-                  <div className="absolute right-0 top-full mt-1.5 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-1.5 z-50 w-44 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-100">
-                    <span className="text-[10px] font-bold text-slate-400 px-2 py-1 uppercase tracking-wider">
+                  <div className="absolute right-0 top-full mt-1.5 bg-white border border-gray-200 rounded-xl shadow-2xl p-1.5 z-50 w-44 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-100">
+                    <span className="text-[10px] font-bold text-gray-500 px-2 py-1 uppercase tracking-wider">
                       Reading Tone
                     </span>
                     {[
@@ -514,14 +514,14 @@ export const AppHeader: React.FC = () => {
                         }}
                         className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs transition-all text-left ${
                           paperTone === t.id
-                            ? 'bg-swift-600/20 text-swift-300 font-semibold'
-                            : 'text-slate-300 hover:bg-slate-800'
+                            ? 'bg-swift-500/10 text-swift-700 font-semibold'
+                            : 'text-gray-700 hover:bg-gray-100'
                         }`}
                       >
                         <span className={`w-3.5 h-3.5 rounded-full border shrink-0 ${t.color}`} />
                         <div>
                           <div className="font-medium leading-none">{t.label}</div>
-                          <div className="text-[9px] text-slate-400 mt-0.5">{t.desc}</div>
+                          <div className="text-[9px] text-gray-500 mt-0.5">{t.desc}</div>
                         </div>
                       </button>
                     ))}
@@ -535,7 +535,7 @@ export const AppHeader: React.FC = () => {
                 className={`hidden xl:flex items-center gap-1.5 ${
                   isTTSOpen
                     ? 'bg-swift-600 text-white border-swift-500 shadow-sm'
-                    : 'bg-slate-800 hover:bg-slate-700 border-slate-700/80 text-slate-300 hover:text-white'
+                    : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'
                 }`}
                 title="Read Aloud / Text-to-Speech (Ctrl+Shift+U)"
               >
@@ -545,7 +545,7 @@ export const AppHeader: React.FC = () => {
 
               {/* Direct Disk / OPFS Draft status indicators */}
               {isAutoSavingDraft && (
-                <span className="hidden xl:flex items-center gap-1.5 text-[11px] text-zinc-400 font-medium animate-pulse">
+                <span className="hidden xl:flex items-center gap-1.5 text-[11px] text-gray-500 font-medium animate-pulse">
                   <span className="w-1.5 h-1.5 rounded-full bg-swift-400 animate-ping" />
                   Auto-saving draft...
                 </span>
@@ -553,7 +553,7 @@ export const AppHeader: React.FC = () => {
 
               {fileHandle && !isAutoSavingDraft && (
                 <span
-                  className="hidden xl:flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-[11px] text-emerald-400 font-medium"
+                  className="hidden xl:flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-[11px] text-emerald-700 font-medium"
                   title={`Native File System Access: In-place direct saving enabled to ${fileName}`}
                 >
                   <HardDrive className="w-3 h-3 text-emerald-400" />

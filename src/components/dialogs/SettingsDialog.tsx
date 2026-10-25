@@ -1,20 +1,12 @@
 import React, { useState } from 'react';
 import { Settings, X, ShieldCheck, Monitor, Zap, Command } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
-import { localDb, AppPreferences } from '@core/db/database';
 
 export const SettingsDialog: React.FC = () => {
-  const { activeModal, setActiveModal, addToast } = useUIStore();
-  const [preferences, setPreferences] = useState<AppPreferences>(localDb.getSettings());
+  const { activeModal, setActiveModal } = useUIStore();
   const [activeSection, setActiveSection] = useState<'general' | 'privacy' | 'performance' | 'shortcuts'>('general');
 
   if (activeModal !== 'settings') return null;
-
-  const handleUpdate = (patch: Partial<AppPreferences>) => {
-    const updated = localDb.updateSettings(patch);
-    setPreferences(updated);
-    addToast({ type: 'info', title: 'Settings Updated', durationMs: 1500 });
-  };
 
   return (
     <div className="fixed inset-0 z-50 bg-gray-50/50 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Settings Dialog">
@@ -32,7 +24,7 @@ export const SettingsDialog: React.FC = () => {
           </div>
           <button
             onClick={() => setActiveModal(null)}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-800"
           >
             <X className="w-4 h-4" />
           </button>
@@ -56,7 +48,7 @@ export const SettingsDialog: React.FC = () => {
                   onClick={() => setActiveSection(tab.id as any)}
                   className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl font-medium transition-colors text-left ${
                     isActive
-                      ? 'bg-red-600 text-white font-semibold'
+                      ? 'bg-swift-500 text-white font-semibold'
                       : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
                   }`}
                 >
@@ -71,36 +63,23 @@ export const SettingsDialog: React.FC = () => {
           <div className="flex-1 p-6 overflow-y-auto space-y-5 text-xs text-gray-700">
             {activeSection === 'general' && (
               <div className="space-y-4">
-                <h4 className="font-bold text-sm text-white">Appearance & Display</h4>
-                
+                <h4 className="font-bold text-sm text-gray-900">Appearance & Display</h4>
+
                 <div className="space-y-1.5">
                   <label className="text-gray-500 block">Application Theme</label>
                   <div className="flex gap-2">
-                    <span className="px-4 py-2 rounded-xl border border-red-500/30 bg-red-50 text-red-700 font-semibold text-xs">
+                    <span className="px-4 py-2 rounded-xl border border-swift-500/30 bg-swift-500/10 text-swift-600 font-semibold text-xs">
                       Clean Light (Default)
                     </span>
                   </div>
-                </div>
-
-                <div className="space-y-1.5 pt-2">
-                  <label className="text-gray-500 block">Default View Mode on Open</label>
-                  <select
-                    value={preferences.defaultViewMode}
-                    onChange={(e) => handleUpdate({ defaultViewMode: e.target.value as any })}
-                    className="bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-white w-full max-w-xs"
-                  >
-                    <option value="continuous">Continuous Scroll</option>
-                    <option value="single">Single Page</option>
-                    <option value="organize">Page Organizer Grid</option>
-                  </select>
                 </div>
               </div>
             )}
 
             {activeSection === 'privacy' && (
               <div className="space-y-4">
-                <h4 className="font-bold text-sm text-white">Privacy & Local-First Guarantees</h4>
-                <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl text-emerald-300 space-y-2">
+                <h4 className="font-bold text-sm text-gray-900">Privacy & Local-First Guarantees</h4>
+                <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl text-emerald-800 space-y-2">
                   <div className="flex items-center gap-2 font-bold text-xs">
                     <ShieldCheck className="w-4 h-4" />
                     <span>Zero Cloud Storage • Zero Document Telemetry</span>
@@ -109,52 +88,26 @@ export const SettingsDialog: React.FC = () => {
                     JustPDFCraft operates 100% on this local device. Your PDF documents, text layers, annotations, and form data are never transmitted to external cloud servers.
                   </p>
                 </div>
-
-                <div className="space-y-2 pt-2">
-                  <label className="flex items-center gap-2 cursor-pointer text-gray-700">
-                    <input
-                      type="checkbox"
-                      checked={preferences.enableCrashRecovery}
-                      onChange={(e) => handleUpdate({ enableCrashRecovery: e.target.checked })}
-                      className="rounded bg-gray-100 border-gray-300 text-swift-500"
-                    />
-                    <span>Enable Local Transaction Crash Recovery Checkpoints</span>
-                  </label>
-                </div>
               </div>
             )}
 
             {activeSection === 'performance' && (
               <div className="space-y-4">
-                <h4 className="font-bold text-sm text-white">Performance & Hardware</h4>
+                <h4 className="font-bold text-sm text-gray-900">Performance & Hardware</h4>
                 <p className="text-gray-500 text-xs">
                   JustPDFCraft utilizes asynchronous worker threads and memory-capped canvas caching for ultra-fast responsiveness.
                 </p>
-
-                <div className="space-y-1.5">
-                  <label className="text-gray-500 block">Auto-Save Recovery Interval</label>
-                  <select
-                    value={preferences.autoSaveIntervalSeconds}
-                    onChange={(e) => handleUpdate({ autoSaveIntervalSeconds: Number(e.target.value) })}
-                    className="bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-white w-full max-w-xs"
-                  >
-                    <option value="30">Every 30 seconds</option>
-                    <option value="60">Every 60 seconds (Recommended)</option>
-                    <option value="300">Every 5 minutes</option>
-                  </select>
-                </div>
               </div>
             )}
 
             {activeSection === 'shortcuts' && (
               <div className="space-y-3">
-                <h4 className="font-bold text-sm text-white">Keyboard Shortcuts</h4>
+                <h4 className="font-bold text-sm text-gray-900">Keyboard Shortcuts</h4>
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {[
                     { key: 'Ctrl + K', desc: 'Command Palette' },
                     { key: 'Ctrl + O', desc: 'Open PDF File' },
                     { key: 'Ctrl + S', desc: 'Save Changes' },
-                    { key: 'Ctrl + P', desc: 'Smart Print' },
                     { key: 'Ctrl + F', desc: 'Search Document' },
                     { key: 'Ctrl + Z', desc: 'Undo' },
                     { key: 'Ctrl + Y', desc: 'Redo' },
@@ -167,7 +120,7 @@ export const SettingsDialog: React.FC = () => {
                       className="bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-center justify-between"
                     >
                       <span className="text-gray-500">{s.desc}</span>
-                      <kbd className="bg-gray-50 border border-gray-300 px-1.5 py-0.5 rounded font-mono text-[10px] text-swift-400">
+                      <kbd className="bg-gray-50 border border-gray-300 px-1.5 py-0.5 rounded font-mono text-[10px] text-swift-600">
                         {s.key}
                       </kbd>
                     </div>
@@ -182,7 +135,7 @@ export const SettingsDialog: React.FC = () => {
         <div className="px-6 py-3.5 border-t border-gray-200 bg-white/60 flex justify-end">
           <button
             onClick={() => setActiveModal(null)}
-            className="px-5 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-white font-semibold text-xs transition-colors"
+            className="px-5 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold text-xs transition-colors"
           >
             Done
           </button>

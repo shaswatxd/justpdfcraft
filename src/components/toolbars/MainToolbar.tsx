@@ -102,8 +102,8 @@ export const MainToolbar: React.FC = () => {
   }> = [
     {
       id: 'student-resizer',
-      label: 'Student & Exam Suite (Target KB, Sign, DOP)',
-      description: 'SSC, UPSC, NEET photo & sign resizer, DOP strip & sign cleaner',
+      label: 'Exam Photo & Signature Resizer',
+      description: 'Resize to exact portal KB limits (SSC, UPSC, NEET, JEE style requirements)',
       icon: GraduationCap,
       color: 'text-amber-400',
     },

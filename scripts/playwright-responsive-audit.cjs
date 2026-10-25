@@ -148,14 +148,14 @@ async function runMobileViewportChecks(browser, vp) {
     await checkNoHorizontalScroll(page, vp.name);
 
     // 2. Identity + primary actions visible in first viewport
-    const identity = page.getByText('private toolbox', { exact: false }).first();
+    const identity = page.getByText('Every tool you need', { exact: false }).first();
     const identityVisible = (await identity.count()) > 0 && (await identity.isVisible());
     softCheck(identityVisible, `${vp.name}: identity heading visible`);
 
-    const openPdf = page.getByRole('button', { name: /open a pdf/i }).first();
-    const openPhoto = page.getByRole('button', { name: /select a photo/i }).first();
-    softCheck((await openPdf.count()) > 0 && (await openPdf.isVisible()), `${vp.name}: primary "Open a PDF" action present`);
-    softCheck((await openPhoto.count()) > 0 && (await openPhoto.isVisible()), `${vp.name}: primary "Select a photo" action present`);
+    const openPdf = page.getByRole('button', { name: /select pdf files/i }).first();
+    const openPhoto = page.locator('div[role="button"]', { hasText: 'Photo & Signature Resizer' }).first();
+    softCheck((await openPdf.count()) > 0 && (await openPdf.isVisible()), `${vp.name}: primary "Select PDF files" action present`);
+    softCheck((await openPhoto.count()) > 0, `${vp.name}: "Photo & Signature Resizer" tool card present`);
 
     // 3. Bottom nav must not cover the primary CTA at scroll position 0
     const navBox = await page.locator('nav[aria-label="Mobile Navigation"]').first().boundingBox().catch(() => null);
@@ -181,7 +181,7 @@ async function runMobileViewportChecks(browser, vp) {
     if ((await search.count()) > 0) {
       await search.fill('photo 50 kb');
       await page.waitForTimeout(250);
-      const resizer = page.locator('div[role="button"]', { hasText: 'Exact Target KB Resizer' }).first();
+      const resizer = page.locator('div[role="button"]', { hasText: 'Photo & Signature Resizer' }).first();
       softCheck((await resizer.count()) > 0, `${vp.name}: "photo 50 kb" finds Target KB Resizer`);
       await resizer.click();
       // The KB resizer opens its dialog directly (upload is inside the dialog)

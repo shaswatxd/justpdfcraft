@@ -1,5 +1,5 @@
 /**
- * SwiftPDF — High-Performance Area OCR & Precision Text Extractor
+ * JustPDFCraft - High-Performance Area OCR & Precision Text Extractor
  * 
  * Provides dual-engine extraction:
  * 1. Digital Vector Stream Extraction:

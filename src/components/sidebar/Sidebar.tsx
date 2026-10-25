@@ -483,7 +483,7 @@ export const Sidebar: React.FC = () => {
         </div>
 
       {/* Tab Contents */}
-      <div className="flex-1 overflow-y-auto p-3 text-slate-300 text-xs">
+      <div className="flex-1 overflow-y-auto p-3 text-gray-700 text-xs">
         {/* Forms View */}
         {activeSidebarTab === 'forms' && <FormFieldsTab />}
 
@@ -653,7 +653,7 @@ export const Sidebar: React.FC = () => {
             </form>
 
             {isSearching && (
-              <div className="py-4 text-center text-slate-400 flex items-center justify-center gap-2">
+              <div className="py-4 text-center text-gray-500 flex items-center justify-center gap-2">
                 <div className="w-3.5 h-3.5 border-2 border-swift-500 border-t-transparent rounded-full animate-spin" />
                 <span>Searching full text...</span>
               </div>
@@ -676,11 +676,11 @@ export const Sidebar: React.FC = () => {
                   }}
                   className={`p-2 rounded cursor-pointer border transition-colors ${
                     currentSearchMatch === idx
-                      ? 'bg-amber-500/20 border-amber-500/40 text-amber-200'
+                      ? 'bg-amber-100 border-amber-400 text-amber-900'
                       : 'bg-gray-50 border-gray-200 hover:bg-gray-100 text-gray-700'
                   }`}
                 >
-                  <div className="flex justify-between font-mono text-[10px] text-slate-400 mb-1">
+                  <div className="flex justify-between font-mono text-[10px] text-gray-500 mb-1">
                     <span>Page {res.pageIndex + 1}</span>
                     <span>#{idx + 1}</span>
                   </div>
@@ -881,23 +881,23 @@ export const Sidebar: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">File Size:</span>
-                  <span className="font-mono text-white">
+                  <span className="font-mono text-gray-900">
                     {fileBytes ? `${(fileBytes.byteLength / 1024).toFixed(1)} KB` : 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">PDF Version:</span>
-                  <span className="font-mono text-white">{metadata?.pdfVersion || '1.7'}</span>
+                  <span className="font-mono text-gray-900">{metadata?.pdfVersion || '1.7'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Encryption:</span>
-                  <span className="font-mono text-white">
+                  <span className="font-mono text-gray-900">
                     {metadata?.isEncrypted ? 'Password Protected' : 'None'}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Producer:</span>
-                  <span className="truncate max-w-[120px] text-white">
+                  <span className="truncate max-w-[120px] text-gray-900">
                     {metadata?.producer || 'JustPDFCraft Engine'}
                   </span>
                 </div>
@@ -908,12 +908,12 @@ export const Sidebar: React.FC = () => {
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                 Security & Privacy
               </h3>
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[11px] space-y-1">
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 text-[11px] space-y-1">
                 <div className="flex items-center gap-1.5 font-semibold">
                   <Shield className="w-3.5 h-3.5" />
                   <span>Local-First Sandbox</span>
                 </div>
-                <p className="text-slate-400 text-[10px]">
+                <p className="text-gray-600 text-[10px]">
                   Document is processed 100% on this machine. No cloud uploads or external telemetry.
                 </p>
               </div>

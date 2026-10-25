@@ -1,6 +1,6 @@
 # PDFEngine Technical Specification
 
-The `PDFEngine` interface abstracts the low-level PDF manipulation library away from the SwiftPDF presentation and application layers.
+The `PDFEngine` interface abstracts the low-level PDF manipulation library away from the JustPDFCraft presentation and application layers.
 
 ## Core Interface Methods
 

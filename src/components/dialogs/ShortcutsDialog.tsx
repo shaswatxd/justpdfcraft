@@ -46,13 +46,11 @@ const ALL_SHORTCUTS: ShortcutEntry[] = [
   { keys: ['Click'], description: 'In-Place Text Editor (Edit Existing PDF Text)', category: 'tools', badge: 'Pro' },
   { keys: ['Esc'], description: 'Cancel Active Drawing / Annotation Drag', category: 'tools', badge: 'New' },
   { keys: ['Toolbar'], description: 'E-Sign & Transparent Signature Pad', category: 'tools', badge: 'New' },
-  { keys: ['Toolbar'], description: 'Photo Studio & Indian ID Crop (3.5×4.5cm)', category: 'tools', badge: 'New' },
   { keys: ['Toolbar'], description: 'Extract Tables to Excel & CSV', category: 'tools', badge: 'New' },
 
   // Document & Operations
   { keys: ['Ctrl', 'O'], description: 'Open PDF File', category: 'doc' },
   { keys: ['Ctrl', 'S'], description: 'Save Document & Download Changes', category: 'doc' },
-  { keys: ['Ctrl', 'P'], description: 'Smart Print Workflow Dialog', category: 'doc' },
   { keys: ['Ctrl', 'W'], description: 'Close Current Tab / Document', category: 'doc' },
   { keys: ['Ctrl', 'Z'], description: 'Undo Last Action', category: 'doc' },
   { keys: ['Ctrl', 'Y'], description: 'Redo Action', category: 'doc' },

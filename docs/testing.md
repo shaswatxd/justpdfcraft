@@ -1,6 +1,6 @@
-# SwiftPDF Testing Strategy
+# JustPDFCraft Testing Strategy
 
-SwiftPDF employs a multi-tiered testing methodology:
+JustPDFCraft employs a multi-tiered testing methodology:
 
 ## 1. Unit Testing
 - Located in `tests/unit/`.

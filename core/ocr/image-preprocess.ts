@@ -1,5 +1,5 @@
 /**
- * SwiftPDF — High-Performance Image Preprocessing Engine for OCR
+ * JustPDFCraft - High-Performance Image Preprocessing Engine for OCR
  * 
  * Provides canvas pixel-level enhancements prior to Tesseract OCR:
  * 1. Grayscale conversion & luminance weighting

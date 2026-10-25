@@ -225,7 +225,7 @@ export const MobileEditorToolbar: React.FC = () => {
         {/* Right: Quick Zoom & Grid Toggle */}
         <div className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-gray-200 rounded-2xl px-2 py-1 flex items-center shadow-lg gap-1.5 shadow-xl">
           <button
-            onClick={() => setZoom((z) => Math.max(0.3, z - 0.15))}
+            onClick={() => setZoom((z) => Math.max(0.2, z - 0.15))}
             className="p-2 text-gray-500 hover:text-gray-900 active:scale-90 transition-transform -my-1 -ml-1"
             title="Zoom Out"
           >
@@ -245,7 +245,7 @@ export const MobileEditorToolbar: React.FC = () => {
             {Math.round(zoom * 100)}%
           </button>
           <button
-            onClick={() => setZoom((z) => Math.min(3.0, z + 0.15))}
+            onClick={() => setZoom((z) => Math.min(4.0, z + 0.15))}
             className="p-2 text-gray-500 hover:text-gray-900 active:scale-90 transition-transform -my-1 -mr-1"
             title="Zoom In"
           >

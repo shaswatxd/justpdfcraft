@@ -258,10 +258,6 @@ export const getToolsByCategory = (category: ToolCategory): ToolDefinition[] => 
   return TOOLS_CATALOG.filter((tool) => tool.category === category);
 };
 
-export const getPopularTools = (): ToolDefinition[] => {
-  return TOOLS_CATALOG.filter((tool) => tool.badge === 'popular' || tool.badge === 'recommended');
-};
-
 export const searchTools = (query: string, category?: ToolCategory | 'all'): ToolDefinition[] => {
   const q = query.trim().toLowerCase();
   return TOOLS_CATALOG.filter((tool) => {

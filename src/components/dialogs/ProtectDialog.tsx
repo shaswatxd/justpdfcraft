@@ -264,7 +264,7 @@ export const ProtectDialog: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white transition-colors"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors"
                 >
                   Close
                 </button>
@@ -279,7 +279,7 @@ export const ProtectDialog: React.FC = () => {
                   value={userPassword}
                   onChange={(e) => setUserPassword(e.target.value)}
                   placeholder="Enter secure password"
-                  className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-rose-500"
+                  className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 outline-none focus:border-rose-500"
                 />
               </div>
 
@@ -290,7 +290,7 @@ export const ProtectDialog: React.FC = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-enter password"
-                  className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-rose-500"
+                  className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 outline-none focus:border-rose-500"
                 />
               </div>
 

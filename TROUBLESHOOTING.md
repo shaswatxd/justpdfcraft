@@ -1,4 +1,4 @@
-# SwiftPDF Troubleshooting Guide
+# JustPDFCraft Troubleshooting Guide
 
 ## Common Issues & Solutions
 
@@ -13,7 +13,3 @@
 ### 3. OCR Worker Initialization Delays
 - **Cause**: First-time OCR runs download the language model pack to local cache.
 - **Solution**: Ensure internet connection is available on the first run for the selected language pack; subsequent runs will be completely cached and offline.
-
-### 4. Build Errors on Tauri
-- **Cause**: Rust toolchain or Windows C++ Build Tools (MSVC) missing.
-- **Solution**: Run `winget install Rustlang.Rustup` and restart your shell.

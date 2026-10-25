@@ -60,8 +60,8 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         })
-        .catch(() => {
-          return caches.match('/index.html') || caches.match('/');
+        .catch(async () => {
+          return (await caches.match('/index.html')) || caches.match('/');
         })
     );
     return;
