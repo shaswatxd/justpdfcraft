@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   MousePointer,
   Hand,
@@ -54,13 +55,29 @@ export const MainToolbar: React.FC = () => {
 
   const [shapesOpen, setShapesOpen] = useState(false);
   const [moreToolsOpen, setMoreToolsOpen] = useState(false);
+  const [shapesPos, setShapesPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [morePos, setMorePos] = useState<{ top: number; right: number }>({ top: 0, right: 0 });
 
   const shapesMenuRef = useRef<HTMLDivElement>(null);
   const moreToolsMenuRef = useRef<HTMLDivElement>(null);
 
+  // The toolbar is a horizontal scroll container (overflow-x-auto), which clips all
+  // non-fixed descendants. Both dropdown menus therefore render through a React
+  // portal at fixed coordinates so the overflow wrapper can never cut them off.
+  const shapesMenuPos = () => {
+    const r = shapesMenuRef.current?.getBoundingClientRect();
+    if (r) setShapesPos({ top: r.bottom + 6, left: r.left });
+  };
+  const moreToolsMenuPos = () => {
+    const r = moreToolsMenuRef.current?.getBoundingClientRect();
+    if (r) setMorePos({ top: r.bottom + 6, right: window.innerWidth - r.right });
+  };
+
   // Close menus on outside click
   useEffect(() => {
     const handleClickOutside = (e: Event) => {
+      // Clicks inside a portaled dropdown belong to the menu, not the outside world
+      if (e.target instanceof Element && e.target.closest('[data-toolbar-portal]')) return;
       const target = e.target as Node;
       if (shapesMenuRef.current && !shapesMenuRef.current.contains(target)) {
         setShapesOpen(false);
@@ -74,6 +91,20 @@ export const MainToolbar: React.FC = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
+
+  // Close menus on scroll/resize so the fixed portals never drift away from their buttons
+  useEffect(() => {
+    const closeAll = () => {
+      setShapesOpen(false);
+      setMoreToolsOpen(false);
+    };
+    window.addEventListener('scroll', closeAll, true);
+    window.addEventListener('resize', closeAll);
+    return () => {
+      window.removeEventListener('scroll', closeAll, true);
+      window.removeEventListener('resize', closeAll);
     };
   }, []);
 
@@ -306,10 +337,14 @@ export const MainToolbar: React.FC = () => {
             <ScanText className={`w-3.5 h-3.5 ${currentTool === 'snip_ocr' ? 'text-white' : 'text-amber-600'}`} />
           </button>
 
-          {/* Shapes Dropdown */}
+          {/* Shapes Dropdown (portal: toolbar scrolls container clips absolute menus) */}
           <div className="relative" ref={shapesMenuRef}>
             <button
-              onClick={() => setShapesOpen((v) => !v)}
+              onClick={() => {
+                shapesMenuPos();
+                setShapesOpen((v) => !v);
+                setMoreToolsOpen(false);
+              }}
               className={`p-1.5 rounded-md transition-all flex items-center gap-0.5 text-xs font-medium ${
                 isShapeActive
                   ? 'bg-swift-600 text-white shadow-sm'
@@ -322,10 +357,15 @@ export const MainToolbar: React.FC = () => {
             </button>
 
             {shapesOpen && (
-              <div className="absolute left-0 top-full mt-1.5 bg-white border border-gray-200 rounded-xl shadow-xl p-1 z-50 w-44 flex flex-col gap-0.5 animate-scale-in text-gray-800">
-                <span className="text-[10px] font-semibold text-gray-400 px-2 py-1 uppercase tracking-wider">
-                  Geometric Shapes
-                </span>
+              createPortal(
+                <div
+                  data-toolbar-portal="true"
+                  style={{ position: 'fixed', top: shapesPos.top, left: shapesPos.left }}
+                  className="bg-white border border-gray-200 rounded-xl shadow-xl p-1 z-[70] w-44 flex flex-col gap-0.5 animate-scale-in text-gray-800"
+                >
+                  <span className="text-[10px] font-semibold text-gray-400 px-2 py-1 uppercase tracking-wider">
+                    Geometric Shapes
+                  </span>
                 {shapeTools.map((s) => {
                   const SIcon = s.icon;
                   const isSelected = currentTool === s.id;
@@ -347,7 +387,9 @@ export const MainToolbar: React.FC = () => {
                     </button>
                   );
                 })}
-              </div>
+                </div>,
+                document.body
+              )
             )}
           </div>
 
@@ -492,10 +534,14 @@ export const MainToolbar: React.FC = () => {
 
         
 
-        {/* "More Tools" Dropdown - Contains Sanitize, Batch, Crop, Bates, Compare, etc. */}
+        {/* "More Tools" Dropdown - Contains Sanitize, Batch, Crop, Bates, Compare, etc. (portal: the overflow toolbar would clip an absolute menu) */}
         <div className="relative shrink-0" ref={moreToolsMenuRef}>
           <button
-            onClick={() => setMoreToolsOpen((v) => !v)}
+            onClick={() => {
+              moreToolsMenuPos();
+              setMoreToolsOpen((v) => !v);
+              setShapesOpen(false);
+            }}
             className={`flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-colors border shrink-0 ${
               moreToolsOpen
                 ? 'bg-red-600 text-white border-red-600 shadow-xs'
@@ -508,7 +554,12 @@ export const MainToolbar: React.FC = () => {
           </button>
 
           {moreToolsOpen && (
-            <div className="absolute right-0 top-full mt-1.5 bg-white border border-gray-200 rounded-2xl shadow-xl p-1.5 z-50 w-72 flex flex-col gap-1 animate-scale-in text-gray-800">
+            createPortal(
+              <div
+                data-toolbar-portal="true"
+                style={{ position: 'fixed', top: morePos.top, right: morePos.right }}
+                className="bg-white border border-gray-200 rounded-2xl shadow-xl p-1.5 z-[70] w-72 flex flex-col gap-1 animate-scale-in text-gray-800"
+              >
               <span className="text-[10px] font-bold text-gray-400 px-3 py-1.5 uppercase tracking-wider border-b border-gray-100">
                 Advanced PDF Utilities
               </span>
@@ -539,7 +590,9 @@ export const MainToolbar: React.FC = () => {
                   );
                 })}
               </div>
-            </div>
+            </div>,
+              document.body
+            )
           )}
         </div>
       </div>
