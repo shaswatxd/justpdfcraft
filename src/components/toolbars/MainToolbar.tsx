@@ -20,7 +20,6 @@ import {
   ScanText,
   Shield,
   Sidebar,
-  Sliders,
   ChevronDown,
   Layers,
   Crop as CropIcon,
@@ -50,8 +49,6 @@ export const MainToolbar: React.FC = () => {
     activeModal,
     toggleSidebar,
     isSidebarOpen,
-    togglePropertiesPanel,
-    isPropertiesPanelOpen,
     setSidebarTab,
   } = useUIStore();
 
@@ -545,21 +542,6 @@ export const MainToolbar: React.FC = () => {
             </div>
           )}
         </div>
-
-        <div className="w-[1px] h-5 bg-gray-200 mx-0.5 shrink-0" />
-
-        {/* Properties toggle */}
-        <button
-          onClick={togglePropertiesPanel}
-          className={`p-1.5 rounded-lg border transition-colors shrink-0 ${
-            isPropertiesPanelOpen
-              ? 'bg-red-50 border-red-200 text-red-600'
-              : 'border-transparent text-gray-500 hover:bg-gray-100 hover:text-gray-800'
-          }`}
-          title="Tool Properties Panel"
-        >
-          <Sliders className="w-4 h-4" />
-        </button>
       </div>
     </div>
   );

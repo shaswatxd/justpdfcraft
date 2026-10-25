@@ -19,7 +19,6 @@ export const StudentToolsDialog: React.FC = () => {
     activeModal,
     setActiveModal,
     addToast,
-    setActiveStudentTab,
     activePhotoUrl,
     setActivePhotoUrl,
   } = useUIStore();
@@ -182,10 +181,7 @@ export const StudentToolsDialog: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => {
-              setActiveModal(null);
-              setActiveStudentTab(null);
-            }}
+            onClick={() => setActiveModal(null)}
             className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-700 transition-colors shrink-0"
             title="Close"
             aria-label="Close"

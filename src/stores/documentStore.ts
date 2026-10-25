@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { DocumentMetadata, PageDimensions, RenderResult, FormFieldData, DocumentOutlineItem } from '@core/pdf/engine.interface';
+import { DocumentMetadata, PageDimensions, FormFieldData, DocumentOutlineItem } from '@core/pdf/engine.interface';
 import { getPDFEngine } from '@core/pdf/engine.factory';
 import { localDb } from '@core/db/database';
 import {
@@ -102,7 +102,6 @@ interface DocumentState {
   fileBytes: Uint8Array | null;
   fileHandle: FileSystemFileHandle | null;
   isAutoSavingDraft: boolean;
-  lastSavedTimestamp: number | null;
   availableDrafts: OPFSDraftMeta[];
   metadata: DocumentMetadata | null;
   pageCount: number;
@@ -119,8 +118,7 @@ interface DocumentState {
   zoom: number;
   viewMode: 'single' | 'continuous' | 'organize' | 'spread';
   selectedPageIndices: number[]; // for multi-select in organizer
-  renderedPages: Map<number, RenderResult>;
-  
+
   // Search
   searchQuery: string;
   searchResults: Array<{ pageIndex: number; textSnippet: string; matchIndex: number }>;
@@ -189,7 +187,6 @@ interface DocumentState {
   undo: () => Promise<void>;
   redo: () => Promise<void>;
   markDirty: () => void;
-  saveCurrentDocument: () => Promise<Uint8Array>;
 }
 
 let autoSaveTimer: any = null;
@@ -204,7 +201,7 @@ function scheduleDraftAutoSave(get: () => DocumentState, set: (partial: Partial<
       const engine = getPDFEngine();
       const bytes = await engine.saveDocument(documentId);
       await saveDraftToOPFS(documentId, fileName, bytes, { currentPage, isDirty: true });
-      set({ isAutoSavingDraft: false, lastSavedTimestamp: Date.now() });
+      set({ isAutoSavingDraft: false });
     } catch (e) {
       console.warn('Auto-save to OPFS skipped:', e);
       set({ isAutoSavingDraft: false });
@@ -222,7 +219,6 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   fileBytes: null,
   fileHandle: null,
   isAutoSavingDraft: false,
-  lastSavedTimestamp: null,
   availableDrafts: [],
   metadata: null,
   pageCount: 0,
@@ -235,7 +231,6 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   zoom: 1.0,
   viewMode: 'continuous',
   selectedPageIndices: [],
-  renderedPages: new Map(),
   searchQuery: '',
   searchResults: [],
   currentSearchMatch: 0,
@@ -356,7 +351,6 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
           userBookmarks,
           highlightFormFields: true,
           selectedPageIndices: validSelected,
-          renderedPages: new Map(),
           undoStack: preservedUndo,
           redoStack: preservedRedo,
           isDirty: preservedDirty,
@@ -426,7 +420,6 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         fileBytes: bytes,
         fileHandle: fileHandle || null,
         isAutoSavingDraft: false,
-        lastSavedTimestamp: Date.now(),
         metadata,
         pageCount,
         currentPage: 1,
@@ -436,7 +429,6 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         userBookmarks,
         highlightFormFields: true,
         selectedPageIndices: [0],
-        renderedPages: new Map(),
         undoStack: [],
         redoStack: [],
         isDirty: false,
@@ -500,7 +492,6 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       zoom: target.zoom,
       viewMode: target.viewMode,
       selectedPageIndices: target.selectedPageIndices,
-      renderedPages: new Map(),
       undoStack: target.undoStack,
       redoStack: target.redoStack,
       isDirty: target.isDirty,
@@ -548,7 +539,6 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         userBookmarks: [],
         formFields: [],
         selectedPageIndices: [],
-        renderedPages: new Map(),
         undoStack: [],
         redoStack: [],
         isDirty: false,
@@ -576,7 +566,6 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         zoom: nextTab.zoom,
         viewMode: nextTab.viewMode,
         selectedPageIndices: nextTab.selectedPageIndices,
-        renderedPages: new Map(),
         undoStack: nextTab.undoStack,
         redoStack: nextTab.redoStack,
         isDirty: nextTab.isDirty,
@@ -616,7 +605,6 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         userBookmarks: [],
         formFields: [],
         selectedPageIndices: [],
-        renderedPages: new Map(),
         undoStack: [],
         redoStack: [],
         isDirty: false,
@@ -994,7 +982,6 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
           fileBytes: bytes,
           fileHandle: newHandle,
           isDirty: false,
-          lastSavedTimestamp: Date.now(),
           tabs: tabs.map((t) =>
             t.id === activeTabId ? { ...t, fileBytes: bytes, fileHandle: newHandle, isDirty: false } : t
           ),
@@ -1021,7 +1008,6 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
             fileBytes: bytes,
             fileHandle: pickerHandle,
             isDirty: false,
-            lastSavedTimestamp: Date.now(),
             tabs: tabs.map((t) =>
               t.id === activeTabId ? { ...t, fileBytes: bytes, fileHandle: pickerHandle, isDirty: false } : t
             ),
@@ -1091,24 +1077,11 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       const engine = getPDFEngine();
       const bytes = await engine.saveDocument(documentId);
       await saveDraftToOPFS(documentId, fileName, bytes, { currentPage, isDirty: true });
-      set({ isAutoSavingDraft: false, lastSavedTimestamp: Date.now() });
+      set({ isAutoSavingDraft: false });
     } catch (err) {
       console.warn('Manual draft save to OPFS failed:', err);
       set({ isAutoSavingDraft: false });
     }
-  },
-
-  saveCurrentDocument: async () => {
-    const { documentId, activeTabId, tabs } = get();
-    if (!documentId) throw new Error('No document loaded');
-    const engine = getPDFEngine();
-    const bytes = await engine.saveDocument(documentId);
-    set({
-      fileBytes: bytes,
-      isDirty: false,
-      tabs: tabs.map((t) => (t.id === activeTabId ? { ...t, fileBytes: bytes, isDirty: false } : t)),
-    });
-    return bytes;
   },
 
   addUserBookmark: (title: string, pageIndex?: number) => {

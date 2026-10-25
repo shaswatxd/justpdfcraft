@@ -38,7 +38,6 @@ export interface ToastMessage {
 export interface UIState {
   isSidebarOpen: boolean;
   activeSidebarTab: SidebarTab;
-  isPropertiesPanelOpen: boolean;
   activeModal: ModalType;
   isCommandPaletteOpen: boolean;
   toasts: ToastMessage[];
@@ -57,8 +56,6 @@ export interface UIState {
   setPendingImageFile: (file: File | null) => void;
 
   // Sub-tabs for modal hubs
-  activeStudentTab: string | null;
-  setActiveStudentTab: (tab: string | null) => void;
   activeLegalTab: string | null;
   setActiveLegalTab: (tab: string | null) => void;
   activeConvertTab: string | null;
@@ -67,9 +64,7 @@ export interface UIState {
   setPaperTone: (tone: PaperTone) => void;
   setActiveView: (view: ActiveView) => void;
   toggleSidebar: () => void;
-  setSidebarOpen: (open: boolean) => void;
   setSidebarTab: (tab: SidebarTab) => void;
-  togglePropertiesPanel: () => void;
   setActiveModal: (modal: ModalType) => void;
   setCommandPaletteOpen: (open: boolean) => void;
   toggleFullscreen: () => void;
@@ -110,7 +105,6 @@ export const useUIStore = create<UIState>((set) => ({
   setActiveView: (activeView) => set({ activeView }),
   isSidebarOpen: typeof window !== 'undefined' ? window.innerWidth >= 768 : true,
   activeSidebarTab: 'thumbnails',
-  isPropertiesPanelOpen: false,
   activeModal: null,
   isCommandPaletteOpen: false,
   toasts: [],
@@ -135,8 +129,6 @@ export const useUIStore = create<UIState>((set) => ({
   pendingImageFile: null,
   setPendingImageFile: (pendingImageFile) => set({ pendingImageFile }),
 
-  activeStudentTab: null,
-  setActiveStudentTab: (activeStudentTab) => set({ activeStudentTab }),
   activeLegalTab: null,
   setActiveLegalTab: (activeLegalTab) => set({ activeLegalTab }),
   activeConvertTab: null,
@@ -150,10 +142,7 @@ export const useUIStore = create<UIState>((set) => ({
   },
 
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
-  setSidebarOpen: (open) => set({ isSidebarOpen: open }),
   setSidebarTab: (tab) => set({ activeSidebarTab: tab, isSidebarOpen: true }),
-  togglePropertiesPanel: () =>
-    set((state) => ({ isPropertiesPanelOpen: !state.isPropertiesPanelOpen })),
   setActiveModal: (modal) => set({ activeModal: modal }),
   setCommandPaletteOpen: (open) => set({ isCommandPaletteOpen: open }),
   toggleFullscreen: () => set((state) => ({ isFullscreen: !state.isFullscreen })),

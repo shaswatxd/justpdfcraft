@@ -42,7 +42,6 @@ export const HomeDashboard: React.FC = () => {
     addToast,
     setActivePhotoUrl,
     setActiveConvertTab,
-    setActiveStudentTab,
     setActiveLegalTab,
     setPendingImageFile,
     setActiveView,
@@ -108,9 +107,6 @@ export const HomeDashboard: React.FC = () => {
       setActivePhotoUrl(photoUrl);
 
       if (pending?.modal) {
-        if (pending.modal === 'student-resizer' && pending.initialTab) {
-          setActiveStudentTab(pending.initialTab);
-        }
         setActiveModal(pending.modal);
         return;
       }
@@ -141,9 +137,7 @@ export const HomeDashboard: React.FC = () => {
         const isPhotoOnlyModal = pending.modal === 'convert' && pending.initialTab === 'img-to-pdf';
 
         if (pending.modal && !isPhotoOnlyModal) {
-          if (pending.modal === 'student-resizer' && pending.initialTab) {
-            setActiveStudentTab(pending.initialTab);
-          } else if (pending.modal === 'legal' && pending.initialTab) {
+          if (pending.modal === 'legal' && pending.initialTab) {
             setActiveLegalTab(pending.initialTab);
           } else if (pending.modal === 'convert' && pending.initialTab) {
             setActiveConvertTab(pending.initialTab);

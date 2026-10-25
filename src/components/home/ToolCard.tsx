@@ -201,9 +201,7 @@ export const launchToolAction = (
 ) => {
   const act = tool.action;
   if (act.type === 'modal') {
-    if (act.modal === 'student-resizer' && act.initialTab) {
-      ui.setActiveStudentTab(act.initialTab);
-    } else if (act.modal === 'legal' && act.initialTab) {
+    if (act.modal === 'legal' && act.initialTab) {
       ui.setActiveLegalTab(act.initialTab);
     } else if (act.modal === 'convert' && act.initialTab) {
       ui.setActiveConvertTab(act.initialTab);

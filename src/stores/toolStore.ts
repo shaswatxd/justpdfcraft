@@ -59,7 +59,6 @@ interface ToolState {
   setMeasureScale: (scale: number) => void;
   
   addStagedRedaction: (area: RedactionArea) => void;
-  removeStagedRedaction: (index: number) => void;
   clearStagedRedactions: () => void;
 }
 
@@ -96,11 +95,6 @@ export const useToolStore = create<ToolState>((set) => ({
 
   addStagedRedaction: (area) =>
     set((state) => ({ stagedRedactions: [...state.stagedRedactions, area] })),
-
-  removeStagedRedaction: (index) =>
-    set((state) => ({
-      stagedRedactions: state.stagedRedactions.filter((_, i) => i !== index),
-    })),
 
   clearStagedRedactions: () => set({ stagedRedactions: [] }),
 }));
