@@ -124,7 +124,6 @@ async function runAudit() {
     console.log('📸 4. Testing Student Tools (Resizer, Signature Cleaner, Combiner, DOP)...');
     await page.evaluate(() => {
       const store = window.__JUSTPDFCRAFT_UI_STORE__.getState();
-      store.setActiveStudentTab('resizer');
       store.setActiveModal('student-resizer');
     });
     await page.waitForTimeout(500);

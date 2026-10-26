@@ -56,7 +56,7 @@ export const MainToolbar: React.FC = () => {
   const [shapesOpen, setShapesOpen] = useState(false);
   const [moreToolsOpen, setMoreToolsOpen] = useState(false);
   const [shapesPos, setShapesPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
-  const [morePos, setMorePos] = useState<{ top: number; right: number }>({ top: 0, right: 0 });
+  const [morePos, setMorePos] = useState<{ top: number; right: number; maxHeight: number }>({ top: 0, right: 0, maxHeight: 320 });
 
   const shapesMenuRef = useRef<HTMLDivElement>(null);
   const moreToolsMenuRef = useRef<HTMLDivElement>(null);
@@ -70,7 +70,19 @@ export const MainToolbar: React.FC = () => {
   };
   const moreToolsMenuPos = () => {
     const r = moreToolsMenuRef.current?.getBoundingClientRect();
-    if (r) setMorePos({ top: r.bottom + 6, right: window.innerWidth - r.right });
+    if (!r) return;
+    const MARGIN = 10;
+    const MENU_PREF = 340; // heading + ~5 rows; the list scrolls beyond this
+    const spaceBelow = window.innerHeight - r.bottom - MARGIN;
+    const spaceAbove = r.top - MARGIN;
+    // On short viewports (e.g. mobile landscape) open upward when there is no room below
+    if (spaceBelow < 190 && spaceAbove > spaceBelow) {
+      const bottomAnchor = r.top - 6;
+      const top = Math.max(MARGIN, bottomAnchor - Math.min(MENU_PREF, spaceAbove));
+      setMorePos({ top, right: window.innerWidth - r.right, maxHeight: Math.max(120, bottomAnchor - top) });
+    } else {
+      setMorePos({ top: r.bottom + 6, right: window.innerWidth - r.right, maxHeight: Math.max(120, Math.min(MENU_PREF, spaceBelow)) });
+    }
   };
 
   // Close menus on outside click
@@ -94,9 +106,12 @@ export const MainToolbar: React.FC = () => {
     };
   }, []);
 
-  // Close menus on scroll/resize so the fixed portals never drift away from their buttons
+  // Close menus on scroll/resize so the fixed portals never drift away from their
+  // buttons — BUT never when the scroll originates inside our own portaled menu
+  // (the "More Tools"/"Shapes" lists are overflow-y-auto and must stay scrollable).
   useEffect(() => {
-    const closeAll = () => {
+    const closeAll = (e: Event) => {
+      if (e.target instanceof Element && e.target.closest('[data-toolbar-portal]')) return;
       setShapesOpen(false);
       setMoreToolsOpen(false);
     };
@@ -557,13 +572,13 @@ export const MainToolbar: React.FC = () => {
             createPortal(
               <div
                 data-toolbar-portal="true"
-                style={{ position: 'fixed', top: morePos.top, right: morePos.right }}
-                className="bg-white border border-gray-200 rounded-2xl shadow-xl p-1.5 z-[70] w-72 flex flex-col gap-1 animate-scale-in text-gray-800"
+                style={{ position: 'fixed', top: morePos.top, right: morePos.right, maxHeight: morePos.maxHeight }}
+                className="bg-white border border-gray-200 rounded-2xl shadow-xl p-1.5 z-[70] w-72 flex flex-col gap-1 animate-scale-in text-gray-800 overflow-y-auto overscroll-contain"
               >
-              <span className="text-[10px] font-bold text-gray-400 px-3 py-1.5 uppercase tracking-wider border-b border-gray-100">
+              <span className="shrink-0 sticky top-0 bg-white z-10 text-[10px] font-bold text-gray-400 px-3 py-1.5 uppercase tracking-wider border-b border-gray-100">
                 Advanced PDF Utilities
               </span>
-              <div className="max-h-80 overflow-y-auto space-y-0.5 p-1">
+              <div className="min-h-0 space-y-0.5 p-1">
                 {moreToolsList.map((tool) => {
                   const TIcon = tool.icon;
                   return (
