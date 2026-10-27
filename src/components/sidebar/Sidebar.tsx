@@ -446,9 +446,9 @@ export const Sidebar: React.FC = () => {
         className="md:hidden fixed top-14 inset-x-0 bottom-0 z-40 bg-slate-900/40 backdrop-blur-xs animate-fade-in"
       />
 
-      <aside className="w-72 max-w-[85vw] md:w-64 bg-white border-r border-gray-200 flex flex-col select-none z-50 fixed top-14 bottom-0 left-0 md:relative md:top-auto md:bottom-auto md:left-auto md:z-auto shadow-xl md:shadow-none h-[calc(100dvh-3.5rem)] md:h-full">
-        {/* Tab Switcher */}
-        <div className="h-11 border-b border-gray-200 flex items-center px-2 gap-1 bg-gray-50 shrink-0">
+      <aside className="w-72 max-w-[85vw] md:w-72 bg-white border-r border-gray-200 flex flex-col select-none z-50 fixed top-14 bottom-0 left-0 md:relative md:top-auto md:bottom-auto md:left-auto md:z-auto shadow-xl md:shadow-none h-[calc(100dvh-3.5rem)] md:h-full">
+        {/* Tab Switcher — scrolls horizontally as a safety fallback instead of bleeding over the organizer pane */}
+        <div className="h-11 border-b border-gray-200 flex items-center px-1.5 gap-0.5 bg-gray-50 shrink-0 overflow-x-auto no-scrollbar">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeSidebarTab === tab.id;
@@ -456,7 +456,7 @@ export const Sidebar: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setSidebarTab(tab.id)}
-                className={`flex-1 h-full py-2 px-1 rounded flex items-center justify-center gap-1 text-[11px] font-medium transition-colors relative min-h-[40px] ${
+                className={`flex-1 h-full py-2 px-1.5 whitespace-nowrap rounded flex items-center justify-center gap-1 text-[11px] font-medium transition-colors relative min-h-[40px] ${
                   isActive ? 'bg-white text-red-600 font-semibold shadow-xs border border-gray-200' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >

@@ -428,12 +428,15 @@ export const PageOrganizer: React.FC = () => {
 
   return (
     <div className="flex-1 flex flex-col bg-slate-100 text-gray-800 overflow-hidden">
-      {/* Top Action Ribbon */}
-      <div className="h-12 bg-white border-b border-gray-200 px-3 sm:px-4 flex items-center justify-between gap-3 sm:gap-4 overflow-x-auto no-scrollbar select-none shadow-2xs">
+      {/* Top Action Ribbon — Open-in-Editor CTA is pinned; middle batch row scrolls on narrow screens */}
+      <div className="h-12 bg-white border-b border-gray-200 px-3 sm:px-4 flex items-center gap-3 select-none shadow-2xs overflow-x-auto no-scrollbar">
         {/* Selection summary & toggles */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <span className="text-xs font-semibold text-gray-700">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <span className="text-xs font-semibold text-gray-700 whitespace-nowrap hidden sm:inline">
             {selectedPageIndices.length} of {pageCount} Selected
+          </span>
+          <span className="text-xs font-semibold text-gray-700 whitespace-nowrap sm:hidden">
+            {selectedPageIndices.length}/{pageCount} Selected
           </span>
           <button
             onClick={selectAllPages}
@@ -444,13 +447,13 @@ export const PageOrganizer: React.FC = () => {
           </button>
           <button
             onClick={handleSelectOdd}
-            className="text-xs text-gray-500 hover:text-slate-200 transition-colors"
+            className="hidden xs:inline text-xs text-gray-500 hover:text-slate-200 transition-colors"
           >
             Odd
           </button>
           <button
             onClick={handleSelectEven}
-            className="text-xs text-gray-500 hover:text-slate-200 transition-colors"
+            className="hidden xs:inline text-xs text-gray-500 hover:text-slate-200 transition-colors"
           >
             Even
           </button>
@@ -462,8 +465,8 @@ export const PageOrganizer: React.FC = () => {
           </button>
         </div>
 
-        {/* Batch Operations */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        {/* Batch Operations — scrollable middle so the pinned CTA never clips */}
+        <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-x-auto no-scrollbar">
           <button
             onClick={() => handleRotate(-90)}
             disabled={selectedPageIndices.length === 0}
@@ -471,7 +474,7 @@ export const PageOrganizer: React.FC = () => {
             title="Rotate 90° Left"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Rotate Left</span>
+            <span className="hidden min-[1900px]:inline">Rotate Left</span>
           </button>
           <button
             onClick={() => handleRotate(90)}
@@ -480,7 +483,7 @@ export const PageOrganizer: React.FC = () => {
             title="Rotate 90° Right"
           >
             <RotateCw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Rotate Right</span>
+            <span className="hidden min-[1900px]:inline">Rotate Right</span>
           </button>
           <button
             onClick={handleDuplicate}
@@ -489,7 +492,7 @@ export const PageOrganizer: React.FC = () => {
             title="Duplicate Selected Pages"
           >
             <Copy className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Duplicate</span>
+            <span className="hidden min-[1900px]:inline">Duplicate</span>
           </button>
           <button
             onClick={handleExtract}
@@ -498,7 +501,7 @@ export const PageOrganizer: React.FC = () => {
             title="Extract to New PDF"
           >
             <Download className="w-3.5 h-3.5 text-red-600" />
-            <span className="hidden sm:inline">Extract</span>
+            <span className="hidden min-[1900px]:inline">Extract</span>
           </button>
           <button
             onClick={handleInsertBlank}
@@ -506,7 +509,7 @@ export const PageOrganizer: React.FC = () => {
             title="Insert Blank Page"
           >
             <Plus className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="hidden sm:inline">Add Blank</span>
+            <span className="hidden min-[1900px]:inline">Add Blank</span>
           </button>
           <input
             ref={externalFileInputRef}
@@ -521,7 +524,7 @@ export const PageOrganizer: React.FC = () => {
             title="Insert External PDF or Image as Pages"
           >
             <Upload className="w-3.5 h-3.5 text-indigo-400" />
-            <span className="hidden sm:inline">Insert File</span>
+            <span className="hidden min-[1900px]:inline">Insert File</span>
           </button>
           <button
             onClick={handleRemoveBlank}
@@ -529,7 +532,7 @@ export const PageOrganizer: React.FC = () => {
             title="Scan and Remove Blank Pages"
           >
             <Eraser className="w-3.5 h-3.5 text-pink-400" />
-            <span className="hidden sm:inline">Remove Blank</span>
+            <span className="hidden min-[1900px]:inline">Remove Blank</span>
           </button>
           <button
             onClick={handleReverseAll}
@@ -537,7 +540,7 @@ export const PageOrganizer: React.FC = () => {
             title="Reverse Page Order"
           >
             <ArrowUpDown className="w-3.5 h-3.5 text-amber-400" />
-            <span className="hidden sm:inline">Reverse All</span>
+            <span className="hidden min-[1900px]:inline">Reverse All</span>
           </button>
           <button
             onClick={() => setActiveModal('crop')}
@@ -545,7 +548,7 @@ export const PageOrganizer: React.FC = () => {
             title="Crop Margins on Document Pages"
           >
             <Crop className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden sm:inline">Crop</span>
+            <span className="hidden min-[1900px]:inline">Crop</span>
           </button>
           <button
             onClick={() => undo()} disabled={undoStack.length === 0} className="p-1.5 rounded bg-gray-100 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs flex items-center gap-1 transition-colors" title="Undo"><Undo2 className="w-3.5 h-3.5" /></button><button onClick={() => redo()} disabled={redoStack.length === 0} className="p-1.5 rounded bg-gray-100 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs flex items-center gap-1 transition-colors" title="Redo"><Redo2 className="w-3.5 h-3.5" /></button><div className="w-[1px] h-5 bg-gray-100 mx-1" /><button onClick={handleDelete}
@@ -554,14 +557,16 @@ export const PageOrganizer: React.FC = () => {
             title="Delete Selected Pages"
           >
             <Trash2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Delete</span>
+            <span className="hidden min-[1900px]:inline">Delete</span>
           </button>
+        </div>
 
-          <div className="w-[1px] h-5 bg-gray-100 mx-1" />
-
+        {/* Pinned primary CTA — always fully visible, never clipped by the ribbon scroll */}
+        <div className="flex items-center shrink-0">
+          <div className="w-[1px] h-5 bg-gray-200" />
           <button
             onClick={() => setViewMode('continuous')}
-            className="p-1.5 px-2.5 rounded bg-red-600 hover:bg-red-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
+            className="ml-2 p-1.5 px-2.5 rounded bg-red-600 hover:bg-red-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
             title="Done organizing: Open current page in PDF Viewer & Editor"
           >
             <Eye className="w-3.5 h-3.5" />

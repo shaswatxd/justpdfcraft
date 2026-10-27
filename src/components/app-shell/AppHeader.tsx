@@ -216,10 +216,10 @@ export const AppHeader: React.FC = () => {
       {/* ======================================================== */}
       {/* Left: Home / Back, Brand Logo & Undo/Redo */}
       {/* ======================================================== */}
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-2 min-w-0 flex-1">
         {/* On Mobile when doc is open: Clean Back Arrow + Truncated Doc Name with Page count */}
         {isDocumentOpen ? (
-          <div className="flex md:hidden items-center gap-2 max-w-[190px] xs:max-w-[240px]">
+          <div className="flex md:hidden items-center gap-2 min-w-0 flex-1">
             <button
               onClick={handleGoHome}
               className="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white shrink-0"
@@ -246,7 +246,7 @@ export const AppHeader: React.FC = () => {
         {/* Desktop or Home Brand Logo (BillGenHai Theme) */}
         <button
           onClick={handleGoHome}
-          className={`${isDocumentOpen ? 'hidden lg:flex' : 'flex'} items-center gap-2.5 hover:opacity-95 transition-opacity select-none focus:outline-none`}
+          className={`${isDocumentOpen ? 'hidden lg:flex' : 'flex'} items-center gap-2.5 hover:opacity-95 transition-opacity select-none focus:outline-none shrink-0`}
           title={isDocumentOpen ? 'Back to Home Dashboard' : 'JustPDFCraft'}
         >
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-white shadow-md shadow-red-500/20 group-hover:scale-105 transition-transform">
@@ -484,11 +484,11 @@ export const AppHeader: React.FC = () => {
         {isDocumentOpen && (
           <>
             {/* Mobile Document Actions (Undo, Redo, 1-Tap Save, Menu) */}
-            <div className="flex md:hidden items-center gap-1">
+            <div className="flex md:hidden items-center gap-0.5">
               <button
                 onClick={() => undo()}
                 disabled={undoStack.length === 0}
-                className="p-2 rounded-lg text-slate-300 hover:text-white disabled:opacity-25"
+                className="p-1.5 rounded-lg text-slate-300 hover:text-white disabled:opacity-25"
                 title="Undo (Ctrl+Z)"
               >
                 <Undo2 className="w-4 h-4" />
@@ -496,7 +496,7 @@ export const AppHeader: React.FC = () => {
               <button
                 onClick={() => redo()}
                 disabled={redoStack.length === 0}
-                className="p-2 rounded-lg text-slate-300 hover:text-white disabled:opacity-25"
+                className="p-1.5 rounded-lg text-slate-300 hover:text-white disabled:opacity-25"
                 title="Redo (Ctrl+Y)"
               >
                 <Redo2 className="w-4 h-4" />
@@ -505,7 +505,7 @@ export const AppHeader: React.FC = () => {
               {/* Mobile Direct Save Button */}
               <button
                 onClick={handleSave}
-                className="flex items-center gap-1 py-2 px-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all relative shadow-sm"
+                className="flex items-center gap-1 py-2 px-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all relative shadow-sm shrink-0"
                 title="Save Document"
               >
                 <Save className="w-3.5 h-3.5" />
@@ -518,7 +518,7 @@ export const AppHeader: React.FC = () => {
               {/* Mobile Options Drawer Toggle */}
               <button
                 onClick={() => setMobileDocMenuOpen((o) => !o)}
-                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
                 title="Document Options"
               >
                 <MoreVertical className="w-4 h-4" />
