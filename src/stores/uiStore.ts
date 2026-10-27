@@ -36,6 +36,12 @@ export interface ToastMessage {
   durationMs?: number;
 }
 
+/** Deferred PWA install prompt captured from the browser's beforeinstallprompt event. */
+export interface InstallPromptEvent {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+}
+
 export interface UIState {
   isSidebarOpen: boolean;
   activeSidebarTab: SidebarTab;
@@ -51,6 +57,10 @@ export interface UIState {
   // Active Photo Editor image URL
   activePhotoUrl: string | null;
   setActivePhotoUrl: (url: string | null) => void;
+
+  // Deferred PWA install prompt (null until the browser offers installation)
+  installPrompt: InstallPromptEvent | null;
+  setInstallPrompt: (prompt: InstallPromptEvent | null) => void;
 
   // Dropped image file for modal consumption (e.g. Convert img-to-pdf, Image Tools)
   pendingImageFile: File | null;
@@ -139,6 +149,9 @@ export const useUIStore = create<UIState>((set) => ({
     }),
   pendingImageFile: null,
   setPendingImageFile: (pendingImageFile) => set({ pendingImageFile }),
+
+  installPrompt: null,
+  setInstallPrompt: (installPrompt) => set({ installPrompt }),
 
   activeLegalTab: null,
   setActiveLegalTab: (activeLegalTab) => set({ activeLegalTab }),

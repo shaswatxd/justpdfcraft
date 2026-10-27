@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useToolStore } from '@/stores/toolStore';
-import { useUIStore } from '@/stores/uiStore';
+import { useUIStore, InstallPromptEvent } from '@/stores/uiStore';
 import { AppHeader } from '@/components/app-shell/AppHeader';
 import { MainToolbar } from '@/components/toolbars/MainToolbar';
 import { ContextPropertiesBar } from '@/components/toolbars/ContextPropertiesBar';
@@ -93,6 +93,7 @@ export const App: React.FC = () => {
     activeModal,
     setActiveModal,
     setActivePhotoUrl,
+    setInstallPrompt,
     activeView,
     setActiveView,
     setSidebarTab,
@@ -302,6 +303,30 @@ export const App: React.FC = () => {
 
   const [isWindowDragging, setIsWindowDragging] = React.useState(false);
   const dragCounterRef = useRef(0);
+
+  // PWA Install Prompt: capture the deferred beforeinstallprompt event so the
+  // header can offer a real "Install" button (Chrome/Edge/Android). Cleared on
+  // appinstalled or when the user dismisses the native prompt.
+  useEffect(() => {
+    const onBeforeInstall = (e: Event) => {
+      e.preventDefault();
+      setInstallPrompt(e as unknown as InstallPromptEvent);
+    };
+    const onInstalled = () => {
+      setInstallPrompt(null);
+      addToast({
+        type: 'success',
+        title: 'App Installed',
+        message: 'JustPDFCraft is now available from your home screen.',
+      });
+    };
+    window.addEventListener('beforeinstallprompt', onBeforeInstall);
+    window.addEventListener('appinstalled', onInstalled);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onBeforeInstall);
+      window.removeEventListener('appinstalled', onInstalled);
+    };
+  }, [setInstallPrompt, addToast]);
 
   useEffect(() => {
     const handleDragEnter = (e: DragEvent) => {

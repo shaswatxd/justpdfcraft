@@ -29,14 +29,21 @@ export const LegalDialog: React.FC = () => {
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactMessage.trim()) return;
+
+    // Real delivery via the user's mail client (no backend on this static site).
+    const subject = encodeURIComponent(
+      `[JustPDFCraft] Feedback from ${contactName.trim() || 'Anonymous'}`
+    );
+    const body = encodeURIComponent(
+      `${contactMessage.trim()}\n\n— ${contactName.trim() || 'Anonymous'}\n${contactEmail.trim()}`
+    );
+    window.location.href = `mailto:hello@justpdfcraft.xyz?subject=${subject}&body=${body}`;
+
     addToast({
       type: 'success',
-      title: 'Message Received',
-      message: 'Thank you for reaching out! We appreciate your feedback and bug reports.',
+      title: 'Opening Your Email App',
+      message: 'Your message is pre-filled — just hit send. If no mail app opened, email hello@justpdfcraft.xyz directly.',
     });
-    setContactName('');
-    setContactEmail('');
-    setContactMessage('');
   };
 
   return (
@@ -219,6 +226,33 @@ export const LegalDialog: React.FC = () => {
                   Send Feedback
                 </button>
               </form>
+
+              {/* Direct email fallback (works even without a configured mail app) */}
+              <div className="flex items-center justify-between gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs">
+                <span className="text-gray-600 truncate">
+                  Prefer email?{' '}
+                  <a
+                    href="mailto:hello@justpdfcraft.xyz"
+                    className="font-semibold text-red-600 hover:text-red-700 underline underline-offset-2"
+                  >
+                    hello@justpdfcraft.xyz
+                  </a>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard?.writeText('hello@justpdfcraft.xyz');
+                    addToast({
+                      type: 'success',
+                      title: 'Copied',
+                      message: 'Email address copied to clipboard.',
+                    });
+                  }}
+                  className="shrink-0 px-2.5 py-1.5 rounded-lg bg-white border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 transition-colors"
+                >
+                  Copy
+                </button>
+              </div>
             </div>
           )}
         </div>

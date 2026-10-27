@@ -22,11 +22,15 @@ import {
   ChevronDown,
   HardDrive,
   MoreVertical,
+  Share2,
+  Printer,
+  Download,
 } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useTTSStore } from '@/stores/ttsStore';
 import { SwiftLogo } from '@/components/common/SwiftLogo';
+import { sharePdfDocument, isShareSupported } from '@/utils/shareDocument';
 
 export const AppHeader: React.FC = () => {
   const {
@@ -103,6 +107,8 @@ export const AppHeader: React.FC = () => {
     activeView,
     setActiveView,
     toggleSidebar,
+    installPrompt,
+    setInstallPrompt,
   } = useUIStore();
 
   const isDocumentOpen = Boolean(documentId) && activeView === 'editor';
@@ -111,6 +117,58 @@ export const AppHeader: React.FC = () => {
 
   const handleGoHome = () => {
     setActiveView('home');
+  };
+
+  // Web Share API: ship the live (unsaved-edit-inclusive) PDF to the native share sheet.
+  const handleShare = async () => {
+    if (!documentId) return;
+    try {
+      const result = await sharePdfDocument(documentId, fileName || 'document.pdf');
+      if (result === 'unsupported') {
+        addToast({
+          type: 'warning',
+          title: 'Sharing Not Supported Here',
+          message: 'This browser cannot share files directly — use Save As instead.',
+        });
+      } else if (result === 'error') {
+        addToast({
+          type: 'error',
+          title: 'Share Failed',
+          message: 'Could not open the share sheet. Try Save As instead.',
+        });
+      }
+      // 'shared' and 'cancelled' need no toast — the native sheet is feedback enough.
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Share Failed',
+        message: err?.message || 'Could not share the document.',
+      });
+    }
+  };
+
+  const handlePrint = () => {
+    // Print CSS (src/index.css @media print) hides all chrome and prints PDF pages only.
+    window.print();
+  };
+
+  // PWA install: consume the deferred beforeinstallprompt (one-shot — clear afterwards).
+  const handleInstall = async () => {
+    if (!installPrompt) return;
+    try {
+      await installPrompt.prompt();
+      const choice = await installPrompt.userChoice;
+      if (choice.outcome === 'accepted') {
+        addToast({
+          type: 'success',
+          title: 'Installing JustPDFCraft',
+          message: 'The app will appear on your home screen shortly.',
+        });
+      }
+    } catch {
+      // Prompt already consumed or blocked — fall through to clear it.
+    }
+    setInstallPrompt(null);
   };
 
   const handleSave = async () => {
@@ -583,6 +641,26 @@ export const AppHeader: React.FC = () => {
                 </button>
               </div>
 
+              {/* Share via Web Share API (hidden where unsupported) */}
+              {isShareSupported() && (
+                <button
+                  onClick={handleShare}
+                  className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors"
+                  title="Share PDF (native share sheet)"
+                >
+                  <Share2 className="w-4 h-4" />
+                </button>
+              )}
+
+              {/* Print (print CSS prints PDF pages only) */}
+              <button
+                onClick={handlePrint}
+                className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors"
+                title="Print Document (Ctrl+P)"
+              >
+                <Printer className="w-4 h-4" />
+              </button>
+
               {/* Fullscreen */}
               <button
                 onClick={toggleFullscreen}
@@ -609,6 +687,18 @@ export const AppHeader: React.FC = () => {
 
 
         
+
+        {/* PWA Install button — only while the browser offers installation */}
+        {!documentId && installPrompt && (
+          <button
+            onClick={handleInstall}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
+            title="Install JustPDFCraft as an app on your device"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Install App</span>
+          </button>
+        )}
 
         {/* Mobile Navigation Menu Toggle */}
         {!documentId && (
@@ -715,6 +805,30 @@ export const AppHeader: React.FC = () => {
               >
                 <Save className="w-4 h-4 text-emerald-400" />
                 <span>Save Copy As...</span>
+              </button>
+
+              {isShareSupported() && (
+                <button
+                  onClick={() => {
+                    setMobileDocMenuOpen(false);
+                    handleShare();
+                  }}
+                  className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-left flex items-center gap-2.5 text-xs text-gray-800 shadow-2xs"
+                >
+                  <Share2 className="w-4 h-4 text-sky-500" />
+                  <span>Share PDF</span>
+                </button>
+              )}
+
+              <button
+                onClick={() => {
+                  setMobileDocMenuOpen(false);
+                  handlePrint();
+                }}
+                className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-left flex items-center gap-2.5 text-xs text-gray-800 shadow-2xs"
+              >
+                <Printer className="w-4 h-4 text-blue-500" />
+                <span>Print</span>
               </button>
 
               <button

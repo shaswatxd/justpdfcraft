@@ -15,6 +15,8 @@ import { SecurityFeatureSection } from '@/components/home/SecurityFeatureSection
 import { FAQSection } from '@/components/home/FAQSection';
 import { HomeFooter } from '@/components/home/HomeFooter';
 import { isNativeFSSupported } from '@core/storage/native-fs';
+import { launchToolAction } from '@/components/home/ToolCard';
+import { getToolFromSearch } from '@/utils/deepLink';
 
 function formatTimeAgo(timestamp: number): string {
   const diffSec = Math.floor((Date.now() - timestamp) / 1000);
@@ -65,9 +67,40 @@ export const HomeDashboard: React.FC = () => {
     checkAndLoadAvailableDrafts();
   }, [checkAndLoadAvailableDrafts]);
 
+  // Per-tool deep links (?tool=<id>): launch the matching catalog tool on boot,
+  // then strip the param so a refresh doesn't re-trigger it. Unknown ids are
+  // ignored (getToolFromSearch resolves them to null).
+  React.useEffect(() => {
+    const { tool, cleaned } = getToolFromSearch(window.location.search);
+    if (!tool) return;
+
+    // Clean the URL first so double-mounts / refreshes never re-launch.
+    window.history.replaceState({}, '', window.location.pathname + cleaned + window.location.hash);
+
+    launchToolAction(
+      tool,
+      useUIStore.getState(),
+      useDocumentStore.getState(),
+      useToolStore.getState(),
+      triggerWorkflowWithFile
+    );
+
+    if (tool.action.type === 'workflow') {
+      addToast({
+        type: 'info',
+        title: tool.name,
+        message: 'Choose a file to get started with this tool.',
+      });
+    }
+    // Mount-only: deep links are consumed exactly once per page load.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleOpenPdfClick = async () => {
-    // If native File System Access API is supported, use modern dialog that keeps real file handle
-    if (isNativeFSSupported()) {
+    // A pending workflow (tool card click or ?tool= deep link) must flow through
+    // the standard input path so handleFilePicked can apply it after load —
+    // the native picker path would silently drop it.
+    if (!pendingWorkflowRef.current && isNativeFSSupported()) {
       try {
         const opened = await openWithNativePicker();
         if (opened) {

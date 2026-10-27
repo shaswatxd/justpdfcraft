@@ -21,6 +21,7 @@ import {
   Files,
   GraduationCap,
   Expand,
+  Printer,
 } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
@@ -46,6 +47,7 @@ export const CommandPalette: React.FC = () => {
   } = useUIStore();
   const {
     currentPage,
+    documentId,
     rotateSelectedPages,
     deletePage,
     insertBlankPageAt,
@@ -164,6 +166,18 @@ export const CommandPalette: React.FC = () => {
         });
       },
     },
+    ...(documentId
+      ? [
+          {
+            id: 'print',
+            title: 'Print Document (PDF Pages Only)',
+            category: 'Document' as const,
+            icon: Printer,
+            shortcut: 'Ctrl+P',
+            action: () => window.print(),
+          },
+        ]
+      : []),
     {
       id: 'view_organize',
       title: 'Switch to Visual Page Organizer Grid',
