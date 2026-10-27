@@ -25,7 +25,7 @@ const FooterLink: React.FC<{
 }> = ({ label, onClick, title }) => (
   <button
     onClick={onClick || scrollToExplorer}
-    className="inline-block w-auto py-1.5 min-h-[32px] text-gray-600 hover:text-red-600 font-medium transition-colors text-left"
+    className="inline-block w-auto py-1.5 min-h-[44px] lg:min-h-[32px] lg:py-1.5 text-gray-600 hover:text-red-600 font-medium transition-colors text-left"
     title={title}
   >
     {label}

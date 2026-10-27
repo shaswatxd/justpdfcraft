@@ -240,7 +240,7 @@ async function runDesktopViewportChecks(browser, vp) {
     await page.waitForTimeout(700);
     console.log(`\n🖥️  ${vp.name} (${vp.width}x${vp.height})`);
     await checkNoHorizontalScroll(page, vp.name, ['html', 'body']);
-    const openPdf = page.getByRole('button', { name: /open a pdf/i }).first();
+    const openPdf = page.getByRole('button', { name: /select pdf files/i }).first();
     softCheck((await openPdf.count()) > 0 && (await openPdf.isVisible()), `${vp.name}: primary action present`);
     const explorer = page.locator('#tool-explorer');
     softCheck((await explorer.count()) > 0, `${vp.name}: complete catalogue reachable`);

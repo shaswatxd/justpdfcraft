@@ -346,13 +346,13 @@ export const HomeDashboard: React.FC = () => {
           }}
           onDragLeave={() => setIsDraggingFile(false)}
           onDrop={handleDrop}
-          className={`relative w-full max-w-xl mx-auto border-2 border-dashed rounded-3xl p-6 sm:p-8 transition-all duration-200 ${
+          className={`relative w-full max-w-xl mx-auto border-2 border-dashed rounded-3xl p-4 sm:p-8 transition-all duration-200 ${
             isDraggingFile
               ? 'border-red-500 bg-red-500/[0.08]'
               : 'border-gray-300 bg-white hover:border-red-500 shadow-xs hover:shadow-md'
           }`}
         >
-          <div className="flex flex-col items-center text-center gap-3">
+          <div className="flex flex-col items-center text-center gap-2.5 sm:gap-3">
             <button
               type="button"
               onClick={() => handleOpenPdfClick()}
@@ -370,7 +370,7 @@ export const HomeDashboard: React.FC = () => {
               <button
                 type="button"
                 onClick={() => createBlankDocument()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[44px] lg:min-h-0 lg:py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 rounded-xl text-xs font-semibold transition-all cursor-pointer"
               >
                 <FilePlus className="w-3.5 h-3.5 text-gray-500" />
                 <span>New blank PDF</span>

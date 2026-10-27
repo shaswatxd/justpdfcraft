@@ -283,7 +283,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
           <button
             type="button"
             onClick={handleFavoriteToggle}
-            className={`fav-btn p-2 rounded-lg transition-all ${
+            className={`fav-btn p-3.5 lg:p-2 rounded-lg transition-all ${
               isFav
                 ? 'opacity-100 text-rose-500 bg-rose-50'
                 : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-gray-400 hover:text-rose-500 hover:bg-gray-100'

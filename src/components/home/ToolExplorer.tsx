@@ -157,7 +157,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="p-1.5 hover:bg-gray-200 rounded-lg text-gray-400 hover:text-gray-700 absolute right-2.5 top-1/2 -translate-y-1/2"
+              className="p-2 lg:p-1.5 hover:bg-gray-200 rounded-lg text-gray-400 hover:text-gray-700 absolute right-2.5 top-1/2 -translate-y-1/2"
               aria-label="Clear search"
               title="Clear search"
             >
@@ -185,7 +185,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
                   onCategoryChange(tab.id);
                 }}
                 aria-pressed={isActive}
-                className={`whitespace-nowrap px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
+                className={`whitespace-nowrap min-h-[44px] lg:min-h-0 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
                   isActive
                     ? 'bg-red-600 text-white shadow-md shadow-red-500/20'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200/80 shadow-2xs'
@@ -204,7 +204,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
               setShowOnlyFavorites((prev) => !prev);
             }}
             aria-pressed={showOnlyFavorites}
-            className={`whitespace-nowrap px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
+            className={`whitespace-nowrap min-h-[44px] lg:min-h-0 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
               showOnlyFavorites
                 ? 'bg-rose-600 text-white shadow-md shadow-rose-500/20'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200/80 shadow-2xs'
@@ -221,7 +221,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
               setShowOnlyPopular((prev) => !prev);
             }}
             aria-pressed={showOnlyPopular}
-            className={`whitespace-nowrap px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
+            className={`whitespace-nowrap min-h-[44px] lg:min-h-0 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
               showOnlyPopular
                 ? 'bg-amber-600 text-white shadow-md shadow-amber-500/20'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200/80 shadow-2xs'
