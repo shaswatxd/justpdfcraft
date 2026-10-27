@@ -170,7 +170,7 @@ export const AppHeader: React.FC = () => {
               <ArrowLeft className="w-4 h-4 text-swift-400" />
             </button>
             <div className="flex flex-col min-w-0">
-              <span className="text-xs font-bold text-white truncate leading-tight">
+              <span className="text-xs font-bold text-gray-900 truncate leading-tight">
                 {fileName || 'Document'}
               </span>
               <button
@@ -447,7 +447,7 @@ export const AppHeader: React.FC = () => {
               {/* Mobile Direct Save Button */}
               <button
                 onClick={handleSave}
-                className="flex items-center gap-1 py-2 px-3 bg-swift-600 hover:bg-swift-500 text-white rounded-xl text-xs font-bold transition-all relative shadow-sm"
+                className="flex items-center gap-1 py-2 px-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all relative shadow-sm"
                 title="Save Document"
               >
                 <Save className="w-3.5 h-3.5" />
