@@ -17,6 +17,7 @@ import { HomeFooter } from '@/components/home/HomeFooter';
 import { HowItWorksSection } from '@/components/home/HowItWorksSection';
 import { WhyChooseSection } from '@/components/home/WhyChooseSection';
 import { SeoContentSection } from '@/components/home/SeoContentSection';
+import { AdBanner } from '@/components/common/AdBanner';
 import { isNativeFSSupported } from '@core/storage/native-fs';
 import { launchToolAction } from '@/components/home/ToolCard';
 import { getToolFromSearch } from '@/utils/deepLink';
@@ -415,6 +416,8 @@ export const HomeDashboard: React.FC = () => {
           onSelectWorkflowFile={triggerWorkflowWithFile}
         />
 
+        {/* Google AdSense container */}
+        <AdBanner slotId="home-mid-banner" />
 
         {/* How It Works Section */}
         <HowItWorksSection />

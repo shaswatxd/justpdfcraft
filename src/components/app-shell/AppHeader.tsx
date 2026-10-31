@@ -17,6 +17,7 @@ Save,
   Sun,
   AlignJustify,
   FileText,
+    Sliders,
   Menu,
   X,
   ChevronDown,
@@ -726,7 +727,18 @@ export const AppHeader: React.FC = () => {
           </button>
         )}
 
-
+        {/* Account & Admin triggers */}
+        {!documentId && (
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setActiveModal('admin')}
+              className="p-1.5 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+              title="Admin Panel"
+            >
+              <Sliders className="w-4 h-4" />
+            </button>
+          </div>
+        )}
 
         {/* Mobile Navigation Menu Toggle */}
         {!documentId && (
