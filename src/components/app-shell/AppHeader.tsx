@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  Save,
+  Search,
+Save,
   Undo2,
   Redo2,
   ZoomIn,
@@ -291,6 +292,66 @@ export const AppHeader: React.FC = () => {
           </button>
         )}
 
+        {/* Desktop Main Navigation Links (Cleanly positioned beside Logo) */}
+        {!documentId && (
+          <nav className="hidden xl:flex items-center gap-1 ml-2 text-xs font-semibold text-slate-600">
+            <button
+              onClick={() => {
+                const el = document.getElementById('tool-explorer');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              All Tools
+            </button>
+            <button
+              onClick={() => {
+                const el = document.getElementById('tool-explorer');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              PDF Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('image-tools')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Image Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('document-tools')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Document Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('student-tools')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Student Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('developer-tools')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Developer Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('about')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              About
+            </button>
+            <button
+              onClick={() => setActiveModal('contact')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Contact
+            </button>
+          </nav>
+        )}
+
         {isDocumentOpen && (
           <>
             <div className="w-[1px] h-4 bg-gray-200 mx-0.5 hidden md:block" />
@@ -445,44 +506,7 @@ export const AppHeader: React.FC = () => {
         </div>
       )}
 
-      {/* When in Home Dashboard: Top Navigation Links (BillGenHai Theme) */}
-      {!isDocumentOpen && (
-        <nav className="hidden lg:flex items-center gap-1.5 text-xs font-bold select-none">
-          <button
-            onClick={() => setActiveModal('merge')}
-            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-blue-50/70 transition-colors uppercase tracking-wide cursor-pointer"
-          >
-            Merge PDF
-          </button>
-          <button
-            onClick={() => setActiveModal('split')}
-            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-blue-50/70 transition-colors uppercase tracking-wide cursor-pointer"
-          >
-            Split PDF
-          </button>
-          <button
-            onClick={() => setActiveModal('compress')}
-            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-blue-50/70 transition-colors uppercase tracking-wide cursor-pointer"
-          >
-            Compress PDF
-          </button>
-          <button
-            onClick={() => setActiveModal('convert')}
-            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-blue-50/70 transition-colors uppercase tracking-wide cursor-pointer"
-          >
-            Convert PDF
-          </button>
-          <button
-            onClick={() => {
-              const el = document.getElementById('tool-explorer');
-              el?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-blue-50/70 transition-colors uppercase tracking-wide cursor-pointer"
-          >
-            All PDF Tools
-          </button>
-        </nav>
-      )}
+      {/* Old duplicate navigation removed */}
 
       {/* ======================================================== */}
       {/* Right: Actions, Reading Comfort, Save & Controls */}
@@ -707,74 +731,9 @@ export const AppHeader: React.FC = () => {
           </button>
         )}
 
-        {/* Desktop Main Navigation Links */}
-        {!documentId && (
-          <nav className="hidden lg:flex items-center gap-1 text-xs font-semibold text-slate-600">
-            <button
-              onClick={() => {
-                const el = document.getElementById('tool-explorer');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
-            >
-              All Tools
-            </button>
-            <button
-              onClick={() => {
-                const el = document.getElementById('tool-explorer');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
-            >
-              PDF Tools
-            </button>
-            <button
-              onClick={() => setActiveModal('image-tools')}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
-            >
-              Image Tools
-            </button>
-            <button
-              onClick={() => setActiveModal('document-tools')}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
-            >
-              Document Tools
-            </button>
-            <button
-              onClick={() => setActiveModal('student-tools')}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
-            >
-              Student Tools
-            </button>
-            <button
-              onClick={() => setActiveModal('developer-tools')}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
-            >
-              Developer Tools
-            </button>
-            <button
-              onClick={() => setActiveModal('about')}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
-            >
-              About
-            </button>
-            <button
-              onClick={() => setActiveModal('contact')}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
-            >
-              Contact
-            </button>
-          </nav>
-        )}
-
         {/* Global Search Trigger (Cmd+K / Ctrl+K) */}
         {!documentId && (
-          <button
-            onClick={() => setCommandPaletteOpen(true)}
-            className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 hover:bg-slate-200/80 text-slate-500 rounded-xl text-xs font-medium transition-colors border border-slate-200/60 cursor-pointer"
-            title="Search tools (Ctrl+K / Cmd+K)"
-          >
-            <span>Search utilities...</span>
+          <button onClick={() => setCommandPaletteOpen(true)} className="inline-flex items-center gap-2 px-2.5 sm:px-3 py-1.5 bg-slate-100 hover:bg-slate-200/80 text-slate-500 rounded-xl text-xs font-medium transition-colors border border-slate-200/60 cursor-pointer" title="Search tools (Ctrl+K / Cmd+K)"><Search className="w-3.5 h-3.5" /><span className="hidden sm:inline">Search utilities...</span>
             <kbd className="px-1.5 py-0.5 rounded bg-white text-[10px] font-mono border border-slate-200 text-slate-400">⌘K</kbd>
           </button>
         )}
@@ -796,7 +755,7 @@ export const AppHeader: React.FC = () => {
         {!documentId && (
           <button
             onClick={() => setMobileMenuOpen((o) => !o)}
-            className="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
+            className="xl:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
             title="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -806,7 +765,7 @@ export const AppHeader: React.FC = () => {
 
       {/* Mobile Drawer Menu - Android Responsive */}
       {!documentId && mobileMenuOpen && (
-        <div className="lg:hidden absolute top-14 left-0 right-0 bg-white border-b border-gray-200 p-3 shadow-xl z-50 flex flex-col gap-1 max-h-[85dvh] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150 text-gray-800 touch-pan-y">
+        <div className="xl:hidden absolute top-14 left-0 right-0 bg-white border-b border-gray-200 p-3 shadow-xl z-50 flex flex-col gap-1 max-h-[85dvh] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150 text-gray-800 touch-pan-y">
           <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 pt-1 pb-0.5">
             Utilities & Suites
           </div>
