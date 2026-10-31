@@ -374,6 +374,36 @@ export const PageOrganizer: React.FC = () => {
     }
   };
 
+  const handleSaveAndDownload = async () => {
+    if (!documentId) return;
+    try {
+      const engine = getPDFEngine();
+      const updatedBytes = await engine.saveDocument(documentId);
+      const blob = new Blob([updatedBytes as any], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const baseName = fileName ? fileName.replace(/\.pdf$/i, '') : 'JustPDFCraft';
+      a.download = `${baseName}_Organized.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      addToast({
+        type: 'success',
+        title: 'Document Saved & Downloaded',
+        message: `Successfully downloaded ${baseName}_Organized.pdf with updated pages.`,
+      });
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Download Failed',
+        message: err?.message || 'Could not download organized PDF.',
+      });
+    }
+  };
+
   const handleMovePage = async (fromIdx: number, direction: 'left' | 'right') => {
     const toIdx = direction === 'left' ? fromIdx - 1 : fromIdx + 1;
     if (toIdx < 0 || toIdx >= pageCount) return;
@@ -500,7 +530,7 @@ export const PageOrganizer: React.FC = () => {
             className="p-1.5 rounded bg-gray-100 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs flex items-center gap-1 transition-colors"
             title="Extract to New PDF"
           >
-            <Download className="w-3.5 h-3.5 text-red-600" />
+            <Download className="w-3.5 h-3.5 text-blue-600" />
             <span className="hidden min-[1900px]:inline">Extract</span>
           </button>
           <button
@@ -561,16 +591,17 @@ export const PageOrganizer: React.FC = () => {
           </button>
         </div>
 
-        {/* Pinned primary CTA — always fully visible, never clipped by the ribbon scroll */}
+        {/* Pinned primary CTA: Save & Download PDF (iLovePDF style) */}
         <div className="flex items-center shrink-0">
           <div className="w-[1px] h-5 bg-gray-200" />
           <button
-            onClick={() => setViewMode('continuous')}
-            className="ml-2 p-1.5 px-2.5 rounded bg-red-600 hover:bg-red-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
-            title="Done organizing: Open current page in PDF Viewer & Editor"
+            onClick={handleSaveAndDownload}
+            disabled={!documentId || pageCount === 0}
+            className="ml-2 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 disabled:opacity-40 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-blue-500/25 cursor-pointer"
+            title="Save and download the organized PDF with all rotations, reordering, and deleted pages"
           >
-            <Eye className="w-3.5 h-3.5" />
-            <span>Open in Editor</span>
+            <Download className="w-3.5 h-3.5" />
+            <span>Save & Download PDF</span>
           </button>
         </div>
       </div>
