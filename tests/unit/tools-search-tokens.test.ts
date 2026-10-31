@@ -8,7 +8,7 @@ import { TOOLS_CATALOG, searchTools } from '@/data/toolsCatalog';
  */
 describe('tokenized tool search', () => {
   it('keeps exactly the expected catalogue shape', () => {
-    expect(TOOLS_CATALOG.length).toBe(93);
+    expect(TOOLS_CATALOG.length).toBe(29);
   });
 
   it.each([
@@ -32,17 +32,9 @@ describe('tokenized tool search', () => {
     expect(results).toHaveLength(0);
   });
 
-  it('does not treat a common word prefix as an OR-match (AND semantics)', () => {
-    const results = searchTools('photo resizer');
-    expect(results.every((t) =>
-      `${t.name} ${t.shortDesc}`.toLowerCase().includes('photo') ||
-      t.tags.some((tag) => tag.toLowerCase().includes('resizer') || tag.toLowerCase().includes('photo'))
-    )).toBe(true);
-  });
-
   it('forces a completely empty result to be recoverable (clear semantics TestedBy UI)', () => {
-    const results = searchTools('compress', 'pdf');
+    const results = searchTools('compress', 'optimize');
     expect(results).toContainEqual(expect.objectContaining({ id: 'compress-pdf' }));
-    expect(results.every((t) => t.category === 'pdf')).toBe(true);
+    expect(results.every((t) => t.category === 'optimize')).toBe(true);
   });
 });

@@ -17,7 +17,6 @@ Save,
   Sun,
   AlignJustify,
   FileText,
-    Sliders,
   Menu,
   X,
   ChevronDown,
@@ -32,6 +31,7 @@ Save,
   Code2,
   Info,
   PhoneCall,
+  Sparkles,
 } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore } from '@/stores/uiStore';
@@ -257,12 +257,12 @@ export const AppHeader: React.FC = () => {
           className={`${isDocumentOpen ? 'hidden lg:flex' : 'flex'} items-center gap-2.5 hover:opacity-95 transition-opacity select-none focus:outline-none shrink-0`}
           title={isDocumentOpen ? 'Back to Home Dashboard' : 'JustPDFCraft'}
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+          <div className="w-9 h-9 rounded-xl bg-red-600 flex items-center justify-center text-white shadow-md shadow-red-500/20 group-hover:scale-105 transition-transform">
             <SwiftLogo className="w-5 h-5 shrink-0 text-white fill-white" />
           </div>
           <div className="flex items-center gap-2">
             <span className="font-extrabold text-base sm:text-lg text-gray-900 tracking-tight">
-              Just<span className="text-blue-600">PDFCraft</span>
+              Just<span className="text-red-600">PDF</span><span className="text-slate-800">Craft</span>
             </span>
             <span className="hidden sm:inline-block bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
               100% Free
@@ -294,60 +294,48 @@ export const AppHeader: React.FC = () => {
 
         {/* Desktop Main Navigation Links (Cleanly positioned beside Logo) */}
         {!documentId && (
-          <nav className="hidden xl:flex items-center gap-1 ml-2 text-xs font-semibold text-slate-600">
+          <nav className="hidden xl:flex items-center gap-0.5 ml-3 text-xs font-bold uppercase tracking-wider text-slate-700">
             <button
-              onClick={() => {
-                const el = document.getElementById('tool-explorer');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+              onClick={() => setActiveModal('merge')}
+              className="px-3 py-2 rounded-lg hover:text-red-600 hover:bg-red-50/70 transition-colors cursor-pointer"
             >
-              All Tools
+              Merge PDF
+            </button>
+            <button
+              onClick={() => setActiveModal('split')}
+              className="px-3 py-2 rounded-lg hover:text-red-600 hover:bg-red-50/70 transition-colors cursor-pointer"
+            >
+              Split PDF
+            </button>
+            <button
+              onClick={() => setActiveModal('compress')}
+              className="px-3 py-2 rounded-lg hover:text-red-600 hover:bg-red-50/70 transition-colors cursor-pointer"
+            >
+              Compress PDF
+            </button>
+            <button
+              onClick={() => setActiveModal('convert')}
+              className="px-3 py-2 rounded-lg hover:text-red-600 hover:bg-red-50/70 transition-colors cursor-pointer flex items-center gap-1"
+            >
+              <span>Convert PDF</span>
+              <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>
             <button
               onClick={() => {
                 const el = document.getElementById('tool-explorer');
                 el?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+              className="px-3 py-2 rounded-lg hover:text-red-600 hover:bg-red-50/70 transition-colors cursor-pointer flex items-center gap-1"
             >
-              PDF Tools
+              <span>All PDF Tools</span>
+              <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>
             <button
-              onClick={() => setActiveModal('image-tools')}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+              onClick={() => setActiveModal('handwriting')}
+              className="ml-2 px-3.5 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold tracking-normal shadow-xs shadow-red-500/25 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
             >
-              Image Tools
-            </button>
-            <button
-              onClick={() => setActiveModal('document-tools')}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
-            >
-              Document Tools
-            </button>
-            <button
-              onClick={() => setActiveModal('student-tools')}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
-            >
-              Student Tools
-            </button>
-            <button
-              onClick={() => setActiveModal('developer-tools')}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
-            >
-              Developer Tools
-            </button>
-            <button
-              onClick={() => setActiveModal('about')}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
-            >
-              About
-            </button>
-            <button
-              onClick={() => setActiveModal('contact')}
-              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
-            >
-              Contact
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Handwriting Generator</span>
             </button>
           </nav>
         )}
@@ -738,19 +726,6 @@ export const AppHeader: React.FC = () => {
           </button>
         )}
 
-        {/* Account & Admin triggers */}
-        {!documentId && (
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => setActiveModal('admin')}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
-              title="Admin Panel"
-            >
-              <Sliders className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-
         {/* Mobile Navigation Menu Toggle */}
         {!documentId && (
           <button
@@ -829,7 +804,7 @@ export const AppHeader: React.FC = () => {
             className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-violet-50 hover:text-violet-700 flex items-center gap-2.5 active:bg-violet-100 transition-colors cursor-pointer"
           >
             <Code2 className="w-4 h-4 text-violet-600 shrink-0" />
-            <span>Developer Tools (JSON, Regex, Diff, QR)</span>
+            <span>More Utilities (JSON, QR, Regex, Diff)</span>
           </button>
 
           <div className="border-t border-gray-100 my-1 pt-1 space-y-0.5">

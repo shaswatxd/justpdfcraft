@@ -30,7 +30,7 @@ export const DocumentToolsDialog: React.FC = () => {
   const isOpen = activeModal === 'document-tools';
 
   const [activeTab, setActiveTab] = useState<DocTab>('word-to-pdf');
-  const [inputText, setInputText] = useState('Type or paste document content here...');
+  const [inputText, setInputText] = useState('');
   const [docTitle, setDocTitle] = useState('My Document');
   const [isProcessing, setIsProcessing] = useState(false);
   const [extractedText, setExtractedText] = useState('');
@@ -274,10 +274,32 @@ export const DocumentToolsDialog: React.FC = () => {
           {activeTab === 'word-to-pdf' && (
             <div className="max-w-2xl mx-auto space-y-4">
               <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-3">
-                <h4 className="text-sm font-bold text-slate-900">Word Document to PDF Compiler</h4>
-                <p className="text-xs text-slate-500">
-                  Paste Word document text or drop a text file to compile into a crisp, multi-page PDF document.
-                </p>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900">Word Document to PDF Compiler</h4>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Paste document text or upload a text file to compile into a crisp, multi-page PDF document.
+                    </p>
+                  </div>
+                  <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer transition-colors shrink-0">
+                    <FileText className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Upload Text File</span>
+                    <input
+                      type="file"
+                      accept=".txt,.md,.text"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setDocTitle(file.name.replace(/\.[^/.]+$/, ''));
+                          const reader = new FileReader();
+                          reader.onload = () => setInputText((reader.result as string) || '');
+                          reader.readAsText(file);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
                 <div>
                   <label className="text-xs font-bold text-slate-700 block mb-1">Document Title</label>
                   <input
@@ -293,7 +315,8 @@ export const DocumentToolsDialog: React.FC = () => {
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     rows={8}
-                    className="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white shadow-2xs resize-none"
+                    placeholder="Type or paste document content here..."
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 shadow-2xs resize-none focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <button
@@ -390,7 +413,8 @@ export const DocumentToolsDialog: React.FC = () => {
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     rows={8}
-                    className="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white shadow-2xs resize-none"
+                    placeholder="Type or paste content here..."
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 shadow-2xs resize-none focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <button
@@ -421,9 +445,10 @@ export const DocumentToolsDialog: React.FC = () => {
                 </div>
                 <textarea
                   readOnly
-                  value={extractedText || 'Extracted document text will appear here...'}
+                  value={extractedText}
+                  placeholder="Extracted document text will appear here..."
                   rows={10}
-                  className="w-full font-mono text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 shadow-2xs resize-none"
+                  className="w-full font-mono text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400 shadow-2xs resize-none"
                 />
                 {extractedText && (
                   <div className="flex justify-end">

@@ -32,9 +32,6 @@ export type ModalType =
   | 'document-tools'
   | 'ai-tools'
   | 'organize'
-
-
-  | 'admin'
   | 'contact'
   | 'about'
   | null;

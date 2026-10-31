@@ -173,7 +173,7 @@ export const CommandPalette: React.FC = () => {
     },
     {
       id: 'developer_tools',
-      title: 'Developer Utilities Suite (JSON, Regex, Diff, QR Code, Base64, JWT)',
+      title: 'More Utilities (JSON, Regex, Diff, QR Code, Base64, JWT)',
       category: 'Tools',
       icon: Code2,
       action: () => setActiveModal('developer-tools'),

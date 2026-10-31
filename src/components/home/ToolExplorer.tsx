@@ -2,16 +2,18 @@ import React, { useState, useMemo } from 'react';
 import {
   Search,
   X,
-  FileText,
-  Image as ImageIcon,
-  GraduationCap,
+  Layers,
+  FileArchive,
+  FilePlus,
+  RefreshCw,
+  Edit3,
+  ShieldCheck,
+  Sparkles,
   LayoutGrid,
   Heart,
   Flame,
   History,
   Trash2,
-  Code2,
-  FileType,
 } from 'lucide-react';
 import { ToolCategory, ToolDefinition } from '@/types/tools';
 import { TOOLS_CATALOG, searchTools } from '@/data/toolsCatalog';
@@ -27,12 +29,20 @@ const CATALOG_BY_ID: Record<string, ToolDefinition> = Object.fromEntries(
 );
 const ALL_TOOLS_COUNT = TOOLS_CATALOG.length;
 
-const CATEGORY_LABELS: Record<ToolCategory, string> = {
-  pdf: 'PDF Tools',
-  image: 'Image Tools',
-  document: 'Document Tools',
-  student: 'Student Productivity Tools',
-  developer: 'Developer Utilities',
+const CATEGORY_LABELS: Record<string, string> = {
+  all: 'All Tools',
+  organize: 'Organize PDF',
+  optimize: 'Optimize PDF',
+  'convert-to-pdf': 'Convert to PDF',
+  'convert-from-pdf': 'Convert from PDF',
+  edit: 'Edit PDF',
+  security: 'PDF Security',
+  handwriting: 'Handwriting Assignment Generator',
+  pdf: 'Organize & PDF Tools',
+  image: 'Convert to/from Images',
+  document: 'Convert Documents',
+  student: 'Handwriting & Exam Tools',
+  developer: 'Optimize & Security',
 };
 
 interface ToolExplorerProps {
@@ -63,7 +73,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
       list = list.filter((t) => favorites.includes(t.id));
     }
     if (showOnlyPopular) {
-      list = list.filter((t) => t.badge === 'popular' || ['merge-pdf', 'compress-pdf', 'target-kb-resizer', 'handwriting-generator', 'sign-pdf', 'split-pdf', 'ocr-pdf', 'resume-builder', 'json-formatter'].includes(t.id));
+      list = list.filter((t) => t.badge === 'popular' || t.badge === 'special');
     }
     return list;
   }, [searchQuery, activeCategory, showOnlyFavorites, showOnlyPopular, favorites]);
@@ -82,6 +92,17 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
     launchToolAction(tool, ui, doc, tools, onSelectWorkflowFile);
   };
 
+  const CATEGORY_TABS: { id: ToolCategory | 'all'; label: string; icon: any }[] = [
+    { id: 'all', label: 'All PDF Tools', icon: LayoutGrid },
+    { id: 'organize', label: 'Organize', icon: Layers },
+    { id: 'optimize', label: 'Optimize', icon: FileArchive },
+    { id: 'convert-to-pdf', label: 'Convert to PDF', icon: FilePlus },
+    { id: 'convert-from-pdf', label: 'Convert from PDF', icon: RefreshCw },
+    { id: 'edit', label: 'Edit PDF', icon: Edit3 },
+    { id: 'security', label: 'Security', icon: ShieldCheck },
+    { id: 'handwriting', label: '✍️ Handwriting Generator', icon: Sparkles },
+  ];
+
   return (
     <section
       id="tool-explorer"
@@ -92,7 +113,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
         <div className="rounded-2xl border border-slate-200/80 bg-white p-3.5 sm:p-4 shadow-2xs">
           <div className="flex items-center justify-between gap-2 mb-2 px-1">
             <h2 className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
-              <History className="w-3.5 h-3.5 text-blue-600" />
+              <History className="w-3.5 h-3.5 text-red-600" />
               Recently used
             </h2>
             <button
@@ -111,7 +132,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
               return (
                 <div
                   key={tool.id}
-                  className="group relative flex items-center justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-blue-50/40 hover:border-blue-300 transition-all cursor-pointer"
+                  className="group relative flex items-center justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-red-50/40 hover:border-red-300 transition-all cursor-pointer"
                 >
                   <button
                     type="button"
@@ -148,11 +169,11 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
           <input
             type="search"
             enterKeyHint="search"
-            placeholder={`Search all ${ALL_TOOLS_COUNT} utilities (e.g. merge, compress, resume, json)...`}
+            placeholder={`Search all ${ALL_TOOLS_COUNT} PDF tools (e.g. merge, compress, handwriting, word)...`}
             aria-label="Search tools"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs sm:text-sm rounded-xl pl-10 pr-9 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white focus:border-blue-500 transition-all placeholder:text-slate-400 font-sans shadow-2xs"
+            className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs sm:text-sm rounded-xl pl-10 pr-9 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white focus:border-red-500 transition-all placeholder:text-slate-400 font-sans shadow-2xs"
           />
           {searchQuery && (
             <button
@@ -168,14 +189,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
 
         {/* Category Filter Tabs */}
         <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
-          {[
-            { id: 'all' as const, label: 'All Tools', icon: LayoutGrid },
-            { id: 'pdf' as const, label: 'PDF', icon: FileText },
-            { id: 'image' as const, label: 'Image', icon: ImageIcon },
-            { id: 'document' as const, label: 'Document', icon: FileType },
-            { id: 'student' as const, label: 'Student', icon: GraduationCap },
-            { id: 'developer' as const, label: 'Developer', icon: Code2 },
-          ].map((tab) => {
+          {CATEGORY_TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeCategory === tab.id && !showOnlyFavorites && !showOnlyPopular;
             return (
@@ -189,7 +203,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
                 aria-pressed={isActive}
                 className={`whitespace-nowrap px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-xs shadow-blue-500/20'
+                    ? 'bg-red-600 text-white shadow-xs shadow-red-500/25'
                     : 'bg-slate-100/80 text-slate-700 hover:bg-slate-200/70 border border-slate-200/60 shadow-2xs'
                 }`}
               >
@@ -244,8 +258,8 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
               : searchQuery
               ? `Results for "${searchQuery}"`
               : activeCategory === 'all'
-              ? 'All Tools & Utilities'
-              : CATEGORY_LABELS[activeCategory]}
+              ? 'All PDF Tools'
+              : (CATEGORY_LABELS[activeCategory] || activeCategory)}
             <span className="text-xs font-semibold text-slate-500 px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200">
               {filteredTools.length} {filteredTools.length === 1 ? 'tool' : 'tools'}
             </span>
@@ -253,30 +267,28 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
         </div>
 
         {filteredTools.length === 0 ? (
-          <div className="py-16 px-4 rounded-2xl bg-white border border-slate-200 text-center space-y-3 shadow-2xs">
-            <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-500 mx-auto flex items-center justify-center">
+          <div className="text-center py-16 bg-white rounded-2xl border border-slate-200/80 space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto">
               <Search className="w-6 h-6" />
             </div>
-            <h4 className="text-base font-bold text-slate-900">No matching tools found</h4>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto">
-              {showOnlyFavorites
-                ? "You haven't favorited any tools yet. Tap the heart on any card to save it here."
-                : `Nothing matches "${searchQuery}". Try searching for "compress", "photo 50 kb", "merge", "pdf to word", or "resume".`}
+            <h3 className="text-base font-bold text-slate-800">No matching tools found</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              We couldn&apos;t find any tool matching &quot;{searchQuery}&quot;. Try searching for merge, split, compress, or handwriting.
             </p>
-            {(searchQuery || showOnlyFavorites) && (
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setShowOnlyFavorites(false);
-                }}
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
-              >
-                Show all tools
-              </button>
-            )}
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setShowOnlyFavorites(false);
+                setShowOnlyPopular(false);
+                onCategoryChange('all');
+              }}
+              className="px-4 py-2 rounded-xl bg-red-600 text-white text-xs font-bold shadow-xs hover:bg-red-700 transition-colors cursor-pointer"
+            >
+              Clear filters
+            </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 py-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {filteredTools.map((tool) => (
               <ToolCard
                 key={tool.id}

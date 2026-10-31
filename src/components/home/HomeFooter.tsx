@@ -50,11 +50,11 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
         {/* Column 1: Brand & Mission */}
         <div className="md:col-span-1 space-y-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+            <div className="w-8 h-8 rounded-xl bg-red-600 flex items-center justify-center text-white shadow-md shadow-red-500/20">
               <SwiftLogo className="w-4 h-4 shrink-0 text-white fill-white" />
             </div>
             <span className="font-extrabold text-base tracking-tight text-slate-900">
-              Just<span className="text-blue-600">PDFCraft</span>
+              Just<span className="text-red-600">PDF</span>Craft
             </span>
           </div>
           <p className="text-xs text-slate-500 leading-relaxed">
@@ -68,7 +68,7 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
 
         {/* Column 2: PDF Essentials */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">PDF Essentials</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Organize PDF</h4>
           <ul className="space-y-0.5">
             <li><FooterLink label="Merge PDF" title="Combine multiple PDFs" onClick={() => setActiveModal('merge')} /></li>
             <li><FooterLink label="Split PDF" title="Extract pages or split ranges" onClick={() => setActiveModal('split')} /></li>
@@ -80,7 +80,7 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
 
         {/* Column 3: Organize & Security */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Security & Sign</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Convert PDF</h4>
           <ul className="space-y-0.5">
             <li><FooterLink label="Protect & Encrypt" title="Set password & AES encryption" onClick={() => setActiveModal('protect')} /></li>
             <li><FooterLink label="Unlock PDF" title="Strip password & restrictions" onClick={() => setActiveModal('protect')} /></li>
@@ -92,7 +92,7 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
 
         {/* Column 4: Student Suite */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Student Tools</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Edit & Security</h4>
           <ul className="space-y-0.5">
             <li><FooterLink label="Resume & CV Builder" onClick={() => setActiveModal('student-tools')} /></li>
             <li><FooterLink label="Photo Resizer (20–50 KB)" onClick={() => setActiveModal('student-resizer')} /></li>
@@ -102,9 +102,9 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
           </ul>
         </div>
 
-        {/* Column 5: Developer Utilities */}
+        {/* Column 5: More Utilities */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Developer Utilities</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Special Tools</h4>
           <ul className="space-y-0.5">
             <li><FooterLink label="JSON Formatter & Validator" onClick={() => setActiveModal('developer-tools')} /></li>
             <li><FooterLink label="Base64 Encoder / Decoder" onClick={() => setActiveModal('developer-tools')} /></li>
@@ -133,7 +133,7 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
           © {new Date().getFullYear()} JustPDFCraft. 100% Client-Side In-Browser Processing.
         </p>
         <p className="flex items-center gap-1">
-          Crafted with <Heart className="w-3.5 h-3.5 text-blue-600 fill-current" /> for privacy & speed
+          Crafted with <Heart className="w-3.5 h-3.5 text-red-600 fill-current" /> for privacy & speed
         </p>
       </div>
     </footer>

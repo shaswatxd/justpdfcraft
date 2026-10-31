@@ -461,8 +461,8 @@ export const DeveloperToolsDialog: React.FC = () => {
               <Code2 className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 leading-tight">Developer Utilities</h2>
-              <p className="text-xs text-slate-500 font-medium">100% In-Browser • Zero Server Calls • Instant & Safe</p>
+              <h2 className="text-lg font-bold text-slate-900 leading-tight">More Utilities</h2>
+              <p className="text-xs text-slate-500 font-medium">100% In-Browser • Helpful Everyday Utilities & Formatter Suite</p>
             </div>
           </div>
           <button

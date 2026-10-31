@@ -41,7 +41,7 @@ export const SeoContentSection: React.FC = () => {
         <div>
           <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5">
             <Code2 className="w-4 h-4 text-indigo-600" />
-            <span>Developer Utilities</span>
+            <span>More Utilities</span>
           </h4>
           <p className="leading-relaxed">
             Format and validate JSON with custom indentation, encode and decode Base64 and URLs, generate v4 UUIDs,

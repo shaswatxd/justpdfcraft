@@ -29,10 +29,24 @@ const VALID_MODALS = new Set([
   'document-tools',
   'ai-tools',
   'organize',
-  'admin',
   'contact',
   'about',
 ]);
+
+const VALID_CATEGORIES = [
+  'organize',
+  'optimize',
+  'convert-to-pdf',
+  'convert-from-pdf',
+  'edit',
+  'security',
+  'handwriting',
+  'pdf',
+  'image',
+  'document',
+  'student',
+  'developer',
+];
 
 describe('Tools Catalog Routing & Action Validation', () => {
   it('should verify every tool has a non-empty name, description, category, and icon', () => {
@@ -40,7 +54,7 @@ describe('Tools Catalog Routing & Action Validation', () => {
       expect(tool.id).toBeTruthy();
       expect(tool.name).toBeTruthy();
       expect(tool.shortDesc).toBeTruthy();
-      expect(['pdf', 'image', 'document', 'student', 'developer']).toContain(tool.category);
+      expect(VALID_CATEGORIES).toContain(tool.category);
       expect(tool.iconName).toBeTruthy();
       expect(tool.tags.length).toBeGreaterThan(0);
     }
@@ -60,7 +74,7 @@ describe('Tools Catalog Routing & Action Validation', () => {
 
   it('should ensure there are exactly 0 tools configured with dead categories or invalid actions', () => {
     const invalidTools = TOOLS_CATALOG.filter(
-      (t) => !['pdf', 'image', 'document', 'student', 'developer'].includes(t.category)
+      (t) => !VALID_CATEGORIES.includes(t.category)
     );
     expect(invalidTools.length).toBe(0);
   });

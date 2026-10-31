@@ -211,6 +211,7 @@ export const HandwritingDialog: React.FC = () => {
       pageLines: string[],
       seed = 42
     ) => {
+      if (!targetCanvas) return;
       const ctx = targetCanvas.getContext('2d');
       if (!ctx) return;
 
