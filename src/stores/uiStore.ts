@@ -31,8 +31,8 @@ export type ModalType =
   | 'image-tools'
   | 'document-tools'
   | 'ai-tools'
-  | 'pricing'
-  | 'auth'
+
+
   | 'admin'
   | 'contact'
   | 'about'

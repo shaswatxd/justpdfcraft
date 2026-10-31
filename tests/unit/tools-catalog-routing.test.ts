@@ -28,8 +28,6 @@ const VALID_MODALS = new Set([
   'image-tools',
   'document-tools',
   'ai-tools',
-  'pricing',
-  'auth',
   'admin',
   'contact',
   'about',

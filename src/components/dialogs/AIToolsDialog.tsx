@@ -166,10 +166,10 @@ export const AIToolsDialog: React.FC = () => {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl border border-slate-200/80 w-full max-w-4xl h-[88vh] flex flex-col overflow-hidden text-slate-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
+      <div className="bg-white rounded-2xl shadow-2xl border border-slate-200/80 w-full max-w-4xl h-[92dvh] max-h-[94dvh] sm:h-[88vh] flex flex-col overflow-hidden text-slate-800">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/70">
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-100 bg-slate-50/70">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-violet-50 border border-violet-200/80 flex items-center justify-center text-violet-600 shadow-2xs">
               <Sparkles className="w-5 h-5" />
@@ -193,7 +193,7 @@ export const AIToolsDialog: React.FC = () => {
         </div>
 
         {/* Tab Nav Bar */}
-        <div className="flex overflow-x-auto border-b border-slate-100 px-4 py-2 gap-1.5 bg-white shrink-0 scrollbar-none">
+        <div className="flex overflow-x-auto border-b border-slate-100 px-3 sm:px-4 py-2 gap-1.5 bg-white shrink-0 scrollbar-none touch-pan-x">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const active = activeTab === tab.id;
@@ -215,7 +215,7 @@ export const AIToolsDialog: React.FC = () => {
         </div>
 
         {/* Tab Body */}
-        <div className="flex-1 overflow-y-auto p-6 bg-slate-50/40">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6 bg-slate-50/40">
           {activeTab === 'settings' ? (
             <div className="max-w-xl mx-auto space-y-4">
               <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-4">

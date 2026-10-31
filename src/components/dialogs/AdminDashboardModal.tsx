@@ -55,10 +55,10 @@ export const AdminDashboardModal: React.FC = () => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200/80 w-full max-w-4xl h-[88vh] flex flex-col overflow-hidden text-slate-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
+      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200/80 w-full max-w-4xl h-[92dvh] max-h-[94dvh] sm:h-[88vh] flex flex-col overflow-hidden text-slate-800">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/70">
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-100 bg-slate-50/70">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-slate-800 flex items-center justify-center text-white shadow-2xs">
               <ShieldCheck className="w-4 h-4" />
@@ -77,7 +77,7 @@ export const AdminDashboardModal: React.FC = () => {
         </div>
 
         {/* Tab Selector */}
-        <div className="flex border-b border-slate-100 px-6 gap-4 bg-white text-xs font-bold">
+        <div className="flex border-b border-slate-100 px-4 sm:px-6 gap-4 bg-white text-xs font-bold">
           <button
             onClick={() => setActiveAdminTab('overview')}
             className={`py-3 border-b-2 transition-all cursor-pointer ${
@@ -105,7 +105,7 @@ export const AdminDashboardModal: React.FC = () => {
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-6 bg-slate-50/40">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6 bg-slate-50/40">
           {activeAdminTab === 'overview' && (
             <div className="space-y-6">
               {/* Metrics Grid */}

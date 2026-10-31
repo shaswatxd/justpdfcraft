@@ -25,6 +25,12 @@ import {
   Share2,
   Printer,
   Download,
+  Layers,
+  Image as ImageIcon,
+  GraduationCap,
+  Code2,
+  Info,
+  PhoneCall,
 } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore } from '@/stores/uiStore';
@@ -777,13 +783,6 @@ export const AppHeader: React.FC = () => {
         {!documentId && (
           <div className="flex items-center gap-1.5">
             <button
-              onClick={() => setActiveModal('auth')}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold transition-all shadow-2xs cursor-pointer"
-              title="User Account & History"
-            >
-              Account
-            </button>
-            <button
               onClick={() => setActiveModal('admin')}
               className="p-1.5 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
               title="Admin Panel"
@@ -805,30 +804,97 @@ export const AppHeader: React.FC = () => {
         )}
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Drawer Menu - Android Responsive */}
       {!documentId && mobileMenuOpen && (
-        <div className="lg:hidden absolute top-14 left-0 right-0 bg-white border-b border-gray-200 p-4 shadow-xl z-50 flex flex-col gap-2 animate-in fade-in slide-in-from-top-2 duration-150 text-gray-800">
+        <div className="lg:hidden absolute top-14 left-0 right-0 bg-white border-b border-gray-200 p-3 shadow-xl z-50 flex flex-col gap-1 max-h-[85dvh] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150 text-gray-800 touch-pan-y">
+          <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 pt-1 pb-0.5">
+            Utilities & Suites
+          </div>
           <button
             onClick={() => {
               setMobileMenuOpen(false);
               const el = document.getElementById('tool-explorer');
               el?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="w-full py-2 px-3 text-left rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2.5 active:bg-blue-100 transition-colors cursor-pointer"
           >
-            All Tools & Suite Explorer
+            <Grid className="w-4 h-4 text-blue-600 shrink-0" />
+            <span>All Tools (93 In-Browser Utilities)</span>
           </button>
           <button
             onClick={() => {
               setMobileMenuOpen(false);
-              setActiveModal('student-resizer');
+              const el = document.getElementById('tool-explorer');
+              el?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="w-full py-2 px-3 text-left rounded-lg text-xs font-semibold text-amber-800 hover:bg-amber-50 flex items-center gap-2"
+            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2.5 active:bg-blue-100 transition-colors cursor-pointer"
           >
-            <Sliders className="w-3.5 h-3.5" />
-            Exam Photo & Signature Suite (20–50 KB)
+            <Layers className="w-4 h-4 text-blue-600 shrink-0" />
+            <span>PDF Tools (Merge, Split, Compress, Sign)</span>
           </button>
-          
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setActiveModal('image-tools');
+            }}
+            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2.5 active:bg-emerald-100 transition-colors cursor-pointer"
+          >
+            <ImageIcon className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Image Tools (Target KB, Passport, Crop)</span>
+          </button>
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setActiveModal('document-tools');
+            }}
+            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-teal-50 hover:text-teal-700 flex items-center gap-2.5 active:bg-teal-100 transition-colors cursor-pointer"
+          >
+            <FileText className="w-4 h-4 text-teal-600 shrink-0" />
+            <span>Document Converters (Word, Excel to PDF)</span>
+          </button>
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setActiveModal('student-tools');
+            }}
+            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-purple-50 hover:text-purple-700 flex items-center gap-2.5 active:bg-purple-100 transition-colors cursor-pointer"
+          >
+            <GraduationCap className="w-4 h-4 text-purple-600 shrink-0" />
+            <span>Student Tools (Resume, CGPA, Calculators)</span>
+          </button>
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setActiveModal('developer-tools');
+            }}
+            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-violet-50 hover:text-violet-700 flex items-center gap-2.5 active:bg-violet-100 transition-colors cursor-pointer"
+          >
+            <Code2 className="w-4 h-4 text-violet-600 shrink-0" />
+            <span>Developer Tools (JSON, Regex, Diff, QR)</span>
+          </button>
+
+          <div className="border-t border-gray-100 my-1 pt-1 space-y-0.5">
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setActiveModal('about');
+              }}
+              className="w-full py-2 px-3 min-h-[40px] text-left rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-100 flex items-center gap-2 active:bg-gray-200 transition-colors cursor-pointer"
+            >
+              <Info className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+              <span>About JustPDFCraft</span>
+            </button>
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setActiveModal('contact');
+              }}
+              className="w-full py-2 px-3 min-h-[40px] text-left rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-100 flex items-center gap-2 active:bg-gray-200 transition-colors cursor-pointer"
+            >
+              <PhoneCall className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+              <span>Contact Support</span>
+            </button>
+          </div>
         </div>
       )}
       {/* Mobile Document Action Drawer Sheet */}

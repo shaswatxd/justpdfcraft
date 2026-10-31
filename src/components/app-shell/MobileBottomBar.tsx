@@ -66,7 +66,7 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
       {onOpenFilePicker && (
         <button
           onClick={onOpenFilePicker}
-          className="flex items-center justify-center -mt-5 bg-red-600 hover:bg-red-700 text-white w-12 h-12 rounded-full shadow-lg shadow-red-500/30 border-2 border-white transition-transform active:scale-95"
+          className="flex items-center justify-center -mt-5 bg-blue-600 hover:bg-blue-700 text-white w-12 h-12 rounded-full shadow-lg shadow-blue-500/30 border-2 border-white transition-transform active:scale-95"
           title="Open or Upload File"
           aria-label="Open or Upload File"
         >
@@ -88,7 +88,7 @@ export const MobileBottomBar: React.FC<{ onOpenFilePicker?: () => void }> = ({
       {/* Search / Command Palette */}
       <button
         onClick={() => setCommandPaletteOpen(true)}
-        className="flex flex-col items-center gap-0.5 py-1.5 px-3 min-h-[44px] min-w-[56px] text-gray-500 hover:text-red-600 transition-colors active:scale-95"
+        className="flex flex-col items-center gap-0.5 py-1.5 px-3 min-h-[44px] min-w-[56px] text-gray-500 hover:text-blue-600 transition-colors active:scale-95"
         aria-label="Search Tools and Commands"
         title="Search Tools & Actions"
       >
