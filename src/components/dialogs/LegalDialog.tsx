@@ -79,7 +79,7 @@ export const LegalDialog: React.FC = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-colors ${
                   isActive
-                    ? 'bg-red-600 text-white'
+                    ? 'bg-blue-600 text-white'
                     : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
                 }`}
               >
@@ -190,7 +190,7 @@ export const LegalDialog: React.FC = () => {
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
                     placeholder="e.g. Rahul Sharma"
-                    className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-swift-500"
+                    className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
 
@@ -202,7 +202,7 @@ export const LegalDialog: React.FC = () => {
                     value={contactEmail}
                     onChange={(e) => setContactEmail(e.target.value)}
                     placeholder="name@domain.com"
-                    className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-swift-500"
+                    className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
 
@@ -214,13 +214,13 @@ export const LegalDialog: React.FC = () => {
                     value={contactMessage}
                     onChange={(e) => setContactMessage(e.target.value)}
                     placeholder="Describe your suggestion, tool request, or issue..."
-                    className="w-full bg-white border border-gray-300 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-swift-500 resize-none"
+                    className="w-full bg-white border border-gray-300 rounded-xl p-3 text-xs text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors shadow-lg shadow-red-500/20"
+                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors shadow-lg shadow-blue-500/20 active:scale-[0.99] cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5" />
                   Send Feedback
@@ -233,7 +233,7 @@ export const LegalDialog: React.FC = () => {
                   Prefer email?{' '}
                   <a
                     href="mailto:hello@justpdfcraft.xyz"
-                    className="font-semibold text-red-600 hover:text-red-700 underline underline-offset-2"
+                    className="font-semibold text-blue-600 hover:text-blue-700 underline underline-offset-2"
                   >
                     hello@justpdfcraft.xyz
                   </a>

@@ -193,7 +193,7 @@ export const CropDialog: React.FC = () => {
           <button
             onClick={handleClose}
             disabled={isApplying}
-            className="p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-gray-100 transition-colors disabled:opacity-40"
+            className="p-1.5 rounded-lg text-gray-500 hover:text-slate-900 hover:bg-gray-100 transition-colors disabled:opacity-40"
           >
             <X className="w-4 h-4" />
           </button>
@@ -325,7 +325,7 @@ export const CropDialog: React.FC = () => {
               <button
                 type="button"
                 onClick={handleReset}
-                className="text-xs text-gray-500 hover:text-white flex items-center gap-1 transition-colors"
+                className="text-xs text-gray-500 hover:text-slate-900 flex items-center gap-1 transition-colors"
               >
                 <RotateCcw className="w-3 h-3" />
                 Reset (0 pt)
@@ -471,7 +471,7 @@ export const CropDialog: React.FC = () => {
               type="button"
               onClick={handleClose}
               disabled={isApplying}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white hover:bg-gray-100 transition-colors disabled:opacity-50"
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 hover:text-slate-900 hover:bg-gray-100 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>

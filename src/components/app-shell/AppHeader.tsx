@@ -391,7 +391,7 @@ export const AppHeader: React.FC = () => {
               onClick={() => setViewMode('continuous')}
               className={`px-2.5 py-1 rounded-md font-medium flex items-center gap-1.5 transition-all ${
                 viewMode === 'continuous'
-                  ? 'bg-red-600 text-white shadow-xs'
+                  ? 'bg-blue-600 text-white shadow-xs'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-white/80'
               }`}
               title="Continuous Vertical Scrolling"
@@ -403,7 +403,7 @@ export const AppHeader: React.FC = () => {
               onClick={() => setViewMode('single')}
               className={`px-2.5 py-1 rounded-md font-medium flex items-center gap-1.5 transition-all ${
                 viewMode === 'single'
-                  ? 'bg-red-600 text-white shadow-xs'
+                  ? 'bg-blue-600 text-white shadow-xs'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-white/80'
               }`}
               title="Single Page View"
@@ -415,7 +415,7 @@ export const AppHeader: React.FC = () => {
               onClick={() => setViewMode('spread')}
               className={`px-2.5 py-1 rounded-md font-medium flex items-center gap-1.5 transition-all ${
                 viewMode === 'spread'
-                  ? 'bg-red-600 text-white shadow-xs'
+                  ? 'bg-blue-600 text-white shadow-xs'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-white/80'
               }`}
               title="Dual-Page Spread (Book Mode)"
@@ -427,7 +427,7 @@ export const AppHeader: React.FC = () => {
               onClick={() => setViewMode('organize')}
               className={`px-2.5 py-1 rounded-md font-medium flex items-center gap-1.5 transition-all ${
                 viewMode === 'organize'
-                  ? 'bg-red-600 text-white shadow-xs'
+                  ? 'bg-blue-600 text-white shadow-xs'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-white/80'
               }`}
               title="Visual Page Organizer Grid"
@@ -765,7 +765,7 @@ export const AppHeader: React.FC = () => {
 
       {/* Mobile Drawer Menu - Android Responsive */}
       {!documentId && mobileMenuOpen && (
-        <div className="xl:hidden absolute top-14 left-0 right-0 bg-white border-b border-gray-200 p-3 shadow-xl z-50 flex flex-col gap-1 max-h-[85dvh] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150 text-gray-800 touch-pan-y">
+        <div className="xl:hidden absolute top-16 left-0 right-0 bg-white border-b border-gray-200 p-3 shadow-xl z-50 flex flex-col gap-1 max-h-[85dvh] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150 text-gray-800 touch-pan-y">
           <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 pt-1 pb-0.5">
             Utilities & Suites
           </div>

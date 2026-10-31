@@ -212,7 +212,7 @@ export const BatesNumberingDialog: React.FC = () => {
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-slate-800 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -360,7 +360,7 @@ export const BatesNumberingDialog: React.FC = () => {
                       onClick={() => setHfTemplate(p)}
                       className={`px-2 py-1 rounded border text-[11px] font-medium transition-colors ${
                         hfTemplate === p
-                          ? 'bg-red-600/30 border-swift-500 text-swift-300'
+                          ? 'bg-blue-50 border-blue-500 text-blue-700'
                           : 'bg-white/60 border-gray-300 text-gray-500 hover:text-gray-800'
                       }`}
                     >
@@ -387,7 +387,7 @@ export const BatesNumberingDialog: React.FC = () => {
                     onClick={() => setPosition(pos.id)}
                     className={`py-2 px-2.5 rounded-lg border text-center font-medium text-[11px] transition-all flex items-center justify-center gap-1.5 ${
                       isSelected
-                        ? 'bg-red-600 text-white border-swift-500 shadow-md ring-1 ring-swift-400'
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-md ring-1 ring-blue-400'
                         : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-100 hover:text-gray-800'
                     }`}
                   >
@@ -475,7 +475,7 @@ export const BatesNumberingDialog: React.FC = () => {
                 onClick={() => setPageScope('all')}
                 className={`flex-1 py-1.5 rounded-lg border text-[11px] font-medium transition-colors ${
                   pageScope === 'all'
-                    ? 'bg-red-600/30 border-swift-500 text-swift-300'
+                    ? 'bg-blue-50 border-blue-500 text-blue-700'
                     : 'bg-gray-50 border-gray-300 text-gray-500 hover:text-gray-800'
                 }`}
               >
@@ -486,7 +486,7 @@ export const BatesNumberingDialog: React.FC = () => {
                 onClick={() => setPageScope('current')}
                 className={`flex-1 py-1.5 rounded-lg border text-[11px] font-medium transition-colors ${
                   pageScope === 'current'
-                    ? 'bg-red-600/30 border-swift-500 text-swift-300'
+                    ? 'bg-blue-50 border-blue-500 text-blue-700'
                     : 'bg-gray-50 border-gray-300 text-gray-500 hover:text-gray-800'
                 }`}
               >
@@ -497,7 +497,7 @@ export const BatesNumberingDialog: React.FC = () => {
                 onClick={() => setPageScope('custom')}
                 className={`flex-1 py-1.5 rounded-lg border text-[11px] font-medium transition-colors ${
                   pageScope === 'custom'
-                    ? 'bg-red-600/30 border-swift-500 text-swift-300'
+                    ? 'bg-blue-50 border-blue-500 text-blue-700'
                     : 'bg-gray-50 border-gray-300 text-gray-500 hover:text-gray-800'
                 }`}
               >
@@ -539,7 +539,7 @@ export const BatesNumberingDialog: React.FC = () => {
           <button
             type="button"
             onClick={handleClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white hover:bg-gray-100 transition-colors"
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
           >
             Cancel
           </button>
@@ -547,7 +547,7 @@ export const BatesNumberingDialog: React.FC = () => {
             type="button"
             onClick={handleApply}
             disabled={isApplying}
-            className="px-5 py-2 rounded-xl text-xs font-semibold bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-swift-600/20 transition-all flex items-center gap-1.5 disabled:opacity-50"
+            className="px-5 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all flex items-center gap-1.5 disabled:opacity-50"
           >
             {isApplying ? (
               <>

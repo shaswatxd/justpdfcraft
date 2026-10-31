@@ -370,7 +370,11 @@ export const HomeDashboard: React.FC = () => {
           }}
           onDragLeave={() => setIsDraggingFile(false)}
           onDrop={handleDrop}
-          className={`relative w-full max-w-xl mx-auto border-2 border-dashed rounded-3xl p-4 sm:p-8 transition-all duration-200 ${
+          onClick={(e) => {
+            if ((e.target as HTMLElement).closest('button')) return;
+            handleOpenPdfClick();
+          }}
+          className={`relative w-full max-w-xl mx-auto border-2 border-dashed rounded-3xl p-4 sm:p-8 transition-all duration-200 cursor-pointer ${
             isDraggingFile
               ? 'border-blue-500 bg-blue-500/[0.05]'
               : 'border-gray-300 bg-white hover:border-blue-500 shadow-xs hover:shadow-md'

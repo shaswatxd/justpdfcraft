@@ -128,7 +128,8 @@ export async function extractTableFromPage(
   const csvLines = prunedRows.map((r) =>
     r
       .map((cell) => {
-        const escaped = cell.replace(/"/g, '""');
+        const safeCell = /^[=+\-@\t\r]/.test(cell.trim()) ? `'${cell}` : cell;
+        const escaped = safeCell.replace(/"/g, '""');
         if (escaped.includes(',') || escaped.includes('"') || escaped.includes('\n')) {
           return `"${escaped}"`;
         }
@@ -142,7 +143,8 @@ export async function extractTableFromPage(
   const tsvLines = prunedRows.map((r) =>
     r
       .map((cell) => {
-        return cell.replace(/\t/g, ' ').replace(/\r?\n/g, ' ');
+        const safeCell = /^[=+\-@\t\r]/.test(cell.trim()) ? `'${cell}` : cell;
+        return safeCell.replace(/\t/g, ' ').replace(/\r?\n/g, ' ');
       })
       .join('\t')
   );
@@ -197,7 +199,8 @@ export async function extractTableFromPages(
     .map((r) =>
       r
         .map((cell) => {
-          const escaped = cell.replace(/"/g, '""');
+          const safeCell = /^[=+\-@\t\r]/.test(cell.trim()) ? `'${cell}` : cell;
+        const escaped = safeCell.replace(/"/g, '""');
           if (escaped.includes(',') || escaped.includes('"') || escaped.includes('\n')) {
             return `"${escaped}"`;
           }
@@ -210,7 +213,7 @@ export async function extractTableFromPages(
   const tsv = normalizedRows
     .map((r) =>
       r
-        .map((cell) => cell.replace(/\t/g, ' ').replace(/\r?\n/g, ' '))
+        .map((cell) => (/^[=+\-@\t\r]/.test(cell.trim()) ? `'${cell}` : cell).replace(/\t/g, ' ').replace(/\r?\n/g, ' '))
         .join('\t')
     )
     .join('\n');

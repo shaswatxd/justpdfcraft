@@ -163,6 +163,16 @@ export const ConvertDialog: React.FC = () => {
     }
   };
 
+  React.useEffect(() => {
+    return () => {
+      imageFiles.forEach((img) => {
+        if (img.previewUrl) URL.revokeObjectURL(img.previewUrl);
+      });
+    };
+  }, [imageFiles]);
+
+
+
   // Consume any pending image file dropped on home dashboard
   React.useEffect(() => {
     if (pendingImageFile && activeModal === 'convert') {
@@ -562,14 +572,14 @@ export const ConvertDialog: React.FC = () => {
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-slate-800 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Mode Switcher */}
-        <div className="flex border-b border-gray-200 bg-white/40 px-6 pt-2 gap-2 text-xs">
+        <div className="flex border-b border-gray-200 bg-white/40 px-4 sm:px-6 pt-2 gap-2 text-xs overflow-x-auto scrollbar-none overscroll-x-contain touch-pan-x">
           <button
             onClick={() => setMode('pdf-to-img')}
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
@@ -657,7 +667,7 @@ export const ConvertDialog: React.FC = () => {
                       <select
                         value={imageFormat}
                         onChange={(e) => setImageFormat(e.target.value as any)}
-                        className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500"
                       >
                         <option value="png">PNG (Lossless & Sharp)</option>
                         <option value="jpeg">JPEG (Compressed)</option>
@@ -669,7 +679,7 @@ export const ConvertDialog: React.FC = () => {
                       <select
                         value={resolutionScale}
                         onChange={(e) => setResolutionScale(parseFloat(e.target.value))}
-                        className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500"
                       >
                         <option value="1.0">Standard 72 DPI (1x)</option>
                         <option value="2.0">High-Res 144 DPI (2x)</option>
@@ -823,7 +833,7 @@ export const ConvertDialog: React.FC = () => {
                       <select
                         value={resolutionScale}
                         onChange={(e) => setResolutionScale(parseFloat(e.target.value))}
-                        className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500"
                       >
                         <option value="1.0">Standard 72 DPI (Smaller File)</option>
                         <option value="2.0">High-Res 144 DPI (Recommended for Print)</option>
@@ -878,7 +888,7 @@ export const ConvertDialog: React.FC = () => {
                       <select
                         value={textFormat}
                         onChange={(e) => setTextFormat(e.target.value as any)}
-                        className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500"
                       >
                         <option value="txt">Plain Text (.txt)</option>
                         <option value="md">Markdown (.md with Page Headers)</option>
@@ -1023,7 +1033,7 @@ export const ConvertDialog: React.FC = () => {
                 value={inputTitle}
                 onChange={(e) => setInputTitle(e.target.value)}
                 placeholder="Document Title"
-                className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500"
               />
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-gray-700">Text / Notes Content</label>
@@ -1032,7 +1042,7 @@ export const ConvertDialog: React.FC = () => {
                   onChange={(e) => setInputText(e.target.value)}
                   placeholder="Type or paste your notes, essay, or text here..."
                   rows={8}
-                  className="w-full bg-gray-100 border border-gray-300 rounded-xl p-3 text-xs text-white font-mono focus:outline-none focus:border-teal-500"
+                  className="w-full bg-white border border-gray-300 rounded-xl p-3 text-xs text-slate-900 font-mono focus:outline-none focus:border-blue-500"
                 />
               </div>
             </div>
@@ -1042,7 +1052,7 @@ export const ConvertDialog: React.FC = () => {
         <div className="px-6 py-4 border-t border-gray-200 bg-white/60 flex justify-end gap-2">
           <button
             onClick={handleClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white"
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
           >
             Cancel
           </button>
@@ -1051,7 +1061,7 @@ export const ConvertDialog: React.FC = () => {
               <button
                 onClick={handleConvertToGrayscale}
                 disabled={isProcessing}
-                className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-teal-900/30 flex items-center gap-1.5"
+                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 flex items-center gap-1.5"
               >
                 <Download className="w-3.5 h-3.5" />
                 {isProcessing ? 'Converting...' : 'Download Grayscale PDF'}
@@ -1062,7 +1072,7 @@ export const ConvertDialog: React.FC = () => {
               <button
                 onClick={handleConvertToWord}
                 disabled={isProcessing}
-                className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-teal-900/30 flex items-center gap-1.5"
+                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 flex items-center gap-1.5"
               >
                 <Download className="w-3.5 h-3.5" />
                 {isProcessing ? 'Generating Word Doc...' : 'Download .DOCX'}
@@ -1073,7 +1083,7 @@ export const ConvertDialog: React.FC = () => {
               <button
                 onClick={handleExportImages}
                 disabled={isProcessing}
-                className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-teal-900/30 flex items-center gap-1.5"
+                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 flex items-center gap-1.5"
               >
                 <Download className="w-3.5 h-3.5" />
                 {isProcessing ? 'Exporting...' : 'Export Images'}
@@ -1084,7 +1094,7 @@ export const ConvertDialog: React.FC = () => {
               <button
                 onClick={() => handleExtractText(true)}
                 disabled={isProcessing}
-                className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-teal-900/30 flex items-center gap-1.5"
+                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 flex items-center gap-1.5"
               >
                 <Download className="w-3.5 h-3.5" />
                 {isProcessing ? 'Extracting...' : `Download ${textFormat.toUpperCase()}`}
@@ -1094,7 +1104,7 @@ export const ConvertDialog: React.FC = () => {
             <button
               onClick={handleConvertImagesToPdf}
               disabled={isProcessing || imageFiles.length === 0}
-              className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-teal-900/30 flex items-center gap-1.5"
+              className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 flex items-center gap-1.5"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               {isProcessing ? 'Creating PDF...' : 'Convert to PDF'}
@@ -1103,7 +1113,7 @@ export const ConvertDialog: React.FC = () => {
             <button
               onClick={handleConvertTextToPdf}
               disabled={isProcessing || !inputText.trim()}
-              className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-teal-900/30 flex items-center gap-1.5"
+              className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 flex items-center gap-1.5"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               {isProcessing ? 'Generating PDF...' : 'Compile Text to PDF'}

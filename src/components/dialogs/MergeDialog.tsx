@@ -124,7 +124,7 @@ export const MergeDialog: React.FC = () => {
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-red-50 text-red-600">
+            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
               <Layers className="w-5 h-5" />
             </div>
             <div>
@@ -256,7 +256,7 @@ export const MergeDialog: React.FC = () => {
             <button
               onClick={handleExecuteMerge}
               disabled={isMerging || files.length < 2}
-              className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-blue-500/25 active:scale-95 disabled:opacity-40 transition-all flex items-center gap-1.5 shadow-md shadow-red-500/20"
+              className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-blue-500/25 active:scale-95 disabled:opacity-40 transition-all flex items-center gap-1.5 shadow-md"
             >
               <Layers className="w-3.5 h-3.5" />
               <span>{isMerging ? 'Merging Documents...' : 'Merge All'}</span>

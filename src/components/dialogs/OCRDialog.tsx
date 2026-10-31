@@ -692,7 +692,7 @@ export const OCRDialog: React.FC = () => {
                 value={customRange}
                 onChange={(e) => setCustomRange(e.target.value)}
                 placeholder={`e.g. 1-3, 5, ${Math.min(pageCount, 8)}`}
-                className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-indigo-500 font-mono"
+                className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 placeholder-slate-400 outline-none focus:border-blue-500 font-mono"
               />
               <p className="text-[10px] text-gray-500">
                 Specify pages or hyphenated ranges separated by commas.

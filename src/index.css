@@ -9,6 +9,8 @@
 
   body {
     user-select: none;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
     -webkit-user-select: none;
   }
 

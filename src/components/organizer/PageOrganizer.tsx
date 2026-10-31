@@ -470,26 +470,26 @@ export const PageOrganizer: React.FC = () => {
           </span>
           <button
             onClick={selectAllPages}
-            className="text-xs text-red-600 hover:text-red-700 transition-colors flex items-center gap-1"
+            className="text-xs text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-1 font-semibold"
           >
             <CheckSquare className="w-3.5 h-3.5" />
             All
           </button>
           <button
             onClick={handleSelectOdd}
-            className="hidden xs:inline text-xs text-gray-500 hover:text-slate-200 transition-colors"
+            className="hidden xs:inline text-xs text-gray-500 hover:text-slate-900 transition-colors"
           >
             Odd
           </button>
           <button
             onClick={handleSelectEven}
-            className="hidden xs:inline text-xs text-gray-500 hover:text-slate-200 transition-colors"
+            className="hidden xs:inline text-xs text-gray-500 hover:text-slate-900 transition-colors"
           >
             Even
           </button>
           <button
             onClick={clearPageSelection}
-            className="text-xs text-gray-500 hover:text-slate-200 transition-colors"
+            className="text-xs text-gray-500 hover:text-slate-900 transition-colors"
           >
             Clear
           </button>
@@ -500,7 +500,7 @@ export const PageOrganizer: React.FC = () => {
           <button
             onClick={() => handleRotate(-90)}
             disabled={selectedPageIndices.length === 0}
-            className="p-1.5 rounded bg-gray-100 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs flex items-center gap-1 transition-colors"
+            className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-40 text-slate-700 hover:text-slate-900 text-xs flex items-center gap-1 transition-colors"
             title="Rotate 90° Left"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -509,7 +509,7 @@ export const PageOrganizer: React.FC = () => {
           <button
             onClick={() => handleRotate(90)}
             disabled={selectedPageIndices.length === 0}
-            className="p-1.5 rounded bg-gray-100 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs flex items-center gap-1 transition-colors"
+            className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-40 text-slate-700 hover:text-slate-900 text-xs flex items-center gap-1 transition-colors"
             title="Rotate 90° Right"
           >
             <RotateCw className="w-3.5 h-3.5" />
@@ -518,7 +518,7 @@ export const PageOrganizer: React.FC = () => {
           <button
             onClick={handleDuplicate}
             disabled={selectedPageIndices.length === 0}
-            className="p-1.5 rounded bg-gray-100 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs flex items-center gap-1 transition-colors"
+            className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-40 text-slate-700 hover:text-slate-900 text-xs flex items-center gap-1 transition-colors"
             title="Duplicate Selected Pages"
           >
             <Copy className="w-3.5 h-3.5" />
@@ -527,7 +527,7 @@ export const PageOrganizer: React.FC = () => {
           <button
             onClick={handleExtract}
             disabled={selectedPageIndices.length === 0}
-            className="p-1.5 rounded bg-gray-100 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs flex items-center gap-1 transition-colors"
+            className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-40 text-slate-700 hover:text-slate-900 text-xs flex items-center gap-1 transition-colors"
             title="Extract to New PDF"
           >
             <Download className="w-3.5 h-3.5 text-blue-600" />
@@ -535,7 +535,7 @@ export const PageOrganizer: React.FC = () => {
           </button>
           <button
             onClick={handleInsertBlank}
-            className="p-1.5 rounded bg-gray-100 hover:bg-slate-700 text-slate-200 text-xs flex items-center gap-1 transition-colors"
+            className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 text-slate-700 hover:text-slate-900 text-xs flex items-center gap-1 transition-colors"
             title="Insert Blank Page"
           >
             <Plus className="w-3.5 h-3.5 text-emerald-400" />
@@ -550,7 +550,7 @@ export const PageOrganizer: React.FC = () => {
           />
           <button
             onClick={() => externalFileInputRef.current?.click()}
-            className="p-1.5 rounded bg-gray-100 hover:bg-slate-700 text-slate-200 text-xs flex items-center gap-1 transition-colors"
+            className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 text-slate-700 hover:text-slate-900 text-xs flex items-center gap-1 transition-colors"
             title="Insert External PDF or Image as Pages"
           >
             <Upload className="w-3.5 h-3.5 text-indigo-400" />
@@ -558,7 +558,7 @@ export const PageOrganizer: React.FC = () => {
           </button>
           <button
             onClick={handleRemoveBlank}
-            className="p-1.5 rounded bg-gray-100 hover:bg-slate-700 text-slate-200 text-xs flex items-center gap-1 transition-colors"
+            className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 text-slate-700 hover:text-slate-900 text-xs flex items-center gap-1 transition-colors"
             title="Scan and Remove Blank Pages"
           >
             <Eraser className="w-3.5 h-3.5 text-pink-400" />
@@ -566,7 +566,7 @@ export const PageOrganizer: React.FC = () => {
           </button>
           <button
             onClick={handleReverseAll}
-            className="p-1.5 rounded bg-gray-100 hover:bg-slate-700 text-slate-200 text-xs flex items-center gap-1 transition-colors"
+            className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 text-slate-700 hover:text-slate-900 text-xs flex items-center gap-1 transition-colors"
             title="Reverse Page Order"
           >
             <ArrowUpDown className="w-3.5 h-3.5 text-amber-400" />
@@ -574,14 +574,14 @@ export const PageOrganizer: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveModal('crop')}
-            className="p-1.5 rounded bg-gray-100 hover:bg-slate-700 text-slate-200 text-xs flex items-center gap-1 transition-colors"
+            className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 text-slate-700 hover:text-slate-900 text-xs flex items-center gap-1 transition-colors"
             title="Crop Margins on Document Pages"
           >
             <Crop className="w-3.5 h-3.5 text-cyan-400" />
             <span className="hidden min-[1900px]:inline">Crop</span>
           </button>
           <button
-            onClick={() => undo()} disabled={undoStack.length === 0} className="p-1.5 rounded bg-gray-100 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs flex items-center gap-1 transition-colors" title="Undo"><Undo2 className="w-3.5 h-3.5" /></button><button onClick={() => redo()} disabled={redoStack.length === 0} className="p-1.5 rounded bg-gray-100 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs flex items-center gap-1 transition-colors" title="Redo"><Redo2 className="w-3.5 h-3.5" /></button><div className="w-[1px] h-5 bg-gray-100 mx-1" /><button onClick={handleDelete}
+            onClick={() => undo()} disabled={undoStack.length === 0} className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-40 text-slate-700 hover:text-slate-900 text-xs flex items-center gap-1 transition-colors" title="Undo"><Undo2 className="w-3.5 h-3.5" /></button><button onClick={() => redo()} disabled={redoStack.length === 0} className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-40 text-slate-700 hover:text-slate-900 text-xs flex items-center gap-1 transition-colors" title="Redo"><Redo2 className="w-3.5 h-3.5" /></button><div className="w-[1px] h-5 bg-gray-100 mx-1" /><button onClick={handleDelete}
             disabled={selectedPageIndices.length === 0}
             className="p-1.5 rounded bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 disabled:opacity-40 text-xs flex items-center gap-1 transition-colors"
             title="Delete Selected Pages"
@@ -655,27 +655,27 @@ export const PageOrganizer: React.FC = () => {
                   }}
                   className={`group relative flex flex-col items-center p-3 rounded-xl border transition-all cursor-grab active:cursor-grabbing select-none ${
                     draggedIndex === i
-                      ? 'opacity-40 border-dashed border-swift-400 scale-95'
+                      ? 'opacity-40 border-dashed border-blue-400 scale-95'
                       : isSelected
-                      ? 'bg-red-500/10 border-swift-500 shadow-lg ring-2 ring-swift-500/40'
+                      ? 'bg-blue-50 border-blue-500 shadow-lg ring-2 ring-blue-500/30'
                       : isCurrent
-                      ? 'bg-red-50/70 border-red-500/60 ring-1 ring-red-500/30'
+                      ? 'bg-blue-50/50 border-blue-400 ring-1 ring-blue-400/20'
                       : 'bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-2xs'
                   }`}
                 >
                   {/* Page Number & Checkbox */}
                   <div className="w-full flex items-center justify-between mb-2 px-1">
                     <div className="flex items-center gap-1.5">
-                      <span className={`text-xs font-mono font-bold ${isSelected || isCurrent ? 'text-red-600' : 'text-gray-600'}`}>
+                      <span className={`text-xs font-mono font-bold ${isSelected || isCurrent ? 'text-blue-600' : 'text-gray-600'}`}>
                         #{i + 1}
                       </span>
                       {isCurrent && (
-                        <span className="text-[9px] font-semibold uppercase px-1 py-px rounded bg-red-500/20 text-red-600 border border-swift-500/30">
+                        <span className="text-[9px] font-semibold uppercase px-1 py-px rounded bg-blue-100 text-blue-700 border border-blue-200">
                           Active
                         </span>
                       )}
                     </div>
-                    <div className={`p-0.5 rounded ${isSelected ? 'text-red-600' : 'text-slate-600 group-hover:text-gray-500'}`}>
+                    <div className={`p-0.5 rounded ${isSelected ? 'text-blue-600' : 'text-slate-600 group-hover:text-gray-500'}`}>
                       {isSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
                     </div>
                   </div>
@@ -718,7 +718,7 @@ export const PageOrganizer: React.FC = () => {
                         setCurrentPage(i + 1);
                         setViewMode('continuous');
                       }}
-                      className="p-1 rounded bg-red-600 hover:bg-red-500 text-white transition-colors"
+                      className="p-1 rounded bg-blue-600 hover:bg-blue-700 text-white transition-colors"
                       title="Open Page in Viewer"
                     >
                       <Eye className="w-3.5 h-3.5" />
@@ -773,17 +773,17 @@ export const PageOrganizer: React.FC = () => {
             })}
 
             {/* Quick Add Blank Page End Card */}
-            <div className="flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-dashed border-gray-200 hover:border-swift-500/60 bg-slate-900/30 hover:bg-red-500/5 transition-all text-slate-500 hover:text-red-600 group min-h-[260px] gap-2.5">
+            <div className="flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-dashed border-gray-200 hover:border-blue-400/80 bg-slate-50/60 hover:bg-blue-50/40 transition-all text-slate-500 hover:text-blue-600 group min-h-[260px] gap-2.5">
               <button
                 type="button"
                 onClick={handleInsertBlank}
                 className="flex flex-col items-center justify-center w-full"
                 title="Append Blank Page"
               >
-                <div className="w-12 h-12 rounded-full bg-gray-100 group-hover:bg-red-500/20 flex items-center justify-center mb-2 transition-colors">
-                  <Plus className="w-6 h-6 text-gray-500 group-hover:text-red-600" />
+                <div className="w-12 h-12 rounded-full bg-gray-100 group-hover:bg-blue-100 flex items-center justify-center mb-2 transition-colors">
+                  <Plus className="w-6 h-6 text-gray-500 group-hover:text-blue-600" />
                 </div>
-                <span className="text-xs font-bold text-gray-700 group-hover:text-white">
+                <span className="text-xs font-bold text-gray-700 group-hover:text-blue-700">
                   Add Blank Page
                 </span>
                 <span className="text-[10px] text-slate-500 mt-0.5">Page #{pageCount + 1}</span>

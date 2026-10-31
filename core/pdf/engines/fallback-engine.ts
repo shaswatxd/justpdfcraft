@@ -446,6 +446,9 @@ export class FallbackPDFEngine implements PDFEngine {
   }
 
   async mergeDocuments(sources: Uint8Array[]): Promise<Uint8Array> {
+    if (!sources || sources.length === 0) {
+      throw new Error('No PDF documents provided for merge.');
+    }
     const mergedDoc = await PDFDocument.create();
 
     for (const src of sources) {
@@ -1462,7 +1465,9 @@ export class FallbackPDFEngine implements PDFEngine {
     if (onProgress) onProgress(100);
 
     const newBytes = compressedData.byteLength;
-    const compressionRatio = Number(((1 - newBytes / originalBytes) * 100).toFixed(1));
+    const compressionRatio = originalBytes > 0
+      ? Number(((1 - newBytes / originalBytes) * 100).toFixed(1))
+      : 0;
 
     return {
       originalBytes,

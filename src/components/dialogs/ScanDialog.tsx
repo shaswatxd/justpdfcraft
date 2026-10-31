@@ -221,7 +221,7 @@ export const ScanDialog: React.FC = () => {
               stopCameraStream();
               setActiveModal(null);
             }}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-slate-800 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -433,14 +433,14 @@ export const ScanDialog: React.FC = () => {
               stopCameraStream();
               setActiveModal(null);
             }}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white"
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSaveScanToPdf}
             disabled={(!currentSnapshot && scannedPages.length === 0) || isProcessing}
-            className="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-orange-900/30 flex items-center gap-1.5"
+            className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 flex items-center gap-1.5"
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
             {isProcessing ? 'Enhancing...' : 'Create Scanned PDF'}

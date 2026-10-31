@@ -147,7 +147,7 @@ export const SplitDialog: React.FC = () => {
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -198,10 +198,10 @@ export const SplitDialog: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setSplitMode('ranges')}
-                    className={`p-2.5 rounded-xl border text-xs font-medium transition-all ${
+                    className={`p-2.5 rounded-xl border text-xs font-semibold transition-all ${
                       splitMode === 'ranges'
-                        ? 'bg-amber-500/10 border-amber-500/80 text-white'
-                        : 'bg-gray-50 border-gray-200 text-gray-500'
+                        ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-2xs'
+                        : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
                     }`}
                   >
                     Custom Ranges
@@ -209,10 +209,10 @@ export const SplitDialog: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setSplitMode('individual')}
-                    className={`p-2.5 rounded-xl border text-xs font-medium transition-all ${
+                    className={`p-2.5 rounded-xl border text-xs font-semibold transition-all ${
                       splitMode === 'individual'
-                        ? 'bg-amber-500/10 border-amber-500/80 text-white'
-                        : 'bg-gray-50 border-gray-200 text-gray-500'
+                        ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-2xs'
+                        : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
                     }`}
                   >
                     Every Single Page
@@ -228,7 +228,7 @@ export const SplitDialog: React.FC = () => {
                     value={rangeInput}
                     onChange={(e) => setRangeInput(e.target.value)}
                     placeholder="e.g. 1-2, 3-5"
-                    className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-white"
+                    className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                   <p className="text-[10px] text-gray-500">
                     Document contains {pageCount} pages. Each comma-separated range creates a new PDF.
@@ -241,7 +241,7 @@ export const SplitDialog: React.FC = () => {
             <div className="px-6 py-4 border-t border-gray-200 bg-white/60 flex justify-end gap-2">
               <button
                 onClick={handleClose}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
               >
                 Cancel
               </button>

@@ -320,7 +320,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
 
       {/* Title & Description */}
       <div className="space-y-1.5">
-        <h3 className="text-sm font-bold text-gray-900 group-hover:text-red-600 transition-colors leading-snug">
+        <h3 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-snug">
           {tool.name}
         </h3>
         <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 min-h-[32px]">
@@ -333,7 +333,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
         <span className="text-[11px] font-medium capitalize text-gray-500 group-hover:text-gray-700 transition-colors">
           {tool.category} Tool
         </span>
-        <span className="text-xs font-semibold text-red-600 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-hover:translate-x-0.5 transition-all flex items-center gap-1">
+        <span className="text-xs font-semibold text-blue-600 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-hover:translate-x-0.5 transition-all flex items-center gap-1">
           Open <ArrowRight className="w-3.5 h-3.5" />
         </span>
       </div>

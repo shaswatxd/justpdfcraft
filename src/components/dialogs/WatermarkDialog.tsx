@@ -179,7 +179,7 @@ export const WatermarkDialog: React.FC = () => {
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-slate-800 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -255,7 +255,7 @@ export const WatermarkDialog: React.FC = () => {
                       value={text}
                       onChange={(e) => setText(e.target.value)}
                       placeholder="e.g. CONFIDENTIAL"
-                      className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-white font-bold focus:border-rose-500 outline-none"
+                      className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
                     />
                   </div>
 
@@ -378,7 +378,7 @@ export const WatermarkDialog: React.FC = () => {
                   <select
                     value={rotation}
                     onChange={(e) => setRotation(parseInt(e.target.value))}
-                    className="w-full bg-gray-100 border border-gray-300 rounded-xl px-2.5 py-1.5 text-white"
+                    className="w-full bg-white border border-gray-300 rounded-xl px-2.5 py-1.5 text-slate-900"
                   >
                     <option value={45}>45° (Diagonal)</option>
                     <option value={0}>0° (Horizontal)</option>
@@ -433,7 +433,7 @@ export const WatermarkDialog: React.FC = () => {
                     value={customRange}
                     onChange={(e) => setCustomRange(e.target.value)}
                     placeholder="e.g. 1-3, 5, 8-end"
-                    className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-1.5 text-white mb-2"
+                    className="w-full bg-white border border-gray-300 rounded-xl px-3 py-1.5 text-slate-900 mb-2"
                   />
                 )}
 
@@ -453,14 +453,14 @@ export const WatermarkDialog: React.FC = () => {
             <div className="px-6 py-4 border-t border-gray-200 bg-white/60 flex justify-end gap-2">
               <button
                 onClick={handleClose}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleApplyWatermark}
                 disabled={isApplying || (mode === 'text' ? !text.trim() : !logoDataUrl)}
-                className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-rose-900/30 flex items-center gap-1.5"
+                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 flex items-center gap-1.5"
               >
                 <Stamp className="w-3.5 h-3.5" />
                 {isApplying ? 'Applying...' : 'Apply Watermark'}

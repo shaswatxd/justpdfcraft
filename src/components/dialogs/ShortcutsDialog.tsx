@@ -106,7 +106,7 @@ export const ShortcutsDialog: React.FC = () => {
           </div>
           <button
             onClick={() => setActiveModal(null)}
-            className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-white transition-colors"
+            className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -131,7 +131,7 @@ export const ShortcutsDialog: React.FC = () => {
               onClick={() => setActiveTab('all')}
               className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
                 activeTab === 'all'
-                  ? 'bg-red-600 text-white shadow-sm'
+                  ? 'bg-blue-600 text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-800'
               }`}
             >
@@ -141,7 +141,7 @@ export const ShortcutsDialog: React.FC = () => {
               onClick={() => setActiveTab('nav')}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-medium transition-colors ${
                 activeTab === 'nav'
-                  ? 'bg-red-600 text-white shadow-sm'
+                  ? 'bg-blue-600 text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-800'
               }`}
             >
@@ -152,7 +152,7 @@ export const ShortcutsDialog: React.FC = () => {
               onClick={() => setActiveTab('tools')}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-medium transition-colors ${
                 activeTab === 'tools'
-                  ? 'bg-red-600 text-white shadow-sm'
+                  ? 'bg-blue-600 text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-800'
               }`}
             >
@@ -163,7 +163,7 @@ export const ShortcutsDialog: React.FC = () => {
               onClick={() => setActiveTab('doc')}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-medium transition-colors ${
                 activeTab === 'doc'
-                  ? 'bg-red-600 text-white shadow-sm'
+                  ? 'bg-blue-600 text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-800'
               }`}
             >

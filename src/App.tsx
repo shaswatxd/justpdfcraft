@@ -456,9 +456,17 @@ export const App: React.FC = () => {
   const handleGlobalFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
+      try {
       const buffer = await file.arrayBuffer();
       await loadDocument(new Uint8Array(buffer), file.name, (file as any).path);
-      setActiveView('editor');
+        setActiveView('editor');
+      } catch (err: any) {
+        addToast({
+          type: 'error',
+          title: 'Failed to Open PDF',
+          message: err?.message || 'Could not parse the selected file.',
+        });
+      }
     }
     e.target.value = '';
   };
@@ -468,8 +476,8 @@ export const App: React.FC = () => {
       {/* Global Window File Drop Overlay */}
       {isWindowDragging && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex flex-col items-center justify-center pointer-events-none p-6 animate-fade-in select-none">
-          <div className="w-full max-w-lg border-2 border-dashed border-red-500 bg-white/95 rounded-3xl p-10 flex flex-col items-center text-center space-y-4 shadow-2xl">
-            <div className="w-16 h-16 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center animate-bounce">
+          <div className="w-full max-w-lg border-2 border-dashed border-blue-500 bg-white/95 rounded-3xl p-10 flex flex-col items-center text-center space-y-4 shadow-2xl">
+            <div className="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center animate-bounce">
               <FileText className="w-8 h-8" />
             </div>
             <div>

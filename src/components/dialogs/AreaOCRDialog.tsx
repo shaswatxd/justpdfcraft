@@ -245,7 +245,7 @@ export const AreaOCRDialog: React.FC<AreaOCRModalProps> = ({
 
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-xl text-xs font-medium text-gray-900 shadow-md transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-xs font-semibold text-white shadow-md shadow-blue-500/20 transition-colors"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-green-300" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied!' : 'Copy to Clipboard'}</span>

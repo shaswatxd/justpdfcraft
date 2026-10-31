@@ -163,7 +163,7 @@ export const StudentToolsDialog: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white shrink-0">
           <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
-            <div className="w-10 h-10 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-red-600 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
               <Sliders className="w-5 h-5" />
             </div>
             <div className="min-w-0">
@@ -209,13 +209,13 @@ export const StudentToolsDialog: React.FC = () => {
                       loadImageFromFile(e.dataTransfer.files[0]);
                     }
                   }}
-                  className="w-full min-h-[300px] border-2 border-dashed border-gray-300 hover:border-red-500 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all group bg-gray-50 hover:bg-red-50/10 p-6 text-center shadow-2xs"
+                  className="w-full min-h-[300px] border-2 border-dashed border-gray-300 hover:border-blue-500 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all group bg-gray-50 hover:bg-blue-50/20 p-6 text-center shadow-2xs"
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform border border-red-100">
+                  <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform border border-blue-100">
                     <Upload className="w-6 h-6" />
                   </div>
                   <p className="text-sm font-semibold text-gray-800">
-                    Drop Photo or Signature here, or <span className="text-red-600 underline font-bold">browse</span>
+                    Drop Photo or Signature here, or <span className="text-blue-600 underline font-bold">browse</span>
                   </p>
                   <p className="text-xs text-gray-500 mt-1 max-w-xs">
                     JPG, PNG, WebP from phone camera or scanner.
@@ -267,7 +267,7 @@ export const StudentToolsDialog: React.FC = () => {
                       />
                     ) : (
                       <div className="py-12 text-xs text-gray-500 flex items-center gap-2">
-                        <RefreshCw className="w-4 h-4 animate-spin text-red-600" />
+                        <RefreshCw className="w-4 h-4 animate-spin text-blue-600" />
                         <span>Compressing image...</span>
                       </div>
                     )}
@@ -305,7 +305,7 @@ export const StudentToolsDialog: React.FC = () => {
               <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-gray-900">Target File Size (KB)</span>
-                  <span className="text-xs font-mono font-semibold text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-200">
+                  <span className="text-xs font-mono font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
                     {targetMinKb} KB – {targetMaxKb} KB
                   </span>
                 </div>
@@ -322,7 +322,7 @@ export const StudentToolsDialog: React.FC = () => {
                         setTargetMinKb(val);
                         if (val > targetMaxKb) setTargetMaxKb(val + 5);
                       }}
-                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-2xs"
+                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs"
                     />
                   </div>
                   <div>
@@ -337,7 +337,7 @@ export const StudentToolsDialog: React.FC = () => {
                         setTargetMaxKb(val);
                         if (val < targetMinKb) setTargetMinKb(Math.max(1, val - 5));
                       }}
-                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-2xs"
+                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs"
                     />
                   </div>
                 </div>
@@ -352,7 +352,7 @@ export const StudentToolsDialog: React.FC = () => {
                       type="checkbox"
                       checked={keepAspect}
                       onChange={(e) => setKeepAspect(e.target.checked)}
-                      className="rounded border-gray-300 text-red-600 focus:ring-red-500"
+                      className="rounded border-gray-300 text-red-600 focus:ring-blue-500"
                     />
                     Lock Aspect Ratio
                   </label>
@@ -371,7 +371,7 @@ export const StudentToolsDialog: React.FC = () => {
                           setCustomHeightPx(Math.round(w * ratio));
                         }
                       }}
-                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-2xs"
+                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs"
                     />
                   </div>
                   <div>
@@ -387,7 +387,7 @@ export const StudentToolsDialog: React.FC = () => {
                           setCustomWidthPx(Math.round(h * ratio));
                         }
                       }}
-                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-2xs"
+                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs"
                     />
                   </div>
                 </div>
@@ -411,7 +411,7 @@ export const StudentToolsDialog: React.FC = () => {
                     }
                   }}
                   disabled={!resizerResult}
-                  className="w-full py-3 bg-red-600 hover:bg-red-700 active:scale-[0.99] disabled:opacity-40 text-white rounded-xl text-xs font-bold shadow-md shadow-red-500/20 flex items-center justify-center gap-2 min-h-[48px] transition-all cursor-pointer"
+                  className="w-full py-3 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] disabled:opacity-40 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 min-h-[48px] transition-all cursor-pointer"
                 >
                   <Download className="w-4 h-4" />
                   Download JPG ({resizerResult?.finalKb || 0} KB)

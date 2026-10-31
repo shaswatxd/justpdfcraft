@@ -352,7 +352,7 @@ export const CommandPalette: React.FC = () => {
       >
         {/* Search Header */}
         <div className="flex items-center px-4 py-3.5 border-b border-gray-100 gap-3 bg-white">
-          <Search className="w-5 h-5 text-red-600 shrink-0" />
+          <Search className="w-5 h-5 text-blue-600 shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -388,7 +388,7 @@ export const CommandPalette: React.FC = () => {
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer text-xs transition-colors ${
                     isSelected
-                      ? 'bg-red-600 text-white font-medium'
+                      ? 'bg-blue-600 text-white font-medium'
                       : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
@@ -399,7 +399,7 @@ export const CommandPalette: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <span
                       className={`text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                        isSelected ? 'bg-red-700 text-white' : 'bg-gray-100 text-gray-500'
+                        isSelected ? 'bg-blue-700 text-white' : 'bg-gray-100 text-gray-500'
                       }`}
                     >
                       {cmd.category}
@@ -408,7 +408,7 @@ export const CommandPalette: React.FC = () => {
                       <kbd
                         className={`text-[10px] font-mono px-1 py-0.5 rounded border ${
                           isSelected
-                            ? 'border-red-400 bg-red-700 text-white'
+                            ? 'border-blue-400 bg-blue-700 text-white'
                             : 'border-gray-200 bg-gray-100 text-gray-500'
                         }`}
                       >
