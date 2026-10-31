@@ -1,7 +1,7 @@
 import { ModalType } from '@/stores/uiStore';
 import { ToolMode } from '@/stores/toolStore';
 
-export type ToolCategory = 'pdf' | 'image' | 'document' | 'student' | 'developer';
+export type ToolCategory = 'organize' | 'optimize' | 'convert' | 'edit' | 'security' | 'handwritten';
 
 export type ToolBadge = 'popular' | 'recommended' | 'new' | 'special';
 

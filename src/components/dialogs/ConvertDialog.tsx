@@ -558,11 +558,11 @@ export const ConvertDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-gray-50/50 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Convert Dialog">
-      <div className="w-full max-w-lg bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+      <div className="w-full max-w-2xl max-h-[90dvh] bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-teal-500/10 text-teal-400">
+            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
               <RefreshCw className="w-5 h-5" />
             </div>
             <div>
@@ -579,77 +579,77 @@ export const ConvertDialog: React.FC = () => {
         </div>
 
         {/* Mode Switcher */}
-        <div className="flex border-b border-gray-200 bg-white/40 px-4 sm:px-6 pt-2 gap-2 text-xs overflow-x-auto scrollbar-none overscroll-x-contain touch-pan-x">
+        <div className="flex border-b border-gray-200 bg-slate-50/80 px-4 sm:px-6 pt-2 gap-2 text-xs overflow-x-auto scrollbar-none overscroll-x-contain touch-pan-x select-none">
           <button
             onClick={() => setMode('pdf-to-img')}
-            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
               mode === 'pdf-to-img'
-                ? 'border-teal-500 text-teal-400'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-900'
             }`}
           >
-            <ImageIcon className="w-3.5 h-3.5" />
+            <ImageIcon className="w-3.5 h-3.5 shrink-0" />
             <span>PDF to Images</span>
           </button>
           <button
             onClick={() => setMode('pdf-to-word')}
-            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
               mode === 'pdf-to-word'
-                ? 'border-teal-500 text-teal-400'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-900'
             }`}
           >
-            <FileType className="w-3.5 h-3.5" />
+            <FileType className="w-3.5 h-3.5 shrink-0" />
             <span>PDF to Word (.docx)</span>
           </button>
           <button
             onClick={() => setMode('pdf-to-grayscale')}
-            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
               mode === 'pdf-to-grayscale'
-                ? 'border-teal-500 text-teal-400'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-900'
             }`}
           >
-            <Moon className="w-3.5 h-3.5" />
+            <Moon className="w-3.5 h-3.5 shrink-0" />
             <span>PDF to Grayscale (B&W)</span>
           </button>
           <button
             onClick={() => setMode('pdf-to-txt')}
-            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
               mode === 'pdf-to-txt'
-                ? 'border-teal-500 text-teal-400'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-900'
             }`}
           >
-            <FileText className="w-3.5 h-3.5" />
+            <FileText className="w-3.5 h-3.5 shrink-0" />
             <span>PDF to Text / MD</span>
           </button>
           <button
             onClick={() => setMode('img-to-pdf')}
-            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
               mode === 'img-to-pdf'
-                ? 'border-teal-500 text-teal-400'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-900'
             }`}
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-3.5 h-3.5 shrink-0" />
             <span>Images to PDF</span>
           </button>
           <button
             onClick={() => setMode('txt-to-pdf')}
-            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 transition-colors ${
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-semibold border-b-2 whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
               mode === 'txt-to-pdf'
-                ? 'border-teal-500 text-teal-400'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-900'
             }`}
           >
-            <FileText className="w-3.5 h-3.5" />
+            <FileText className="w-3.5 h-3.5 shrink-0" />
             <span>Text to PDF</span>
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4 overflow-y-auto max-h-[calc(90dvh-130px)]">
           {mode === 'pdf-to-img' && (
             <div className="space-y-4">
               {!documentId ? (
@@ -695,7 +695,7 @@ export const ConvertDialog: React.FC = () => {
                         step="0.1"
                         value={imageQuality}
                         onChange={(e) => setImageQuality(parseFloat(e.target.value))}
-                        className="w-full accent-teal-500"
+                        className="w-full accent-blue-600"
                         disabled={imageFormat === 'png'}
                       />
                       <div className="text-right text-[10px] text-gray-500">{Math.round(imageQuality * 100)}%</div>
@@ -710,7 +710,7 @@ export const ConvertDialog: React.FC = () => {
                         onClick={() => setScope('current')}
                         className={`flex-1 py-2 text-xs font-semibold rounded-xl border transition-colors ${
                           scope === 'current'
-                            ? 'bg-teal-500/10 border-teal-500 text-teal-300'
+                            ? 'bg-blue-50 border-blue-600 text-blue-600'
                             : 'bg-gray-100 border-gray-300 text-gray-500'
                         }`}
                       >
@@ -721,7 +721,7 @@ export const ConvertDialog: React.FC = () => {
                         onClick={() => setScope('all')}
                         className={`flex-1 py-2 text-xs font-semibold rounded-xl border transition-colors ${
                           scope === 'all'
-                            ? 'bg-teal-500/10 border-teal-500 text-teal-300'
+                            ? 'bg-blue-50 border-blue-600 text-blue-600'
                             : 'bg-gray-100 border-gray-300 text-gray-500'
                         }`}
                       >
@@ -754,7 +754,7 @@ export const ConvertDialog: React.FC = () => {
                           onClick={() => setScope('current')}
                           className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                             scope === 'current'
-                              ? 'bg-teal-500/20 border-teal-500 text-teal-300'
+                              ? 'bg-blue-50 border-blue-600 text-blue-600'
                               : 'bg-gray-100 border-gray-300 text-gray-500'
                           }`}
                         >
@@ -765,7 +765,7 @@ export const ConvertDialog: React.FC = () => {
                           onClick={() => setScope('all')}
                           className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                             scope === 'all'
-                              ? 'bg-teal-500/20 border-teal-500 text-teal-300'
+                              ? 'bg-blue-50 border-blue-600 text-blue-600'
                               : 'bg-gray-100 border-gray-300 text-gray-500'
                           }`}
                         >
@@ -808,7 +808,7 @@ export const ConvertDialog: React.FC = () => {
                           onClick={() => setScope('current')}
                           className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                             scope === 'current'
-                              ? 'bg-teal-500/20 border-teal-500 text-teal-300'
+                              ? 'bg-blue-50 border-blue-600 text-blue-600'
                               : 'bg-gray-100 border-gray-300 text-gray-500'
                           }`}
                         >
@@ -819,7 +819,7 @@ export const ConvertDialog: React.FC = () => {
                           onClick={() => setScope('all')}
                           className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                             scope === 'all'
-                              ? 'bg-teal-500/20 border-teal-500 text-teal-300'
+                              ? 'bg-blue-50 border-blue-600 text-blue-600'
                               : 'bg-gray-100 border-gray-300 text-gray-500'
                           }`}
                         >
@@ -842,14 +842,14 @@ export const ConvertDialog: React.FC = () => {
                     </div>
 
                     {isProcessing && grayscaleProgress && (
-                      <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl space-y-1.5">
-                        <div className="flex justify-between text-xs text-teal-300">
+                      <div className="p-3 bg-blue-50 border border-blue-600/20 rounded-xl space-y-1.5">
+                        <div className="flex justify-between text-xs text-blue-600">
                           <span>Converting to Grayscale...</span>
                           <span>{grayscaleProgress.current} / {grayscaleProgress.total} Pages</span>
                         </div>
                         <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
                           <div
-                            className="bg-teal-500 h-full transition-all duration-200"
+                            className="bg-blue-600 h-full transition-all duration-200"
                             style={{ width: `${Math.round((grayscaleProgress.current / grayscaleProgress.total) * 100)}%` }}
                           />
                         </div>
@@ -902,7 +902,7 @@ export const ConvertDialog: React.FC = () => {
                           onClick={() => setScope('current')}
                           className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                             scope === 'current'
-                              ? 'bg-teal-500/10 border-teal-500 text-teal-300'
+                              ? 'bg-blue-50 border-blue-600 text-blue-600'
                               : 'bg-gray-100 border-gray-300 text-gray-500'
                           }`}
                         >
@@ -913,7 +913,7 @@ export const ConvertDialog: React.FC = () => {
                           onClick={() => setScope('all')}
                           className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                             scope === 'all'
-                              ? 'bg-teal-500/10 border-teal-500 text-teal-300'
+                              ? 'bg-blue-50 border-blue-600 text-blue-600'
                               : 'bg-gray-100 border-gray-300 text-gray-500'
                           }`}
                         >
@@ -954,9 +954,9 @@ export const ConvertDialog: React.FC = () => {
                     addFiles(e.dataTransfer.files);
                   }
                 }}
-                className="border-2 border-dashed border-gray-300 hover:border-teal-500/50 bg-gray-50 p-4 rounded-xl flex items-center justify-center gap-2 cursor-pointer text-xs font-semibold text-gray-700 transition-all"
+                className="border-2 border-dashed border-gray-300 hover:border-blue-500/50 bg-gray-50 p-4 rounded-xl flex items-center justify-center gap-2 cursor-pointer text-xs font-semibold text-gray-700 transition-all"
               >
-                <Plus className="w-4 h-4 text-teal-400" />
+                <Plus className="w-4 h-4 text-blue-600" />
                 <span>Select or Drop Images (JPG, PNG, WEBP, BMP, GIF)...</span>
                 <input
                   type="file"
@@ -999,7 +999,7 @@ export const ConvertDialog: React.FC = () => {
               </div>
             </div>
           )}
-        </div>
+
           {mode === 'txt-to-pdf' && (
             <div className="space-y-4">
               <input
@@ -1022,7 +1022,7 @@ export const ConvertDialog: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => textFileInputRef.current?.click()}
-                  className="text-xs text-teal-400 hover:text-teal-300 font-medium flex items-center gap-1"
+                  className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
                 >
                   <FileText className="w-3.5 h-3.5" />
                   <span>Load .txt or .md file</span>
@@ -1047,6 +1047,7 @@ export const ConvertDialog: React.FC = () => {
               </div>
             </div>
           )}
+        </div>
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-gray-200 bg-white/60 flex justify-end gap-2">

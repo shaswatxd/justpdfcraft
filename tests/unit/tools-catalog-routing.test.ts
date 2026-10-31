@@ -40,7 +40,7 @@ describe('Tools Catalog Routing & Action Validation', () => {
       expect(tool.id).toBeTruthy();
       expect(tool.name).toBeTruthy();
       expect(tool.shortDesc).toBeTruthy();
-      expect(['pdf', 'image', 'document', 'student', 'developer']).toContain(tool.category);
+      expect(['organize', 'optimize', 'convert', 'edit', 'security', 'handwritten']).toContain(tool.category);
       expect(tool.iconName).toBeTruthy();
       expect(tool.tags.length).toBeGreaterThan(0);
     }
@@ -60,7 +60,7 @@ describe('Tools Catalog Routing & Action Validation', () => {
 
   it('should ensure there are exactly 0 tools configured with dead categories or invalid actions', () => {
     const invalidTools = TOOLS_CATALOG.filter(
-      (t) => !['pdf', 'image', 'document', 'student', 'developer'].includes(t.category)
+      (t) => !['organize', 'optimize', 'convert', 'edit', 'security', 'handwritten'].includes(t.category)
     );
     expect(invalidTools.length).toBe(0);
   });

@@ -31,17 +31,12 @@ const FooterLink: React.FC<{
   </button>
 );
 
-export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
+export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory: _onSelectCategory }) => {
   const { setActiveModal, setActiveLegalTab } = useUIStore();
 
   const openLegal = (tab: string) => {
     setActiveLegalTab(tab);
     setActiveModal('legal');
-  };
-
-  const goCategory = (cat: ToolCategory | 'all') => {
-    onSelectCategory(cat);
-    scrollToExplorer();
   };
 
   return (
@@ -66,51 +61,51 @@ export const HomeFooter: React.FC<HomeFooterProps> = ({ onSelectCategory }) => {
           </div>
         </div>
 
-        {/* Column 2: PDF Essentials */}
+        {/* Column 2: Organize PDF */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">PDF Essentials</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Organize PDF</h4>
           <ul className="space-y-0.5">
             <li><FooterLink label="Merge PDF" title="Combine multiple PDFs" onClick={() => setActiveModal('merge')} /></li>
             <li><FooterLink label="Split PDF" title="Extract pages or split ranges" onClick={() => setActiveModal('split')} /></li>
-            <li><FooterLink label="Compress PDF" title="Reduce file size" onClick={() => setActiveModal('compress')} /></li>
-            <li><FooterLink label="PDF to Word (.docx)" title="Convert PDF to editable Word" onClick={() => setActiveModal('convert')} /></li>
-            <li><FooterLink label="In-Place Text Editor" title="Edit text on canvas" onClick={() => goCategory('pdf')} /></li>
+            <li><FooterLink label="Organize Pages" title="Reorder, rotate & delete pages" onClick={() => setActiveModal('organize')} /></li>
+            <li><FooterLink label="Scan to PDF" title="Capture documents with camera" onClick={() => setActiveModal('scan')} /></li>
+            <li><FooterLink label="Rotate PDF" title="Rotate pages permanently" onClick={() => setActiveModal('organize')} /></li>
           </ul>
         </div>
 
-        {/* Column 3: Organize & Security */}
+        {/* Column 3: Convert PDF */}
+        <div className="space-y-2">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Convert PDF</h4>
+          <ul className="space-y-0.5">
+            <li><FooterLink label="PDF to Word (.docx)" title="Convert PDF to editable Word" onClick={() => setActiveModal('convert')} /></li>
+            <li><FooterLink label="Word to PDF" title="Convert Word doc to PDF" onClick={() => setActiveModal('convert')} /></li>
+            <li><FooterLink label="JPG to PDF" title="Convert images to PDF" onClick={() => setActiveModal('convert')} /></li>
+            <li><FooterLink label="PDF to JPG" title="Extract pages as JPG images" onClick={() => setActiveModal('convert')} /></li>
+            <li><FooterLink label="HTML to PDF" title="Convert webpages to PDF" onClick={() => setActiveModal('convert')} /></li>
+          </ul>
+        </div>
+
+        {/* Column 4: Security & Sign */}
         <div className="space-y-2">
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Security & Sign</h4>
           <ul className="space-y-0.5">
+            <li><FooterLink label="Sign Document" title="Draw or place digital signature" onClick={() => setActiveModal('sign')} /></li>
             <li><FooterLink label="Protect & Encrypt" title="Set password & AES encryption" onClick={() => setActiveModal('protect')} /></li>
             <li><FooterLink label="Unlock PDF" title="Strip password & restrictions" onClick={() => setActiveModal('protect')} /></li>
-            <li><FooterLink label="Organize Pages" title="Reorder, rotate & delete pages" onClick={() => goCategory('pdf')} /></li>
             <li><FooterLink label="Watermark PDF" title="Stamp text or image watermarks" onClick={() => setActiveModal('watermark')} /></li>
-            <li><FooterLink label="Sign Document" title="Draw or place digital signature" onClick={() => setActiveModal('sign')} /></li>
+            <li><FooterLink label="Compare Documents" title="Diff revisions side-by-side" onClick={() => setActiveModal('compare')} /></li>
           </ul>
         </div>
 
-        {/* Column 4: Student Suite */}
+        {/* Column 5: Special & Optimize */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Student Tools</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Special & Optimize</h4>
           <ul className="space-y-0.5">
-            <li><FooterLink label="Resume & CV Builder" onClick={() => setActiveModal('student-tools')} /></li>
-            <li><FooterLink label="Photo Resizer (20–50 KB)" onClick={() => setActiveModal('student-resizer')} /></li>
-            <li><FooterLink label="Handwriting Generator" onClick={() => setActiveModal('handwriting')} /></li>
-            <li><FooterLink label="CGPA & GPA Calculator" onClick={() => setActiveModal('student-tools')} /></li>
-            <li><FooterLink label="Age & Exam Eligibility" onClick={() => setActiveModal('student-tools')} /></li>
-          </ul>
-        </div>
-
-        {/* Column 5: Developer Utilities */}
-        <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Developer Utilities</h4>
-          <ul className="space-y-0.5">
-            <li><FooterLink label="JSON Formatter & Validator" onClick={() => setActiveModal('developer-tools')} /></li>
-            <li><FooterLink label="Base64 Encoder / Decoder" onClick={() => setActiveModal('developer-tools')} /></li>
-            <li><FooterLink label="UUID & Password Generator" onClick={() => setActiveModal('developer-tools')} /></li>
-            <li><FooterLink label="JWT Decoder & Hash Gen" onClick={() => setActiveModal('developer-tools')} /></li>
-            <li><FooterLink label="QR Code Generator" onClick={() => setActiveModal('developer-tools')} /></li>
+            <li><FooterLink label="Handwritten Assignment Generator" title="Convert text to realistic handwritten homework" onClick={() => setActiveModal('handwriting')} /></li>
+            <li><FooterLink label="Compress PDF" title="Reduce file size" onClick={() => setActiveModal('compress')} /></li>
+            <li><FooterLink label="OCR PDF" title="Convert scans to searchable text" onClick={() => setActiveModal('ocr')} /></li>
+            <li><FooterLink label="Repair PDF" title="Fix corrupted PDF streams" onClick={() => setActiveModal('convert')} /></li>
+            <li><FooterLink label="Add Page Numbers" title="Stamp page numbers & headers" onClick={() => setActiveModal('page-number')} /></li>
           </ul>
         </div>
 
