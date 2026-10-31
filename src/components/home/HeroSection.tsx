@@ -11,7 +11,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ children }) => {
       {/* Editorial Pill */}
       <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-bold mb-3 shadow-2xs">
         <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-        <span>100% In-Browser PDF Suite</span>
+        <span>100% In-Browser Document & Developer Utility Suite</span>
       </div>
 
       <h1 className="mt-1 text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight max-w-3xl">

@@ -27,12 +27,10 @@ Save,
   Printer,
   Download,
   Layers,
+  Image as ImageIcon,
+  GraduationCap,
+  Code2,
   Info,
-  PenTool,
-  Scissors,
-  FileArchive,
-  RefreshCw,
-  ShieldCheck,
   PhoneCall,
 } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
@@ -294,49 +292,62 @@ export const AppHeader: React.FC = () => {
           </button>
         )}
 
-        {/* Desktop Main Navigation Links (Clean iLovePDF layout + Handwritten) */}
+        {/* Desktop Main Navigation Links (Cleanly positioned beside Logo) */}
         {!documentId && (
-          <nav className="hidden lg:flex items-center gap-1 ml-4 text-xs font-semibold text-slate-700">
+          <nav className="hidden xl:flex items-center gap-1 ml-2 text-xs font-semibold text-slate-600">
             <button
-              onClick={() => setActiveModal('merge')}
-              className="px-3 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer font-bold"
+              onClick={() => {
+                const el = document.getElementById('tool-explorer');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
             >
-              Merge PDF
-            </button>
-            <button
-              onClick={() => setActiveModal('split')}
-              className="px-3 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer font-bold"
-            >
-              Split PDF
-            </button>
-            <button
-              onClick={() => setActiveModal('compress')}
-              className="px-3 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer font-bold"
-            >
-              Compress PDF
-            </button>
-            <button
-              onClick={() => setActiveModal('convert')}
-              className="px-3 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer font-bold"
-            >
-              Convert PDF
-            </button>
-            <button
-              onClick={() => setActiveModal('handwriting')}
-              className="px-3 py-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer font-bold flex items-center gap-1.5"
-            >
-              <PenTool className="w-3.5 h-3.5" />
-              <span>Handwritten</span>
-              <span className="text-[9px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full font-bold uppercase">Popular</span>
+              All Tools
             </button>
             <button
               onClick={() => {
                 const el = document.getElementById('tool-explorer');
                 el?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="px-3 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer text-slate-500 font-medium"
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
             >
-              All PDF Tools
+              PDF Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('image-tools')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Image Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('document-tools')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Document Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('student-tools')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Student Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('developer-tools')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Developer Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('about')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              About
+            </button>
+            <button
+              onClick={() => setActiveModal('contact')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Contact
             </button>
           </nav>
         )}
@@ -761,62 +772,13 @@ export const AppHeader: React.FC = () => {
           <button
             onClick={() => {
               setMobileMenuOpen(false);
-              setActiveModal('merge');
+              const el = document.getElementById('tool-explorer');
+              el?.scrollIntoView({ behavior: 'smooth' });
             }}
             className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2.5 active:bg-blue-100 transition-colors cursor-pointer"
           >
-            <Layers className="w-4 h-4 text-blue-600 shrink-0" />
-            <span>Merge PDF</span>
-          </button>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setActiveModal('split');
-            }}
-            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2.5 active:bg-blue-100 transition-colors cursor-pointer"
-          >
-            <Scissors className="w-4 h-4 text-blue-600 shrink-0" />
-            <span>Split PDF</span>
-          </button>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setActiveModal('compress');
-            }}
-            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2.5 active:bg-blue-100 transition-colors cursor-pointer"
-          >
-            <FileArchive className="w-4 h-4 text-blue-600 shrink-0" />
-            <span>Compress PDF</span>
-          </button>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setActiveModal('convert');
-            }}
-            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2.5 active:bg-blue-100 transition-colors cursor-pointer"
-          >
-            <RefreshCw className="w-4 h-4 text-blue-600 shrink-0" />
-            <span>Convert PDF (Word, JPG, Excel)</span>
-          </button>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setActiveModal('handwriting');
-            }}
-            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-blue-600 hover:bg-blue-50 flex items-center gap-2.5 active:bg-blue-100 transition-colors cursor-pointer font-bold"
-          >
-            <PenTool className="w-4 h-4 text-blue-600 shrink-0" />
-            <span>Handwritten Assignment Generator</span>
-          </button>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setActiveModal('sign');
-            }}
-            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2.5 active:bg-blue-100 transition-colors cursor-pointer"
-          >
-            <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0" />
-            <span>Sign & Protect PDF</span>
+            <Grid className="w-4 h-4 text-blue-600 shrink-0" />
+            <span>All Tools (93 In-Browser Utilities)</span>
           </button>
           <button
             onClick={() => {
@@ -826,8 +788,48 @@ export const AppHeader: React.FC = () => {
             }}
             className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2.5 active:bg-blue-100 transition-colors cursor-pointer"
           >
-            <Grid className="w-4 h-4 text-blue-600 shrink-0" />
-            <span>All PDF Tools</span>
+            <Layers className="w-4 h-4 text-blue-600 shrink-0" />
+            <span>PDF Tools (Merge, Split, Compress, Sign)</span>
+          </button>
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setActiveModal('image-tools');
+            }}
+            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2.5 active:bg-emerald-100 transition-colors cursor-pointer"
+          >
+            <ImageIcon className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Image Tools (Target KB, Passport, Crop)</span>
+          </button>
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setActiveModal('document-tools');
+            }}
+            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-teal-50 hover:text-teal-700 flex items-center gap-2.5 active:bg-teal-100 transition-colors cursor-pointer"
+          >
+            <FileText className="w-4 h-4 text-teal-600 shrink-0" />
+            <span>Document Converters (Word, Excel to PDF)</span>
+          </button>
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setActiveModal('student-tools');
+            }}
+            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-purple-50 hover:text-purple-700 flex items-center gap-2.5 active:bg-purple-100 transition-colors cursor-pointer"
+          >
+            <GraduationCap className="w-4 h-4 text-purple-600 shrink-0" />
+            <span>Student Tools (Resume, CGPA, Calculators)</span>
+          </button>
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setActiveModal('developer-tools');
+            }}
+            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-violet-50 hover:text-violet-700 flex items-center gap-2.5 active:bg-violet-100 transition-colors cursor-pointer"
+          >
+            <Code2 className="w-4 h-4 text-violet-600 shrink-0" />
+            <span>Developer Tools (JSON, Regex, Diff, QR)</span>
           </button>
 
           <div className="border-t border-gray-100 my-1 pt-1 space-y-0.5">

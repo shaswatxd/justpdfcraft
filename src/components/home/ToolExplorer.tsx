@@ -2,17 +2,16 @@ import React, { useState, useMemo } from 'react';
 import {
   Search,
   X,
+  FileText,
+  Image as ImageIcon,
+  GraduationCap,
   LayoutGrid,
   Heart,
   Flame,
   History,
   Trash2,
-  Layers,
-  FileArchive,
-  RefreshCw,
-  Edit3,
-  ShieldCheck,
-  PenTool,
+  Code2,
+  FileType,
 } from 'lucide-react';
 import { ToolCategory, ToolDefinition } from '@/types/tools';
 import { TOOLS_CATALOG, searchTools } from '@/data/toolsCatalog';
@@ -29,12 +28,11 @@ const CATALOG_BY_ID: Record<string, ToolDefinition> = Object.fromEntries(
 const ALL_TOOLS_COUNT = TOOLS_CATALOG.length;
 
 const CATEGORY_LABELS: Record<ToolCategory, string> = {
-  organize: 'Organize PDF',
-  optimize: 'Optimize PDF',
-  convert: 'Convert PDF',
-  edit: 'Edit PDF',
-  security: 'PDF Security & Sign',
-  handwritten: 'Handwritten Generator',
+  pdf: 'PDF Tools',
+  image: 'Image Tools',
+  document: 'Document Tools',
+  student: 'Student Productivity Tools',
+  developer: 'Developer Utilities',
 };
 
 interface ToolExplorerProps {
@@ -65,7 +63,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
       list = list.filter((t) => favorites.includes(t.id));
     }
     if (showOnlyPopular) {
-      list = list.filter((t) => t.badge === 'popular' || ['merge-pdf', 'compress-pdf', 'handwriting-generator', 'sign-pdf', 'split-pdf', 'ocr-pdf', 'pdf-to-word-doc'].includes(t.id));
+      list = list.filter((t) => t.badge === 'popular' || ['merge-pdf', 'compress-pdf', 'target-kb-resizer', 'handwriting-generator', 'sign-pdf', 'split-pdf', 'ocr-pdf', 'resume-builder', 'json-formatter'].includes(t.id));
     }
     return list;
   }, [searchQuery, activeCategory, showOnlyFavorites, showOnlyPopular, favorites]);
@@ -150,7 +148,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
           <input
             type="search"
             enterKeyHint="search"
-            placeholder={`Search all ${ALL_TOOLS_COUNT} PDF tools (e.g. merge, compress, handwritten, word, ocr)...`}
+            placeholder={`Search all ${ALL_TOOLS_COUNT} utilities (e.g. merge, compress, resume, json)...`}
             aria-label="Search tools"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -172,12 +170,11 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
         <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
           {[
             { id: 'all' as const, label: 'All Tools', icon: LayoutGrid },
-            { id: 'organize' as const, label: 'Organize', icon: Layers },
-            { id: 'optimize' as const, label: 'Optimize', icon: FileArchive },
-            { id: 'convert' as const, label: 'Convert', icon: RefreshCw },
-            { id: 'edit' as const, label: 'Edit', icon: Edit3 },
-            { id: 'security' as const, label: 'Security & Sign', icon: ShieldCheck },
-            { id: 'handwritten' as const, label: 'Handwritten', icon: PenTool },
+            { id: 'pdf' as const, label: 'PDF', icon: FileText },
+            { id: 'image' as const, label: 'Image', icon: ImageIcon },
+            { id: 'document' as const, label: 'Document', icon: FileType },
+            { id: 'student' as const, label: 'Student', icon: GraduationCap },
+            { id: 'developer' as const, label: 'Developer', icon: Code2 },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeCategory === tab.id && !showOnlyFavorites && !showOnlyPopular;
