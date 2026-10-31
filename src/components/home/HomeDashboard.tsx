@@ -35,7 +35,6 @@ function formatTimeAgo(timestamp: number): string {
 export const HomeDashboard: React.FC = () => {
   const {
     loadDocument,
-    setViewMode,
     availableDrafts,
     checkAndLoadAvailableDrafts,
     restoreDraft,
@@ -50,9 +49,7 @@ export const HomeDashboard: React.FC = () => {
     setActiveConvertTab,
     setActiveLegalTab,
     setPendingImageFile,
-    setActiveView,
   } = useUIStore();
-  const { setTool } = useToolStore();
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const pendingWorkflowRef = useRef<{
@@ -108,7 +105,7 @@ export const HomeDashboard: React.FC = () => {
       try {
         const opened = await openWithNativePicker();
         if (opened) {
-          setActiveView('editor');
+          setActiveModal('convert');
           return;
         }
       } catch (err: any) {
@@ -180,27 +177,17 @@ export const HomeDashboard: React.FC = () => {
             setActiveConvertTab(pending.initialTab);
           }
           setActiveModal(pending.modal);
-          setActiveView('editor');
-        } else if (pending.viewMode || pending.tool) {
-          setActiveView('editor');
+        } else if (pending.viewMode === 'organize' || pending.tool) {
+          setActiveModal('organize');
+        } else {
+          setActiveModal('convert');
         }
-        if (pending.viewMode) {
-          setViewMode(pending.viewMode);
-        }
-        if (pending.tool) {
-          setTool(pending.tool);
-        }
-        addToast({
-          type: 'success',
-          title: 'Document Opened',
-          message: `${file.name} loaded. Opening ${pending.label || 'workflow'}...`,
-        });
       } else {
-        setActiveView('editor');
+        setActiveModal('convert');
         addToast({
           type: 'success',
-          title: 'Document Opened in Editor',
-          message: `${file.name} loaded successfully.`,
+          title: 'Document Loaded',
+          message: `${file.name} ready. Choose your tool below.`,
         });
       }
     } catch (err: any) {
@@ -245,7 +232,7 @@ export const HomeDashboard: React.FC = () => {
     doc.addPage([595.28, 841.89]); // A4
     const bytes = await doc.save();
     await loadDocument(bytes, 'Untitled.pdf');
-    setActiveView('editor');
+    setActiveModal('organize');
     addToast({
       type: 'info',
       title: 'Blank Document Created',
@@ -323,7 +310,7 @@ export const HomeDashboard: React.FC = () => {
                   e.stopPropagation();
                   const restored = await restoreDraft(availableDrafts[0].id);
                   if (restored) {
-                    setActiveView('editor');
+                    setActiveModal('organize');
                     addToast({
                       type: 'success',
                       title: 'Draft Restored',

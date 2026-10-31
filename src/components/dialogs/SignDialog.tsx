@@ -17,7 +17,7 @@ import { NoDocumentState } from '@/components/common/NoDocumentState';
 export type SignaturePlacement = 'bottom-right' | 'bottom-left' | 'bottom-center' | 'top-right';
 
 export const SignDialog: React.FC = () => {
-  const { activeModal, setActiveModal, activeView, setActiveView, addToast } = useUIStore();
+  const { activeModal, setActiveModal, activeView, addToast } = useUIStore();
   const {
     documentId,
     currentPage,
@@ -248,12 +248,18 @@ export const SignDialog: React.FC = () => {
       });
 
       const updatedBytes = await engine.saveDocument(documentId);
+      const downloadBlob = new Blob([updatedBytes as any], { type: 'application/pdf' });
+      const url = URL.createObjectURL(downloadBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Signed_${fileName || 'Document.pdf'}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
       if (fileName) {
         await loadDocument(updatedBytes, fileName, filePath || undefined);
-      }
-
-      if (activeView === 'home') {
-        setActiveView('editor');
       }
       setActiveModal(null);
       addToast({
@@ -289,12 +295,18 @@ export const SignDialog: React.FC = () => {
       });
 
       const updatedBytes = await engine.saveDocument(documentId);
+      const downloadBlob = new Blob([updatedBytes as any], { type: 'application/pdf' });
+      const url = URL.createObjectURL(downloadBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Signed_${fileName || 'Document.pdf'}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
       if (fileName) {
         await loadDocument(updatedBytes, fileName, filePath || undefined);
-      }
-
-      if (activeView === 'home') {
-        setActiveView('editor');
       }
       setActiveModal(null);
       addToast({

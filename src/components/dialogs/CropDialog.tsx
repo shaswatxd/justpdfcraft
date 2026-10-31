@@ -14,7 +14,7 @@ import { getPDFEngine } from '@core/pdf/engine.factory';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const CropDialog: React.FC = () => {
-  const { activeModal, setActiveModal, activeView, setActiveView, addToast } = useUIStore();
+  const { activeModal, setActiveModal, activeView, addToast } = useUIStore();
   const {
     documentId,
     currentPage,
@@ -125,12 +125,18 @@ export const CropDialog: React.FC = () => {
       });
 
       const updatedBytes = await engine.saveDocument(documentId);
+      const blob = new Blob([updatedBytes as any], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Cropped_${fileName || 'Document.pdf'}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
       if (fileName) {
         await loadDocument(updatedBytes, fileName, filePath || undefined);
-      }
-
-      if (activeView === 'home') {
-        setActiveView('editor');
       }
       setActiveModal(null);
       addToast({

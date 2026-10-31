@@ -31,6 +31,7 @@ export type ModalType =
   | 'image-tools'
   | 'document-tools'
   | 'ai-tools'
+  | 'organize'
 
 
   | 'admin'

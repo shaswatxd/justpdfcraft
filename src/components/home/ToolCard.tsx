@@ -53,7 +53,7 @@ import {
 import { ToolDefinition } from '@/types/tools';
 import { useFavoritesStore } from '@/stores/favoritesStore';
 import { useRecentToolsStore } from '@/stores/recentToolsStore';
-import { useUIStore, UIState } from '@/stores/uiStore';
+import { useUIStore, UIState, ModalType } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useToolStore } from '@/stores/toolStore';
 
@@ -195,38 +195,50 @@ interface ToolCardProps {
 export const launchToolAction = (
   tool: ToolDefinition,
   ui: UIState,
-  docStore: { setViewMode: (v: 'single' | 'continuous' | 'organize' | 'spread') => void },
-  tools: { setTool: (t: any) => void },
-  onSelectWorkflowFile?: (workflow: any) => void
+  _docStore: { setViewMode: (v: 'single' | 'continuous' | 'organize' | 'spread') => void },
+  _tools: { setTool: (t: any) => void },
+  _onSelectWorkflowFile?: (workflow: any) => void
 ) => {
   const act = tool.action;
+  let targetModal: ModalType = null;
+
   if (act.type === 'modal') {
-    if (act.modal === 'legal' && act.initialTab) {
-      ui.setActiveLegalTab(act.initialTab);
-    } else if (act.modal === 'convert' && act.initialTab) {
-      ui.setActiveConvertTab(act.initialTab);
-    } else if (act.modal === 'image-tools' && act.initialTab) {
-      ui.setActiveImageTab(act.initialTab);
-    } else if (act.modal === 'document-tools' && act.initialTab) {
-      ui.setActiveDocTab(act.initialTab);
-    } else if (act.modal === 'student-tools' && act.initialTab) {
-      ui.setActiveStudentTab(act.initialTab);
-    } else if (act.modal === 'developer-tools' && act.initialTab) {
-      ui.setActiveDeveloperTab(act.initialTab);
-    } else if (act.modal === 'ai-tools' && act.initialTab) {
-      ui.setActiveAITab(act.initialTab);
-    }
-    ui.setActiveModal(act.modal);
+    targetModal = act.modal;
   } else if (act.type === 'workflow') {
-    if (onSelectWorkflowFile) {
-      onSelectWorkflowFile(act);
+    if (act.modal) {
+      targetModal = act.modal;
+    } else if (act.viewMode === 'organize') {
+      targetModal = 'organize';
+    } else if (act.tool === 'draw' || act.tool === 'edit_text') {
+      targetModal = 'organize';
+    } else {
+      targetModal = 'organize';
     }
   } else if (act.type === 'viewMode') {
-    docStore.setViewMode(act.viewMode);
-    ui.setActiveView('editor');
+    targetModal = 'organize';
   } else if (act.type === 'tool') {
-    tools.setTool(act.tool);
-    ui.setActiveView('editor');
+    targetModal = 'organize';
+  }
+
+  const initialTab = (act as any).initialTab;
+  if (targetModal === 'legal' && initialTab) {
+    ui.setActiveLegalTab(initialTab);
+  } else if (targetModal === 'convert' && initialTab) {
+    ui.setActiveConvertTab(initialTab);
+  } else if (targetModal === 'image-tools' && initialTab) {
+    ui.setActiveImageTab(initialTab);
+  } else if (targetModal === 'document-tools' && initialTab) {
+    ui.setActiveDocTab(initialTab);
+  } else if (targetModal === 'student-tools' && initialTab) {
+    ui.setActiveStudentTab(initialTab);
+  } else if (targetModal === 'developer-tools' && initialTab) {
+    ui.setActiveDeveloperTab(initialTab);
+  } else if (targetModal === 'ai-tools' && initialTab) {
+    ui.setActiveAITab(initialTab);
+  }
+
+  if (targetModal) {
+    ui.setActiveModal(targetModal);
   }
 };
 

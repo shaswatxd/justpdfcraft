@@ -17,7 +17,7 @@ import { getPDFEngine } from '@core/pdf/engine.factory';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const ProtectDialog: React.FC = () => {
-  const { activeModal, setActiveModal, activeView, setActiveView, addToast } = useUIStore();
+  const { activeModal, setActiveModal, activeView, addToast } = useUIStore();
   const { documentId, metadata, pushHistory, fileName, filePath, loadDocument, closeCurrentDocument } = useDocumentStore();
 
   const [activeTab, setActiveTab] = useState<'unlock' | 'protect'>('unlock');
@@ -68,13 +68,18 @@ export const ProtectDialog: React.FC = () => {
         allowModifying: !restrictEditing,
       });
       const savedBytes = await engine.saveDocument(documentId);
+      const blob = new Blob([savedBytes as any], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Protected_${fileName || 'Document.pdf'}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
 
       if (fileName) {
         await loadDocument(savedBytes, fileName, filePath || undefined, userPassword);
-      }
-
-      if (activeView === 'home') {
-        setActiveView('editor');
       }
       setActiveModal(null);
       addToast({
@@ -118,6 +123,16 @@ export const ProtectDialog: React.FC = () => {
           setActiveModal(null);
         }
       } else {
+        const blob = new Blob([unlockedBytes as any], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Unlocked_${fileName || 'Document.pdf'}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+
         if (fileName) {
           await loadDocument(unlockedBytes, fileName, filePath || undefined);
         }
@@ -126,9 +141,6 @@ export const ProtectDialog: React.FC = () => {
           title: 'Document Unlocked',
           message: 'All DRM restrictions, print locks, and owner permissions stripped successfully.',
         });
-        if (activeView === 'home') {
-          setActiveView('editor');
-        }
         setActiveModal(null);
       }
     } catch (err: any) {

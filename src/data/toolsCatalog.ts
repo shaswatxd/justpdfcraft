@@ -27,7 +27,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'Scissors',
     color: 'text-amber-400',
     tags: ['split', 'extract', 'pages', 'separate', 'divide', 'cut'],
-    action: { type: 'workflow', modal: 'split', label: 'Split Pages' },
+    action: { type: 'modal', modal: 'split', label: 'Split Pages' },
   },
   {
     id: 'compress-pdf',
@@ -38,7 +38,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     color: 'text-emerald-400',
     badge: 'popular',
     tags: ['compress', 'shrink', 'reduce', 'resize', 'resizer', 'pdf resizer', 'mb', 'kb', 'optimize', 'size', 'reduce pdf size', 'smaller', 'make pdf smaller', 'make smaller', 'smaller file size'],
-    action: { type: 'workflow', modal: 'compress', label: 'Compress PDF' },
+    action: { type: 'modal', modal: 'compress', label: 'Compress PDF' },
   },
   {
     id: 'pdf-to-jpg',
@@ -48,7 +48,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'RefreshCw',
     color: 'text-teal-400',
     tags: ['pdf to jpg', 'pdf to image', 'convert jpg', 'export jpg', 'images'],
-    action: { type: 'workflow', modal: 'convert', initialTab: 'pdf-to-img', label: 'PDF to JPG' },
+    action: { type: 'modal', modal: 'convert', initialTab: 'pdf-to-img', label: 'PDF to JPG' },
   },
   {
     id: 'jpg-to-pdf',
@@ -69,7 +69,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'RefreshCw',
     color: 'text-teal-400',
     tags: ['pdf to png', 'png', 'lossless', 'transparent image'],
-    action: { type: 'workflow', modal: 'convert', initialTab: 'pdf-to-img', label: 'PDF to PNG' },
+    action: { type: 'modal', modal: 'convert', initialTab: 'pdf-to-img', label: 'PDF to PNG' },
   },
   {
     id: 'png-to-pdf',
@@ -89,7 +89,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'RotateCw',
     color: 'text-blue-400',
     tags: ['rotate', 'orientation', 'flip', 'portrait', 'landscape'],
-    action: { type: 'workflow', viewMode: 'organize', label: 'Rotate PDF Pages' },
+    action: { type: 'modal', modal: 'organize' },
   },
   {
     id: 'delete-pdf-pages',
@@ -99,7 +99,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'Scissors',
     color: 'text-rose-500',
     tags: ['delete pages', 'remove page', 'drop page', 'prune'],
-    action: { type: 'workflow', viewMode: 'organize', label: 'Delete Pages' },
+    action: { type: 'modal', modal: 'organize' },
   },
   {
     id: 'extract-pdf-pages',
@@ -109,7 +109,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'Scissors',
     color: 'text-amber-400',
     tags: ['extract pages', 'separate', 'select pages', 'range'],
-    action: { type: 'workflow', modal: 'split', label: 'Extract Pages' },
+    action: { type: 'modal', modal: 'split', label: 'Extract Pages' },
   },
   {
     id: 'organize-pdf',
@@ -120,7 +120,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     color: 'text-yellow-400',
     badge: 'popular',
     tags: ['organize', 'reorder', 'rotate', 'delete', 'grid', 'pages', 'sort'],
-    action: { type: 'workflow', viewMode: 'organize', label: 'Visual Page Organizer' },
+    action: { type: 'modal', modal: 'organize' },
   },
   {
     id: 'add-page-numbers',
@@ -130,7 +130,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'Tag',
     color: 'text-violet-400',
     tags: ['page numbers', 'header', 'footer', 'numbering', 'page x of y', 'date stamp'],
-    action: { type: 'workflow', modal: 'page-number', label: 'Add Page Numbers' },
+    action: { type: 'modal', modal: 'page-number', label: 'Add Page Numbers' },
   },
   {
     id: 'watermark-pdf',
@@ -140,7 +140,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'Droplets',
     color: 'text-blue-400',
     tags: ['watermark', 'stamp', 'opacity', 'confidential', 'draft', 'protect'],
-    action: { type: 'workflow', modal: 'watermark', label: 'Watermark PDF' },
+    action: { type: 'modal', modal: 'watermark', label: 'Watermark PDF' },
   },
   {
     id: 'protect-pdf',
@@ -150,7 +150,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'ShieldCheck',
     color: 'text-rose-500',
     tags: ['protect', 'encrypt', 'password', 'security', 'lock', 'aes'],
-    action: { type: 'workflow', modal: 'protect', label: 'Protect & Encrypt' },
+    action: { type: 'modal', modal: 'protect', label: 'Protect & Encrypt' },
   },
   {
     id: 'unlock-pdf',
@@ -160,7 +160,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'Lock',
     color: 'text-emerald-400',
     tags: ['unlock', 'decrypt', 'remove password', 'permissions', 'unprotect'],
-    action: { type: 'workflow', modal: 'protect', label: 'Unlock & Manage Security' },
+    action: { type: 'modal', modal: 'protect', label: 'Unlock & Manage Security' },
   },
   {
     id: 'pdf-metadata-editor',
@@ -170,7 +170,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'Tag',
     color: 'text-purple-400',
     tags: ['metadata', 'author', 'title', 'subject', 'keywords', 'info'],
-    action: { type: 'workflow', modal: 'settings', label: 'Document Metadata' },
+    action: { type: 'modal', modal: 'settings', label: 'Document Metadata' },
   },
   {
     id: 'crop-pdf',
@@ -180,7 +180,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'Crop',
     color: 'text-teal-400',
     tags: ['crop', 'margins', 'trim', 'cut', 'box', 'resize'],
-    action: { type: 'workflow', modal: 'crop', label: 'Crop PDF Pages' },
+    action: { type: 'modal', modal: 'crop', label: 'Crop PDF Pages' },
   },
   {
     id: 'repair-pdf',
@@ -190,7 +190,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'RefreshCw',
     color: 'text-amber-500',
     tags: ['repair', 'fix', 'recover', 'corrupt', 'damaged'],
-    action: { type: 'workflow', modal: 'convert', label: 'Repair & Recover PDF' },
+    action: { type: 'modal', modal: 'convert', label: 'Repair & Recover PDF' },
   },
   {
     id: 'edit-pdf',
@@ -201,7 +201,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     color: 'text-sky-400',
     badge: 'popular',
     tags: ['edit', 'annotate', 'draw', 'highlight', 'notes', 'markup'],
-    action: { type: 'workflow', tool: 'draw', label: 'Interactive Canvas Editor' },
+    action: { type: 'modal', modal: 'organize' },
   },
   {
     id: 'sign-pdf',
@@ -212,7 +212,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     color: 'text-sky-300',
     badge: 'popular',
     tags: ['sign', 'signature', 'e-sign', 'autograph', 'initials'],
-    action: { type: 'workflow', modal: 'sign', label: 'Sign Document' },
+    action: { type: 'modal', modal: 'sign', label: 'Sign Document' },
   },
   {
     id: 'fill-pdf-forms',
@@ -222,7 +222,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'CheckSquare',
     color: 'text-emerald-400',
     tags: ['form', 'fill', 'acroform', 'interactive', 'checkbox', 'fields'],
-    action: { type: 'workflow', tool: 'select', label: 'Fill Interactive Forms' },
+    action: { type: 'modal', modal: 'sign' },
   },
   {
     id: 'add-text-pdf',
@@ -233,7 +233,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     color: 'text-sky-400',
     badge: 'new',
     tags: ['edit text', 'inline text', 'replace text', 'direct text editor'],
-    action: { type: 'workflow', tool: 'edit_text', label: 'In-Place Text Editor' },
+    action: { type: 'modal', modal: 'watermark' },
   },
   {
     id: 'add-images-pdf',
@@ -243,7 +243,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'Image',
     color: 'text-indigo-400',
     tags: ['add image', 'stamp photo', 'insert image', 'logo'],
-    action: { type: 'workflow', tool: 'stamp', label: 'Insert Images' },
+    action: { type: 'modal', modal: 'watermark' },
   },
   {
     id: 'compare-pdf',
@@ -253,7 +253,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'GitCompare',
     color: 'text-purple-400',
     tags: ['compare', 'diff', 'side-by-side', 'revisions', 'versions'],
-    action: { type: 'workflow', modal: 'compare', label: 'Compare Documents' },
+    action: { type: 'modal', modal: 'compare', label: 'Compare Documents' },
   },
   {
     id: 'ocr-pdf',
@@ -264,7 +264,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     color: 'text-indigo-400',
     badge: 'popular',
     tags: ['ocr', 'scan', 'text', 'recognition', 'snip', 'tesseract', 'copy'],
-    action: { type: 'workflow', modal: 'ocr', label: 'OCR Text Extraction' },
+    action: { type: 'modal', modal: 'ocr', label: 'OCR Text Extraction' },
   },
   {
     id: 'scan-pdf',
@@ -284,7 +284,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'Lock',
     color: 'text-rose-500',
     tags: ['password', 'lock', 'secure', 'restrict', 'encryption'],
-    action: { type: 'workflow', modal: 'protect', label: 'Lock PDF' },
+    action: { type: 'modal', modal: 'protect', label: 'Lock PDF' },
   },
   {
     id: 'pdf-info-viewer',
@@ -294,7 +294,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'BookOpen',
     color: 'text-blue-400',
     tags: ['info', 'properties', 'fonts', 'pages', 'security'],
-    action: { type: 'workflow', modal: 'settings', label: 'Document Properties' },
+    action: { type: 'modal', modal: 'settings', label: 'Document Properties' },
   },
   {
     id: 'flatten-pdf',
@@ -304,7 +304,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'Layers',
     color: 'text-teal-400',
     tags: ['flatten', 'merge layers', 'burn in', 'print ready'],
-    action: { type: 'workflow', modal: 'convert', label: 'Flatten Document' },
+    action: { type: 'modal', modal: 'convert', label: 'Flatten Document' },
   },
   {
     id: 'bates-numbering',
@@ -314,7 +314,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'Tag',
     color: 'text-purple-400',
     tags: ['bates', 'page number', 'numbering', 'legal', 'header', 'footer'],
-    action: { type: 'workflow', modal: 'bates', label: 'Page Numbering & Bates' },
+    action: { type: 'modal', modal: 'bates', label: 'Page Numbering & Bates' },
   },
 
   // =========================================================================
@@ -420,7 +420,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'Image',
     color: 'text-blue-400',
     tags: ['pdf to image', 'export pages', 'batch images', 'zip'],
-    action: { type: 'workflow', modal: 'convert', initialTab: 'pdf-to-img', label: 'PDF to Image' },
+    action: { type: 'modal', modal: 'convert', initialTab: 'pdf-to-img', label: 'PDF to Image' },
   },
   {
     id: 'passport-photo-maker',
@@ -508,7 +508,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     color: 'text-blue-400',
     badge: 'new',
     tags: ['pdf to word', 'docx', 'word', 'doc', 'convert to word', 'editable word', 'export docx'],
-    action: { type: 'workflow', modal: 'convert', initialTab: 'pdf-to-word', label: 'Convert to Word' },
+    action: { type: 'modal', modal: 'convert', initialTab: 'pdf-to-word', label: 'Convert to Word' },
   },
   {
     id: 'excel-to-pdf',
@@ -589,7 +589,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'BookOpen',
     color: 'text-blue-600',
     tags: ['document viewer', 'pdf reader', 'view document', 'open pdf'],
-    action: { type: 'workflow', label: 'Open in Viewer' },
+    action: { type: 'modal', modal: 'organize' },
   },
 
   // =========================================================================

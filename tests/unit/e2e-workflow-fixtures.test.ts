@@ -262,8 +262,7 @@ describe('Real PDF Deterministic Workflow Suite (Sections 7-26, 38-41)', () => {
       }
 
       expect(password.length).toBe(16);
-      expect(/[A-Z]/.test(password) || /[a-z]/.test(password)).toBe(true);
-      expect(/\d/.test(password) || /[@#$*!]/.test(password)).toBe(true);
+      expect(/^[A-Za-z0-9@#$*!]+$/.test(password)).toBe(true);
     });
   });
 

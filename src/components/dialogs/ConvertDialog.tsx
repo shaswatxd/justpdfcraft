@@ -18,7 +18,6 @@ export const ConvertDialog: React.FC = () => {
     pendingImageFile,
     setPendingImageFile,
     activeView,
-    setActiveView,
   } = useUIStore();
   const { documentId, pageCount, currentPage, fileName, loadDocument, closeCurrentDocument } = useDocumentStore();
 
@@ -523,9 +522,17 @@ export const ConvertDialog: React.FC = () => {
       }
 
       const pdfBytes = await doc.save();
-      await loadDocument(pdfBytes, 'Converted_Images.pdf');
+      const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Converted_Images.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-      setActiveView('editor');
+      await loadDocument(pdfBytes, 'Converted_Images.pdf');
       handleClose();
       addToast({
         type: 'success',

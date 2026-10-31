@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { FolderOpen, FileText } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { FolderOpen, FileText, UploadCloud } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useUIStore } from '@/stores/uiStore';
 
@@ -17,13 +17,11 @@ export const NoDocumentState: React.FC<NoDocumentStateProps> = ({
   actionText,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const { loadDocument } = useDocumentStore();
   const { addToast } = useUIStore();
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    const file = e.target.files[0];
-
+  const handleFile = async (file: File) => {
     if (!file.name.toLowerCase().endsWith('.pdf')) {
       addToast({
         type: 'error',
@@ -50,8 +48,39 @@ export const NoDocumentState: React.FC<NoDocumentStateProps> = ({
     }
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    await handleFile(e.target.files[0]);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      await handleFile(e.dataTransfer.files[0]);
+    }
+  };
+
   return (
-    <div className="p-8 text-center flex flex-col items-center justify-center space-y-4 my-2">
+    <div
+      onDragOver={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+      }}
+      onDragLeave={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+      }}
+      onDrop={handleDrop}
+      className={`p-6 sm:p-10 text-center flex flex-col items-center justify-center space-y-4 my-2 border-2 border-dashed rounded-2xl transition-all duration-200 ${
+        isDragging
+          ? 'border-blue-600 bg-blue-50/50 scale-[0.99]'
+          : 'border-slate-200 hover:border-blue-400 bg-slate-50/50'
+      }`}
+    >
       <input
         ref={fileInputRef}
         type="file"
@@ -60,25 +89,27 @@ export const NoDocumentState: React.FC<NoDocumentStateProps> = ({
         className="hidden"
       />
 
-      <div className="w-16 h-16 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center border border-red-200/80 shadow-2xs">
-        <Icon className="w-8 h-8" />
+      <div className="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200 shadow-xs">
+        {isDragging ? <UploadCloud className="w-8 h-8 animate-bounce" /> : <Icon className="w-8 h-8" />}
       </div>
 
       <div className="space-y-1">
-        <h4 className="text-base font-bold text-gray-900">No PDF Document Open</h4>
+        <h4 className="text-base sm:text-lg font-bold text-gray-900">Select PDF for {toolName}</h4>
         <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
-          {description || `Please select a PDF document first to use the ${toolName} workflow.`}
+          {description || `Choose or drag a PDF document here to start the ${toolName} workflow. 100% private in your browser.`}
         </p>
       </div>
 
       <button
         type="button"
         onClick={() => fileInputRef.current?.click()}
-        className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-md shadow-red-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md shadow-blue-500/25 transition-all cursor-pointer min-h-[44px]"
       >
         <FolderOpen className="w-4 h-4" />
         <span>{actionText || `Select PDF to ${toolName}`}</span>
       </button>
+
+      <p className="text-[11px] text-gray-400 font-medium">or drop your PDF anywhere in this box</p>
     </div>
   );
 };

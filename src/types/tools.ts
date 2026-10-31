@@ -6,7 +6,7 @@ export type ToolCategory = 'pdf' | 'image' | 'document' | 'student' | 'developer
 export type ToolBadge = 'popular' | 'recommended' | 'new' | 'special';
 
 export type ToolActionType = 
-  | { type: 'modal'; modal: ModalType; initialTab?: string }
+  | { type: 'modal'; modal: ModalType; initialTab?: string; label?: string }
   | { type: 'workflow'; modal?: ModalType; viewMode?: 'single' | 'continuous' | 'organize' | 'spread'; tool?: ToolMode; label: string; initialTab?: string }
   | { type: 'viewMode'; viewMode: 'organize' }
   | { type: 'tool'; tool: ToolMode; label: string }

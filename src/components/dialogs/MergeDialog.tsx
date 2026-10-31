@@ -11,7 +11,7 @@ interface MergeFileItem {
 }
 
 export const MergeDialog: React.FC = () => {
-  const { activeModal, setActiveModal, setActiveView, addToast } = useUIStore();
+  const { activeModal, setActiveModal, addToast } = useUIStore();
   const { loadDocument, documentId, fileBytes, fileName } = useDocumentStore();
 
   const [files, setFiles] = useState<MergeFileItem[]>([]);
@@ -87,9 +87,18 @@ export const MergeDialog: React.FC = () => {
       const engine = getPDFEngine();
       const mergedBytes = await engine.mergeDocuments(files.map((f) => f.bytes));
 
-      // Load merged PDF into memory
+      // Direct file download (iLovePDF style)
+      const blob = new Blob([mergedBytes as any], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Merged_Document.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
       await loadDocument(mergedBytes, 'Merged_Document.pdf');
-      setActiveView('editor');
       setActiveModal(null);
       setFiles([]);
 
@@ -162,9 +171,9 @@ export const MergeDialog: React.FC = () => {
                 setFiles((prev) => [...prev, ...newItems]);
               }
             }}
-            className="border-2 border-dashed border-slate-300 hover:border-red-500 bg-slate-50/70 hover:bg-red-50/20 p-5 rounded-2xl flex items-center justify-center gap-2.5 cursor-pointer text-xs font-semibold text-slate-700 transition-all shadow-xs"
+            className="border-2 border-dashed border-slate-300 hover:border-blue-500 bg-slate-50/70 hover:bg-blue-50/20 p-5 rounded-2xl flex items-center justify-center gap-2.5 cursor-pointer text-xs font-semibold text-slate-700 transition-all shadow-xs"
           >
-            <Plus className="w-4 h-4 text-red-600" />
+            <Plus className="w-4 h-4 text-blue-600" />
             <span>Add PDF Files... (or drag & drop PDFs here)</span>
             <input
               type="file"
@@ -247,7 +256,7 @@ export const MergeDialog: React.FC = () => {
             <button
               onClick={handleExecuteMerge}
               disabled={isMerging || files.length < 2}
-              className="px-5 py-2 rounded-xl text-xs font-bold text-gray-900 bg-red-600 hover:bg-red-500 active:scale-95 disabled:opacity-40 transition-all flex items-center gap-1.5 shadow-md shadow-red-500/20"
+              className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-blue-500/25 active:scale-95 disabled:opacity-40 transition-all flex items-center gap-1.5 shadow-md shadow-red-500/20"
             >
               <Layers className="w-3.5 h-3.5" />
               <span>{isMerging ? 'Merging Documents...' : 'Merge All'}</span>
