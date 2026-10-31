@@ -76,7 +76,6 @@ const AIToolsDialog = safeLazy(() => import('@/components/dialogs/AIToolsDialog'
 const OrganizeDialog = safeLazy(() => import('@/components/dialogs/OrganizeDialog'), 'OrganizeDialog');
 
 
-const AdminDashboardModal = safeLazy(() => import('@/components/dialogs/AdminDashboardModal'), 'AdminDashboardModal');
 const ContactAboutModal = safeLazy(() => import('@/components/dialogs/ContactAboutModal'), 'ContactAboutModal');
 
 export const App: React.FC = () => {
@@ -615,7 +614,6 @@ export const App: React.FC = () => {
           {activeModal === 'organize' && <OrganizeDialog />}
 
 
-          {activeModal === 'admin' && <AdminDashboardModal />}
           {(activeModal === 'contact' || activeModal === 'about') && <ContactAboutModal />}
         </React.Suspense>
       </ErrorBoundary>

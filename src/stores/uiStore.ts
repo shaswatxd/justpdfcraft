@@ -34,7 +34,6 @@ export type ModalType =
   | 'organize'
 
 
-  | 'admin'
   | 'contact'
   | 'about'
   | null;
