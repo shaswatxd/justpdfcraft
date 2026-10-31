@@ -23,6 +23,16 @@ const VALID_MODALS = new Set([
   'legal',
   'settings',
   'shortcuts',
+  'student-tools',
+  'developer-tools',
+  'image-tools',
+  'document-tools',
+  'ai-tools',
+  'pricing',
+  'auth',
+  'admin',
+  'contact',
+  'about',
 ]);
 
 describe('Tools Catalog Routing & Action Validation', () => {
@@ -31,7 +41,7 @@ describe('Tools Catalog Routing & Action Validation', () => {
       expect(tool.id).toBeTruthy();
       expect(tool.name).toBeTruthy();
       expect(tool.shortDesc).toBeTruthy();
-      expect(['pdf', 'image', 'student']).toContain(tool.category);
+      expect(['pdf', 'image', 'document', 'student', 'developer']).toContain(tool.category);
       expect(tool.iconName).toBeTruthy();
       expect(tool.tags.length).toBeGreaterThan(0);
     }
@@ -49,9 +59,9 @@ describe('Tools Catalog Routing & Action Validation', () => {
     }
   });
 
-  it('should ensure there are exactly 0 tools configured with dead categories or missing tabs', () => {
+  it('should ensure there are exactly 0 tools configured with dead categories or invalid actions', () => {
     const invalidTools = TOOLS_CATALOG.filter(
-      (t) => (t.category as string) === 'ai' || (t.action as any).modal === 'pricing'
+      (t) => !['pdf', 'image', 'document', 'student', 'developer'].includes(t.category)
     );
     expect(invalidTools.length).toBe(0);
   });

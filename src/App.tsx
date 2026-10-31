@@ -68,6 +68,15 @@ const StudentToolsDialog = safeLazy(() => import('@/components/dialogs/StudentTo
 const HandwritingDialog = safeLazy(() => import('@/components/dialogs/HandwritingDialog'), 'HandwritingDialog');
 const LegalDialog = safeLazy(() => import('@/components/dialogs/LegalDialog'), 'LegalDialog');
 const ShortcutsDialog = safeLazy(() => import('@/components/dialogs/ShortcutsDialog'), 'ShortcutsDialog');
+const DeveloperToolsDialog = safeLazy(() => import('@/components/dialogs/DeveloperToolsDialog'), 'DeveloperToolsDialog');
+const StudentToolsSuiteDialog = safeLazy(() => import('@/components/dialogs/StudentToolsSuiteDialog'), 'StudentToolsSuiteDialog');
+const ImageToolsDialog = safeLazy(() => import('@/components/dialogs/ImageToolsDialog'), 'ImageToolsDialog');
+const DocumentToolsDialog = safeLazy(() => import('@/components/dialogs/DocumentToolsDialog'), 'DocumentToolsDialog');
+const AIToolsDialog = safeLazy(() => import('@/components/dialogs/AIToolsDialog'), 'AIToolsDialog');
+const PricingModal = safeLazy(() => import('@/components/dialogs/PricingModal'), 'PricingModal');
+const AuthModal = safeLazy(() => import('@/components/dialogs/AuthModal'), 'AuthModal');
+const AdminDashboardModal = safeLazy(() => import('@/components/dialogs/AdminDashboardModal'), 'AdminDashboardModal');
+const ContactAboutModal = safeLazy(() => import('@/components/dialogs/ContactAboutModal'), 'ContactAboutModal');
 
 export const App: React.FC = () => {
   const {
@@ -589,6 +598,15 @@ export const App: React.FC = () => {
                     {activeModal === 'legal' && <LegalDialog />}
           {activeModal === 'settings' && <SettingsDialog />}
           {activeModal === 'shortcuts' && <ShortcutsDialog />}
+          {activeModal === 'developer-tools' && <DeveloperToolsDialog />}
+          {activeModal === 'student-tools' && <StudentToolsSuiteDialog />}
+          {activeModal === 'image-tools' && <ImageToolsDialog />}
+          {activeModal === 'document-tools' && <DocumentToolsDialog />}
+          {activeModal === 'ai-tools' && <AIToolsDialog />}
+          {activeModal === 'pricing' && <PricingModal />}
+          {activeModal === 'auth' && <AuthModal />}
+          {activeModal === 'admin' && <AdminDashboardModal />}
+          {(activeModal === 'contact' || activeModal === 'about') && <ContactAboutModal />}
         </React.Suspense>
       </ErrorBoundary>
 

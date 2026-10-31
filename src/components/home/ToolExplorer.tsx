@@ -10,10 +10,12 @@ import {
   Flame,
   History,
   Trash2,
+  Code2,
+  FileType,
 } from 'lucide-react';
 import { ToolCategory, ToolDefinition } from '@/types/tools';
 import { TOOLS_CATALOG, searchTools } from '@/data/toolsCatalog';
-import { ToolCard, launchToolAction, ICON_MAP } from '@/components/home/ToolCard';
+import { ToolCard, launchToolAction } from '@/components/home/ToolCard';
 import { useFavoritesStore } from '@/stores/favoritesStore';
 import { useRecentToolsStore } from '@/stores/recentToolsStore';
 import { useUIStore } from '@/stores/uiStore';
@@ -26,9 +28,11 @@ const CATALOG_BY_ID: Record<string, ToolDefinition> = Object.fromEntries(
 const ALL_TOOLS_COUNT = TOOLS_CATALOG.length;
 
 const CATEGORY_LABELS: Record<ToolCategory, string> = {
-  pdf: 'PDF & Document Tools',
-  image: 'Photo & Image Tools',
-  student: 'Student & Study Tools',
+  pdf: 'PDF Tools',
+  image: 'Image Tools',
+  document: 'Document Tools',
+  student: 'Student Productivity Tools',
+  developer: 'Developer Utilities',
 };
 
 interface ToolExplorerProps {
@@ -59,12 +63,12 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
       list = list.filter((t) => favorites.includes(t.id));
     }
     if (showOnlyPopular) {
-      list = list.filter((t) => t.badge === 'popular' || ['merge-pdf', 'compress-pdf', 'target-kb-resizer', 'handwriting-generator', 'sign-pdf', 'split-pdf', 'ocr-pdf'].includes(t.id));
+      list = list.filter((t) => t.badge === 'popular' || ['merge-pdf', 'compress-pdf', 'target-kb-resizer', 'handwriting-generator', 'sign-pdf', 'split-pdf', 'ocr-pdf', 'resume-builder', 'json-formatter'].includes(t.id));
     }
     return list;
   }, [searchQuery, activeCategory, showOnlyFavorites, showOnlyPopular, favorites]);
 
-  // Locally recorded recent tools — only this user's real usage
+  // Locally recorded recent tools
   const recentTools = useMemo(() => {
     if (!recentToolIds.length) return [];
     return recentToolIds
@@ -83,43 +87,39 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
       id="tool-explorer"
       className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-6"
     >
-      {/* Recently Used — appears only when the user has local history */}
+      {/* Recently Used */}
       {recentTools.length > 0 && !searchQuery && !showOnlyFavorites && (
-        <div className="rounded-2xl border border-gray-200 bg-white p-3.5 sm:p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-3.5 sm:p-4 shadow-2xs">
           <div className="flex items-center justify-between gap-2 mb-2 px-1">
-            <h2 className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gray-500">
-              <History className="w-3.5 h-3.5 text-red-500" />
+            <h2 className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
+              <History className="w-3.5 h-3.5 text-blue-600" />
               Recently used
             </h2>
             <button
               type="button"
               onClick={clearRecents}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
               title="Clear your recent tools history"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>Clear</span>
             </button>
           </div>
-          <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
             {recentTools.map((tool) => {
-              const Icon = ICON_MAP[tool.iconName] || Flame;
               const isFav = favorites.includes(tool.id);
               return (
                 <div
                   key={tool.id}
-                  className="shrink-0 inline-flex items-stretch rounded-xl border border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300 transition-all text-left shadow-2xs"
+                  className="group relative flex items-center justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-blue-50/40 hover:border-blue-300 transition-all cursor-pointer"
                 >
                   <button
                     type="button"
                     onClick={() => launchRecent(tool)}
-                    className="inline-flex items-center gap-2 pl-3 pr-2 py-2"
-                    title={`Open ${tool.name}`}
+                    className="flex-1 text-left px-3 py-2 text-xs font-semibold text-slate-800 truncate"
+                    title={tool.name}
                   >
-                    <Icon className={`w-4 h-4 ${tool.color}`} />
-                    <span className="text-xs font-semibold text-gray-800 whitespace-nowrap">
-                      {tool.name}
-                    </span>
+                    {tool.name}
                   </button>
                   <button
                     type="button"
@@ -127,7 +127,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
                       e.stopPropagation();
                       toggleFavorite(tool.id);
                     }}
-                    className="p-2 mr-1 rounded-lg text-gray-400 hover:text-rose-500 transition-colors"
+                    className="p-2 mr-1 rounded-lg text-slate-400 hover:text-rose-500 transition-colors"
                     aria-label={isFav ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`}
                     title={isFav ? 'Remove from favorites' : 'Add to favorites'}
                   >
@@ -140,24 +140,24 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
         </div>
       )}
 
-      {/* Search & Category Filter Header Bar (BillGenHai Theme) */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5 bg-white p-3 sm:p-4 rounded-2xl border border-gray-200 shadow-xs">
+      {/* Search & Category Filter Header Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5 bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-2xs">
         {/* Live Search Input */}
         <div className="relative flex-1 md:max-w-md">
-          <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="search"
             enterKeyHint="search"
-            placeholder={`Search all ${ALL_TOOLS_COUNT} PDF & document tools…`}
+            placeholder={`Search all ${ALL_TOOLS_COUNT} utilities (e.g. merge, compress, resume, json)...`}
             aria-label="Search tools"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-xl pl-10 pr-9 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white focus:border-transparent transition-all placeholder:text-gray-400 font-sans shadow-2xs"
+            className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs sm:text-sm rounded-xl pl-10 pr-9 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white focus:border-blue-500 transition-all placeholder:text-slate-400 font-sans shadow-2xs"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="p-2 lg:p-1.5 hover:bg-gray-200 rounded-lg text-gray-400 hover:text-gray-700 absolute right-2.5 top-1/2 -translate-y-1/2"
+              className="p-2 lg:p-1.5 hover:bg-slate-200 rounded-lg text-slate-400 hover:text-slate-700 absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
               aria-label="Clear search"
               title="Clear search"
             >
@@ -171,8 +171,10 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
           {[
             { id: 'all' as const, label: 'All Tools', icon: LayoutGrid },
             { id: 'pdf' as const, label: 'PDF', icon: FileText },
-            { id: 'image' as const, label: 'Image & Photo', icon: ImageIcon },
+            { id: 'image' as const, label: 'Image', icon: ImageIcon },
+            { id: 'document' as const, label: 'Document', icon: FileType },
             { id: 'student' as const, label: 'Student', icon: GraduationCap },
+            { id: 'developer' as const, label: 'Developer', icon: Code2 },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeCategory === tab.id && !showOnlyFavorites && !showOnlyPopular;
@@ -185,10 +187,10 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
                   onCategoryChange(tab.id);
                 }}
                 aria-pressed={isActive}
-                className={`whitespace-nowrap min-h-[44px] lg:min-h-0 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
+                className={`whitespace-nowrap px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
                   isActive
-                    ? 'bg-red-600 text-white shadow-md shadow-red-500/20'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200/80 shadow-2xs'
+                    ? 'bg-blue-600 text-white shadow-xs shadow-blue-500/20'
+                    : 'bg-slate-100/80 text-slate-700 hover:bg-slate-200/70 border border-slate-200/60 shadow-2xs'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -204,10 +206,10 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
               setShowOnlyFavorites((prev) => !prev);
             }}
             aria-pressed={showOnlyFavorites}
-            className={`whitespace-nowrap min-h-[44px] lg:min-h-0 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
+            className={`whitespace-nowrap px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
               showOnlyFavorites
-                ? 'bg-rose-600 text-white shadow-md shadow-rose-500/20'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200/80 shadow-2xs'
+                ? 'bg-rose-600 text-white shadow-xs shadow-rose-500/20'
+                : 'bg-slate-100/80 text-slate-700 hover:bg-slate-200/70 border border-slate-200/60 shadow-2xs'
             }`}
           >
             <Heart className={`w-3.5 h-3.5 ${showOnlyFavorites ? 'fill-current text-white' : 'text-rose-500'}`} />
@@ -221,10 +223,10 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
               setShowOnlyPopular((prev) => !prev);
             }}
             aria-pressed={showOnlyPopular}
-            className={`whitespace-nowrap min-h-[44px] lg:min-h-0 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
+            className={`whitespace-nowrap px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 active:scale-95 flex items-center gap-1.5 cursor-pointer ${
               showOnlyPopular
-                ? 'bg-amber-600 text-white shadow-md shadow-amber-500/20'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200/80 shadow-2xs'
+                ? 'bg-amber-500 text-white shadow-xs shadow-amber-500/20'
+                : 'bg-slate-100/80 text-slate-700 hover:bg-slate-200/70 border border-slate-200/60 shadow-2xs'
             }`}
           >
             <Flame className={`w-3.5 h-3.5 ${showOnlyPopular ? 'fill-current text-white' : 'text-amber-500'}`} />
@@ -233,33 +235,33 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
         </div>
       </div>
 
-      {/* Tools Grid Section (BillGenHai Theme) */}
+      {/* Tools Grid Section */}
       <div className="space-y-4 pt-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-base sm:text-lg font-bold text-gray-900 flex items-center gap-2">
+          <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
             {showOnlyFavorites
               ? 'Your Favorite Tools'
               : searchQuery
               ? `Results for "${searchQuery}"`
               : activeCategory === 'all'
-              ? 'All Tools'
+              ? 'All Tools & Utilities'
               : CATEGORY_LABELS[activeCategory]}
-            <span className="text-xs font-semibold text-gray-500 px-2.5 py-0.5 rounded-full bg-gray-100 border border-gray-200">
+            <span className="text-xs font-semibold text-slate-500 px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200">
               {filteredTools.length} {filteredTools.length === 1 ? 'tool' : 'tools'}
             </span>
           </h2>
         </div>
 
         {filteredTools.length === 0 ? (
-          <div className="py-16 px-4 rounded-2xl bg-white border border-gray-200 text-center space-y-3 shadow-xs">
-            <div className="w-12 h-12 rounded-2xl bg-gray-100 text-gray-500 mx-auto flex items-center justify-center">
+          <div className="py-16 px-4 rounded-2xl bg-white border border-slate-200 text-center space-y-3 shadow-2xs">
+            <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-500 mx-auto flex items-center justify-center">
               <Search className="w-6 h-6" />
             </div>
-            <h4 className="text-base font-bold text-gray-900">No matching tools found</h4>
-            <p className="text-xs sm:text-sm text-gray-500 max-w-sm mx-auto">
+            <h4 className="text-base font-bold text-slate-900">No matching tools found</h4>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto">
               {showOnlyFavorites
                 ? "You haven't favorited any tools yet. Tap the heart on any card to save it here."
-                : `Nothing matches "${searchQuery}". Try searching for "compress", "photo 50 kb", "merge", "pdf to word", or "organize".`}
+                : `Nothing matches "${searchQuery}". Try searching for "compress", "photo 50 kb", "merge", "pdf to word", or "resume".`}
             </p>
             {(searchQuery || showOnlyFavorites) && (
               <button
@@ -267,7 +269,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
                   setSearchQuery('');
                   setShowOnlyFavorites(false);
                 }}
-                className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-red-500/20 active:scale-95 cursor-pointer"
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
               >
                 Show all tools
               </button>

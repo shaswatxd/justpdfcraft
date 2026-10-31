@@ -109,6 +109,7 @@ export const AppHeader: React.FC = () => {
     toggleSidebar,
     installPrompt,
     setInstallPrompt,
+    setCommandPaletteOpen,
   } = useUIStore();
 
   const isDocumentOpen = Boolean(documentId) && activeView === 'editor';
@@ -249,14 +250,14 @@ export const AppHeader: React.FC = () => {
           className={`${isDocumentOpen ? 'hidden lg:flex' : 'flex'} items-center gap-2.5 hover:opacity-95 transition-opacity select-none focus:outline-none shrink-0`}
           title={isDocumentOpen ? 'Back to Home Dashboard' : 'JustPDFCraft'}
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-white shadow-md shadow-red-500/20 group-hover:scale-105 transition-transform">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
             <SwiftLogo className="w-5 h-5 shrink-0 text-white fill-white" />
           </div>
           <div className="flex items-center gap-2">
             <span className="font-extrabold text-base sm:text-lg text-gray-900 tracking-tight">
-              Just<span className="text-red-600">PDFCraft</span>
+              Just<span className="text-blue-600">PDFCraft</span>
             </span>
-            <span className="hidden sm:inline-block bg-red-100 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+            <span className="hidden sm:inline-block bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
               100% Free
             </span>
           </div>
@@ -268,7 +269,7 @@ export const AppHeader: React.FC = () => {
             className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 rounded-lg text-xs font-semibold border border-gray-200 transition-all group shrink-0 shadow-2xs"
             title="Back to Home Dashboard"
           >
-            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform text-red-600" />
+            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform text-blue-600" />
             <span>Home</span>
           </button>
         )}
@@ -276,7 +277,7 @@ export const AppHeader: React.FC = () => {
         {documentId && activeView === 'home' && (
           <button
             onClick={() => setActiveView('editor')}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-all cursor-pointer"
             title="Return to your active document in the editor"
           >
             <FileText className="w-3.5 h-3.5" />
@@ -389,7 +390,7 @@ export const AppHeader: React.FC = () => {
                   if (e.key === 'Enter') handleCommitPage();
                   if (e.key === 'Escape') setPageInput(String(currentPage));
                 }}
-                className="w-7 bg-white border border-gray-300 rounded px-1 py-0.5 text-center text-xs text-gray-900 focus:outline-none focus:border-red-500 font-mono shadow-2xs"
+                className="w-7 bg-white border border-gray-300 rounded px-1 py-0.5 text-center text-xs text-gray-900 focus:outline-none focus:border-blue-500 font-mono shadow-2xs"
                 title="Type page number and press Enter"
               />
               <span className="text-gray-400 font-sans text-[11px]">/</span>
@@ -443,25 +444,25 @@ export const AppHeader: React.FC = () => {
         <nav className="hidden lg:flex items-center gap-1.5 text-xs font-bold select-none">
           <button
             onClick={() => setActiveModal('merge')}
-            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-red-600 hover:bg-red-50/70 transition-colors uppercase tracking-wide cursor-pointer"
+            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-blue-50/70 transition-colors uppercase tracking-wide cursor-pointer"
           >
             Merge PDF
           </button>
           <button
             onClick={() => setActiveModal('split')}
-            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-red-600 hover:bg-red-50/70 transition-colors uppercase tracking-wide cursor-pointer"
+            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-blue-50/70 transition-colors uppercase tracking-wide cursor-pointer"
           >
             Split PDF
           </button>
           <button
             onClick={() => setActiveModal('compress')}
-            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-red-600 hover:bg-red-50/70 transition-colors uppercase tracking-wide cursor-pointer"
+            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-blue-50/70 transition-colors uppercase tracking-wide cursor-pointer"
           >
             Compress PDF
           </button>
           <button
             onClick={() => setActiveModal('convert')}
-            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-red-600 hover:bg-red-50/70 transition-colors uppercase tracking-wide cursor-pointer"
+            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-blue-50/70 transition-colors uppercase tracking-wide cursor-pointer"
           >
             Convert PDF
           </button>
@@ -470,7 +471,7 @@ export const AppHeader: React.FC = () => {
               const el = document.getElementById('tool-explorer');
               el?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-red-600 hover:bg-red-50/70 transition-colors uppercase tracking-wide cursor-pointer"
+            className="px-3.5 py-2 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-blue-50/70 transition-colors uppercase tracking-wide cursor-pointer"
           >
             All PDF Tools
           </button>
@@ -505,7 +506,7 @@ export const AppHeader: React.FC = () => {
               {/* Mobile Direct Save Button */}
               <button
                 onClick={handleSave}
-                className="flex items-center gap-1 py-2 px-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all relative shadow-sm shrink-0"
+                className="flex items-center gap-1 py-2 px-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all relative shadow-sm shrink-0"
                 title="Save Document"
               >
                 <Save className="w-3.5 h-3.5" />
@@ -623,7 +624,7 @@ export const AppHeader: React.FC = () => {
               <div className="flex items-center rounded-lg shadow-md shadow-swift-900/30">
                 <button
                   onClick={handleSave}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-l-lg text-xs font-bold transition-all relative shadow-xs"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-l-lg text-xs font-bold transition-all relative shadow-xs"
                   title={fileHandle ? `Direct in-place save to ${fileName} (Ctrl+S)` : "Save changes to file (Ctrl+S)"}
                 >
                   <Save className="w-3.5 h-3.5" />
@@ -634,7 +635,7 @@ export const AppHeader: React.FC = () => {
                 </button>
                 <button
                   onClick={handleSaveAs}
-                  className="px-1.5 py-1.5 bg-red-700 hover:bg-red-800 text-white rounded-r-lg border-l border-red-500/40 text-xs transition-all flex items-center justify-center"
+                  className="px-1.5 py-1.5 bg-blue-700 hover:bg-blue-800 text-white rounded-r-lg border-l border-blue-500/40 text-xs transition-all flex items-center justify-center"
                   title="Save As... (Ctrl+Shift+S)"
                 >
                   <ChevronDown className="w-3 h-3" />
@@ -692,7 +693,7 @@ export const AppHeader: React.FC = () => {
         {!documentId && installPrompt && (
           <button
             onClick={handleInstall}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
             title="Install JustPDFCraft as an app on your device"
           >
             <Download className="w-3.5 h-3.5" />
@@ -700,11 +701,103 @@ export const AppHeader: React.FC = () => {
           </button>
         )}
 
+        {/* Desktop Main Navigation Links */}
+        {!documentId && (
+          <nav className="hidden lg:flex items-center gap-1 text-xs font-semibold text-slate-600">
+            <button
+              onClick={() => {
+                const el = document.getElementById('tool-explorer');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              All Tools
+            </button>
+            <button
+              onClick={() => {
+                const el = document.getElementById('tool-explorer');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              PDF Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('image-tools')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Image Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('document-tools')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Document Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('student-tools')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Student Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('developer-tools')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Developer Tools
+            </button>
+            <button
+              onClick={() => setActiveModal('about')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              About
+            </button>
+            <button
+              onClick={() => setActiveModal('contact')}
+              className="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50/60 transition-colors cursor-pointer"
+            >
+              Contact
+            </button>
+          </nav>
+        )}
+
+        {/* Global Search Trigger (Cmd+K / Ctrl+K) */}
+        {!documentId && (
+          <button
+            onClick={() => setCommandPaletteOpen(true)}
+            className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 hover:bg-slate-200/80 text-slate-500 rounded-xl text-xs font-medium transition-colors border border-slate-200/60 cursor-pointer"
+            title="Search tools (Ctrl+K / Cmd+K)"
+          >
+            <span>Search utilities...</span>
+            <kbd className="px-1.5 py-0.5 rounded bg-white text-[10px] font-mono border border-slate-200 text-slate-400">⌘K</kbd>
+          </button>
+        )}
+
+        {/* Account & Admin triggers */}
+        {!documentId && (
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setActiveModal('auth')}
+              className="px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold transition-all shadow-2xs cursor-pointer"
+              title="User Account & History"
+            >
+              Account
+            </button>
+            <button
+              onClick={() => setActiveModal('admin')}
+              className="p-1.5 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+              title="Admin Panel"
+            >
+              <Sliders className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
         {/* Mobile Navigation Menu Toggle */}
         {!documentId && (
           <button
             onClick={() => setMobileMenuOpen((o) => !o)}
-            className="lg:hidden p-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors -mr-1.5"
+            className="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
             title="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -772,7 +865,7 @@ export const AppHeader: React.FC = () => {
                     }}
                     className={`py-2 px-1 rounded-xl border flex flex-col items-center gap-1 text-[11px] font-medium transition-all ${
                       paperTone === t.id
-                        ? 'bg-red-50 border-red-500 text-red-700 font-semibold'
+                        ? 'bg-blue-50 border-blue-500 text-blue-700 font-semibold'
                         : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
                     }`}
                   >

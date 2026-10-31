@@ -205,6 +205,16 @@ export const launchToolAction = (
       ui.setActiveLegalTab(act.initialTab);
     } else if (act.modal === 'convert' && act.initialTab) {
       ui.setActiveConvertTab(act.initialTab);
+    } else if (act.modal === 'image-tools' && act.initialTab) {
+      ui.setActiveImageTab(act.initialTab);
+    } else if (act.modal === 'document-tools' && act.initialTab) {
+      ui.setActiveDocTab(act.initialTab);
+    } else if (act.modal === 'student-tools' && act.initialTab) {
+      ui.setActiveStudentTab(act.initialTab);
+    } else if (act.modal === 'developer-tools' && act.initialTab) {
+      ui.setActiveDeveloperTab(act.initialTab);
+    } else if (act.modal === 'ai-tools' && act.initialTab) {
+      ui.setActiveAITab(act.initialTab);
     }
     ui.setActiveModal(act.modal);
   } else if (act.type === 'workflow') {

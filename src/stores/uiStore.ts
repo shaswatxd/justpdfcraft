@@ -26,6 +26,16 @@ export type ModalType =
   | 'student-resizer'
   | 'handwriting'
   | 'legal'
+  | 'student-tools'
+  | 'developer-tools'
+  | 'image-tools'
+  | 'document-tools'
+  | 'ai-tools'
+  | 'pricing'
+  | 'auth'
+  | 'admin'
+  | 'contact'
+  | 'about'
   | null;
 
 export interface ToastMessage {
@@ -71,6 +81,16 @@ export interface UIState {
   setActiveLegalTab: (tab: string | null) => void;
   activeConvertTab: string | null;
   setActiveConvertTab: (tab: string | null) => void;
+  activeStudentTab: string | null;
+  setActiveStudentTab: (tab: string | null) => void;
+  activeDeveloperTab: string | null;
+  setActiveDeveloperTab: (tab: string | null) => void;
+  activeImageTab: string | null;
+  setActiveImageTab: (tab: string | null) => void;
+  activeDocTab: string | null;
+  setActiveDocTab: (tab: string | null) => void;
+  activeAITab: string | null;
+  setActiveAITab: (tab: string | null) => void;
 
   setPaperTone: (tone: PaperTone) => void;
   setActiveView: (view: ActiveView) => void;
@@ -157,6 +177,16 @@ export const useUIStore = create<UIState>((set) => ({
   setActiveLegalTab: (activeLegalTab) => set({ activeLegalTab }),
   activeConvertTab: null,
   setActiveConvertTab: (activeConvertTab) => set({ activeConvertTab }),
+  activeStudentTab: null,
+  setActiveStudentTab: (activeStudentTab) => set({ activeStudentTab }),
+  activeDeveloperTab: null,
+  setActiveDeveloperTab: (activeDeveloperTab) => set({ activeDeveloperTab }),
+  activeImageTab: null,
+  setActiveImageTab: (activeImageTab) => set({ activeImageTab }),
+  activeDocTab: null,
+  setActiveDocTab: (activeDocTab) => set({ activeDocTab }),
+  activeAITab: null,
+  setActiveAITab: (activeAITab) => set({ activeAITab }),
 
   setPaperTone: (paperTone: PaperTone) => {
     try {

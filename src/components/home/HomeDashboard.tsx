@@ -14,6 +14,10 @@ import { ToolExplorer } from '@/components/home/ToolExplorer';
 import { SecurityFeatureSection } from '@/components/home/SecurityFeatureSection';
 import { FAQSection } from '@/components/home/FAQSection';
 import { HomeFooter } from '@/components/home/HomeFooter';
+import { HowItWorksSection } from '@/components/home/HowItWorksSection';
+import { WhyChooseSection } from '@/components/home/WhyChooseSection';
+import { SeoContentSection } from '@/components/home/SeoContentSection';
+import { AdBanner } from '@/components/common/AdBanner';
 import { isNativeFSSupported } from '@core/storage/native-fs';
 import { launchToolAction } from '@/components/home/ToolCard';
 import { getToolFromSearch } from '@/utils/deepLink';
@@ -381,15 +385,15 @@ export const HomeDashboard: React.FC = () => {
           onDrop={handleDrop}
           className={`relative w-full max-w-xl mx-auto border-2 border-dashed rounded-3xl p-4 sm:p-8 transition-all duration-200 ${
             isDraggingFile
-              ? 'border-red-500 bg-red-500/[0.08]'
-              : 'border-gray-300 bg-white hover:border-red-500 shadow-xs hover:shadow-md'
+              ? 'border-blue-500 bg-blue-500/[0.05]'
+              : 'border-gray-300 bg-white hover:border-blue-500 shadow-xs hover:shadow-md'
           }`}
         >
           <div className="flex flex-col items-center text-center gap-2.5 sm:gap-3">
             <button
               type="button"
               onClick={() => handleOpenPdfClick()}
-              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white font-bold rounded-2xl text-base sm:text-lg shadow-lg shadow-red-500/25 transition-all min-h-[52px] cursor-pointer"
+              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold rounded-2xl text-base sm:text-lg shadow-lg shadow-blue-500/25 transition-all min-h-[52px] cursor-pointer"
             >
               <FolderOpen className="w-6 h-6" />
               <span>Select PDF files</span>
@@ -421,11 +425,23 @@ export const HomeDashboard: React.FC = () => {
           onSelectWorkflowFile={triggerWorkflowWithFile}
         />
 
+        {/* Google AdSense container */}
+        <AdBanner slotId="home-mid-banner" />
+
+        {/* How It Works Section */}
+        <HowItWorksSection />
+
         {/* Local-First Architecture Explainer */}
         <SecurityFeatureSection />
 
+        {/* Why Choose JustPDFCraft */}
+        <WhyChooseSection />
+
         {/* FAQ Accordion */}
         <FAQSection />
+
+        {/* SEO-friendly Content */}
+        <SeoContentSection />
       </div>
 
       {/* Footer */}

@@ -22,6 +22,10 @@ import {
   GraduationCap,
   Expand,
   Printer,
+  Image as ImageIcon,
+  FileText,
+  Code2,
+  Sparkles,
 } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
@@ -145,6 +149,41 @@ export const CommandPalette: React.FC = () => {
       category: 'Tools',
       icon: GraduationCap,
       action: () => setActiveModal('student-resizer'),
+    },
+    {
+      id: 'image_tools',
+      title: 'Image Tools Suite (Compress, Resize, Crop, Passport, Convert)',
+      category: 'Tools',
+      icon: ImageIcon,
+      action: () => setActiveModal('image-tools'),
+    },
+    {
+      id: 'document_tools',
+      title: 'Document Tools Suite (Word, Excel, Text, Markdown to PDF)',
+      category: 'Tools',
+      icon: FileText,
+      action: () => setActiveModal('document-tools'),
+    },
+    {
+      id: 'student_tools',
+      title: 'Student Productivity Suite (Resume, CGPA, GPA, Calculator, Timetable)',
+      category: 'Tools',
+      icon: GraduationCap,
+      action: () => setActiveModal('student-tools'),
+    },
+    {
+      id: 'developer_tools',
+      title: 'Developer Utilities Suite (JSON, Regex, Diff, QR Code, Base64, JWT)',
+      category: 'Tools',
+      icon: Code2,
+      action: () => setActiveModal('developer-tools'),
+    },
+    {
+      id: 'ai_tools',
+      title: 'AI Document Assistant (Summarize, Q&A, Translate, Resume Review)',
+      category: 'Tools',
+      icon: Sparkles,
+      action: () => setActiveModal('ai-tools'),
     },
     {
       id: 'save',

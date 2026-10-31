@@ -8,7 +8,7 @@ import { TOOLS_CATALOG, searchTools } from '@/data/toolsCatalog';
  */
 describe('tokenized tool search', () => {
   it('keeps exactly the expected catalogue shape', () => {
-    expect(TOOLS_CATALOG.length).toBe(23);
+    expect(TOOLS_CATALOG.length).toBe(93);
   });
 
   it.each([
