@@ -323,8 +323,19 @@ export const OCRDialog: React.FC = () => {
         async (pIdx) => {
           if (cancelledRef.current || signal?.aborted) return null;
           setStatusText(`Rendering page ${pIdx + 1} at 300 DPI equivalent...`);
-          const renderRes = await engine.renderPage(documentId, pIdx, 2.5);
-          return renderRes.canvas || null;
+          try {
+            const renderRes = await engine.renderPage(documentId, pIdx, 2.5);
+            return renderRes.canvas || null;
+          } catch (err) {
+            console.warn(`Rendering page ${pIdx + 1} at 2.5 scale failed, retrying at 1.5 scale:`, err);
+            try {
+              const fallbackRes = await engine.renderPage(documentId, pIdx, 1.5);
+              return fallbackRes.canvas || null;
+            } catch (fallbackErr) {
+              console.error(`Page ${pIdx + 1} render failed completely:`, fallbackErr);
+              return null;
+            }
+          }
         },
         {
           language,
@@ -384,7 +395,7 @@ export const OCRDialog: React.FC = () => {
       }
 
       if (results.length === 0) {
-        throw new Error('Unable to render page canvases for visual text recognition.');
+        throw new Error('No text or page content could be recognized. Please check the document and try again.');
       }
 
       setProgress(100);

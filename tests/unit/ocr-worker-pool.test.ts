@@ -117,7 +117,7 @@ describe('OCR Worker Pool & Multi-Threaded Batch Queue', () => {
       expect(results.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('should clean up worker threads on terminate', async () => {
+    it('should clean up worker threads on terminate and reset isTerminated on init', async () => {
       const mockWorker: any = {
         terminate: vi.fn().mockResolvedValue(undefined),
       };
@@ -127,6 +127,54 @@ describe('OCR Worker Pool & Multi-Threaded Batch Queue', () => {
 
       expect(mockWorker.terminate).toHaveBeenCalled();
       expect(pool.activeWorkerCount).toBe(0);
+      expect((pool as any).isTerminated).toBe(true);
+
+      // Now mock initPool's internal worker creation
+      const newMockWorker: any = {
+        setParameters: vi.fn().mockResolvedValue(undefined),
+        recognize: vi.fn().mockResolvedValue({
+          data: { text: 'First run text', confidence: 92, lines: [] },
+        }),
+        terminate: vi.fn().mockResolvedValue(undefined),
+      };
+
+      vi.spyOn(pool, 'initPool').mockImplementation(async () => {
+        (pool as any).isTerminated = false;
+        (pool as any).workers = [newMockWorker];
+        return [newMockWorker];
+      });
+
+      // Verify the very first run succeeds and is not prematurely broken by isTerminated
+      const firstRunResults = await pool.processBatchStreaming(
+        [0],
+        async () => ({ width: 10, height: 10 } as any),
+        { concurrency: 1, preprocess: false }
+      );
+
+      expect(firstRunResults.length).toBe(1);
+      expect(firstRunResults[0].text).toBe('First run text');
+    });
+
+    it('should continue processing remaining pages if a single page canvas is empty or fails', async () => {
+      const mockWorker: any = {
+        setParameters: vi.fn().mockResolvedValue(undefined),
+        recognize: vi.fn().mockResolvedValue({
+          data: { text: 'Page 2 content', confidence: 88, lines: [] },
+        }),
+        terminate: vi.fn().mockResolvedValue(undefined),
+      };
+
+      vi.spyOn(pool, 'initPool').mockResolvedValue([mockWorker]);
+
+      const results = await pool.processBatchStreaming(
+        [0, 1],
+        async (pIdx) => (pIdx === 0 ? null : ({ width: 10, height: 10 } as any)),
+        { concurrency: 1, preprocess: false }
+      );
+
+      expect(results.length).toBe(2);
+      expect(results[0].text).toContain('[Page 1 empty canvas]');
+      expect(results[1].text).toBe('Page 2 content');
     });
   });
 });

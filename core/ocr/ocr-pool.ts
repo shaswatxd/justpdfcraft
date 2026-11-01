@@ -49,13 +49,15 @@ export class OCRWorkerPool {
   }
 
   private async _doInitPool(language: string = 'eng+hin', targetCount: number = 1): Promise<Worker[]> {
-    this.isTerminated = false;
     const clampedCount = Math.max(1, Math.min(targetCount, 8));
 
     // If language changed or pool count changed, tear down old workers
     if (this.currentLanguage !== language || this.workers.length !== clampedCount) {
       await this.terminate();
     }
+
+    // Always reset isTerminated to false once teardown completes
+    this.isTerminated = false;
 
     if (this.workers.length === clampedCount && this.currentLanguage === language) {
       return this.workers;
@@ -86,6 +88,7 @@ export class OCRWorkerPool {
 
     this.workers = await Promise.all(workerPromises);
     this.currentLanguage = language;
+    this.isTerminated = false;
     return this.workers;
   }
 
@@ -180,9 +183,11 @@ export class OCRWorkerPool {
   ): Promise<OCRPageResult[]> {
     if (pageIndices.length === 0) return [];
 
+    this.isTerminated = false;
     const language = options?.language || 'eng+hin';
     const concurrency = options?.concurrency ?? getOptimalWorkerCount(pageIndices.length);
     const workers = await this.initPool(language, concurrency);
+    this.isTerminated = false;
 
     const totalToProcess = pageIndices.length;
     const queue = [...pageIndices];
@@ -205,12 +210,35 @@ export class OCRWorkerPool {
           canvas = await renderPage(pIdx);
         } catch (renderErr) {
           console.error(`Failed to render page ${pIdx + 1}:`, renderErr);
+          resultsMap.set(pIdx, {
+            pageIndex: pIdx,
+            text: `[Page ${pIdx + 1} render failed]`,
+            confidence: 0,
+            lines: [],
+            wordCount: 0,
+            charCount: 0,
+          });
+          completedCount++;
           continue;
         }
 
-        if (!canvas || options?.abortSignal?.aborted || this.isTerminated) {
+        if (options?.abortSignal?.aborted || this.isTerminated) {
           if (canvas) { canvas.width = 1; canvas.height = 1; }
           break;
+        }
+
+        if (!canvas) {
+          console.warn(`No canvas returned for page ${pIdx + 1}`);
+          resultsMap.set(pIdx, {
+            pageIndex: pIdx,
+            text: `[Page ${pIdx + 1} empty canvas]`,
+            confidence: 0,
+            lines: [],
+            wordCount: 0,
+            charCount: 0,
+          });
+          completedCount++;
+          continue;
         }
 
         try {
