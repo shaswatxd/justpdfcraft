@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RefreshCw, X, Download, Image as ImageIcon, Plus, Trash2, FileText, Copy, Check, FileType, Moon } from 'lucide-react';
+import { RefreshCw, X, Download, Image as ImageIcon, Plus, Trash2, FileText, Copy, Check, FileType, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
 import { getPDFEngine } from '@core/pdf/engine.factory';
@@ -42,6 +42,22 @@ export const ConvertDialog: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [inputTitle, setInputTitle] = useState('My Document');
   const textFileInputRef = React.useRef<HTMLInputElement>(null);
+  const convertTabNavRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollConvertTabs = (direction: 'left' | 'right') => {
+    if (convertTabNavRef.current) {
+      convertTabNavRef.current.scrollBy({ left: direction === 'left' ? -200 : 200, behavior: 'smooth' });
+    }
+  };
+
+  React.useEffect(() => {
+    if (convertTabNavRef.current) {
+      const activeBtn = convertTabNavRef.current.querySelector<HTMLElement>('[data-active="true"]');
+      if (activeBtn) {
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+  }, [mode]);
 
   const handleConvertTextToPdf = async () => {
     if (!inputText.trim()) return;
@@ -652,7 +668,7 @@ export const ConvertDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-gray-50/50 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Convert Dialog">
-      <div className="w-full max-w-2xl bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+      <div className="w-full max-w-3xl sm:max-w-4xl bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -672,11 +688,26 @@ export const ConvertDialog: React.FC = () => {
           </button>
         </div>
 
-        {/* Mode Switcher */}
-        <div className="flex border-b border-gray-200 bg-slate-50/70 px-4 sm:px-6 pt-2 gap-1 text-xs overflow-x-auto scrollbar-none overscroll-x-contain touch-pan-x">
+        {/* Mode Switcher with Interactive Scroll Controls */}
+        <div className="relative border-b border-gray-200 bg-slate-50/70 flex items-center px-1 sm:px-2">
+          <button
+            type="button"
+            onClick={() => scrollConvertTabs('left')}
+            className="p-1 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-200/60 transition-colors shrink-0 z-10 cursor-pointer hidden sm:flex items-center justify-center mb-1"
+            title="Scroll left"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+
+          <div
+            ref={convertTabNavRef}
+            className="flex-1 flex px-2 pt-2 gap-1 text-xs overflow-x-auto scroll-smooth scrollbar-none overscroll-x-contain touch-pan-x"
+          >
           <button
             type="button"
             onClick={() => setMode('pdf-to-img')}
+            data-active={mode === 'pdf-to-img' ? 'true' : 'false'}
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer ${
               mode === 'pdf-to-img'
                 ? 'border-teal-600 text-teal-700 bg-white rounded-t-lg shadow-2xs'
@@ -689,6 +720,7 @@ export const ConvertDialog: React.FC = () => {
           <button
             type="button"
             onClick={() => setMode('pdf-to-word')}
+            data-active={mode === 'pdf-to-word' ? 'true' : 'false'}
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer ${
               mode === 'pdf-to-word'
                 ? 'border-teal-600 text-teal-700 bg-white rounded-t-lg shadow-2xs'
@@ -701,6 +733,7 @@ export const ConvertDialog: React.FC = () => {
           <button
             type="button"
             onClick={() => setMode('pdf-to-powerpoint')}
+            data-active={mode === 'pdf-to-powerpoint' ? 'true' : 'false'}
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer ${
               mode === 'pdf-to-powerpoint'
                 ? 'border-orange-600 text-orange-700 bg-white rounded-t-lg shadow-2xs'
@@ -713,6 +746,7 @@ export const ConvertDialog: React.FC = () => {
           <button
             type="button"
             onClick={() => setMode('pdf-to-grayscale')}
+            data-active={mode === 'pdf-to-grayscale' ? 'true' : 'false'}
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer ${
               mode === 'pdf-to-grayscale'
                 ? 'border-teal-600 text-teal-700 bg-white rounded-t-lg shadow-2xs'
@@ -725,6 +759,7 @@ export const ConvertDialog: React.FC = () => {
           <button
             type="button"
             onClick={() => setMode('pdf-to-pdfa')}
+            data-active={mode === 'pdf-to-pdfa' ? 'true' : 'false'}
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer ${
               mode === 'pdf-to-pdfa'
                 ? 'border-teal-600 text-teal-700 bg-white rounded-t-lg shadow-2xs'
@@ -737,6 +772,7 @@ export const ConvertDialog: React.FC = () => {
           <button
             type="button"
             onClick={() => setMode('pdf-to-txt')}
+            data-active={mode === 'pdf-to-txt' ? 'true' : 'false'}
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer ${
               mode === 'pdf-to-txt'
                 ? 'border-teal-600 text-teal-700 bg-white rounded-t-lg shadow-2xs'
@@ -749,6 +785,7 @@ export const ConvertDialog: React.FC = () => {
           <button
             type="button"
             onClick={() => setMode('img-to-pdf')}
+            data-active={mode === 'img-to-pdf' ? 'true' : 'false'}
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer ${
               mode === 'img-to-pdf'
                 ? 'border-teal-600 text-teal-700 bg-white rounded-t-lg shadow-2xs'
@@ -761,6 +798,7 @@ export const ConvertDialog: React.FC = () => {
           <button
             type="button"
             onClick={() => setMode('txt-to-pdf')}
+            data-active={mode === 'txt-to-pdf' ? 'true' : 'false'}
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer ${
               mode === 'txt-to-pdf'
                 ? 'border-teal-600 text-teal-700 bg-white rounded-t-lg shadow-2xs'
@@ -769,6 +807,17 @@ export const ConvertDialog: React.FC = () => {
           >
             <FileText className="w-4 h-4 shrink-0" />
             <span>Text to PDF</span>
+          </button>
+        </div>
+
+          <button
+            type="button"
+            onClick={() => scrollConvertTabs('right')}
+            className="p-1 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-200/60 transition-colors shrink-0 z-10 cursor-pointer hidden sm:flex items-center justify-center mb-1"
+            title="Scroll right"
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
