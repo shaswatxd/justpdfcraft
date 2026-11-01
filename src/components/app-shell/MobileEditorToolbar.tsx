@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   Hand,
+  RefreshCw,
   PenTool,
   Highlighter,
   Type,
@@ -24,6 +25,7 @@ import {
   Crop,
   Sparkles,
   Edit3,
+  FileText,
 } from 'lucide-react';
 import { useToolStore, ToolMode } from '@/stores/toolStore';
 import { useDocumentStore } from '@/stores/documentStore';
@@ -297,7 +299,7 @@ export const MobileEditorToolbar: React.FC = () => {
           onClick={() => handleToolSelect('edit_text')}
           className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all shrink-0 min-w-[44px] ${
             currentTool === 'edit_text'
-              ? 'text-cyan-400 bg-cyan-500/20 font-bold ring-1 ring-cyan-500/40'
+              ? 'text-blue-700 bg-blue-50 font-bold ring-1 ring-blue-300 shadow-2xs'
               : 'text-gray-500 hover:text-gray-900'
           }`}
           title="Edit Existing Text in PDF"
@@ -311,7 +313,7 @@ export const MobileEditorToolbar: React.FC = () => {
           onClick={() => handleToolSelect('draw')}
           className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all relative shrink-0 min-w-[44px] ${
             currentTool === 'draw'
-              ? 'text-red-600 bg-red-50 text-red-600 font-semibold'
+              ? 'text-red-700 bg-red-50 font-bold ring-1 ring-red-300 shadow-2xs'
               : 'text-gray-500 hover:text-gray-900'
           }`}
           title="Pen / Freehand Draw"
@@ -331,7 +333,7 @@ export const MobileEditorToolbar: React.FC = () => {
           onClick={() => handleToolSelect('highlight')}
           className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all relative shrink-0 min-w-[44px] ${
             currentTool === 'highlight'
-              ? 'text-amber-400 bg-amber-500/15 font-semibold'
+              ? 'text-amber-700 bg-amber-50 font-bold ring-1 ring-amber-300 shadow-2xs'
               : 'text-gray-500 hover:text-gray-900'
           }`}
           title="Highlighter"
@@ -345,7 +347,7 @@ export const MobileEditorToolbar: React.FC = () => {
           onClick={() => handleToolSelect('text')}
           className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all shrink-0 min-w-[44px] ${
             currentTool === 'text'
-              ? 'text-emerald-400 bg-emerald-500/15 font-semibold'
+              ? 'text-emerald-700 bg-emerald-50 font-bold ring-1 ring-emerald-300 shadow-2xs'
               : 'text-gray-500 hover:text-gray-900'
           }`}
           title="Add Text"
@@ -357,7 +359,7 @@ export const MobileEditorToolbar: React.FC = () => {
         {/* Sign Tool */}
         <button
           onClick={() => setActiveModal('sign')}
-          className="flex flex-col items-center justify-center p-1.5 rounded-xl text-purple-400 hover:text-purple-300 transition-all shrink-0 min-w-[44px]"
+          className="flex flex-col items-center justify-center p-1.5 rounded-xl text-purple-700 hover:text-purple-900 hover:bg-purple-50 transition-all shrink-0 min-w-[44px]"
           title="Sign Document"
         >
           <Stamp className="w-4 h-4" />
@@ -369,7 +371,7 @@ export const MobileEditorToolbar: React.FC = () => {
           onClick={() => handleToolSelect('eraser')}
           className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all shrink-0 min-w-[44px] ${
             currentTool === 'eraser'
-              ? 'text-rose-400 bg-rose-500/15 font-semibold'
+              ? 'text-rose-700 bg-rose-50 font-bold ring-1 ring-rose-300 shadow-2xs'
               : 'text-gray-500 hover:text-gray-900'
           }`}
           title="Eraser"
@@ -412,14 +414,18 @@ export const MobileEditorToolbar: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-2.5">
               {[
-                { id: 'compress', label: 'Compress PDF', icon: FileArchive, color: 'text-emerald-400', desc: 'Reduce file size' },
-                { id: 'split', label: 'Split & Extract', icon: Scissors, color: 'text-rose-400', desc: 'Cut into pages' },
+                { id: 'compress', label: 'Compress PDF', icon: FileArchive, color: 'text-emerald-600', desc: 'Reduce file size' },
+                { id: 'split', label: 'Split & Extract', icon: Scissors, color: 'text-orange-600', desc: 'Cut into pages' },
                 { id: 'merge', label: 'Merge Files', icon: Files, color: 'text-red-600', desc: 'Combine external PDFs' },
-                { id: 'ocr', label: 'Scan & OCR', icon: ScanText, color: 'text-cyan-400', desc: 'Extract text' },
-                { id: 'protect', label: 'Protect / Lock', icon: Shield, color: 'text-amber-400', desc: 'Password encryption' },
-                { id: 'watermark', label: 'Watermark', icon: Droplets, color: 'text-indigo-400', desc: 'Custom text stamp' },
-                { id: 'crop', label: 'Crop Margins', icon: Crop, color: 'text-teal-400', desc: 'Trim white margins' },
-                { id: 'student-resizer', label: 'Exam Resizer', icon: Sparkles, color: 'text-pink-400', desc: 'Target 20-50 KB' },
+                { id: 'ocr', label: 'Scan & OCR', icon: ScanText, color: 'text-cyan-600', desc: 'Extract text' },
+                { id: 'protect', label: 'Protect / Lock', icon: Shield, color: 'text-emerald-600', desc: 'Password encryption' },
+                { id: 'repair', label: 'Repair PDF', icon: RefreshCw, color: 'text-amber-600', desc: 'Recover damaged file' },
+                { id: 'document-tools', label: 'Office to PDF', icon: FileText, color: 'text-blue-600', desc: 'Word, Excel, PPT' },
+                { id: 'handwriting', label: 'Handwriting', icon: PenTool, color: 'text-red-600', desc: 'Notes on ruled sheet' },
+                { id: 'watermark', label: 'Watermark', icon: Droplets, color: 'text-blue-600', desc: 'Custom text stamp' },
+                { id: 'crop', label: 'Crop Margins', icon: Crop, color: 'text-teal-600', desc: 'Trim white margins' },
+                { id: 'student-resizer', label: 'Exam Resizer', icon: Sparkles, color: 'text-pink-600', desc: 'Target 20-50 KB' },
+                { id: 'bates', label: 'Page Numbers', icon: AlignJustify, color: 'text-slate-700', desc: 'Headers & Footers' },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
