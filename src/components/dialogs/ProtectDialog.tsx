@@ -17,10 +17,16 @@ import { getPDFEngine } from '@core/pdf/engine.factory';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const ProtectDialog: React.FC = () => {
-  const { activeModal, setActiveModal, activeView, addToast } = useUIStore();
+  const { activeModal, setActiveModal, activeView, addToast, activeProtectTab } = useUIStore();
   const { documentId, metadata, pushHistory, fileName, filePath, loadDocument, closeCurrentDocument } = useDocumentStore();
 
   const [activeTab, setActiveTab] = useState<'unlock' | 'protect'>('unlock');
+
+  React.useEffect(() => {
+    if (activeProtectTab) {
+      setActiveTab(activeProtectTab);
+    }
+  }, [activeProtectTab]);
   const [userPassword, setUserPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [restrictPrinting, setRestrictPrinting] = useState(false);

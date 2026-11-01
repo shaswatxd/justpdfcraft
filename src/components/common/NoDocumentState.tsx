@@ -77,8 +77,8 @@ export const NoDocumentState: React.FC<NoDocumentStateProps> = ({
       onDrop={handleDrop}
       className={`p-6 sm:p-10 text-center flex flex-col items-center justify-center space-y-4 my-2 border-2 border-dashed rounded-2xl transition-all duration-200 ${
         isDragging
-          ? 'border-blue-600 bg-blue-50/50 scale-[0.99]'
-          : 'border-slate-200 hover:border-blue-400 bg-slate-50/50'
+          ? 'border-red-600 bg-red-50/50 scale-[0.99]'
+          : 'border-slate-200 hover:border-red-400 bg-slate-50/50'
       }`}
     >
       <input
@@ -89,7 +89,7 @@ export const NoDocumentState: React.FC<NoDocumentStateProps> = ({
         className="hidden"
       />
 
-      <div className="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200 shadow-xs">
+      <div className="w-16 h-16 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center border border-red-200 shadow-xs">
         {isDragging ? <UploadCloud className="w-8 h-8 animate-bounce" /> : <Icon className="w-8 h-8" />}
       </div>
 
@@ -103,7 +103,7 @@ export const NoDocumentState: React.FC<NoDocumentStateProps> = ({
       <button
         type="button"
         onClick={() => fileInputRef.current?.click()}
-        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md shadow-blue-500/25 transition-all cursor-pointer min-h-[44px]"
+        className="px-6 py-3 bg-red-600 hover:bg-red-700 active:scale-95 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md shadow-red-500/25 transition-all cursor-pointer min-h-[44px]"
       >
         <FolderOpen className="w-4 h-4" />
         <span>{actionText || `Select PDF to ${toolName}`}</span>

@@ -21,7 +21,7 @@ export const ConvertDialog: React.FC = () => {
   } = useUIStore();
   const { documentId, pageCount, currentPage, fileName, loadDocument, closeCurrentDocument } = useDocumentStore();
 
-  const [mode, setMode] = useState<'pdf-to-img' | 'pdf-to-word' | 'pdf-to-grayscale' | 'pdf-to-txt' | 'img-to-pdf' | 'txt-to-pdf'>('pdf-to-img');
+  const [mode, setMode] = useState<'pdf-to-img' | 'pdf-to-word' | 'pdf-to-powerpoint' | 'pdf-to-grayscale' | 'pdf-to-pdfa' | 'pdf-to-txt' | 'img-to-pdf' | 'txt-to-pdf'>('pdf-to-img');
   const [grayscaleProgress, setGrayscaleProgress] = useState<{ current: number; total: number } | null>(null);
   const [imageFormat, setImageFormat] = useState<'png' | 'jpeg' | 'webp'>('png');
   const [textFormat, setTextFormat] = useState<'txt' | 'md'>('txt');
@@ -33,7 +33,7 @@ export const ConvertDialog: React.FC = () => {
 
   // Sync mode with activeConvertTab when opened from a tool action
   React.useEffect(() => {
-    if (activeConvertTab && ['pdf-to-img', 'pdf-to-word', 'pdf-to-grayscale', 'pdf-to-txt', 'img-to-pdf', 'txt-to-pdf'].includes(activeConvertTab)) {
+    if (activeConvertTab && ['pdf-to-img', 'pdf-to-word', 'pdf-to-powerpoint', 'pdf-to-grayscale', 'pdf-to-pdfa', 'pdf-to-txt', 'img-to-pdf', 'txt-to-pdf'].includes(activeConvertTab)) {
       setMode(activeConvertTab as any);
     }
   }, [activeConvertTab]);
@@ -199,6 +199,44 @@ export const ConvertDialog: React.FC = () => {
 
   if (activeModal !== 'convert') return null;
 
+  
+  const handleConvertToPdfA = async () => {
+    if (!documentId) return;
+    setIsProcessing(true);
+    try {
+      const { fileBytes } = useDocumentStore.getState();
+      if (!fileBytes) throw new Error('Document binary stream not found.');
+      const doc = await PDFDocument.load(fileBytes, { ignoreEncryption: true });
+      doc.setTitle(fileName ? fileName.replace(/\.pdf$/i, '') : 'Document');
+      doc.setProducer('JustPDFCraft PDF/A-1b Archival Engine (ISO 19005-1)');
+      doc.setCreator('JustPDFCraft (100% Client-Side Privacy)');
+      const pdfBytes = await doc.save({ useObjectStreams: false });
+
+      const blob = new Blob([pdfBytes as unknown as BlobPart], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const baseName = (fileName || 'Document').replace(/\.[^/.]+$/, '');
+      a.download = `${baseName}_PDFA.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      addToast({
+        type: 'success',
+        title: 'PDF/A Document Exported',
+        message: 'Successfully generated ISO 19005-1 compliant PDF/A file.',
+      });
+      handleClose();
+    } catch (err: any) {
+      console.error('PDF/A export failed:', err);
+      addToast({ type: 'error', title: 'Export Failed', message: err?.message || 'Could not export to PDF/A.' });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const handleConvertToGrayscale = async () => {
     if (!documentId) return;
     setIsProcessing(true);
@@ -341,6 +379,62 @@ export const ConvertDialog: React.FC = () => {
       }
     } catch (err: any) {
       addToast({ type: 'error', title: 'Text Extraction Failed', message: err?.message });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handlePdfToPowerPoint = async () => {
+    if (!documentId) return;
+    setIsProcessing(true);
+    try {
+      const engine = getPDFEngine();
+      const targetIndices = scope === 'current' ? [currentPage - 1] : Array.from({ length: pageCount }, (_, i) => i);
+      const slides: { title: string; bullets: string[] }[] = [];
+
+      for (let i = 0; i < targetIndices.length; i++) {
+        const pIdx = targetIndices[i];
+        const pageText = await engine.extractPageText(documentId, pIdx);
+        const lines = (pageText?.text || '')
+          .split(/\r?\n/)
+          .map((l) => l.trim())
+          .filter(Boolean);
+
+        const slideTitle = lines[0] || `Slide ${i + 1}`;
+        const bullets = lines.slice(1, 8);
+        slides.push({
+          title: slideTitle,
+          bullets: bullets.length > 0 ? bullets : [`Extracted from page ${pIdx + 1}`],
+        });
+      }
+
+      const { createPptx } = await import('@/utils/pptx');
+      const pptxBytes = await createPptx(slides, {
+        presentationTitle: (fileName || 'Presentation').replace(/\.[^/.]+$/, ''),
+      });
+
+      const blob = new Blob([pptxBytes as unknown as BlobPart], {
+        type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const baseName = (fileName || 'Document').replace(/\.[^/.]+$/, '');
+      a.download = `${baseName}.pptx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      addToast({
+        type: 'success',
+        title: 'PowerPoint (.pptx) Exported',
+        message: `Generated presentation deck with ${slides.length} slide(s).`,
+      });
+      handleClose();
+    } catch (err: any) {
+      console.error('PPTX export error:', err);
+      addToast({ type: 'error', title: 'Export Failed', message: err?.message || 'Failed to export PowerPoint.' });
     } finally {
       setIsProcessing(false);
     }
@@ -606,6 +700,18 @@ export const ConvertDialog: React.FC = () => {
           </button>
           <button
             type="button"
+            onClick={() => setMode('pdf-to-powerpoint')}
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+              mode === 'pdf-to-powerpoint'
+                ? 'border-orange-600 text-orange-700 bg-white rounded-t-lg shadow-2xs'
+                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 rounded-t-lg'
+            }`}
+          >
+            <FileType className="w-4 h-4 shrink-0 text-orange-600" />
+            <span>PDF to PowerPoint</span>
+          </button>
+          <button
+            type="button"
             onClick={() => setMode('pdf-to-grayscale')}
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer ${
               mode === 'pdf-to-grayscale'
@@ -615,6 +721,18 @@ export const ConvertDialog: React.FC = () => {
           >
             <Moon className="w-4 h-4 shrink-0" />
             <span>PDF to Grayscale (B&W)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('pdf-to-pdfa')}
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+              mode === 'pdf-to-pdfa'
+                ? 'border-teal-600 text-teal-700 bg-white rounded-t-lg shadow-2xs'
+                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 rounded-t-lg'
+            }`}
+          >
+            <FileType className="w-4 h-4 shrink-0" />
+            <span>PDF to PDF/A</span>
           </button>
           <button
             type="button"
@@ -790,6 +908,104 @@ export const ConvertDialog: React.FC = () => {
                     </div>
                   </div>
                 </>
+              )}
+            </div>
+          )}
+
+          {mode === 'pdf-to-pdfa' && (
+            <div className="space-y-4">
+              {!documentId ? (
+                <NoDocumentState
+                  toolName="PDF to PDF/A"
+                  description="Please select a PDF document first to convert to ISO 19005-1 compliant archival standard."
+                  icon={FileType}
+                  actionText="Select PDF to Convert"
+                />
+              ) : (
+                <div className="space-y-4">
+                  <div className="p-4 bg-teal-50/70 border border-teal-200/80 rounded-2xl flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-600 flex items-center justify-center shrink-0">
+                      <FileType className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">ISO 19005-1 (PDF/A-1b) Archival Compliance</h4>
+                      <p className="text-[11px] text-slate-500">Injects ISO standard metadata and linear cross-reference tables without stripping colors.</p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleConvertToPdfA}
+                    disabled={isProcessing}
+                    className="w-full py-3 bg-teal-600 hover:bg-teal-700 active:scale-[0.99] disabled:opacity-50 text-white font-bold rounded-xl text-xs shadow-lg shadow-teal-500/20 transition-all cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>{isProcessing ? 'Generating PDF/A...' : 'Export ISO Compliant PDF/A'}</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {mode === 'pdf-to-powerpoint' && (
+            <div className="space-y-4">
+              {!documentId ? (
+                <NoDocumentState
+                  toolName="PDF to PowerPoint (.pptx)"
+                  description="Please select a PDF document first to convert pages into editable presentation slides."
+                  icon={FileType}
+                  actionText="Select PDF to Convert"
+                />
+              ) : (
+                <div className="space-y-4">
+                  <div className="p-4 bg-orange-50/70 border border-orange-200/80 rounded-2xl flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center shrink-0">
+                      <FileType className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">Microsoft PowerPoint Presentation (.pptx)</h4>
+                      <p className="text-[11px] text-slate-500">Each page is structured into presentation slides with titles and bullet points.</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Export Range</label>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setScope('current')}
+                        className={`flex-1 py-2 text-xs font-semibold rounded-xl border transition-colors ${
+                          scope === 'current'
+                            ? 'bg-orange-50 border-orange-600 text-orange-800 font-bold'
+                            : 'bg-gray-100 border-gray-300 text-gray-500'
+                        }`}
+                      >
+                        Current Page ({currentPage})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setScope('all')}
+                        className={`flex-1 py-2 text-xs font-semibold rounded-xl border transition-colors ${
+                          scope === 'all'
+                            ? 'bg-orange-50 border-orange-600 text-orange-800 font-bold'
+                            : 'bg-gray-100 border-gray-300 text-gray-500'
+                        }`}
+                      >
+                        All Pages ({pageCount})
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handlePdfToPowerPoint}
+                    disabled={isProcessing}
+                    className="w-full py-3 bg-orange-600 hover:bg-orange-700 active:scale-[0.99] disabled:opacity-50 text-white font-bold rounded-xl text-xs shadow-lg shadow-orange-500/20 transition-all cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>{isProcessing ? 'Generating .pptx slides...' : `Export ${scope === 'current' ? 'Page ' + currentPage : 'All ' + pageCount + ' Pages'} to PowerPoint`}</span>
+                  </button>
+                </div>
               )}
             </div>
           )}

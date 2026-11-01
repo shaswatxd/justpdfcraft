@@ -297,6 +297,9 @@ export const launchToolAction = (
     if (targetModal === 'student-tools' && initialTab) {
       ui.setActiveStudentTab(initialTab);
     }
+    if (targetModal === 'protect' && initialTab) {
+      ui.setActiveProtectTab(initialTab as any);
+    }
 
     if (targetModal) {
       ui.setActiveModal(targetModal);

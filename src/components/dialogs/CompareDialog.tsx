@@ -123,10 +123,8 @@ export const CompareDialog: React.FC = () => {
 
   if (activeModal !== 'compare') return null;
 
-  const handlePickSecondFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0 || !documentId) return;
-
-    const file = e.target.files[0];
+  const loadSecondFile = async (file: File) => {
+    if (!documentId) return;
     if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
       addToast({ type: 'error', title: 'Invalid File', message: 'Please select a PDF file for comparison.' });
       return;
@@ -165,6 +163,13 @@ export const CompareDialog: React.FC = () => {
     } finally {
       setIsComparing(false);
     }
+  };
+
+  const handlePickSecondFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      loadSecondFile(e.target.files[0]);
+    }
+    e.target.value = '';
   };
 
   const updateSliderPosFromEvent = (clientX: number) => {
@@ -259,7 +264,16 @@ export const CompareDialog: React.FC = () => {
                     <span className="text-[10px] uppercase font-bold text-cyan-400 block mb-0.5">Version A (Original)</span>
                     <p className="text-xs font-semibold text-gray-900 truncate">{fileName || 'Current PDF'}</p>
                   </div>
-                  <div className="p-2.5 bg-gray-50 border border-gray-300/80 rounded-xl flex items-center justify-between gap-2">
+                  <div
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                        loadSecondFile(e.dataTransfer.files[0]);
+                      }
+                    }}
+                    className="p-2.5 bg-gray-50 border border-dashed border-purple-300 hover:border-purple-500 rounded-xl flex items-center justify-between gap-2 transition-colors"
+                  >
                     <div className="overflow-hidden min-w-0">
                       <span className="text-[10px] uppercase font-bold text-purple-400 block mb-0.5">Version B (Revision)</span>
                       <p className="text-xs font-semibold text-gray-900 truncate">

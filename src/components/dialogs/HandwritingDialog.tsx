@@ -12,6 +12,7 @@ import {
   Layers,
   CheckCircle2,
   Loader2,
+  FolderOpen,
 } from 'lucide-react';
 import { PDFDocument } from 'pdf-lib';
 import { useUIStore } from '@/stores/uiStore';
@@ -82,6 +83,34 @@ export const HandwritingDialog: React.FC = () => {
 
   // Core settings
   const [text, setText] = useState<string>(SAMPLE_TEXT);
+  const docInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadTextDoc = async (file: File) => {
+    try {
+      if (file.name.toLowerCase().endsWith('.docx')) {
+        const { parseDocx } = await import('@/utils/officeParsers');
+        const buffer = await file.arrayBuffer();
+        const parsed = await parseDocx(new Uint8Array(buffer), file.name);
+        const extracted = parsed.elements.map((e) => e.text).join('\n\n');
+        setText(extracted);
+        addToast({
+          type: 'success',
+          title: 'Document Loaded',
+          message: `Imported ${parsed.elements.length} paragraphs from ${file.name}.`,
+        });
+      } else {
+        const txt = await file.text();
+        setText(txt);
+        addToast({
+          type: 'success',
+          title: 'Notes Loaded',
+          message: `Loaded ${file.name} into handwriting canvas.`,
+        });
+      }
+    } catch (err: any) {
+      addToast({ type: 'error', title: 'Could Not Read File', message: err?.message });
+    }
+  };
   const [selectedFont, setSelectedFont] = useState<string>('Caveat');
   const [paperType, setPaperType] = useState<'ruled' | 'plain' | 'grid'>('ruled');
   const [inkColor, setInkColor] = useState<string>('#1d3557');
@@ -542,6 +571,25 @@ export const HandwritingDialog: React.FC = () => {
                   Assignment Content / Notes
                 </label>
                 <div className="flex items-center gap-2">
+                  <input
+                    ref={docInputRef}
+                    type="file"
+                    accept=".txt,.md,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) handleUploadTextDoc(e.target.files[0]);
+                      e.target.value = '';
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => docInputRef.current?.click()}
+                    className="text-xs text-amber-600 hover:text-amber-700 transition-colors flex items-center gap-1 font-semibold cursor-pointer"
+                  >
+                    <FolderOpen className="w-3 h-3" />
+                    Upload File
+                  </button>
+                  <span className="text-slate-400">•</span>
                   <button
                     onClick={handleInsertSample}
                     className="text-xs text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-1 font-medium"

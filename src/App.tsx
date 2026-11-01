@@ -76,6 +76,7 @@ const ImageToolsDialog = safeLazy(() => import('@/components/dialogs/ImageToolsD
 const DocumentToolsDialog = safeLazy(() => import('@/components/dialogs/DocumentToolsDialog'), 'DocumentToolsDialog');
 const AIToolsDialog = safeLazy(() => import('@/components/dialogs/AIToolsDialog'), 'AIToolsDialog');
 const OrganizeDialog = safeLazy(() => import('@/components/dialogs/OrganizeDialog'), 'OrganizeDialog');
+const RepairDialog = safeLazy(() => import('@/components/dialogs/RepairDialog'), 'RepairDialog');
 
 
 const ContactAboutModal = safeLazy(() => import('@/components/dialogs/ContactAboutModal'), 'ContactAboutModal');
@@ -641,6 +642,7 @@ export const App: React.FC = () => {
           {activeModal === 'document-tools' && <DocumentToolsDialog />}
           {activeModal === 'ai-tools' && <AIToolsDialog />}
           {activeModal === 'organize' && <OrganizeDialog />}
+          {activeModal === 'repair' && <RepairDialog />}
 
 
           {(activeModal === 'contact' || activeModal === 'about') && <ContactAboutModal />}

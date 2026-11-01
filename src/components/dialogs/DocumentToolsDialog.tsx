@@ -18,18 +18,24 @@ import {
   parseDocx,
   parseXlsx,
   parseCsv,
+  parsePptx,
   renderWordToPdf,
   renderExcelToPdf,
+  renderPptxToPdf,
+  renderHtmlToPdf,
+  parseHtmlBlocks,
   DocxElement,
+  PptxSlide,
 } from '@/utils/officeParsers';
 
 type DocTab =
   | 'word-to-pdf'
-  | 'pdf-to-word'
+  | 'powerpoint-to-pdf'
   | 'excel-to-pdf'
+  | 'html-to-pdf'
+  | 'pdf-to-word'
   | 'txt-to-pdf'
   | 'markdown-to-pdf'
-  | 'html-to-pdf'
   | 'pdf-to-txt';
 
 export const DocumentToolsDialog: React.FC = () => {
@@ -59,9 +65,22 @@ export const DocumentToolsDialog: React.FC = () => {
   // PDF Text Extraction state
   const [extractedText, setExtractedText] = useState('');
 
+  // PowerPoint to PDF state
+  const [pptxFile, setPptxFile] = useState<File | null>(null);
+  const [pptxTitle, setPptxTitle] = useState('Presentation');
+  const [pptxSlides, setPptxSlides] = useState<PptxSlide[]>([]);
+
+  // HTML to PDF state
+  const [, setHtmlFile] = useState<File | null>(null);
+  const [htmlTitle, setHtmlTitle] = useState('Web Page');
+  const [htmlMarkup, setHtmlMarkup] = useState('<h1>Sample Web Document</h1>\n<p>This formatted HTML content will be converted into a clean vector PDF.</p>');
+
   // Hidden file inputs
   const wordInputRef = useRef<HTMLInputElement>(null);
+  const pptxInputRef = useRef<HTMLInputElement>(null);
   const excelInputRef = useRef<HTMLInputElement>(null);
+  const htmlInputRef = useRef<HTMLInputElement>(null);
+  const textInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -301,6 +320,109 @@ export const DocumentToolsDialog: React.FC = () => {
     }
   };
 
+  // Handle PowerPoint file selection (.pptx)
+  const handlePptxFile = async (file: File) => {
+    setPptxFile(file);
+    const cleanName = file.name.replace(/\.[^/.]+$/, '');
+    setPptxTitle(cleanName);
+    setIsProcessing(true);
+    try {
+      const buffer = await file.arrayBuffer();
+      const parsed = await parsePptx(new Uint8Array(buffer), file.name);
+      setPptxSlides(parsed.slides);
+      if (parsed.title) setPptxTitle(parsed.title);
+      addToast({
+        type: 'success',
+        title: 'PowerPoint Loaded',
+        message: `Parsed ${parsed.slides.length} slide(s) from ${file.name}.`,
+      });
+    } catch (err: any) {
+      console.error('PPTX parse error:', err);
+      addToast({
+        type: 'error',
+        title: 'Could Not Parse PowerPoint',
+        message: err?.message || 'Please ensure it is a valid .pptx presentation.',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleConvertPptxToPdf = async () => {
+    if (pptxSlides.length === 0) return;
+    setIsProcessing(true);
+    try {
+      const pdfBytes = await renderPptxToPdf(pptxSlides, { title: pptxTitle });
+      const blob = new Blob([pdfBytes as unknown as BlobPart], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${pptxTitle.trim() || 'Presentation'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      addToast({
+        type: 'success',
+        title: 'PowerPoint Converted to PDF',
+        message: `Saved ${pptxSlides.length} slide(s) as PDF.`,
+      });
+    } catch (err: any) {
+      addToast({ type: 'error', title: 'Export Failed', message: err?.message });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Handle HTML file selection
+  const handleHtmlFile = async (file: File) => {
+    setHtmlFile(file);
+    const cleanName = file.name.replace(/\.[^/.]+$/, '');
+    setHtmlTitle(cleanName);
+    setIsProcessing(true);
+    try {
+      const text = await file.text();
+      setHtmlMarkup(text);
+      const { title } = parseHtmlBlocks(text);
+      if (title && title !== 'Document') setHtmlTitle(title);
+      addToast({
+        type: 'success',
+        title: 'HTML Document Loaded',
+        message: `Loaded ${file.name} ready to compile.`,
+      });
+    } catch (err: any) {
+      addToast({ type: 'error', title: 'Could Not Read HTML', message: err?.message });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleConvertHtmlToPdf = async () => {
+    if (!htmlMarkup.trim()) return;
+    setIsProcessing(true);
+    try {
+      const pdfBytes = await renderHtmlToPdf(htmlMarkup, { title: htmlTitle });
+      const blob = new Blob([pdfBytes as unknown as BlobPart], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${htmlTitle.trim() || 'Web-Document'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      addToast({
+        type: 'success',
+        title: 'HTML Converted to PDF',
+        message: 'Successfully generated vector PDF.',
+      });
+    } catch (err: any) {
+      addToast({ type: 'error', title: 'Export Failed', message: err?.message });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   // Extract PDF Text
   const handleExtractPdfText = async () => {
     if (!documentId) {
@@ -330,7 +452,9 @@ export const DocumentToolsDialog: React.FC = () => {
 
   const tabs: { id: DocTab; label: string; icon: any }[] = [
     { id: 'word-to-pdf', label: 'Word to PDF', icon: FileType },
+    { id: 'powerpoint-to-pdf', label: 'PowerPoint to PDF', icon: FileType },
     { id: 'excel-to-pdf', label: 'Excel to PDF', icon: Table },
+    { id: 'html-to-pdf', label: 'HTML to PDF', icon: FileText },
     { id: 'pdf-to-word', label: 'PDF to Word (.docx)', icon: FileType },
     { id: 'txt-to-pdf', label: 'TXT to PDF', icon: FileText },
     { id: 'markdown-to-pdf', label: 'Markdown to PDF', icon: FileText },
@@ -351,12 +475,48 @@ export const DocumentToolsDialog: React.FC = () => {
         }}
       />
       <input
+        ref={pptxInputRef}
+        type="file"
+        accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        className="hidden"
+        onChange={(e) => {
+          if (e.target.files && e.target.files[0]) handlePptxFile(e.target.files[0]);
+          e.target.value = '';
+        }}
+      />
+      <input
         ref={excelInputRef}
         type="file"
         accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv"
         className="hidden"
         onChange={(e) => {
           if (e.target.files && e.target.files[0]) handleExcelFile(e.target.files[0]);
+          e.target.value = '';
+        }}
+      />
+      <input
+        ref={htmlInputRef}
+        type="file"
+        accept=".html,.htm,text/html"
+        className="hidden"
+        onChange={(e) => {
+          if (e.target.files && e.target.files[0]) handleHtmlFile(e.target.files[0]);
+          e.target.value = '';
+        }}
+      />
+      <input
+        ref={textInputRef}
+        type="file"
+        accept=".txt,.md,.text,text/plain,text/markdown"
+        className="hidden"
+        onChange={(e) => {
+          if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            file.text().then((txt) => {
+              setManualWordText(txt);
+              setWordTitle(file.name.replace(/\.[^/.]+$/, ''));
+            });
+          }
           e.target.value = '';
         }}
       />
@@ -702,6 +862,150 @@ export const DocumentToolsDialog: React.FC = () => {
             </div>
           )}
 
+          {/* POWERPOINT TO PDF */}
+          {activeTab === 'powerpoint-to-pdf' && (
+            <div className="max-w-2xl mx-auto space-y-4">
+              {!pptxFile && pptxSlides.length === 0 ? (
+                <div
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                      handlePptxFile(e.dataTransfer.files[0]);
+                    }
+                  }}
+                  className="border-2 border-dashed border-orange-300 hover:border-orange-500 bg-white hover:bg-orange-50/20 rounded-3xl p-8 sm:p-12 text-center transition-all shadow-xs space-y-4"
+                >
+                  <div className="w-16 h-16 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center mx-auto shadow-inner">
+                    <FileType className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900">PowerPoint to PDF</h3>
+                    <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-md mx-auto">
+                      Convert your PPTX presentations into clean landscape PDF slides.
+                    </p>
+                  </div>
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => pptxInputRef.current?.click()}
+                      className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-orange-600 hover:bg-orange-700 active:scale-95 text-white font-bold rounded-2xl text-base shadow-lg shadow-orange-500/25 transition-all cursor-pointer"
+                    >
+                      <FolderOpen className="w-5 h-5" />
+                      <span>Select POWERPOINT files</span>
+                    </button>
+                    <p className="text-xs text-slate-400 mt-2 font-medium">or drop PPTX slides here</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white rounded-2xl border border-slate-200/80 p-5 space-y-4 shadow-xs">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center">
+                        <FileType className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-900">{pptxFile?.name || 'Presentation'}</h4>
+                        <p className="text-xs text-emerald-600 font-semibold">{pptxSlides.length} slide(s) parsed</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPptxFile(null);
+                        setPptxSlides([]);
+                      }}
+                      className="text-xs text-slate-500 hover:text-red-600 font-medium cursor-pointer"
+                    >
+                      Change file
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 block">Presentation Title</label>
+                    <input
+                      type="text"
+                      value={pptxTitle}
+                      onChange={(e) => setPptxTitle(e.target.value)}
+                      className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white shadow-2xs"
+                    />
+                  </div>
+                  <div className="space-y-1.5 max-h-48 overflow-y-auto border border-slate-100 rounded-xl p-3 bg-slate-50/50">
+                    {pptxSlides.map((s, idx) => (
+                      <div key={idx} className="p-2 bg-white rounded-lg border border-slate-100 text-xs">
+                        <strong className="text-slate-800">Slide {s.slideNumber}: {s.title}</strong>
+                        {s.bullets.length > 0 && (
+                          <span className="text-slate-500 ml-2">({s.bullets.length} bullet point{s.bullets.length > 1 ? 's' : ''})</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={handleConvertPptxToPdf}
+                    disabled={isProcessing}
+                    className="w-full py-3 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white font-bold rounded-xl text-xs shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>{isProcessing ? 'Generating PDF...' : 'Convert to PDF & Download'}</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* HTML TO PDF */}
+          {activeTab === 'html-to-pdf' && (
+            <div className="max-w-2xl mx-auto space-y-4">
+              <div className="bg-white rounded-2xl border border-slate-200/80 p-5 space-y-4 shadow-xs">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900">HTML to PDF</h4>
+                      <p className="text-xs text-slate-500 font-medium">Render clean web markup and formatted HTML into PDF</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => htmlInputRef.current?.click()}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                  >
+                    <FolderOpen className="w-3.5 h-3.5" />
+                    <span>Upload .html File</span>
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-700 block">Document Title</label>
+                  <input
+                    type="text"
+                    value={htmlTitle}
+                    onChange={(e) => setHtmlTitle(e.target.value)}
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white shadow-2xs"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-700 block">HTML Content</label>
+                  <textarea
+                    value={htmlMarkup}
+                    onChange={(e) => setHtmlMarkup(e.target.value)}
+                    rows={8}
+                    placeholder="<h1>Your Title</h1><p>Your web content...</p>"
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-mono shadow-2xs resize-none focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+                <button
+                  onClick={handleConvertHtmlToPdf}
+                  disabled={isProcessing || !htmlMarkup.trim()}
+                  className="w-full py-3 bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50 text-white font-bold rounded-xl text-xs shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>{isProcessing ? 'Generating PDF...' : 'Convert HTML to PDF & Download'}</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* PDF TO WORD (.DOCX) */}
           {activeTab === 'pdf-to-word' && (
             <div className="max-w-xl mx-auto space-y-4 text-center">
@@ -763,8 +1067,18 @@ export const DocumentToolsDialog: React.FC = () => {
                     className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white shadow-2xs"
                   />
                 </div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-bold text-slate-700">Input Content</label>
+                  <button
+                    type="button"
+                    onClick={() => textInputRef.current?.click()}
+                    className="text-xs text-red-600 hover:text-red-800 font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    <FolderOpen className="w-3.5 h-3.5" />
+                    <span>Load .txt / .md File</span>
+                  </button>
+                </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Input Text</label>
                   <textarea
                     value={manualWordText}
                     onChange={(e) => setManualWordText(e.target.value)}

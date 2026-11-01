@@ -150,19 +150,30 @@ export const HomeDashboard: React.FC = () => {
             setActiveLegalTab(pending.initialTab);
           } else if (pending.modal === 'convert' && pending.initialTab) {
             setActiveConvertTab(pending.initialTab);
+          } else if (pending.modal === 'protect' && pending.initialTab) {
+            useUIStore.getState().setActiveProtectTab(pending.initialTab as any);
           }
           setActiveModal(pending.modal);
-        } else if (pending.viewMode === 'organize' || pending.tool) {
-          setActiveModal('organize');
+        } else if (pending.viewMode === 'organize') {
+          useDocumentStore.getState().setViewMode('organize');
+          useUIStore.getState().setActiveView('editor');
+          setActiveModal(null);
+        } else if (pending.viewMode || pending.tool) {
+          if (pending.viewMode) useDocumentStore.getState().setViewMode(pending.viewMode);
+          if (pending.tool) useToolStore.getState().setTool(pending.tool);
+          useUIStore.getState().setActiveView('editor');
+          setActiveModal(null);
         } else {
-          setActiveModal('convert');
+          useUIStore.getState().setActiveView('editor');
+          setActiveModal(null);
         }
       } else {
-        setActiveModal('convert');
+        useUIStore.getState().setActiveView('editor');
+        setActiveModal(null);
         addToast({
           type: 'success',
           title: 'Document Loaded',
-          message: `${file.name} ready. Choose your tool below.`,
+          message: `${file.name} opened in JustPDFCraft Editor.`,
         });
       }
     } catch (err: any) {

@@ -32,6 +32,7 @@ export type ModalType =
   | 'document-tools'
   | 'ai-tools'
   | 'organize'
+  | 'repair'
   | 'contact'
   | 'about'
   | null;
@@ -89,6 +90,8 @@ export interface UIState {
   setActiveDocTab: (tab: string | null) => void;
   activeAITab: string | null;
   setActiveAITab: (tab: string | null) => void;
+  activeProtectTab: 'unlock' | 'protect' | null;
+  setActiveProtectTab: (tab: 'unlock' | 'protect' | null) => void;
 
   setPaperTone: (tone: PaperTone) => void;
   setActiveView: (view: ActiveView) => void;
@@ -185,6 +188,8 @@ export const useUIStore = create<UIState>((set) => ({
   setActiveDocTab: (activeDocTab) => set({ activeDocTab }),
   activeAITab: null,
   setActiveAITab: (activeAITab) => set({ activeAITab }),
+  activeProtectTab: null,
+  setActiveProtectTab: (activeProtectTab) => set({ activeProtectTab }),
 
   setPaperTone: (paperTone: PaperTone) => {
     try {

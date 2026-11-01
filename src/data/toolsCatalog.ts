@@ -74,7 +74,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'RefreshCw',
     color: 'text-amber-500',
     tags: ['repair', 'fix', 'recover', 'corrupt', 'damaged'],
-    action: { type: 'modal', modal: 'convert', label: 'Repair & Recover PDF' },
+    action: { type: 'modal', modal: 'repair', label: 'Repair PDF' },
   },
   {
     id: 'ocr-pdf',
@@ -120,7 +120,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'FileType',
     color: 'text-orange-600',
     tags: ['powerpoint to pdf', 'ppt to pdf', 'pptx to pdf', 'presentation'],
-    action: { type: 'modal', modal: 'document-tools', initialTab: 'txt-to-pdf' },
+    action: { type: 'modal', modal: 'document-tools', initialTab: 'powerpoint-to-pdf' },
   },
   {
     id: 'excel-to-pdf',
@@ -176,7 +176,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'FileType',
     color: 'text-orange-500',
     tags: ['pdf to powerpoint', 'pdf to ppt', 'slides', 'presentation export'],
-    action: { type: 'modal', modal: 'convert', initialTab: 'pdf-to-txt' },
+    action: { type: 'modal', modal: 'convert', initialTab: 'pdf-to-powerpoint', label: 'PDF to PowerPoint' },
   },
   {
     id: 'pdf-to-excel',
@@ -196,7 +196,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'FileArchive',
     color: 'text-slate-600',
     tags: ['pdf to pdfa', 'pdf/a', 'archiving', 'iso standard'],
-    action: { type: 'modal', modal: 'convert', initialTab: 'pdf-to-grayscale' },
+    action: { type: 'modal', modal: 'convert', initialTab: 'pdf-to-pdfa' },
   },
 
   // =========================================================================
@@ -299,7 +299,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     iconName: 'ShieldCheck',
     color: 'text-slate-800',
     tags: ['redact', 'blackout', 'sanitize', 'remove metadata', 'purge'],
-    action: { type: 'modal', modal: 'protect' },
+    action: { type: 'workflow', tool: 'redact', viewMode: 'single', label: 'Redact PDF' },
   },
   {
     id: 'compare-pdf',
