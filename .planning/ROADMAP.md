@@ -14,9 +14,7 @@
 - [x] Phase 6: Text Layer Transparency & Rotated Font Calculation fixes.
 - [x] Phase 7: Memory virtualization and slider debouncing optimizations.
 
-## Future Horizons (Backlog)
-
-### Milestone 2: Client Storage & Performance Enhancements
+### Milestone 2: Client Storage & Performance Enhancements (Complete)
 - [x] Phase 8: Native File System Access & OPFS (Direct file save & crash recovery drafts).
 - [x] Phase 9: Multi-threaded Web Worker background processing for large PDF OCR batch queues.
-- [ ] Phase 10: Multi-language OCR model auto-caching (Hindi, Bengali, Tamil, Spanish, French).
+- [x] Phase 10: Multi-language OCR model auto-caching (Hindi, Bengali, Tamil, Spanish, French).

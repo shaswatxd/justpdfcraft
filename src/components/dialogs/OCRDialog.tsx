@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   ScanText,
   X,
@@ -18,7 +18,7 @@ import {
 import { useUIStore } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
 import { getPDFEngine } from '@core/pdf/engine.factory';
-import { ocrWorkerPool, getOptimalWorkerCount, OCRPageResult } from '@core/ocr/ocr-service';
+import { ocrWorkerPool, getOptimalWorkerCount, ocrModelCache, OCRPageResult } from '@core/ocr/ocr-service';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const OCRDialog: React.FC = () => {
@@ -61,6 +61,52 @@ export const OCRDialog: React.FC = () => {
   const [pageResults, setPageResults] = useState<OCRPageResult[]>([]);
   const [avgConfidence, setAvgConfidence] = useState<number | null>(null);
   const [totalWords, setTotalWords] = useState(0);
+  const [cachedLangs, setCachedLangs] = useState<string[]>([]);
+  const [isPreloadingModel, setIsPreloadingModel] = useState(false);
+  const [modelProgress, setModelProgress] = useState(0);
+
+  const refreshCachedLangs = async () => {
+    try {
+      const models = await ocrModelCache.getCachedModels();
+      setCachedLangs(models.map((m) => m.lang));
+    } catch {
+      // Ignore
+    }
+  };
+
+  useEffect(() => {
+    refreshCachedLangs();
+  }, []);
+
+  const handlePreloadCurrentLang = async () => {
+    const primaryLang = language.includes('+') ? language.split('+')[0] : language;
+    setIsPreloadingModel(true);
+    setModelProgress(10);
+    try {
+      const ok = await ocrModelCache.downloadAndCache(primaryLang, (pct) => {
+        setModelProgress(pct);
+      });
+      if (ok) {
+        addToast({
+          type: 'success',
+          title: 'Model Cached Offline',
+          message: `"${primaryLang}" model is now saved in browser storage for 100% offline OCR.`,
+        });
+        await refreshCachedLangs();
+      } else {
+        throw new Error('Download failed');
+      }
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Cache Failed',
+        message: 'Could not download model. Check your internet connection.',
+      });
+    } finally {
+      setIsPreloadingModel(false);
+      setModelProgress(0);
+    }
+  };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -70,6 +116,8 @@ export const OCRDialog: React.FC = () => {
     { code: 'eng', name: 'English' },
     { code: 'hin', name: 'Hindi' },
     { code: 'eng+hin', name: 'English + Hindi Bilingual' },
+    { code: 'ben', name: 'Bengali (বাংলা)' },
+    { code: 'tam', name: 'Tamil (தமிழ்)' },
     { code: 'spa', name: 'Spanish (Español)' },
     { code: 'fra', name: 'French (Français)' },
     { code: 'deu', name: 'German (Deutsch)' },
@@ -624,21 +672,41 @@ export const OCRDialog: React.FC = () => {
           {/* Settings Grid */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5 text-indigo-400" />
-                OCR Language
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                  <Globe className="w-3.5 h-3.5 text-indigo-400" />
+                  OCR Language
+                </label>
+                {cachedLangs.includes(language.includes('+') ? language.split('+')[0] : language) ? (
+                  <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    <Check className="w-2.5 h-2.5" /> Offline Ready
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handlePreloadCurrentLang}
+                    disabled={isPreloadingModel || isProcessing}
+                    className="text-[10px] text-indigo-600 hover:text-indigo-800 font-medium underline flex items-center gap-1"
+                  >
+                    {isPreloadingModel ? `Downloading ${modelProgress}%` : '⬇ Save Offline'}
+                  </button>
+                )}
+              </div>
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
                 disabled={isProcessing || mode === 'fast_stream'}
                 className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-indigo-500 disabled:opacity-40"
               >
-                {languages.map((l) => (
-                  <option key={l.code} value={l.code}>
-                    {l.name}
-                  </option>
-                ))}
+                {languages.map((l) => {
+                  const checkLang = l.code.includes('+') ? l.code.split('+')[0] : l.code;
+                  const isCached = cachedLangs.includes(checkLang);
+                  return (
+                    <option key={l.code} value={l.code}>
+                      {l.name} {isCached ? '✓ (Offline)' : ''}
+                    </option>
+                  );
+                })}
               </select>
             </div>
 

@@ -1,8 +1,9 @@
 import { createWorker, Worker } from 'tesseract.js';
 import { ImagePreprocessor, PreprocessOptions } from './image-preprocess';
 import { ocrWorkerPool, getOptimalWorkerCount, BatchOCROptions } from './ocr-pool';
+import { ocrModelCache, OCRModelCache } from './model-cache';
 
-export { ocrWorkerPool, getOptimalWorkerCount };
+export { ocrWorkerPool, getOptimalWorkerCount, ocrModelCache, OCRModelCache };
 export type { BatchOCROptions };
 
 export interface OCROptions {
