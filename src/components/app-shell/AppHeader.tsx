@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Search,
-Save,
+  Save,
   Undo2,
   Redo2,
   ZoomIn,
@@ -26,15 +26,28 @@ Save,
   Printer,
   Download,
   Layers,
-  Image as ImageIcon,
-  GraduationCap,
-  Code2,
-  Info,
-  PhoneCall,
   Sparkles,
+  Scissors,
+  FileArchive,
+  Table,
+  Camera,
+  ScanText,
+  Tag,
+  Droplets,
+  Crop,
+  Lock,
+  ShieldCheck,
+  PenTool,
+  GitCompare,
+  FilePlus,
+  FileType,
+  RefreshCw,
+  Sliders,
+  ArrowRight,
+  Edit3,
 } from 'lucide-react';
 import { useDocumentStore } from '@/stores/documentStore';
-import { useUIStore } from '@/stores/uiStore';
+import { useUIStore, ModalType } from '@/stores/uiStore';
 import { useTTSStore } from '@/stores/ttsStore';
 import { SwiftLogo } from '@/components/common/SwiftLogo';
 import { sharePdfDocument, isShareSupported } from '@/utils/shareDocument';
@@ -83,7 +96,29 @@ export const AppHeader: React.FC = () => {
     setPageInput(String(currentPage));
   }, [currentPage]);
 
-  // Close tone dropdown on any outside interaction (mouse, touch, pen)
+  const [megaMenu, setMegaMenu] = useState<'convert' | 'all' | null>(null);
+  const megaMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close tone & mega-menu dropdowns on outside interaction or escape
+  useEffect(() => {
+    const handlePointerDown = (e: PointerEvent) => {
+      if (megaMenuRef.current && !megaMenuRef.current.contains(e.target as Node)) {
+        setMegaMenu(null);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMegaMenu(null);
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
   useEffect(() => {
     const handleClickOutside = (e: PointerEvent) => {
       if (toneDropdownRef.current && !toneDropdownRef.current.contains(e.target as Node)) {
@@ -117,6 +152,10 @@ export const AppHeader: React.FC = () => {
     installPrompt,
     setInstallPrompt,
     setCommandPaletteOpen,
+    setActiveConvertTab,
+    setActiveDocTab,
+    setActiveStudentTab,
+    setActiveProtectTab,
   } = useUIStore();
 
   const isDocumentOpen = Boolean(documentId) && activeView === 'editor';
@@ -125,6 +164,39 @@ export const AppHeader: React.FC = () => {
 
   const handleGoHome = () => {
     setActiveView('home');
+    setMegaMenu(null);
+  };
+
+  const handleOpenTool = (
+    modal: ModalType,
+    tab?: string,
+    protectTab?: 'unlock' | 'protect'
+  ) => {
+    setMegaMenu(null);
+    setMobileMenuOpen(false);
+    if (tab) {
+      if (modal === 'convert') setActiveConvertTab(tab);
+      if (modal === 'document-tools') setActiveDocTab(tab);
+      if (modal === 'student-tools') setActiveStudentTab(tab);
+    }
+    if (protectTab) {
+      setActiveProtectTab(protectTab);
+    }
+    if (modal) {
+      setActiveModal(modal);
+    }
+  };
+
+  const handleEditPdf = () => {
+    setMegaMenu(null);
+    setMobileMenuOpen(false);
+    if (documentId) {
+      setViewMode('single');
+      setActiveView('editor');
+    } else {
+      const el = document.getElementById('tool-explorer');
+      el?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   // Web Share API: ship the live (unsaved-edit-inclusive) PDF to the native share sheet.
@@ -314,21 +386,22 @@ export const AppHeader: React.FC = () => {
               Compress PDF
             </button>
             <button
-              onClick={() => setActiveModal('convert')}
-              className="px-3 py-2 rounded-lg hover:text-red-600 hover:bg-red-50/70 transition-colors cursor-pointer flex items-center gap-1"
+              onClick={() => setMegaMenu((m) => (m === 'convert' ? null : 'convert'))}
+              className={`px-3 py-2 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
+                megaMenu === 'convert' ? 'text-red-600 bg-red-50/90' : 'hover:text-red-600 hover:bg-red-50/70'
+              }`}
             >
               <span>Convert PDF</span>
-              <ChevronDown className="w-3 h-3 text-slate-400" />
+              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${megaMenu === 'convert' ? 'rotate-180 text-red-600' : 'text-slate-400'}`} />
             </button>
             <button
-              onClick={() => {
-                const el = document.getElementById('tool-explorer');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="px-3 py-2 rounded-lg hover:text-red-600 hover:bg-red-50/70 transition-colors cursor-pointer flex items-center gap-1"
+              onClick={() => setMegaMenu((m) => (m === 'all' ? null : 'all'))}
+              className={`px-3 py-2 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
+                megaMenu === 'all' ? 'text-red-600 bg-red-50/90' : 'hover:text-red-600 hover:bg-red-50/70'
+              }`}
             >
               <span>All PDF Tools</span>
-              <ChevronDown className="w-3 h-3 text-slate-400" />
+              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${megaMenu === 'all' ? 'rotate-180 text-red-600' : 'text-slate-400'}`} />
             </button>
             <button
               onClick={() => setActiveModal('handwriting')}
@@ -502,7 +575,7 @@ export const AppHeader: React.FC = () => {
       <div className="flex items-center gap-1.5 shrink-0">
         {isDocumentOpen && (
           <>
-            {/* Mobile Document Actions (Undo, Redo, 1-Tap Save, Menu) */}
+            {/* Mobile Document Actions (Undo, Redo, 1-Tap   Save, Menu) */}
             <div className="flex md:hidden items-center gap-0.5">
               <button
                 onClick={() => undo()}
@@ -738,96 +811,424 @@ export const AppHeader: React.FC = () => {
         )}
       </div>
 
-      {/* Mobile Drawer Menu - Android Responsive */}
-      {!documentId && mobileMenuOpen && (
-        <div className="xl:hidden absolute top-16 left-0 right-0 bg-white border-b border-gray-200 p-3 shadow-xl z-50 flex flex-col gap-1 max-h-[85dvh] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150 text-gray-800 touch-pan-y">
-          <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 pt-1 pb-0.5">
-            Utilities & Suites
-          </div>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              const el = document.getElementById('tool-explorer');
-              el?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2.5 active:bg-blue-100 transition-colors cursor-pointer"
-          >
-            <Grid className="w-4 h-4 text-blue-600 shrink-0" />
-            <span>All Tools (93 In-Browser Utilities)</span>
-          </button>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              const el = document.getElementById('tool-explorer');
-              el?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2.5 active:bg-blue-100 transition-colors cursor-pointer"
-          >
-            <Layers className="w-4 h-4 text-blue-600 shrink-0" />
-            <span>PDF Tools (Merge, Split, Compress, Sign)</span>
-          </button>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setActiveModal('image-tools');
-            }}
-            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2.5 active:bg-emerald-100 transition-colors cursor-pointer"
-          >
-            <ImageIcon className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>Image Tools (Target KB, Passport, Crop)</span>
-          </button>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setActiveModal('document-tools');
-            }}
-            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-teal-50 hover:text-teal-700 flex items-center gap-2.5 active:bg-teal-100 transition-colors cursor-pointer"
-          >
-            <FileText className="w-4 h-4 text-teal-600 shrink-0" />
-            <span>Document Converters (Word, Excel to PDF)</span>
-          </button>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setActiveModal('student-tools');
-            }}
-            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-purple-50 hover:text-purple-700 flex items-center gap-2.5 active:bg-purple-100 transition-colors cursor-pointer"
-          >
-            <GraduationCap className="w-4 h-4 text-purple-600 shrink-0" />
-            <span>Student Tools (Resume, CGPA, Calculators)</span>
-          </button>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setActiveModal('developer-tools');
-            }}
-            className="w-full py-2.5 px-3 min-h-[44px] text-left rounded-xl text-xs font-semibold text-gray-800 hover:bg-violet-50 hover:text-violet-700 flex items-center gap-2.5 active:bg-violet-100 transition-colors cursor-pointer"
-          >
-            <Code2 className="w-4 h-4 text-violet-600 shrink-0" />
-            <span>More Utilities (JSON, QR, Regex, Diff)</span>
-          </button>
+      {/* Desktop Convert PDF Mega-Menu Dropdown (iLovePDF Style) */}
+      {!documentId && megaMenu === 'convert' && (
+        <div
+          ref={megaMenuRef}
+          className="hidden xl:block absolute top-16 left-1/2 -translate-x-1/2 w-[680px] bg-white rounded-2xl shadow-2xl border border-slate-200/90 p-5 z-50 animate-in fade-in slide-in-from-top-1 duration-150 text-slate-800"
+        >
+          <div className="grid grid-cols-2 gap-6">
+            {/* Column 1: CONVERT TO PDF */}
+            <div className="space-y-1">
+              <div className="px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                Convert to PDF
+              </div>
+              {[
+                { name: 'JPG to PDF', desc: 'Convert JPG, PNG, images to PDF', icon: FilePlus, color: 'text-rose-600 bg-rose-50', action: () => handleOpenTool('convert', 'img-to-pdf') },
+                { name: 'Word to PDF', desc: 'Convert DOC & DOCX to clean PDF', icon: FileType, color: 'text-blue-600 bg-blue-50', action: () => handleOpenTool('document-tools', 'word-to-pdf') },
+                { name: 'PowerPoint to PDF', desc: 'Convert PPT & PPTX presentation slides', icon: FileType, color: 'text-orange-600 bg-orange-50', action: () => handleOpenTool('document-tools', 'powerpoint-to-pdf') },
+                { name: 'Excel to PDF', desc: 'Convert spreadsheets & CSV tables to PDF', icon: Table, color: 'text-green-700 bg-green-50', action: () => handleOpenTool('document-tools', 'excel-to-pdf') },
+                { name: 'HTML to PDF', desc: 'Convert HTML code & web pages to PDF', icon: FileText, color: 'text-cyan-600 bg-cyan-50', action: () => handleOpenTool('document-tools', 'html-to-pdf') },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.name}
+                    onClick={item.action}
+                    className="w-full p-2.5 rounded-xl hover:bg-slate-50 flex items-center gap-3 text-left transition-colors cursor-pointer group"
+                  >
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${item.color} group-hover:scale-105 transition-transform shadow-2xs`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-slate-900 group-hover:text-red-600 transition-colors">{item.name}</div>
+                      <div className="text-[11px] text-slate-400 truncate">{item.desc}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
 
-          <div className="border-t border-gray-100 my-1 pt-1 space-y-0.5">
+            {/* Column 2: CONVERT FROM PDF */}
+            <div className="space-y-1 border-l border-slate-100 pl-6">
+              <div className="px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                Convert from PDF
+              </div>
+              {[
+                { name: 'PDF to JPG', desc: 'Extract pages into high-res images', icon: RefreshCw, color: 'text-amber-500 bg-amber-50', action: () => handleOpenTool('convert', 'pdf-to-img') },
+                { name: 'PDF to Word', desc: 'Convert PDF to editable DOCX', icon: FileType, color: 'text-blue-700 bg-blue-50', action: () => handleOpenTool('convert', 'pdf-to-word') },
+                { name: 'PDF to PowerPoint', desc: 'Convert PDF to presentation slides', icon: FileType, color: 'text-orange-500 bg-orange-50', action: () => handleOpenTool('convert', 'pdf-to-powerpoint') },
+                { name: 'PDF to Excel', desc: 'Extract tabular data straight into Excel', icon: Table, color: 'text-emerald-700 bg-emerald-50', action: () => handleOpenTool('extract-table') },
+                { name: 'PDF to PDF/A', desc: 'ISO-standard long-term archiving', icon: FileArchive, color: 'text-slate-600 bg-slate-100', action: () => handleOpenTool('convert', 'pdf-to-pdfa') },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.name}
+                    onClick={item.action}
+                    className="w-full p-2.5 rounded-xl hover:bg-slate-50 flex items-center gap-3 text-left transition-colors cursor-pointer group"
+                  >
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${item.color} group-hover:scale-105 transition-transform shadow-2xs`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-slate-900 group-hover:text-red-600 transition-colors">{item.name}</div>
+                      <div className="text-[11px] text-slate-400 truncate">{item.desc}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+            <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              100% Client-Side • Zero Cloud Uploads • 100% Private
+            </span>
+            <button
+              onClick={() => {
+                setMegaMenu(null);
+                const el = document.getElementById('tool-explorer');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1 cursor-pointer"
+            >
+              <span>Explore All 93 Tools</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop All PDF Tools Mega-Menu Dropdown (iLovePDF Style) */}
+      {!documentId && megaMenu === 'all' && (
+        <div
+          ref={megaMenuRef}
+          className="hidden xl:block absolute top-16 left-1/2 -translate-x-1/2 w-[95vw] max-w-6xl bg-white rounded-2xl shadow-2xl border border-slate-200/90 p-6 z-50 animate-in fade-in slide-in-from-top-1 duration-150 text-slate-800"
+        >
+          <div className="grid grid-cols-6 gap-5">
+            {/* Column 1: ORGANIZE PDF */}
+            <div className="space-y-1">
+              <div className="px-2 py-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                Organize PDF
+              </div>
+              {[
+                { name: 'Merge PDF', icon: Layers, color: 'text-red-500 hover:bg-red-50', action: () => handleOpenTool('merge') },
+                { name: 'Split PDF', icon: Scissors, color: 'text-orange-500 hover:bg-orange-50', action: () => handleOpenTool('split') },
+                { name: 'Organize PDF', icon: Grid, color: 'text-purple-600 hover:bg-purple-50', action: () => handleOpenTool('organize') },
+                { name: 'Scan to PDF', icon: Camera, color: 'text-teal-600 hover:bg-teal-50', action: () => handleOpenTool('scan') },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.name}
+                    onClick={item.action}
+                    className={`w-full p-2 rounded-xl text-left flex items-center gap-2.5 text-xs font-bold text-slate-800 transition-colors cursor-pointer ${item.color}`}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{item.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Column 2: OPTIMIZE PDF */}
+            <div className="space-y-1">
+              <div className="px-2 py-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                Optimize PDF
+              </div>
+              {[
+                { name: 'Compress PDF', icon: FileArchive, color: 'text-emerald-500 hover:bg-emerald-50', action: () => handleOpenTool('compress') },
+                { name: 'Repair PDF', icon: RefreshCw, color: 'text-amber-500 hover:bg-amber-50', action: () => handleOpenTool('repair') },
+                { name: 'OCR PDF (Searchable)', icon: ScanText, color: 'text-indigo-600 hover:bg-indigo-50', action: () => handleOpenTool('ocr') },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.name}
+                    onClick={item.action}
+                    className={`w-full p-2 rounded-xl text-left flex items-center gap-2.5 text-xs font-bold text-slate-800 transition-colors cursor-pointer ${item.color}`}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{item.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Column 3: CONVERT TO PDF */}
+            <div className="space-y-1">
+              <div className="px-2 py-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                Convert to PDF
+              </div>
+              {[
+                { name: 'JPG to PDF', icon: FilePlus, color: 'text-rose-600 hover:bg-rose-50', action: () => handleOpenTool('convert', 'img-to-pdf') },
+                { name: 'Word to PDF', icon: FileType, color: 'text-blue-600 hover:bg-blue-50', action: () => handleOpenTool('document-tools', 'word-to-pdf') },
+                { name: 'PowerPoint to PDF', icon: FileType, color: 'text-orange-600 hover:bg-orange-50', action: () => handleOpenTool('document-tools', 'powerpoint-to-pdf') },
+                { name: 'Excel to PDF', icon: Table, color: 'text-green-700 hover:bg-green-50', action: () => handleOpenTool('document-tools', 'excel-to-pdf') },
+                { name: 'HTML to PDF', icon: FileText, color: 'text-cyan-600 hover:bg-cyan-50', action: () => handleOpenTool('document-tools', 'html-to-pdf') },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.name}
+                    onClick={item.action}
+                    className={`w-full p-2 rounded-xl text-left flex items-center gap-2.5 text-xs font-bold text-slate-800 transition-colors cursor-pointer ${item.color}`}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{item.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Column 4: CONVERT FROM PDF */}
+            <div className="space-y-1">
+              <div className="px-2 py-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                Convert from PDF
+              </div>
+              {[
+                { name: 'PDF to JPG', icon: RefreshCw, color: 'text-amber-500 hover:bg-amber-50', action: () => handleOpenTool('convert', 'pdf-to-img') },
+                { name: 'PDF to Word', icon: FileType, color: 'text-blue-700 hover:bg-blue-50', action: () => handleOpenTool('convert', 'pdf-to-word') },
+                { name: 'PDF to PowerPoint', icon: FileType, color: 'text-orange-500 hover:bg-orange-50', action: () => handleOpenTool('convert', 'pdf-to-powerpoint') },
+                { name: 'PDF to Excel', icon: Table, color: 'text-emerald-700 hover:bg-emerald-50', action: () => handleOpenTool('extract-table') },
+                { name: 'PDF to PDF/A', icon: FileArchive, color: 'text-slate-600 hover:bg-slate-100', action: () => handleOpenTool('convert', 'pdf-to-pdfa') },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.name}
+                    onClick={item.action}
+                    className={`w-full p-2 rounded-xl text-left flex items-center gap-2.5 text-xs font-bold text-slate-800 transition-colors cursor-pointer ${item.color}`}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{item.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Column 5: EDIT PDF */}
+            <div className="space-y-1">
+              <div className="px-2 py-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                Edit PDF
+              </div>
+              {[
+                { name: 'Rotate PDF', icon: RefreshCw, color: 'text-blue-500 hover:bg-blue-50', action: () => handleOpenTool('organize') },
+                { name: 'Add Page Numbers', icon: Tag, color: 'text-rose-500 hover:bg-rose-50', action: () => handleOpenTool('bates') },
+                { name: 'Add Watermark', icon: Droplets, color: 'text-teal-500 hover:bg-teal-50', action: () => handleOpenTool('watermark') },
+                { name: 'Crop PDF', icon: Crop, color: 'text-fuchsia-600 hover:bg-fuchsia-50', action: () => handleOpenTool('crop') },
+                { name: 'Edit PDF Pages', icon: Edit3, color: 'text-indigo-600 hover:bg-indigo-50', action: handleEditPdf },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.name}
+                    onClick={item.action}
+                    className={`w-full p-2 rounded-xl text-left flex items-center gap-2.5 text-xs font-bold text-slate-800 transition-colors cursor-pointer ${item.color}`}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{item.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Column 6: SECURITY & SPECIAL */}
+            <div className="space-y-1">
+              <div className="px-2 py-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                Security & Student
+              </div>
+              {[
+                { name: 'Unlock PDF', icon: Lock, color: 'text-red-500 hover:bg-red-50', action: () => handleOpenTool('protect', undefined, 'unlock') },
+                { name: 'Protect PDF', icon: ShieldCheck, color: 'text-emerald-600 hover:bg-emerald-50', action: () => handleOpenTool('protect', undefined, 'protect') },
+                { name: 'Sign PDF', icon: PenTool, color: 'text-sky-500 hover:bg-sky-50', action: () => handleOpenTool('sign') },
+                { name: 'Compare PDF', icon: GitCompare, color: 'text-purple-500 hover:bg-purple-50', action: () => handleOpenTool('compare') },
+                { name: '✍️ Handwriting Gen', icon: Sparkles, color: 'text-red-600 bg-red-50/70 hover:bg-red-100/80 font-extrabold', action: () => handleOpenTool('handwriting') },
+                { name: '📐 Exam Resizer', icon: Sliders, color: 'text-blue-600 hover:bg-blue-50', action: () => handleOpenTool('student-resizer') },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.name}
+                    onClick={item.action}
+                    className={`w-full p-2 rounded-xl text-left flex items-center gap-2.5 text-xs font-bold text-slate-800 transition-colors cursor-pointer ${item.color}`}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{item.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
+            <div className="flex items-center gap-2 text-emerald-700 font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <span>100% In-Browser Privacy: Files are processed directly on your device and never uploaded to any remote server.</span>
+            </div>
+            <button
+              onClick={() => {
+                setMegaMenu(null);
+                const el = document.getElementById('tool-explorer');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1 cursor-pointer"
+            >
+              <span>View All 93 Tools</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Drawer Menu - Android Responsive & Ergonomic */}
+      {!documentId && mobileMenuOpen && (
+        <div className="xl:hidden absolute top-16 left-0 right-0 bg-white border-b border-gray-200 p-4 shadow-2xl z-50 flex flex-col gap-3.5 max-h-[85dvh] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150 text-gray-800 touch-pan-y">
+          {/* Quick Access Action Chips */}
+          <div className="space-y-1.5">
+            <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-1">
+              Popular Tools
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => handleOpenTool('merge')}
+                className="p-3 min-h-[48px] rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs flex items-center gap-2.5 border border-red-200/60 active:scale-98 transition-all"
+              >
+                <Layers className="w-4 h-4 shrink-0 text-red-600" />
+                <span>Merge PDF</span>
+              </button>
+              <button
+                onClick={() => handleOpenTool('split')}
+                className="p-3 min-h-[48px] rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 font-bold text-xs flex items-center gap-2.5 border border-orange-200/60 active:scale-98 transition-all"
+              >
+                <Scissors className="w-4 h-4 shrink-0 text-orange-600" />
+                <span>Split PDF</span>
+              </button>
+              <button
+                onClick={() => handleOpenTool('compress')}
+                className="p-3 min-h-[48px] rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center gap-2.5 border border-emerald-200/60 active:scale-98 transition-all"
+              >
+                <FileArchive className="w-4 h-4 shrink-0 text-emerald-600" />
+                <span>Compress PDF</span>
+              </button>
+              <button
+                onClick={handleEditPdf}
+                className="p-3 min-h-[48px] rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center gap-2.5 border border-indigo-200/60 active:scale-98 transition-all"
+              >
+                <Edit3 className="w-4 h-4 shrink-0 text-indigo-600" />
+                <span>Edit PDF</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Exclusive Student & Exam Banner */}
+          <div className="p-3 rounded-2xl bg-gradient-to-r from-red-500/10 via-amber-500/10 to-purple-500/10 border border-amber-300/60 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-extrabold text-red-600 flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5" />
+                EXCLUSIVE TOOLS
+              </span>
+              <span className="text-[9px] font-bold bg-red-600 text-white px-2 py-0.5 rounded-full">STUDENT SUITE</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => handleOpenTool('handwriting')}
+                className="p-2.5 min-h-[44px] bg-white rounded-xl border border-red-200 text-left text-xs font-bold text-red-700 shadow-2xs active:scale-95 transition-transform"
+              >
+                ✍️ Handwritten Notes
+              </button>
+              <button
+                onClick={() => handleOpenTool('student-resizer')}
+                className="p-2.5 min-h-[44px] bg-white rounded-xl border border-blue-200 text-left text-xs font-bold text-blue-700 shadow-2xs active:scale-95 transition-transform"
+              >
+                📐 Photo & Sign (20-50KB)
+              </button>
+            </div>
+          </div>
+
+          {/* Categorized Tool Hubs */}
+          <div className="space-y-1">
+            <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-1">
+              Document Tool Hubs
+            </div>
+
+            <button
+              onClick={() => handleOpenTool('document-tools', 'word-to-pdf')}
+              className="w-full py-2.5 px-3 min-h-[48px] text-left rounded-xl text-xs font-semibold text-slate-800 hover:bg-blue-50 flex items-center justify-between border border-slate-100 active:bg-blue-100 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <FileType className="w-4 h-4 text-blue-600 shrink-0" />
+                <span>Word & Excel Converters</span>
+              </div>
+              <span className="text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded-md">DOCX/XLSX</span>
+            </button>
+
+            <button
+              onClick={() => handleOpenTool('convert', 'pdf-to-img')}
+              className="w-full py-2.5 px-3 min-h-[48px] text-left rounded-xl text-xs font-semibold text-slate-800 hover:bg-amber-50 flex items-center justify-between border border-slate-100 active:bg-amber-100 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <RefreshCw className="w-4 h-4 text-amber-500 shrink-0" />
+                <span>PDF to JPG & Images</span>
+              </div>
+              <span className="text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded-md">High-Res</span>
+            </button>
+
+            <button
+              onClick={() => handleOpenTool('protect', undefined, 'protect')}
+              className="w-full py-2.5 px-3 min-h-[48px] text-left rounded-xl text-xs font-semibold text-slate-800 hover:bg-emerald-50 flex items-center justify-between border border-slate-100 active:bg-emerald-100 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Protect & Unlock PDF</span>
+              </div>
+              <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">AES-256</span>
+            </button>
+
+            <button
+              onClick={() => handleOpenTool('sign')}
+              className="w-full py-2.5 px-3 min-h-[48px] text-left rounded-xl text-xs font-semibold text-slate-800 hover:bg-sky-50 flex items-center justify-between border border-slate-100 active:bg-sky-100 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <PenTool className="w-4 h-4 text-sky-500 shrink-0" />
+                <span>Sign PDF Document</span>
+              </div>
+              <span className="text-[10px] text-sky-600 font-bold bg-sky-50 px-2 py-0.5 rounded-md">Digital Sign</span>
+            </button>
+
+            <button
+              onClick={() => handleOpenTool('ocr')}
+              className="w-full py-2.5 px-3 min-h-[48px] text-left rounded-xl text-xs font-semibold text-slate-800 hover:bg-indigo-50 flex items-center justify-between border border-slate-100 active:bg-indigo-100 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <ScanText className="w-4 h-4 text-indigo-600 shrink-0" />
+                <span>OCR Text Recognition</span>
+              </div>
+              <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded-md">Multi-Lang</span>
+            </button>
+          </div>
+
+          {/* View All & Legal Links */}
+          <div className="border-t border-gray-100 pt-2 space-y-1">
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
-                setActiveModal('about');
+                const el = document.getElementById('tool-explorer');
+                el?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="w-full py-2 px-3 min-h-[40px] text-left rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-100 flex items-center gap-2 active:bg-gray-200 transition-colors cursor-pointer"
+              className="w-full py-2.5 px-3 min-h-[44px] text-center rounded-xl text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
             >
-              <Info className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-              <span>About JustPDFCraft</span>
+              Browse All 93 PDF Utilities &rarr;
             </button>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setActiveModal('contact');
-              }}
-              className="w-full py-2 px-3 min-h-[40px] text-left rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-100 flex items-center gap-2 active:bg-gray-200 transition-colors cursor-pointer"
-            >
-              <PhoneCall className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-              <span>Contact Support</span>
-            </button>
+            <div className="flex items-center justify-center gap-4 pt-1 text-[11px] text-slate-400">
+              <button onClick={() => { setMobileMenuOpen(false); setActiveModal('about'); }} className="hover:text-slate-700">About</button>
+              <span>•</span>
+              <button onClick={() => { setMobileMenuOpen(false); setActiveModal('contact'); }} className="hover:text-slate-700">Support</button>
+              <span>•</span>
+              <button onClick={() => { setMobileMenuOpen(false); setActiveModal('legal'); }} className="hover:text-slate-700">Privacy & Terms</button>
+            </div>
           </div>
         </div>
       )}

@@ -693,7 +693,7 @@ export const ConvertDialog: React.FC = () => {
           <button
             type="button"
             onClick={() => scrollConvertTabs('left')}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-200/60 transition-colors shrink-0 z-10 cursor-pointer hidden sm:flex items-center justify-center mb-1"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-200/60 transition-colors shrink-0 z-10 cursor-pointer flex items-center justify-center mb-1"
             title="Scroll left"
             aria-label="Scroll left"
           >
@@ -813,7 +813,7 @@ export const ConvertDialog: React.FC = () => {
           <button
             type="button"
             onClick={() => scrollConvertTabs('right')}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-200/60 transition-colors shrink-0 z-10 cursor-pointer hidden sm:flex items-center justify-center mb-1"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-200/60 transition-colors shrink-0 z-10 cursor-pointer flex items-center justify-center mb-1"
             title="Scroll right"
             aria-label="Scroll right"
           >
