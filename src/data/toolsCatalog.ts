@@ -211,7 +211,7 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     color: 'text-indigo-600',
     badge: 'popular',
     tags: ['edit', 'annotate', 'draw', 'highlight', 'notes', 'markup', 'edit pdf'],
-    action: { type: 'modal', modal: 'organize' },
+    action: { type: 'workflow', viewMode: 'single', label: 'Edit PDF' },
   },
   {
     id: 'rotate-pdf',

@@ -1,7 +1,5 @@
 import React, { useRef, useState } from 'react';
 import {
-  FolderOpen,
-  FilePlus,
   RotateCcw,
   X,
 } from 'lucide-react';
@@ -18,7 +16,6 @@ import { HowItWorksSection } from '@/components/home/HowItWorksSection';
 import { WhyChooseSection } from '@/components/home/WhyChooseSection';
 import { SeoContentSection } from '@/components/home/SeoContentSection';
 import { AdBanner } from '@/components/common/AdBanner';
-import { isNativeFSSupported } from '@core/storage/native-fs';
 import { launchToolAction } from '@/components/home/ToolCard';
 import { getToolFromSearch } from '@/utils/deepLink';
 
@@ -40,7 +37,6 @@ export const HomeDashboard: React.FC = () => {
     restoreDraft,
     discardDraft,
     clearAllDrafts,
-    openWithNativePicker,
   } = useDocumentStore();
   const {
     setActiveModal,
@@ -60,7 +56,6 @@ export const HomeDashboard: React.FC = () => {
     initialTab?: string;
   } | null>(null);
 
-  const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<ToolCategory | 'all'>('all');
 
   // Check for unsaved drafts on mount
@@ -96,26 +91,6 @@ export const HomeDashboard: React.FC = () => {
     // Mount-only: deep links are consumed exactly once per page load.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleOpenPdfClick = async () => {
-    // A pending workflow (tool card click or ?tool= deep link) must flow through
-    // the standard input path so handleFilePicked can apply it after load —
-    // the native picker path would silently drop it.
-    if (!pendingWorkflowRef.current && isNativeFSSupported()) {
-      try {
-        const opened = await openWithNativePicker();
-        if (opened) {
-          setActiveModal('convert');
-          return;
-        }
-      } catch (err: any) {
-        // User cancelled or aborted picker
-        if (err?.name === 'AbortError') return;
-      }
-    }
-    // Fallback: standard file input
-    pdfInputRef.current?.click();
-  };
 
   const handleFilePicked = async (file: File) => {
     const isImage = file.type.startsWith('image/') || /\.(jpe?g|png|webp|gif|bmp)$/i.test(file.name);
@@ -216,28 +191,6 @@ export const HomeDashboard: React.FC = () => {
     } else {
       pdfInputRef.current?.click();
     }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDraggingFile(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFilePicked(e.dataTransfer.files[0]);
-    }
-  };
-
-  const createBlankDocument = async () => {
-    const { PDFDocument } = await import('pdf-lib');
-    const doc = await PDFDocument.create();
-    doc.addPage([595.28, 841.89]); // A4
-    const bytes = await doc.save();
-    await loadDocument(bytes, 'Untitled.pdf');
-    setActiveModal('organize');
-    addToast({
-      type: 'info',
-      title: 'Blank Document Created',
-      message: 'Created a new A4 PDF document in Editor.',
-    });
   };
 
   const handleCategorySelect = (cat: ToolCategory | 'all') => {
@@ -362,50 +315,7 @@ export const HomeDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* 1. Primary Action: Select PDF files button */}
-        <div
-          onDragOver={(e) => {
-            e.preventDefault();
-            setIsDraggingFile(true);
-          }}
-          onDragLeave={() => setIsDraggingFile(false)}
-          onDrop={handleDrop}
-          onClick={(e) => {
-            if ((e.target as HTMLElement).closest('button')) return;
-            handleOpenPdfClick();
-          }}
-          className={`relative w-full max-w-xl mx-auto border-2 border-dashed rounded-3xl p-4 sm:p-8 transition-all duration-200 cursor-pointer ${
-            isDraggingFile
-              ? 'border-red-500 bg-red-500/[0.05]'
-              : 'border-gray-300 bg-white hover:border-red-500 shadow-xs hover:shadow-md'
-          }`}
-        >
-          <div className="flex flex-col items-center text-center gap-2.5 sm:gap-3">
-            <button
-              type="button"
-              onClick={() => handleOpenPdfClick()}
-              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white font-bold rounded-2xl text-base sm:text-lg shadow-lg shadow-red-500/25 transition-all min-h-[52px] cursor-pointer"
-            >
-              <FolderOpen className="w-6 h-6" />
-              <span>Select PDF files</span>
-            </button>
-            <p className="text-xs sm:text-sm text-gray-500 font-medium">
-              or drop PDFs here • 100% private, files never leave your browser
-            </p>
-
-            {/* Secondary row: blank document */}
-            <div className="flex justify-center pt-1">
-              <button
-                type="button"
-                onClick={() => createBlankDocument()}
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[44px] lg:min-h-0 lg:py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 rounded-xl text-xs font-semibold transition-all cursor-pointer"
-              >
-                <FilePlus className="w-3.5 h-3.5 text-gray-500" />
-                <span>New blank PDF</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        
       </HeroSection>
 
       {/* Complete catalogue: search, recents, favourites & every category */}
