@@ -87,6 +87,7 @@ export class OCRService {
 
     // Apply pixel-level enhancement pre-processing if enabled (default true)
     let processedCanvas = sourceCanvas;
+    let wasPreprocessed = false;
     if (options?.preprocess !== false) {
       try {
         processedCanvas = ImagePreprocessor.processCanvas(
@@ -99,14 +100,24 @@ export class OCRService {
             autoInvert: true,
           }
         );
+        wasPreprocessed = processedCanvas !== sourceCanvas;
       } catch (err) {
         console.warn('OCR image preprocessing warning (using raw canvas):', err);
         processedCanvas = sourceCanvas;
+        wasPreprocessed = false;
       }
     }
 
-    const result = await worker.recognize(processedCanvas);
-    const data = result.data;
+    let data: any;
+    try {
+      const result = await worker.recognize(processedCanvas);
+      data = result.data;
+    } finally {
+      if (wasPreprocessed && processedCanvas) {
+        processedCanvas.width = 1;
+        processedCanvas.height = 1;
+      }
+    }
 
     const rawText = data.text || '';
     const confidence = Math.round(data.confidence || 0);
@@ -124,7 +135,7 @@ export class OCRService {
       }
     }
 
-    const words = rawText.trim().split(/\s+/).filter((w) => w.length > 0);
+    const words = rawText.trim().split(/\s+/).filter((w: string) => w.length > 0);
 
     return {
       text: rawText.trim(),

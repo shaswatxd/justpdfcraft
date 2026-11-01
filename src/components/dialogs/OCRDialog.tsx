@@ -78,6 +78,14 @@ export const OCRDialog: React.FC = () => {
     refreshCachedLangs();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      cancelledRef.current = true;
+      abortControllerRef.current?.abort();
+      ocrWorkerPool.terminate().catch(() => {});
+    };
+  }, []);
+
   const handlePreloadCurrentLang = async () => {
     const primaryLang = language.includes('+') ? language.split('+')[0] : language;
     setIsPreloadingModel(true);
@@ -164,6 +172,7 @@ export const OCRDialog: React.FC = () => {
       return;
     }
 
+    abortControllerRef.current = new AbortController();
     setIsProcessing(true);
     cancelledRef.current = false;
     setProgress(5);
@@ -554,7 +563,7 @@ export const OCRDialog: React.FC = () => {
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-white transition-colors"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -720,7 +729,7 @@ export const OCRDialog: React.FC = () => {
                   onClick={() => setScope('current')}
                   disabled={isProcessing}
                   className={`flex-1 py-1 text-xs rounded-lg font-medium transition-colors ${
-                    scope === 'current' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-white'
+                    scope === 'current' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-900'
                   }`}
                 >
                   Current ({documentId ? currentPage : 1})
@@ -878,7 +887,7 @@ export const OCRDialog: React.FC = () => {
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={handleCopy}
-                    className="flex items-center gap-1 text-xs text-gray-800 hover:text-white bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-lg transition-colors border border-gray-300"
+                    className="flex items-center gap-1 text-xs text-gray-800 hover:text-gray-950 bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-lg transition-colors border border-gray-300"
                     title="Copy without restriction"
                   >
                     {hasCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -887,7 +896,7 @@ export const OCRDialog: React.FC = () => {
 
                   <button
                     onClick={handleDownloadTxt}
-                    className="flex items-center gap-1 text-xs text-indigo-300 hover:text-indigo-200 bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-lg transition-colors border border-gray-300"
+                    className="flex items-center gap-1 text-xs text-indigo-700 hover:text-indigo-900 bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-lg transition-colors border border-gray-300"
                     title="Export as .txt"
                   >
                     <Download className="w-3.5 h-3.5" />
@@ -896,7 +905,7 @@ export const OCRDialog: React.FC = () => {
 
                   <button
                     onClick={handleDownloadMarkdown}
-                    className="flex items-center gap-1 text-xs text-indigo-300 hover:text-indigo-200 bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-lg transition-colors border border-gray-300"
+                    className="flex items-center gap-1 text-xs text-indigo-700 hover:text-indigo-900 bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-lg transition-colors border border-gray-300"
                     title="Export as Markdown"
                   >
                     <FileDown className="w-3.5 h-3.5" />

@@ -285,7 +285,7 @@ export const MobileEditorToolbar: React.FC = () => {
           onClick={() => handleToolSelect('hand')}
           className={`flex flex-col items-center justify-center p-1.5 rounded-xl transition-all shrink-0 min-w-[44px] ${
             currentTool === 'hand'
-              ? 'text-red-600 bg-red-50 text-red-600 font-semibold'
+              ? 'text-red-700 bg-red-50 font-bold ring-1 ring-red-300 shadow-2xs'
               : 'text-gray-500 hover:text-gray-900'
           }`}
           title="Pan / Scroll Mode"

@@ -31,11 +31,19 @@ const TESSDATA_BASE_URL = 'https://tessdata.projectnaptha.com/4.0.0';
 export class OCRModelCache {
   // In-memory fallback map for environments without CacheStorage/IndexedDB (e.g. Node tests)
   private memoryCache = new Map<string, { buffer: ArrayBuffer; cachedAt: number }>();
+  private dbPromise: Promise<IDBDatabase | null> | null = null;
 
   /**
    * Returns true if the language model is present in CacheStorage, IndexedDB, or memory.
    */
   async hasModel(lang: string): Promise<boolean> {
+    const subLangs = lang.split('+').map((l) => l.trim()).filter(Boolean);
+    if (subLangs.length > 1) {
+      for (const sub of subLangs) {
+        if (!(await this.hasModel(sub))) return false;
+      }
+      return true;
+    }
     if (this.memoryCache.has(lang)) return true;
 
     // 1. Check CacheStorage
@@ -157,6 +165,20 @@ export class OCRModelCache {
     lang: string,
     onProgress?: (progressPercent: number) => void
   ): Promise<boolean> {
+    const subLangs = lang.split('+').map((l) => l.trim()).filter(Boolean);
+    if (subLangs.length > 1) {
+      for (let i = 0; i < subLangs.length; i++) {
+        const sub = subLangs[i];
+        const ok = await this.downloadAndCache(sub, (p) => {
+          const overall = Math.round(((i + p / 100) / subLangs.length) * 100);
+          onProgress?.(overall);
+        });
+        if (!ok) return false;
+      }
+      onProgress?.(100);
+      return true;
+    }
+
     // If already cached, notify 100% and exit
     if (await this.hasModel(lang)) {
       onProgress?.(100);
@@ -327,18 +349,23 @@ export class OCRModelCache {
    */
   private async openDB(): Promise<IDBDatabase | null> {
     if (typeof indexedDB === 'undefined') return null;
-
-    return new Promise((resolve) => {
-      const req = indexedDB.open(DB_NAME, 1);
-      req.onupgradeneeded = () => {
-        const db = req.result;
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          db.createObjectStore(STORE_NAME, { keyPath: 'lang' });
-        }
-      };
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => resolve(null);
-    });
+    if (!this.dbPromise) {
+      this.dbPromise = new Promise((resolve) => {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'lang' });
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => {
+          this.dbPromise = null;
+          resolve(null);
+        };
+      });
+    }
+    return this.dbPromise;
   }
 }
 

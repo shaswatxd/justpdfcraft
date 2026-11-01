@@ -35,11 +35,20 @@ export class OCRWorkerPool {
   private workers: Worker[] = [];
   private currentLanguage: string = '';
   private isTerminated = false;
+  private initPromise: Promise<Worker[]> | null = null;
 
   /**
    * Initializes or resizes the worker pool to the target concurrency and language.
    */
   async initPool(language: string = 'eng+hin', targetCount: number = 1): Promise<Worker[]> {
+    if (this.initPromise) return this.initPromise;
+    this.initPromise = this._doInitPool(language, targetCount).finally(() => {
+      this.initPromise = null;
+    });
+    return this.initPromise;
+  }
+
+  private async _doInitPool(language: string = 'eng+hin', targetCount: number = 1): Promise<Worker[]> {
     this.isTerminated = false;
     const clampedCount = Math.max(1, Math.min(targetCount, 8));
 
@@ -99,6 +108,7 @@ export class OCRWorkerPool {
     }
 
     let processedCanvas = sourceCanvas;
+    let wasPreprocessed = false;
     if (options?.preprocess !== false) {
       try {
         processedCanvas = ImagePreprocessor.processCanvas(
@@ -111,39 +121,48 @@ export class OCRWorkerPool {
             autoInvert: true,
           }
         );
+        wasPreprocessed = processedCanvas !== sourceCanvas;
       } catch (err) {
         console.warn('OCR image preprocessing warning (using raw canvas):', err);
         processedCanvas = sourceCanvas;
+        wasPreprocessed = false;
       }
     }
 
-    const result = await worker.recognize(processedCanvas);
-    const data = result.data;
-    const rawText = data.text || '';
-    const confidence = Math.round(data.confidence || 0);
+    try {
+      const result = await worker.recognize(processedCanvas);
+      const data = result.data;
+      const rawText = data.text || '';
+      const confidence = Math.round(data.confidence || 0);
 
-    const lines: OCRLineItem[] = [];
-    const dataAny = data as any;
-    if (dataAny.lines && Array.isArray(dataAny.lines)) {
-      for (const line of dataAny.lines) {
-        if (line.text && line.text.trim().length > 0) {
-          lines.push({
-            text: line.text.trim(),
-            confidence: Math.round(line.confidence || confidence),
-          });
+      const lines: OCRLineItem[] = [];
+      const dataAny = data as any;
+      if (dataAny.lines && Array.isArray(dataAny.lines)) {
+        for (const line of dataAny.lines) {
+          if (line.text && line.text.trim().length > 0) {
+            lines.push({
+              text: line.text.trim(),
+              confidence: Math.round(line.confidence || confidence),
+            });
+          }
         }
       }
+
+      const words = rawText.trim().split(/\s+/).filter((w) => w.length > 0);
+
+      return {
+        text: rawText.trim(),
+        confidence,
+        lines,
+        wordCount: words.length,
+        charCount: rawText.length,
+      };
+    } finally {
+      if (wasPreprocessed && processedCanvas) {
+        processedCanvas.width = 1;
+        processedCanvas.height = 1;
+      }
     }
-
-    const words = rawText.trim().split(/\s+/).filter((w) => w.length > 0);
-
-    return {
-      text: rawText.trim(),
-      confidence,
-      lines,
-      wordCount: words.length,
-      charCount: rawText.length,
-    };
   }
 
   /**
@@ -170,7 +189,7 @@ export class OCRWorkerPool {
     const resultsMap = new Map<number, OCRPageResult>();
     let completedCount = 0;
 
-    // Worker consumer loop
+    // Worker consumer loop with per-page error boundary & clean abort handling
     const runWorkerLoop = async (worker: Worker) => {
       while (queue.length > 0) {
         if (options?.abortSignal?.aborted || this.isTerminated) {
@@ -180,13 +199,17 @@ export class OCRWorkerPool {
         const pIdx = queue.shift();
         if (pIdx === undefined) break;
 
-        // 1. Render page canvas just-in-time
-        const canvas = await renderPage(pIdx);
-        if (!canvas) continue;
+        let canvas: HTMLCanvasElement | null = null;
+        try {
+          // 1. Render page canvas just-in-time
+          canvas = await renderPage(pIdx);
+        } catch (renderErr) {
+          console.error(`Failed to render page ${pIdx + 1}:`, renderErr);
+          continue;
+        }
 
-        if (options?.abortSignal?.aborted || this.isTerminated) {
-          canvas.width = 1;
-          canvas.height = 1;
+        if (!canvas || options?.abortSignal?.aborted || this.isTerminated) {
+          if (canvas) { canvas.width = 1; canvas.height = 1; }
           break;
         }
 
@@ -218,10 +241,28 @@ export class OCRWorkerPool {
               res.confidence
             );
           }
+        } catch (err) {
+          // If cancelled/aborted, exit loop gracefully without rejecting batch
+          if (options?.abortSignal?.aborted || this.isTerminated) {
+            break;
+          }
+          console.error(`OCR error on page ${pIdx + 1}:`, err);
+          // Fallback result so document order is preserved
+          resultsMap.set(pIdx, {
+            pageIndex: pIdx,
+            text: `[OCR failed on page ${pIdx + 1}]`,
+            confidence: 0,
+            lines: [],
+            wordCount: 0,
+            charCount: 0,
+          });
+          completedCount++;
         } finally {
           // 3. Immediately deallocate canvas memory
-          canvas.width = 1;
-          canvas.height = 1;
+          if (canvas) {
+            canvas.width = 1;
+            canvas.height = 1;
+          }
         }
       }
     };
