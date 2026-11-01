@@ -1,5 +1,9 @@
 import { createWorker, Worker } from 'tesseract.js';
 import { ImagePreprocessor, PreprocessOptions } from './image-preprocess';
+import { ocrWorkerPool, getOptimalWorkerCount, BatchOCROptions } from './ocr-pool';
+
+export { ocrWorkerPool, getOptimalWorkerCount };
+export type { BatchOCROptions };
 
 export interface OCROptions {
   language?: string;
@@ -131,52 +135,40 @@ export class OCRService {
   }
 
   /**
-   * Recognizes an array of rendered page canvases with real-time streaming progress.
+   * Recognizes an array of rendered page canvases with parallel web worker processing.
    */
   async recognizePages(
     pageCanvases: Array<{ pageIndex: number; canvas: HTMLCanvasElement }>,
-    options?: OCROptions
+    options?: BatchOCROptions
   ): Promise<OCRPageResult[]> {
-    const results: OCRPageResult[] = [];
-    const total = pageCanvases.length;
+    if (pageCanvases.length === 0) return [];
 
-    for (let i = 0; i < total; i++) {
-      const { pageIndex, canvas } = pageCanvases[i];
-      const startPercent = Math.round((i / total) * 100);
-
-      if (options?.onProgress) {
-        options.onProgress(
-          startPercent,
-          `Scanning & enhancing page ${pageIndex + 1} of ${total}...`
-        );
-      }
-
-      const res = await this.recognizeImage(canvas, options);
-
-      results.push({
-        pageIndex,
-        text: res.text,
-        confidence: res.confidence,
-        lines: res.lines,
-        wordCount: res.wordCount,
-        charCount: res.charCount,
-      });
-
-      if (options?.onProgress) {
-        const endPercent = Math.round(((i + 1) / total) * 100);
-        options.onProgress(
-          endPercent,
-          `Page ${pageIndex + 1} done (${res.confidence}% confidence, ${res.wordCount} words)`,
-          res.confidence
-        );
-      }
+    // Use multi-threaded worker pool if multiple pages are provided
+    if (pageCanvases.length > 1) {
+      return ocrWorkerPool.recognizePages(pageCanvases, options);
     }
+
+    // Single page path
+    const { pageIndex, canvas } = pageCanvases[0];
+    if (options?.onProgress) {
+      options.onProgress(0, `Scanning & enhancing page ${pageIndex + 1}...`);
+    }
+
+    const res = await this.recognizeImage(canvas, options);
+    const singleResult: OCRPageResult = {
+      pageIndex,
+      text: res.text,
+      confidence: res.confidence,
+      lines: res.lines,
+      wordCount: res.wordCount,
+      charCount: res.charCount,
+    };
 
     if (options?.onProgress) {
-      options.onProgress(100, 'OCR Recognition Complete');
+      options.onProgress(100, 'OCR Recognition Complete', res.confidence);
     }
 
-    return results;
+    return [singleResult];
   }
 
   async terminate(): Promise<void> {
@@ -184,6 +176,7 @@ export class OCRService {
       await this.worker.terminate();
       this.worker = null;
     }
+    await ocrWorkerPool.terminate();
   }
 }
 

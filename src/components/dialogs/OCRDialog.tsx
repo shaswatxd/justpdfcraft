@@ -18,7 +18,7 @@ import {
 import { useUIStore } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
 import { getPDFEngine } from '@core/pdf/engine.factory';
-import { ocrService, OCRPageResult } from '@core/ocr/ocr-service';
+import { ocrWorkerPool, getOptimalWorkerCount, OCRPageResult } from '@core/ocr/ocr-service';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 
 export const OCRDialog: React.FC = () => {
@@ -39,6 +39,7 @@ export const OCRDialog: React.FC = () => {
   // Set when the dialog is dismissed mid-run so worker loops abort instead of
   // burning CPU and toasting "finished" long after the dialog has been closed.
   const cancelledRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const [language, setLanguage] = useState('eng');
   const [scope, setScope] = useState<'current' | 'all' | 'custom'>('current');
@@ -247,26 +248,31 @@ export const OCRDialog: React.FC = () => {
         // Otherwise fall through to Deep Visual OCR below
       }
 
-      // 3. DEEP VISUAL OCR MODE (Bypasses all copy restrictions, scrambled fonts, and scans)
-      const results: OCRPageResult[] = [];
+      // 3. DEEP VISUAL OCR MODE (Multi-threaded Web Worker Batch Queue)
       const totalToRun = pagesToProcess.length;
+      const concurrency = getOptimalWorkerCount(totalToRun);
+      const signal = abortControllerRef.current?.signal;
 
-      for (let i = 0; i < totalToRun; i++) {
-        if (cancelledRef.current) break;
-        const pIdx = pagesToProcess[i];
-        const pageNum = pIdx + 1;
-        const pagePercent = Math.round((i / totalToRun) * 100);
+      setStatusText(
+        totalToRun > 1
+          ? `Starting ${concurrency}-worker parallel neural OCR queue (${totalToRun} pages)...`
+          : `Rendering page ${pagesToProcess[0] + 1} at 300 DPI equivalent...`
+      );
 
-        setStatusText(`Rendering page ${pageNum} (${i + 1}/${totalToRun}) at 300 DPI equivalent...`);
-        setProgress(pagePercent);
+      const visualResults: OCRPageResult[] = [];
 
-        // Render single page at 2.5x scale
-        const renderRes = await engine.renderPage(documentId, pIdx, 2.5);
-        if (!renderRes.canvas) continue;
-
-        setStatusText(`Recognizing neural text on page ${pageNum} (${i + 1}/${totalToRun})...`);
-        const pageRes = await ocrService.recognizeImage(renderRes.canvas, {
+      const results = await ocrWorkerPool.processBatchStreaming(
+        pagesToProcess,
+        async (pIdx) => {
+          if (cancelledRef.current || signal?.aborted) return null;
+          setStatusText(`Rendering page ${pIdx + 1} at 300 DPI equivalent...`);
+          const renderRes = await engine.renderPage(documentId, pIdx, 2.5);
+          return renderRes.canvas || null;
+        },
+        {
           language,
+          concurrency,
+          abortSignal: signal,
           preprocess: true,
           preprocessOptions: {
             grayscale: true,
@@ -275,41 +281,38 @@ export const OCRDialog: React.FC = () => {
             binarize: binarizeText,
             autoInvert: true,
           },
-        });
+          onPageComplete: (pageRes, completed, total) => {
+            visualResults.push(pageRes);
+            visualResults.sort((a, b) => a.pageIndex - b.pageIndex);
 
-        // Immediately release canvas bitmap memory
-        renderRes.canvas.width = 1;
-        renderRes.canvas.height = 1;
+            const partialCombined = visualResults
+              .map(
+                (r) =>
+                  `=== PAGE ${r.pageIndex + 1} (${r.confidence}% confidence) ===\n${
+                    r.text.trim() || '[No text detected]'
+                  }\n`
+              )
+              .join('\n');
+            setExtractedText(partialCombined);
+            setPageResults([...visualResults]);
 
-        results.push({
-          pageIndex: pIdx,
-          text: pageRes.text,
-          confidence: pageRes.confidence,
-          lines: pageRes.lines,
-          wordCount: pageRes.wordCount,
-          charCount: pageRes.charCount,
-        });
-
-        // Live progressive preview update
-        const partialCombined = results
-          .map((r) => `=== PAGE ${r.pageIndex + 1} (${r.confidence}% confidence) ===\n${r.text.trim() || '[No text detected]'}\n`)
-          .join('\n');
-        setExtractedText(partialCombined);
-        setPageResults([...results]);
-
-        const validSoFar = results.map((r) => r.confidence).filter((c) => c > 0);
-        if (validSoFar.length > 0) {
-          setAvgConfidence(Math.round(validSoFar.reduce((a, b) => a + b, 0) / validSoFar.length));
+            const validSoFar = visualResults.map((r) => r.confidence).filter((c) => c > 0);
+            if (validSoFar.length > 0) {
+              setAvgConfidence(Math.round(validSoFar.reduce((a, b) => a + b, 0) / validSoFar.length));
+            }
+            setTotalWords(visualResults.reduce((acc, r) => acc + r.wordCount, 0));
+            setProgress(Math.round((completed / total) * 100));
+            setStatusText(
+              `Worker finished page ${pageRes.pageIndex + 1} (${completed}/${total} completed across ${concurrency} threads)`
+            );
+          },
         }
-        setTotalWords(results.reduce((acc, r) => acc + r.wordCount, 0));
-        setProgress(Math.round(((i + 1) / totalToRun) * 100));
-      }
+      );
 
-      if (cancelledRef.current) {
-        // Keep partial progressive results on screen, just finalize metrics
+      if (cancelledRef.current || signal?.aborted) {
         setStatusText('OCR cancelled.');
-        const partialWords = results.reduce((acc, r) => acc + r.wordCount, 0);
-        const partialConfs = results.map((r) => r.confidence).filter((c) => c > 0);
+        const partialWords = visualResults.reduce((acc, r) => acc + r.wordCount, 0);
+        const partialConfs = visualResults.map((r) => r.confidence).filter((c) => c > 0);
         if (partialConfs.length > 0) {
           setAvgConfidence(Math.round(partialConfs.reduce((a, b) => a + b, 0) / partialConfs.length));
         }
@@ -318,7 +321,7 @@ export const OCRDialog: React.FC = () => {
         addToast({
           type: 'info',
           title: 'OCR Cancelled',
-          message: `Stopped early. Partial results (${results.length} page(s)) retained.`,
+          message: `Stopped early. Partial results (${visualResults.length} page(s)) retained.`,
         });
         return;
       }
@@ -857,12 +860,27 @@ export const OCRDialog: React.FC = () => {
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-gray-200 bg-white/60 flex justify-end gap-2">
-          <button
-            onClick={() => setActiveModal(null)}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-white transition-colors"
-          >
-            Close
-          </button>
+          {isProcessing ? (
+            <button
+              onClick={() => {
+                cancelledRef.current = true;
+                abortControllerRef.current?.abort();
+                ocrWorkerPool.terminate().catch(() => {});
+                setIsProcessing(false);
+                setStatusText('OCR cancelled.');
+              }}
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-colors"
+            >
+              Cancel OCR
+            </button>
+          ) : (
+            <button
+              onClick={() => setActiveModal(null)}
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors"
+            >
+              Close
+            </button>
+          )}
           <button
             onClick={handleStartExtraction}
             disabled={isProcessing}
