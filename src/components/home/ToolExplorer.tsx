@@ -12,21 +12,12 @@ import {
   LayoutGrid,
   Heart,
   Flame,
-  History,
-  Trash2,
 } from 'lucide-react';
-import { ToolCategory, ToolDefinition } from '@/types/tools';
+import { ToolCategory } from '@/types/tools';
 import { TOOLS_CATALOG, searchTools } from '@/data/toolsCatalog';
-import { ToolCard, launchToolAction } from '@/components/home/ToolCard';
+import { ToolCard } from '@/components/home/ToolCard';
 import { useFavoritesStore } from '@/stores/favoritesStore';
-import { useRecentToolsStore } from '@/stores/recentToolsStore';
-import { useUIStore } from '@/stores/uiStore';
-import { useDocumentStore } from '@/stores/documentStore';
-import { useToolStore } from '@/stores/toolStore';
 
-const CATALOG_BY_ID: Record<string, ToolDefinition> = Object.fromEntries(
-  TOOLS_CATALOG.map((t) => [t.id, t])
-);
 const ALL_TOOLS_COUNT = TOOLS_CATALOG.length;
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -60,11 +51,7 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   const [showOnlyPopular, setShowOnlyPopular] = useState(false);
 
-  const { favorites, toggleFavorite } = useFavoritesStore();
-  const { recentToolIds, clearRecents, trackTool } = useRecentToolsStore();
-  const ui = useUIStore();
-  const doc = useDocumentStore();
-  const tools = useToolStore();
+  const { favorites } = useFavoritesStore();
 
   // Filter tools based on category and search query
   const filteredTools = useMemo(() => {
@@ -77,20 +64,6 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
     }
     return list;
   }, [searchQuery, activeCategory, showOnlyFavorites, showOnlyPopular, favorites]);
-
-  // Locally recorded recent tools
-  const recentTools = useMemo(() => {
-    if (!recentToolIds.length) return [];
-    return recentToolIds
-      .map((id) => CATALOG_BY_ID[id])
-      .filter((t): t is ToolDefinition => Boolean(t))
-      .slice(0, 6);
-  }, [recentToolIds]);
-
-  const launchRecent = (tool: ToolDefinition) => {
-    trackTool(tool.id);
-    launchToolAction(tool, ui, doc, tools, onSelectWorkflowFile);
-  };
 
   const CATEGORY_TABS: { id: ToolCategory | 'all'; label: string; icon: any }[] = [
     { id: 'all', label: 'All PDF Tools', icon: LayoutGrid },
@@ -108,59 +81,6 @@ export const ToolExplorer: React.FC<ToolExplorerProps> = ({
       id="tool-explorer"
       className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-6"
     >
-      {/* Recently Used */}
-      {recentTools.length > 0 && !searchQuery && !showOnlyFavorites && (
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-3.5 sm:p-4 shadow-2xs">
-          <div className="flex items-center justify-between gap-2 mb-2 px-1">
-            <h2 className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
-              <History className="w-3.5 h-3.5 text-red-600" />
-              Recently used
-            </h2>
-            <button
-              type="button"
-              onClick={clearRecents}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
-              title="Clear your recent tools history"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>Clear</span>
-            </button>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
-            {recentTools.map((tool) => {
-              const isFav = favorites.includes(tool.id);
-              return (
-                <div
-                  key={tool.id}
-                  className="group relative flex items-center justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-red-50/40 hover:border-red-300 transition-all cursor-pointer"
-                >
-                  <button
-                    type="button"
-                    onClick={() => launchRecent(tool)}
-                    className="flex-1 text-left px-3 py-2 text-xs font-semibold text-slate-800 truncate"
-                    title={tool.name}
-                  >
-                    {tool.name}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFavorite(tool.id);
-                    }}
-                    className="p-2 mr-1 rounded-lg text-slate-400 hover:text-rose-500 transition-colors"
-                    aria-label={isFav ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`}
-                    title={isFav ? 'Remove from favorites' : 'Add to favorites'}
-                  >
-                    <Heart className={`w-3.5 h-3.5 ${isFav ? 'fill-rose-500 text-rose-500' : ''}`} />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
       {/* Search & Category Filter Header Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5 bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-2xs">
         {/* Live Search Input */}

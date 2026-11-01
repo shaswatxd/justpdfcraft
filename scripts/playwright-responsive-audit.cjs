@@ -384,7 +384,6 @@ async function runAudit() {
     }
     await runEditorChecks(browser, PHONE_VIEWPORTS[3]); // 390x844
     await runEditorChecks(browser, PHONE_VIEWPORTS[6]); // 844x390 landscape
-    await runRecentsCheck(browser);
   } finally {
     await browser.close();
     if (serverProcess) {
