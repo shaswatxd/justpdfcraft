@@ -129,8 +129,35 @@ export const AIToolsDialog: React.FC = () => {
         if (!res.ok) throw new Error(`OpenAI request failed: HTTP ${res.status}`);
         const data = await res.json();
         result = data.choices?.[0]?.message?.content || 'No response returned.';
+      } else if (provider === 'gemini') {
+        const cleanKey = encodeURIComponent(apiKey.trim());
+        const targetModel = modelName.trim() || 'gemini-1.5-flash';
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${cleanKey}`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  { text: `${systemTask}\n\nDocument Text:\n${userText}\n\nTask Instructions:\n${promptInput || 'Process the above.'}` }
+                ]
+              }
+            ],
+            generationConfig: {
+              temperature: 0.2,
+              maxOutputTokens: 2048,
+            }
+          }),
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(`Gemini API request failed (HTTP ${res.status}): ${errData?.error?.message || res.statusText}`);
+        }
+        const data = await res.json();
+        result = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response returned from Gemini.';
       } else {
-        result = `Configured provider: ${provider}. Response delivered successfully through secure client proxy.`;
+        result = `Unsupported AI provider: ${provider}. Please choose OpenAI, Google Gemini, or local Ollama.`;
       }
 
       setAiOutput(result);

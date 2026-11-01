@@ -17,6 +17,8 @@ import { ToastContainer } from '@/components/common/ToastContainer';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { TTSPlayerHUD } from '@/components/viewer/TTSPlayerHUD';
 import { useTTSStore } from '@/stores/ttsStore';
+import { getToolFromUrl } from '@/utils/deepLink';
+import { launchToolAction } from '@/components/home/ToolCard';
 import { ChevronLeft, ChevronRight, Minimize2, Crosshair, Focus, FileText } from 'lucide-react';
 
 // Robust lazy loader with chunk load error handling and deployment recovery
@@ -119,6 +121,33 @@ export const App: React.FC = () => {
   const hiddenFileInputRef = useRef<HTMLInputElement>(null);
   const { setTool } = useToolStore();
   const { toggleTTS } = useTTSStore();
+
+  // Deep-linking & Clean URL Routing (/merge-pdf, /compress-pdf, ?tool=merge-pdf, ?p=...)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const { tool } = getToolFromUrl(window.location.pathname, window.location.search);
+    if (!tool) return;
+
+    document.title = `${tool.name} — Online PDF Tools | JustPDFCraft`;
+
+    launchToolAction(
+      tool,
+      useUIStore.getState(),
+      useDocumentStore.getState(),
+      useToolStore.getState(),
+      (workflow) => {
+        if (workflow.modal) setActiveModal(workflow.modal);
+        if (workflow.viewMode) setActiveView('editor');
+      }
+    );
+
+    const targetPath = '/' + tool.id;
+    if (window.location.pathname !== targetPath && !window.location.pathname.endsWith('.html')) {
+      window.history.replaceState({}, '', targetPath);
+    }
+  }, []);
+
+
 
   // Global Modal Dismissal: Escape key + backdrop click.
   // Applies centrally to every lazy dialog rendered from `activeModal`, so no

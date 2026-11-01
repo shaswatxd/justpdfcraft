@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { getToolFromSearch } from '@/utils/deepLink';
+import { getToolFromSearch, getToolFromUrl } from '@/utils/deepLink';
 import { TOOLS_CATALOG } from '@/data/toolsCatalog';
 
 describe('Per-tool deep links (?tool=<id>)', () => {
@@ -31,6 +31,22 @@ describe('Per-tool deep links (?tool=<id>)', () => {
 
   it('should work without a leading question mark', () => {
     expect(getToolFromSearch('tool=ocr-pdf').tool?.id).toBe('ocr-pdf');
+  });
+});
+
+describe('Enhanced URL & Path routing', () => {
+  it('should resolve clean pathnames like /merge-pdf and /compress-pdf', () => {
+    expect(getToolFromUrl('/merge-pdf', '').tool?.id).toBe('merge-pdf');
+    expect(getToolFromUrl('/compress-pdf', '').tool?.id).toBe('compress-pdf');
+    expect(getToolFromUrl('/split-pdf', '').tool?.id).toBe('split-pdf');
+  });
+
+  it('should resolve common aliases like /pdf-to-word', () => {
+    expect(getToolFromUrl('/pdf-to-word', '').tool?.id).toBe('pdf-to-word-doc');
+  });
+
+  it('should resolve SPA 404 trampoline redirect query (?p=/merge-pdf)', () => {
+    expect(getToolFromUrl('/', '?p=%2Fmerge-pdf').tool?.id).toBe('merge-pdf');
   });
 });
 

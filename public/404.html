@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting to JustPDFCraft...</title>
+    <script type="text/javascript">
+      // Single Page Application redirect for GitHub Pages custom domain
+      var l = window.location;
+      var cleanPath = l.pathname.slice(1);
+      var query = l.search ? '&' + l.search.slice(1) : '';
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        '/?p=/' + encodeURIComponent(cleanPath) + query + l.hash
+      );
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to <a href="/">JustPDFCraft</a>...</p>
+  </body>
+</html>
