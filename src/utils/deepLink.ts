@@ -23,6 +23,9 @@ const TOOL_PATH_ALIASES: Record<string, string> = {
   'invert': 'invert-pdf',
   'metadata': 'metadata-pdf',
   'flatten': 'flatten-pdf',
+  'mini-xerox': 'mini-xerox-pdf',
+  'pocket-xerox': 'mini-xerox-pdf',
+  'micro-xerox': 'mini-xerox-pdf',
 };
 
 /**

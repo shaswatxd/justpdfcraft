@@ -151,6 +151,13 @@ export const CommandPalette: React.FC = () => {
       action: () => setActiveModal('n-up'),
     },
     {
+      id: 'mini_xerox',
+      title: 'Mini Xerox / Pocket Notes Maker (4, 8, 16-in-1 with Scissor Cut Lines)',
+      category: 'Tools',
+      icon: Scissors,
+      action: () => setActiveModal('mini-xerox'),
+    },
+    {
       id: 'metadata',
       title: 'Edit PDF Metadata & Privacy Scrubber (Title, Author, Clean Tracking)',
       category: 'Tools',

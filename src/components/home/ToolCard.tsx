@@ -328,6 +328,8 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
   };
 
   const isHandwriting = tool.id === 'handwriting-generator';
+  const isMiniXerox = tool.id === 'mini-xerox-pdf';
+  const isSpecialCard = isHandwriting || isMiniXerox;
 
   const handleClick = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('.fav-btn')) {
@@ -354,7 +356,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
         }
       }}
       className={`group relative flex flex-col justify-between p-5 sm:p-6 rounded-2xl bg-white transition-all duration-200 cursor-pointer select-none text-left border ${
-        isHandwriting
+        isSpecialCard
           ? 'border-amber-300/90 shadow-md shadow-amber-500/10 hover:border-red-500 hover:shadow-2xl hover:-translate-y-1.5 ring-1 ring-amber-400/30'
           : 'border-slate-200/80 hover:border-slate-300 shadow-xs hover:shadow-xl hover:-translate-y-1.5'
       }`}
@@ -363,16 +365,20 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelectWorkflowFile }
       <div className="flex items-center justify-between gap-3 mb-4">
         <div
           className={`w-14 h-14 rounded-2xl ${
-            isHandwriting ? 'bg-gradient-to-br from-red-50 to-amber-50 border-amber-300' : theme.bg
+            isSpecialCard ? 'bg-gradient-to-br from-red-50 to-amber-50 border-amber-300' : theme.bg
           } border ${theme.border} flex items-center justify-center transition-all duration-300 shadow-2xs group-hover:scale-105`}
         >
-          <IconComponent className={`w-7 h-7 ${isHandwriting ? 'text-red-600' : theme.text}`} />
+          <IconComponent className={`w-7 h-7 ${isSpecialCard ? 'text-red-600' : theme.text}`} />
         </div>
 
         <div className="flex items-center gap-1.5">
           {isHandwriting ? (
             <span className="px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-gradient-to-r from-red-600 to-amber-500 text-white shadow-2xs">
               ✨ EXCLUSIVE
+            </span>
+          ) : isMiniXerox ? (
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-gradient-to-r from-amber-500 to-red-600 text-white shadow-2xs">
+              ✂️ 16-IN-1 XEROX
             </span>
           ) : tool.badge ? (
             <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-slate-100 border border-slate-200 text-slate-600">

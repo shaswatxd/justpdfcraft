@@ -80,6 +80,7 @@ const RepairDialog = safeLazy(() => import('@/components/dialogs/RepairDialog'),
 const FlattenDialog = safeLazy(() => import('@/components/dialogs/FlattenDialog'), 'FlattenDialog');
 const ExtractImagesDialog = safeLazy(() => import('@/components/dialogs/ExtractImagesDialog'), 'ExtractImagesDialog');
 const NUpDialog = safeLazy(() => import('@/components/dialogs/NUpDialog'), 'NUpDialog');
+const MiniXeroxDialog = safeLazy(() => import('@/components/dialogs/MiniXeroxDialog'), 'MiniXeroxDialog');
 const MetadataDialog = safeLazy(() => import('@/components/dialogs/MetadataDialog'), 'MetadataDialog');
 
 
@@ -650,6 +651,7 @@ export const App: React.FC = () => {
           {activeModal === 'flatten' && <FlattenDialog />}
           {activeModal === 'extract-images' && <ExtractImagesDialog />}
           {activeModal === 'n-up' && <NUpDialog />}
+          {activeModal === 'mini-xerox' && <MiniXeroxDialog />}
           {activeModal === 'metadata' && <MetadataDialog />}
 
 

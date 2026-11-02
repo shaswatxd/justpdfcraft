@@ -921,6 +921,7 @@ export const AppHeader: React.FC = () => {
                 { name: 'Split PDF', icon: Scissors, color: 'text-orange-500 hover:bg-orange-50', action: () => handleOpenTool('split') },
                 { name: 'Organize PDF', icon: Grid, color: 'text-purple-600 hover:bg-purple-50', action: () => handleOpenTool('organize') },
                 { name: 'N-Up Multi-Page', icon: LayoutGrid, color: 'text-purple-700 hover:bg-purple-50', action: () => handleOpenTool('n-up') },
+                { name: 'Mini Xerox / Pocket Notes', icon: Scissors, color: 'text-amber-600 hover:bg-amber-50 font-bold', action: () => handleOpenTool('mini-xerox') },
                 { name: 'Scan to PDF', icon: Camera, color: 'text-teal-600 hover:bg-teal-50', action: () => handleOpenTool('scan') },
               ].map((item) => {
                 const Icon = item.icon;

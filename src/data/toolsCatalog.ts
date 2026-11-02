@@ -84,6 +84,30 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     tags: ['n-up', 'multiple pages per sheet', '2 up', '4 up', 'handouts', 'slides print', 'cheat sheet', 'booklet layout', 'nup'],
     action: { type: 'modal', modal: 'n-up' },
   },
+  {
+    id: 'mini-xerox-pdf',
+    name: 'Mini Xerox / Pocket Notes',
+    shortDesc: 'Condense notes into 4, 8, or 16 pages per sheet with scissor cut guidelines for pocket revision booklets.',
+    category: 'organize',
+    iconName: 'Scissors',
+    color: 'text-amber-600',
+    badge: 'special',
+    tags: [
+      'mini xerox',
+      'pocket xerox',
+      'micro xerox',
+      '16 in 1 xerox',
+      '4 in 1 xerox',
+      'choti xerox',
+      'cheat sheet',
+      'pocket notes',
+      'exam notes xerox',
+      'xerox pdf',
+      'mini xerox online',
+      'cut guidelines',
+    ],
+    action: { type: 'modal', modal: 'mini-xerox' },
+  },
 
   // =========================================================================
   // 2. OPTIMIZE PDF

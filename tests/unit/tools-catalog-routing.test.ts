@@ -33,6 +33,7 @@ const VALID_MODALS = new Set([
   'flatten',
   'extract-images',
   'n-up',
+  'mini-xerox',
   'metadata',
   'contact',
   'about',

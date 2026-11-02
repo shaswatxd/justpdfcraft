@@ -3,13 +3,14 @@ import { TOOLS_CATALOG, searchTools } from '@/data/toolsCatalog';
 
 describe('Master Tools Catalog (iLovePDF Suite)', () => {
   it('should contain curated authentic PDF tools plus exclusive handwriting generator and new powerhouse tools', () => {
-    expect(TOOLS_CATALOG.length).toBe(37);
+    expect(TOOLS_CATALOG.length).toBe(38);
     expect(TOOLS_CATALOG.some((t) => t.id === 'merge-pdf')).toBe(true);
     expect(TOOLS_CATALOG.some((t) => t.id === 'split-pdf')).toBe(true);
     expect(TOOLS_CATALOG.some((t) => t.id === 'compress-pdf')).toBe(true);
     expect(TOOLS_CATALOG.some((t) => t.id === 'handwriting-generator')).toBe(true);
     expect(TOOLS_CATALOG.some((t) => t.id === 'flatten-pdf')).toBe(true);
     expect(TOOLS_CATALOG.some((t) => t.id === 'n-up-pdf')).toBe(true);
+    expect(TOOLS_CATALOG.some((t) => t.id === 'mini-xerox-pdf')).toBe(true);
     expect(TOOLS_CATALOG.some((t) => t.id === 'pdf-to-grayscale')).toBe(true);
     expect(TOOLS_CATALOG.some((t) => t.id === 'extract-images-pdf')).toBe(true);
     expect(TOOLS_CATALOG.some((t) => t.id === 'metadata-pdf')).toBe(true);

@@ -8,7 +8,7 @@ import { TOOLS_CATALOG, searchTools } from '@/data/toolsCatalog';
  */
 describe('tokenized tool search', () => {
   it('keeps exactly the expected catalogue shape', () => {
-    expect(TOOLS_CATALOG.length).toBe(37);
+    expect(TOOLS_CATALOG.length).toBe(38);
   });
 
   it.each([
@@ -28,6 +28,8 @@ describe('tokenized tool search', () => {
     ['delete pages', 'delete-pdf-pages'],
     ['dark mode', 'invert-pdf'],
     ['edit metadata', 'metadata-pdf'],
+    ['mini xerox', 'mini-xerox-pdf'],
+    ['pocket notes', 'mini-xerox-pdf'],
   ])('finds the right tool for "%s"', (query, expectedId) => {
     const results = searchTools(query);
     expect(results.map((t) => t.id)).toContain(expectedId);
