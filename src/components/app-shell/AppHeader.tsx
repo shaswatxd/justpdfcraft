@@ -1054,8 +1054,8 @@ export const AppHeader: React.FC = () => {
                 { name: 'Edit Metadata', icon: Tag, color: 'text-slate-700 hover:bg-slate-100', action: () => handleOpenTool('metadata') },
                 { name: 'Sign PDF', icon: PenTool, color: 'text-sky-500 hover:bg-sky-50', action: () => handleOpenTool('sign') },
                 { name: 'Compare PDF', icon: GitCompare, color: 'text-purple-500 hover:bg-purple-50', action: () => handleOpenTool('compare') },
-                { name: '✍️ Handwriting Gen', icon: Sparkles, color: 'text-red-600 bg-red-50/70 hover:bg-red-100/80 font-extrabold', action: () => handleOpenTool('handwriting') },
-                { name: '📐 Exam Resizer', icon: Sliders, color: 'text-blue-600 hover:bg-blue-50', action: () => handleOpenTool('student-resizer') },
+                { name: '✍️ Handwriting Generator', icon: Sparkles, color: 'text-red-600 bg-red-50/70 hover:bg-red-100/80 font-extrabold', action: () => handleOpenTool('handwriting') },
+                { name: '📐 Photo & Signature Resizer', icon: Sliders, color: 'text-blue-600 hover:bg-blue-50', action: () => handleOpenTool('student-resizer') },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
