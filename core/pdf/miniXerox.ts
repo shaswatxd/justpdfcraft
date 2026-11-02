@@ -5,6 +5,9 @@
  * - Multi-document merging: combine multiple chapter PDFs into one pocket booklet
  * - Direct text / notes chits mode: paste notes & adjust font size (chota / bada)
  * - 4-in-1, 6-in-1, 8-in-1, 9-in-1, 16-in-1, and 25-in-1 (5x5 Ultra Micro Farra)
+ * - Z-Order (Horizontal) & N-Order (Vertical column-first for scissor stacking)
+ * - Auto-Rotate pages by 90° to eliminate white space & maximize text size
+ * - Custom page range filter (e.g. '1-10', 'odd', 'even', 'all')
  * - Content zoom & auto-margin trimming to maximize text legibility
  * - Scissor cutting guidelines (dashed lines) for paper-cutter slicing
  * - Sequential mini-page numbering badges (#1, #2...) so sliced cards stay in order
@@ -12,31 +15,35 @@
  * - 100% Client-Side via WebAssembly & pdf-lib (zero server uploads)
  */
 
-import { PDFDocument, rgb, StandardFonts, LineCapStyle } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts, LineCapStyle, degrees } from 'pdf-lib';
 import { getPDFEngine } from './engine.factory';
 
 export type MiniXeroxLayout = '4-in-1' | '6-in-1' | '8-in-1' | '9-in-1' | '16-in-1' | '25-in-1';
 export type MiniXeroxPageSize = 'A4' | 'Letter' | 'Legal';
 export type MiniXeroxOrientation = 'auto' | 'portrait' | 'landscape';
+export type MiniXeroxPageOrder = 'horizontal' | 'vertical';
 
 export interface MiniXeroxOptions {
   layout: MiniXeroxLayout;
   pageSize?: MiniXeroxPageSize;
   orientation?: MiniXeroxOrientation;
-  drawCutGuides?: boolean;       // Dashed scissor lines between cells
-  drawBorders?: boolean;         // Thin outer border around each mini-page
-  drawPageNumbers?: boolean;     // Sequential '#1', '#2' badge on each mini page
-  duplexCutSafe?: boolean;       // Mirror columns on even sheets for back-to-back cutting
-  contentZoom?: number;          // Zoom factor to expand content & trim outer white margins (e.g. 1.0 - 1.4)
-  trimMargins?: boolean;         // Crop 10% outer whitespace margins so text is bigger
-  margin?: number;               // Outer sheet margin in points (default: 16)
-  spacing?: number;              // Gap between mini pages in points (default: 6)
+  pageOrder?: MiniXeroxPageOrder;   // 'horizontal' (Z-order) or 'vertical' (N-order column-first)
+  autoRotate?: boolean;             // Auto-rotate page 90° if it fills the cell better
+  pageRange?: string;               // e.g. 'all', '1-10', 'odd', 'even'
+  drawCutGuides?: boolean;          // Dashed scissor lines between cells
+  drawBorders?: boolean;            // Thin outer border around each mini-page
+  drawPageNumbers?: boolean;        // Sequential '#1', '#2' badge on each mini page
+  duplexCutSafe?: boolean;          // Mirror columns on even sheets for back-to-back cutting
+  contentZoom?: number;             // Zoom factor to expand content & trim outer white margins (e.g. 1.0 - 1.4)
+  trimMargins?: boolean;            // Crop 10% outer whitespace margins so text is bigger
+  margin?: number;                  // Outer sheet margin in points (default: 14)
+  spacing?: number;                 // Gap between mini pages in points (default: 4)
   onProgress?: (currentSheet: number, totalSheets: number, status: string) => void;
 }
 
 export interface NotesChitsOptions {
   text: string;
-  fontSize?: number;             // Chota/Bada text control (e.g. 6 to 14 pt, default: 8)
+  fontSize?: number;             // Chota/Bada text control (e.g. 5 to 14 pt, default: 7.5)
   layout?: MiniXeroxLayout;      // Grid per page (default: '16-in-1')
   columnsPerChit?: 1 | 2 | 3;    // Multi-column text flow inside each micro chit (default: 2)
   pageSize?: MiniXeroxPageSize;  // A4 / Letter / Legal
@@ -76,7 +83,43 @@ export interface SourcePageReference {
 }
 
 /**
- * Creates a Mini Xerox PDF from one or more PDF documents.
+ * Parses user page range syntax: e.g. "all", "1-10", "1, 3, 5-8", "odd", "even"
+ */
+export function parsePageRange(rangeStr: string | undefined, maxPages: number): number[] {
+  if (!rangeStr || rangeStr.trim().toLowerCase() === 'all') {
+    return Array.from({ length: maxPages }, (_, i) => i);
+  }
+  const pages = new Set<number>();
+  const parts = rangeStr.split(/[,;s]+/);
+  for (const part of parts) {
+    const trimmed = part.trim();
+    if (!trimmed) continue;
+    if (trimmed.toLowerCase() === 'odd') {
+      for (let i = 0; i < maxPages; i += 2) pages.add(i);
+    } else if (trimmed.toLowerCase() === 'even') {
+      for (let i = 1; i < maxPages; i += 2) pages.add(i);
+    } else if (trimmed.includes('-')) {
+      const [startStr, endStr] = trimmed.split('-');
+      const start = parseInt(startStr, 10);
+      const end = parseInt(endStr, 10);
+      if (!isNaN(start) && !isNaN(end)) {
+        const min = Math.max(1, Math.min(start, end));
+        const max = Math.min(maxPages, Math.max(start, end));
+        for (let p = min; p <= max; p++) pages.add(p - 1);
+      }
+    } else {
+      const num = parseInt(trimmed, 10);
+      if (!isNaN(num) && num >= 1 && num <= maxPages) {
+        pages.add(num - 1);
+      }
+    }
+  }
+  const result = Array.from(pages).sort((a, b) => a - b);
+  return result.length > 0 ? result : Array.from({ length: maxPages }, (_, i) => i);
+}
+
+/**
+ * Fallback page rasterizer via PDF.js if direct stream embedding encounters unknown filters.
  */
 async function renderPageFallback(
   docBytes: Uint8Array,
@@ -111,6 +154,9 @@ async function renderPageFallback(
   }
 }
 
+/**
+ * Creates a Mini Xerox PDF from one or more PDF documents.
+ */
 export async function createMiniXeroxPdf(
   sourceDocuments: Uint8Array[] | string,
   options: MiniXeroxOptions
@@ -131,7 +177,7 @@ export async function createMiniXeroxPdf(
 
   // 1. Load all source documents and catalog total pages
   const loadedDocs: PDFDocument[] = [];
-  const allPageRefs: { docIndex: number; pageIndex: number; originalDoc: PDFDocument }[] = [];
+  const rawPageRefs: { docIndex: number; pageIndex: number; originalDoc: PDFDocument }[] = [];
 
   for (let dIdx = 0; dIdx < docBuffers.length; dIdx++) {
     const buf = docBuffers[dIdx];
@@ -140,15 +186,23 @@ export async function createMiniXeroxPdf(
       loadedDocs.push(doc);
       const count = doc.getPageCount();
       for (let pIdx = 0; pIdx < count; pIdx++) {
-        allPageRefs.push({ docIndex: dIdx, pageIndex: pIdx, originalDoc: doc });
+        rawPageRefs.push({ docIndex: dIdx, pageIndex: pIdx, originalDoc: doc });
       }
     } catch (err: any) {
       console.warn(`Failed to parse source document #${dIdx + 1}:`, err);
     }
   }
 
-  if (allPageRefs.length === 0) {
+  if (rawPageRefs.length === 0) {
     throw new Error('No valid pages found in provided document(s).');
+  }
+
+  // Filter with pageRange if specified
+  const filteredIndices = parsePageRange(options.pageRange, rawPageRefs.length);
+  const allPageRefs = filteredIndices.map((idx) => rawPageRefs[idx]);
+
+  if (allPageRefs.length === 0) {
+    throw new Error('No pages match the specified page range.');
   }
 
   const spec = MINI_XEROX_LAYOUTS[options.layout] || MINI_XEROX_LAYOUTS['16-in-1'];
@@ -172,8 +226,8 @@ export async function createMiniXeroxPdf(
       ? [Math.max(baseDims[0], baseDims[1]), Math.min(baseDims[0], baseDims[1])]
       : [Math.min(baseDims[0], baseDims[1]), Math.max(baseDims[0], baseDims[1])];
 
-  const margin = options.margin ?? 16;
-  const spacing = options.spacing ?? 6;
+  const margin = options.margin ?? 14;
+  const spacing = options.spacing ?? 4;
 
   const availableWidth = sheetWidth - 2 * margin - (spec.cols - 1) * spacing;
   const availableHeight = sheetHeight - 2 * margin - (spec.rows - 1) * spacing;
@@ -200,8 +254,18 @@ export async function createMiniXeroxPdf(
       const pageNumberInDoc = i + 1; // 1-based sequential number
       const posOnSheet = i - sheetStartIdx;
       
-      const row = Math.floor(posOnSheet / spec.cols);
-      let col = posOnSheet % spec.cols;
+      let row = 0;
+      let col = 0;
+
+      if (options.pageOrder === 'vertical') {
+        // N-Order (Down column first, then next column - ideal for cutting into strips & stacking)
+        col = Math.floor(posOnSheet / spec.rows);
+        row = posOnSheet % spec.rows;
+      } else {
+        // Z-Order (Across rows first - standard reading order)
+        row = Math.floor(posOnSheet / spec.cols);
+        col = posOnSheet % spec.cols;
+      }
 
       // Duplex cut alignment: mirror columns on reverse side so Page 1 back matches Page 2
       if (options.duplexCutSafe && isEvenSheet) {
@@ -238,14 +302,18 @@ export async function createMiniXeroxPdf(
       const origWidth = embeddedPage ? embeddedPage.width : embeddedJpg!.width;
       const origHeight = embeddedPage ? embeddedPage.height : embeddedJpg!.height;
 
-      // Calculate uniform scale to fit cell preserving aspect ratio with zoom factor
-      const baseScaleX = cellWidth / origWidth;
-      const baseScaleY = cellHeight / origHeight;
-      const baseScale = Math.min(baseScaleX, baseScaleY);
-      const scale = baseScale * contentZoom;
+      // Check scale without rotation
+      const scaleNoRot = Math.min(cellWidth / origWidth, cellHeight / origHeight) * contentZoom;
 
-      const fittedWidth = origWidth * scale;
-      const fittedHeight = origHeight * scale;
+      // Check scale with 90° rotation
+      const scaleWithRot = Math.min(cellWidth / origHeight, cellHeight / origWidth) * contentZoom;
+
+      // Auto-rotate if enabled and rotation yields >= 12% bigger text
+      const shouldRotate = Boolean(options.autoRotate && scaleWithRot > scaleNoRot * 1.12);
+
+      const effectiveScale = shouldRotate ? scaleWithRot : scaleNoRot;
+      const fittedWidth = (shouldRotate ? origHeight : origWidth) * effectiveScale;
+      const fittedHeight = (shouldRotate ? origWidth : origHeight) * effectiveScale;
 
       // Center within the cell
       const drawX = cellX + (cellWidth - fittedWidth) / 2;
@@ -253,12 +321,22 @@ export async function createMiniXeroxPdf(
 
       // Embed the mini-page
       if (embeddedPage) {
-        outPage.drawPage(embeddedPage, {
-          x: drawX,
-          y: drawY,
-          xScale: scale,
-          yScale: scale,
-        });
+        if (shouldRotate) {
+          outPage.drawPage(embeddedPage, {
+            x: drawX + fittedWidth,
+            y: drawY,
+            xScale: effectiveScale,
+            yScale: effectiveScale,
+            rotate: degrees(90),
+          });
+        } else {
+          outPage.drawPage(embeddedPage, {
+            x: drawX,
+            y: drawY,
+            xScale: effectiveScale,
+            yScale: effectiveScale,
+          });
+        }
       } else if (embeddedJpg) {
         outPage.drawImage(embeddedJpg.img, {
           x: drawX,
@@ -290,8 +368,8 @@ export async function createMiniXeroxPdf(
         const badgeW = textWidth + padX * 2;
         const badgeH = fontSize + padY * 2;
 
-        const badgeX = cellX + cellWidth - badgeW - 2;
-        const badgeY = cellY + 2;
+        const badgeX = cellX + 1.5;
+        const badgeY = cellY + cellHeight - badgeH - 1.5;
 
         // Background pill
         outPage.drawRectangle({
@@ -299,13 +377,12 @@ export async function createMiniXeroxPdf(
           y: badgeY,
           width: badgeW,
           height: badgeH,
-          color: rgb(1, 1, 1),
-          borderColor: rgb(0.2, 0.2, 0.25),
+          color: rgb(0.96, 0.96, 0.98),
+          borderColor: rgb(0.8, 0.82, 0.86),
           borderWidth: 0.5,
-          opacity: 0.95,
         });
 
-        // Text
+        // Badge text
         outPage.drawText(badgeText, {
           x: badgeX + padX,
           y: badgeY + padY + 1,
@@ -372,8 +449,8 @@ export async function createNotesChitsPdf(options: NotesChitsOptions): Promise<U
   const spec = MINI_XEROX_LAYOUTS[options.layout || '16-in-1'];
   const [sheetWidth, sheetHeight] = PAGE_SIZE_POINTS[options.pageSize || 'A4'];
 
-  const margin = 16;
-  const spacing = 6;
+  const margin = 14;
+  const spacing = 4;
   const availableWidth = sheetWidth - 2 * margin - (spec.cols - 1) * spacing;
   const availableHeight = sheetHeight - 2 * margin - (spec.rows - 1) * spacing;
 
@@ -471,29 +548,33 @@ export async function createNotesChitsPdf(options: NotesChitsOptions): Promise<U
         });
       }
 
-      // Fill columns inside this chit
-      for (let colIdx = 0; colIdx < columnsPerChit; colIdx++) {
-        const colStartX = cellX + chitInternalMargin + colIdx * (singleColWidth + colGap);
-        const colStartY = cellY + cellHeight - chitInternalMargin - fontSize;
+      // Draw text columns inside this chit
+      for (let c = 0; c < columnsPerChit; c++) {
+        const colStartX = cellX + chitInternalMargin + c * (singleColWidth + colGap);
+        let startY = cellY + cellHeight - chitInternalMargin - lineHeight;
 
         for (let l = 0; l < maxLinesPerColumn; l++) {
           if (currentLineIdx >= wrappedLines.length) break;
           const lineObj = wrappedLines[currentLineIdx++];
 
           if (lineObj.text) {
+            const fontToUse = lineObj.isHeader ? boldFont : font;
+            const colorToUse = lineObj.isHeader ? rgb(0.65, 0.1, 0.1) : rgb(0.1, 0.1, 0.12);
+
             page.drawText(lineObj.text, {
               x: colStartX,
-              y: colStartY - l * lineHeight,
+              y: startY,
               size: fontSize,
-              font: lineObj.isHeader ? boldFont : font,
-              color: rgb(0.08, 0.08, 0.1),
+              font: fontToUse,
+              color: colorToUse,
             });
           }
+          startY -= lineHeight;
         }
       }
     }
 
-    // Scissor Cut Guidelines
+    // Draw scissor cut lines if enabled
     if (options.drawCutGuides !== false) {
       const guideColor = rgb(0.75, 0.78, 0.82);
       const dashArray = [4, 4];
@@ -523,7 +604,7 @@ export async function createNotesChitsPdf(options: NotesChitsOptions): Promise<U
       }
     }
 
-    options.onProgress?.(sIdx + 1, totalSheets, `Rendered Sheet ${sIdx + 1} of ${totalSheets}...`);
+    options.onProgress?.(sIdx + 1, totalSheets, `Typeset Sheet ${sIdx + 1} of ${totalSheets}...`);
   }
 
   return await outDoc.save();

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { createMiniXeroxPdf, createNotesChitsPdf } from '../../core/pdf/miniXerox';
+import { createMiniXeroxPdf, createNotesChitsPdf, parsePageRange } from '../../core/pdf/miniXerox';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
 describe('Mini Xerox / Pocket Notes PDF Engine', () => {
@@ -16,6 +16,8 @@ describe('Mini Xerox / Pocket Notes PDF Engine', () => {
       layout: '8-in-1',
       pageSize: 'A4',
       orientation: 'landscape',
+      pageOrder: 'horizontal',
+      autoRotate: true,
       drawCutGuides: true,
       drawPageNumbers: true,
       drawBorders: true,
@@ -26,6 +28,37 @@ describe('Mini Xerox / Pocket Notes PDF Engine', () => {
 
     const outDoc = await PDFDocument.load(outBytes);
     expect(outDoc.getPageCount()).toBe(1); // 8 pages fit on 1 sheet
+  });
+
+  it('should support N-Order (vertical column-first) for stackable scissor strips', async () => {
+    const doc = await PDFDocument.create();
+    const font = await doc.embedFont(StandardFonts.Helvetica);
+    for (let i = 0; i < 16; i++) {
+      const p = doc.addPage([300, 400]);
+      p.drawText(`Page ${i + 1}`, { x: 30, y: 300, font, size: 14 });
+    }
+    const bytes = await doc.save();
+
+    const outBytes = await createMiniXeroxPdf([bytes], {
+      layout: '16-in-1',
+      pageSize: 'A4',
+      pageOrder: 'vertical',
+      autoRotate: true,
+      drawCutGuides: true,
+      drawPageNumbers: true,
+    });
+
+    expect(outBytes).toBeInstanceOf(Uint8Array);
+    const outDoc = await PDFDocument.load(outBytes);
+    expect(outDoc.getPageCount()).toBe(1);
+  });
+
+  it('should parse page ranges correctly with parsePageRange', () => {
+    expect(parsePageRange('all', 10)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    expect(parsePageRange('1-4', 10)).toEqual([0, 1, 2, 3]);
+    expect(parsePageRange('1, 3, 5-7', 10)).toEqual([0, 2, 4, 5, 6]);
+    expect(parsePageRange('odd', 6)).toEqual([0, 2, 4]);
+    expect(parsePageRange('even', 6)).toEqual([1, 3, 5]);
   });
 
   it('should merge multiple PDF documents into a 16-in-1 micro xerox grid', async () => {
@@ -52,6 +85,8 @@ describe('Mini Xerox / Pocket Notes PDF Engine', () => {
       layout: '16-in-1',
       pageSize: 'A4',
       orientation: 'portrait',
+      pageOrder: 'horizontal',
+      autoRotate: true,
       drawCutGuides: true,
       drawPageNumbers: true,
       duplexCutSafe: true,
@@ -75,6 +110,7 @@ describe('Mini Xerox / Pocket Notes PDF Engine', () => {
     const outBytes = await createMiniXeroxPdf([bytes], {
       layout: '25-in-1',
       pageSize: 'A4',
+      autoRotate: true,
     });
 
     const outDoc = await PDFDocument.load(outBytes);
