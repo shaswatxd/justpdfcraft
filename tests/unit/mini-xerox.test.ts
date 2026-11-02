@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { createMiniXeroxPdf } from '../../core/pdf/miniXerox';
+import { createMiniXeroxPdf, createNotesChitsPdf } from '../../core/pdf/miniXerox';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
 describe('Mini Xerox / Pocket Notes PDF Engine', () => {
@@ -55,28 +55,69 @@ describe('Mini Xerox / Pocket Notes PDF Engine', () => {
       drawCutGuides: true,
       drawPageNumbers: true,
       duplexCutSafe: true,
+      contentZoom: 1.15,
+      trimMargins: true,
     });
 
     const outDoc = await PDFDocument.load(outBytes);
     expect(outDoc.getPageCount()).toBe(1);
   });
 
-  it('should correctly calculate sheets across multiple pages in 4-in-1 mode', async () => {
+  it('should compile 25 pages into 1 sheet in 25-in-1 ultra micro layout', async () => {
     const doc = await PDFDocument.create();
     const font = await doc.embedFont(StandardFonts.Helvetica);
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 25; i++) {
       const p = doc.addPage([300, 400]);
       p.drawText(`Page ${i + 1}`, { x: 30, y: 300, font, size: 14 });
     }
     const bytes = await doc.save();
 
-    // 9 pages with 4-in-1 -> ceil(9/4) = 3 sheets
     const outBytes = await createMiniXeroxPdf([bytes], {
-      layout: '4-in-1',
+      layout: '25-in-1',
       pageSize: 'A4',
     });
 
     const outDoc = await PDFDocument.load(outBytes);
-    expect(outDoc.getPageCount()).toBe(3);
+    expect(outDoc.getPageCount()).toBe(1);
+  });
+
+  it('should typeset raw formula/notes text into compact micro chits with font size control', async () => {
+    const formulas = `
+# PHYSICS FORMULAS
+E = mc^2
+F = ma
+v = u + at
+s = ut + (1/2)at^2
+v^2 = u^2 + 2as
+W = F * d * cos(theta)
+P = W / t
+
+# THERMODYNAMICS
+PV = nRT
+dQ = dU + dW
+Delta S = dQ / T
+
+# CALCULUS DERIVATIVES
+d/dx(x^n) = n*x^(n-1)
+d/dx(sin x) = cos x
+d/dx(cos x) = -sin x
+d/dx(e^x) = e^x
+d/dx(ln x) = 1/x
+    `;
+
+    const outBytes = await createNotesChitsPdf({
+      text: formulas,
+      fontSize: 7, // chota text
+      columnsPerChit: 2,
+      layout: '16-in-1',
+      drawCutGuides: true,
+      drawPageNumbers: true,
+    });
+
+    expect(outBytes).toBeInstanceOf(Uint8Array);
+    expect(outBytes.length).toBeGreaterThan(100);
+
+    const outDoc = await PDFDocument.load(outBytes);
+    expect(outDoc.getPageCount()).toBeGreaterThanOrEqual(1);
   });
 });
