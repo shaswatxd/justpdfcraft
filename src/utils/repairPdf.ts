@@ -54,6 +54,7 @@ export async function repairPdf(sourceBytes: Uint8Array): Promise<RepairResult> 
       ignoreEncryption: true,
       parseSpeed: Infinity,
       updateMetadata: false,
+      throwOnInvalidObject: false,
     });
 
     const pageCount = doc.getPageCount();

@@ -84,6 +84,7 @@ export class FallbackPDFEngine implements PDFEngine {
       pdfLibDoc = await PDFDocument.load(source, {
         ignoreEncryption: true,
         updateMetadata: false,
+        throwOnInvalidObject: false,
       });
     } catch (err: any) {
       throw new Error(`Failed to parse PDF binary stream: ${err?.message || err}`);
@@ -452,7 +453,7 @@ export class FallbackPDFEngine implements PDFEngine {
     const mergedDoc = await PDFDocument.create();
 
     for (const src of sources) {
-      const srcDoc = await PDFDocument.load(src, { ignoreEncryption: true });
+      const srcDoc = await PDFDocument.load(src, { ignoreEncryption: true, throwOnInvalidObject: false });
       const pages = await mergedDoc.copyPages(srcDoc, srcDoc.getPageIndices());
       pages.forEach((p) => mergedDoc.addPage(p));
     }

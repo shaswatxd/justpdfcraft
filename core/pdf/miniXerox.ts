@@ -78,6 +78,39 @@ export interface SourcePageReference {
 /**
  * Creates a Mini Xerox PDF from one or more PDF documents.
  */
+async function renderPageFallback(
+  docBytes: Uint8Array,
+  pageIndex: number
+): Promise<{ imageBytes: Uint8Array; width: number; height: number } | null> {
+  try {
+    if (typeof window === 'undefined') return null;
+    const pdfjsLib = await import('pdfjs-dist');
+    const loadingTask = pdfjsLib.getDocument({ data: docBytes.slice() });
+    const pdfDoc = await loadingTask.promise;
+    const page = await pdfDoc.getPage(pageIndex + 1);
+    const viewport = page.getViewport({ scale: 2.0 });
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+    const base64 = dataUrl.split(',')[1];
+    const binary = atob(base64);
+    const u8 = new Uint8Array(binary.length);
+    for (let k = 0; k < binary.length; k++) u8[k] = binary.charCodeAt(k);
+    return {
+      imageBytes: u8,
+      width: viewport.width / 2.0,
+      height: viewport.height / 2.0,
+    };
+  } catch (err) {
+    console.warn('Fallback rendering failed for page:', err);
+    return null;
+  }
+}
+
 export async function createMiniXeroxPdf(
   sourceDocuments: Uint8Array[] | string,
   options: MiniXeroxOptions
@@ -103,7 +136,7 @@ export async function createMiniXeroxPdf(
   for (let dIdx = 0; dIdx < docBuffers.length; dIdx++) {
     const buf = docBuffers[dIdx];
     try {
-      const doc = await PDFDocument.load(buf, { ignoreEncryption: true });
+      const doc = await PDFDocument.load(buf, { ignoreEncryption: true, throwOnInvalidObject: false });
       loadedDocs.push(doc);
       const count = doc.getPageCount();
       for (let pIdx = 0; pIdx < count; pIdx++) {
@@ -152,6 +185,7 @@ export async function createMiniXeroxPdf(
 
   // 3. Cache embedded pages to avoid redundant embedding
   const embeddedPageCache = new Map<string, any>();
+  const embeddedJpgCache = new Map<string, { img: any; width: number; height: number }>();
 
   // 4. Generate each Sheet
   for (let sIdx = 0; sIdx < totalSheets; sIdx++) {
@@ -181,33 +215,58 @@ export async function createMiniXeroxPdf(
       const pageRef = allPageRefs[i];
       const cacheKey = `${pageRef.docIndex}_${pageRef.pageIndex}`;
       let embeddedPage = embeddedPageCache.get(cacheKey);
+      let embeddedJpg = embeddedJpgCache.get(cacheKey);
 
-      if (!embeddedPage) {
-        const [embedded] = await outDoc.embedPages([pageRef.originalDoc.getPage(pageRef.pageIndex)]);
-        embeddedPage = embedded;
-        embeddedPageCache.set(cacheKey, embeddedPage);
+      if (!embeddedPage && !embeddedJpg) {
+        try {
+          const [embedded] = await outDoc.embedPages([pageRef.originalDoc.getPage(pageRef.pageIndex)]);
+          embeddedPage = embedded;
+          embeddedPageCache.set(cacheKey, embeddedPage);
+        } catch (embedErr) {
+          console.warn(`Direct embedPages failed on page #${pageNumberInDoc}, using high-res rasterizer fallback:`, embedErr);
+          const fallbackRes = await renderPageFallback(docBuffers[pageRef.docIndex], pageRef.pageIndex);
+          if (fallbackRes) {
+            const img = await outDoc.embedJpg(fallbackRes.imageBytes);
+            embeddedJpg = { img, width: fallbackRes.width, height: fallbackRes.height };
+            embeddedJpgCache.set(cacheKey, embeddedJpg);
+          } else {
+            throw embedErr;
+          }
+        }
       }
 
+      const origWidth = embeddedPage ? embeddedPage.width : embeddedJpg!.width;
+      const origHeight = embeddedPage ? embeddedPage.height : embeddedJpg!.height;
+
       // Calculate uniform scale to fit cell preserving aspect ratio with zoom factor
-      const baseScaleX = cellWidth / embeddedPage.width;
-      const baseScaleY = cellHeight / embeddedPage.height;
+      const baseScaleX = cellWidth / origWidth;
+      const baseScaleY = cellHeight / origHeight;
       const baseScale = Math.min(baseScaleX, baseScaleY);
       const scale = baseScale * contentZoom;
 
-      const fittedWidth = embeddedPage.width * scale;
-      const fittedHeight = embeddedPage.height * scale;
+      const fittedWidth = origWidth * scale;
+      const fittedHeight = origHeight * scale;
 
       // Center within the cell
       const drawX = cellX + (cellWidth - fittedWidth) / 2;
       const drawY = cellY + (cellHeight - fittedHeight) / 2;
 
       // Embed the mini-page
-      outPage.drawPage(embeddedPage, {
-        x: drawX,
-        y: drawY,
-        xScale: scale,
-        yScale: scale,
-      });
+      if (embeddedPage) {
+        outPage.drawPage(embeddedPage, {
+          x: drawX,
+          y: drawY,
+          xScale: scale,
+          yScale: scale,
+        });
+      } else if (embeddedJpg) {
+        outPage.drawImage(embeddedJpg.img, {
+          x: drawX,
+          y: drawY,
+          width: fittedWidth,
+          height: fittedHeight,
+        });
+      }
 
       // Optional cell border
       if (options.drawBorders) {

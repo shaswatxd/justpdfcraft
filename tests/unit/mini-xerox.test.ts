@@ -120,4 +120,21 @@ d/dx(ln x) = 1/x
     const outDoc = await PDFDocument.load(outBytes);
     expect(outDoc.getPageCount()).toBeGreaterThanOrEqual(1);
   });
+
+  it('should handle documents with throwOnInvalidObject: false gracefully', async () => {
+    const doc = await PDFDocument.create();
+    const page = doc.addPage([200, 200]);
+    page.drawText('Stream Decompress Resilience Test');
+    const bytes = await doc.save({ useObjectStreams: false });
+
+    const outBytes = await createMiniXeroxPdf([bytes], {
+      layout: '4-in-1',
+      pageSize: 'A4',
+      drawCutGuides: true,
+      drawPageNumbers: true,
+    });
+    expect(outBytes).toBeInstanceOf(Uint8Array);
+    const outDoc = await PDFDocument.load(outBytes, { throwOnInvalidObject: false });
+    expect(outDoc.getPageCount()).toBe(1);
+  });
 });

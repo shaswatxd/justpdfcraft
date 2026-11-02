@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   X,
   Scissors,
@@ -11,6 +11,12 @@ import {
   Type,
   FileStack,
   Sliders,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Settings,
+  ZoomIn,
+  Sparkles,
 } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import { useDocumentStore } from '@/stores/documentStore';
@@ -32,6 +38,14 @@ interface LoadedFileItem {
   bytes: Uint8Array;
   pageCount: number;
   dimensions?: string;
+}
+
+interface PageCatalogItem {
+  fileIndex: number;
+  fileName: string;
+  pageIndexInFile: number;
+  globalPageNumber: number;
+  fileBytes: Uint8Array;
 }
 
 const SAMPLE_CHEAT_NOTES = `# PHYSICS FORMULAS
@@ -78,10 +92,79 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+/**
+ * High-performance thumbnail renderer for miniature page cells.
+ * Uses pdfjs-dist with automatic fallback to document skeleton lines.
+ */
+const MiniPageThumbnail: React.FC<{
+  bytes: Uint8Array;
+  pageIndex: number;
+}> = ({ bytes, pageIndex }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [rendered, setRendered] = useState(false);
+
+  useEffect(() => {
+    let isCancelled = false;
+    const renderThumb = async () => {
+      try {
+        if (typeof window === 'undefined') return;
+        const pdfjsLib = await import('pdfjs-dist');
+        const task = pdfjsLib.getDocument({ data: bytes.slice() });
+        const pdfDoc = await task.promise;
+        if (isCancelled) return;
+        const page = await pdfDoc.getPage(pageIndex + 1);
+        if (isCancelled || !canvasRef.current) return;
+
+        const canvas = canvasRef.current;
+        const viewport = page.getViewport({ scale: 0.28 });
+        canvas.width = Math.max(1, viewport.width);
+        canvas.height = Math.max(1, viewport.height);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        if (!isCancelled) setRendered(true);
+      } catch {
+        // Fallback to skeleton lines
+      }
+    };
+    renderThumb();
+    return () => {
+      isCancelled = true;
+    };
+  }, [bytes, pageIndex]);
+
+  return (
+    <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-white">
+      <canvas
+        ref={canvasRef}
+        className={`w-full h-full object-contain ${rendered ? 'block' : 'hidden'}`}
+      />
+      {!rendered && (
+        <div className="w-full h-full p-2 flex flex-col justify-between bg-white select-none pointer-events-none opacity-80">
+          <div className="space-y-1">
+            <div className="h-1 bg-red-400/80 rounded w-4/5" />
+            <div className="h-0.5 bg-slate-300 rounded w-full" />
+            <div className="h-0.5 bg-slate-200 rounded w-5/6" />
+            <div className="h-0.5 bg-slate-300 rounded w-full" />
+            <div className="h-0.5 bg-slate-200 rounded w-3/4" />
+          </div>
+          <div className="space-y-0.5">
+            <div className="h-0.5 bg-slate-200 rounded w-2/3" />
+            <div className="h-0.5 bg-slate-200 rounded w-1/2" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const MiniXeroxDialog: React.FC = () => {
   const { activeModal, setActiveModal, addToast } = useUIStore();
   const { documentId, fileName } = useDocumentStore();
   const isOpen = activeModal === 'mini-xerox';
+
+  // Responsive Mobile View Switcher (Settings vs Live Sheet Preview)
+  const [mobileView, setMobileView] = useState<'settings' | 'preview'>('settings');
 
   // Mode: Upload PDFs vs Directly Paste / Type Notes
   const [activeTab, setActiveTab] = useState<'pdf' | 'notes'>('pdf');
@@ -105,6 +188,10 @@ export const MiniXeroxDialog: React.FC = () => {
   const [drawBorders, setDrawBorders] = useState(true);
   const [duplexCutSafe, setDuplexCutSafe] = useState(false);
 
+  // Interactive Live Sheet Preview Pager & Zoom
+  const [previewSheetIndex, setPreviewSheetIndex] = useState<number>(0);
+  const [previewZoom, setPreviewZoom] = useState<'fit' | '100' | '150'>('fit');
+
   // Processing state
   const [isProcessing, setIsProcessing] = useState(false);
   const [progressStatus, setProgressStatus] = useState<string>('');
@@ -112,7 +199,7 @@ export const MiniXeroxDialog: React.FC = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Automatically pre-load open document if available
+  // Safely pre-load open document if available with dual-engine fallback
   useEffect(() => {
     if (!isOpen) return;
 
@@ -122,16 +209,32 @@ export const MiniXeroxDialog: React.FC = () => {
           const { getPDFEngine } = await import('@core/pdf/engine.factory');
           const engine = getPDFEngine();
           const bytes = await engine.saveDocument(documentId);
-          const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
-          const firstPage = doc.getPage(0);
+
+          let pageCount = 1;
+          let dimensions = 'A4';
+          try {
+            const doc = await PDFDocument.load(bytes, { ignoreEncryption: true, throwOnInvalidObject: false });
+            pageCount = doc.getPageCount();
+            const firstPage = doc.getPage(0);
+            dimensions = `${Math.round(firstPage.getWidth())} × ${Math.round(firstPage.getHeight())} pt`;
+          } catch {
+            const pdfjsLib = await import('pdfjs-dist');
+            const task = pdfjsLib.getDocument({ data: bytes.slice() });
+            const pDoc = await task.promise;
+            pageCount = pDoc.numPages;
+            const p1 = await pDoc.getPage(1);
+            const vp = p1.getViewport({ scale: 1 });
+            dimensions = `${Math.round(vp.width)} × ${Math.round(vp.height)} pt`;
+          }
+
           setFiles([
             {
               id: 'current-doc',
               name: fileName || 'Active Document.pdf',
               sizeBytes: bytes.byteLength,
               bytes,
-              pageCount: doc.getPageCount(),
-              dimensions: `${Math.round(firstPage.getWidth())} × ${Math.round(firstPage.getHeight())} pt`,
+              pageCount,
+              dimensions,
             },
           ]);
         } catch (e) {
@@ -143,32 +246,70 @@ export const MiniXeroxDialog: React.FC = () => {
     loadCurrentDoc();
   }, [isOpen, documentId, fileName]);
 
-  if (!isOpen) return null;
+  // Catalog all source pages across all uploaded files
+  const catalogedPages = useMemo<PageCatalogItem[]>(() => {
+    const list: PageCatalogItem[] = [];
+    let counter = 1;
+    files.forEach((file, fIdx) => {
+      for (let p = 0; p < file.pageCount; p++) {
+        list.push({
+          fileIndex: fIdx,
+          fileName: file.name,
+          pageIndexInFile: p,
+          globalPageNumber: counter++,
+          fileBytes: file.bytes,
+        });
+      }
+    });
+    return list;
+  }, [files]);
 
-  const totalInputPages = files.reduce((acc, f) => acc + f.pageCount, 0);
+  const totalInputPages = catalogedPages.length;
   const totalSizeBytes = files.reduce((acc, f) => acc + f.sizeBytes, 0);
   const spec = MINI_XEROX_LAYOUTS[layout] || MINI_XEROX_LAYOUTS['16-in-1'];
   const pagesPerSheet = spec.cols * spec.rows;
 
-  // Approximate sheet count for notes mode
-  const estNotesLines = notesText.split('\n').filter((l) => l.trim().length > 0).length;
-  const estChitsForNotes = Math.max(1, Math.ceil(estNotesLines / (22 * notesColumns)));
-  const notesOutputSheets = Math.ceil(estChitsForNotes / pagesPerSheet);
+  // Notes mode chits splitting
+  const noteLines = useMemo(
+    () => notesText.split('\n').filter((l) => l.trim().length > 0),
+    [notesText]
+  );
+  const linesPerChit = Math.max(6, Math.round(20 * notesColumns * (7 / notesFontSize)));
+  const noteChits = useMemo(() => {
+    const chits: string[] = [];
+    for (let i = 0; i < noteLines.length; i += linesPerChit) {
+      chits.push(noteLines.slice(i, i + linesPerChit).join('\n'));
+    }
+    return chits.length > 0 ? chits : [SAMPLE_CHEAT_NOTES];
+  }, [noteLines, linesPerChit]);
+
+  const notesOutputSheets = Math.ceil(noteChits.length / pagesPerSheet) || 1;
 
   const outputSheets =
     activeTab === 'pdf'
-      ? Math.ceil(totalInputPages / pagesPerSheet) || 1
+      ? Math.max(1, Math.ceil(totalInputPages / pagesPerSheet))
       : notesOutputSheets;
+
+  // Clamp preview sheet index when total sheets change
+  useEffect(() => {
+    if (previewSheetIndex >= outputSheets) {
+      setPreviewSheetIndex(Math.max(0, outputSheets - 1));
+    }
+  }, [outputSheets, previewSheetIndex]);
+
+  if (!isOpen) return null;
 
   const paperSavingsPercent =
     activeTab === 'pdf' && totalInputPages > 0
       ? Math.max(0, Math.round(((totalInputPages - outputSheets) / totalInputPages) * 100))
-      : 93;
+      : 94;
+
   const estimatedCostSaved =
     activeTab === 'pdf'
       ? Math.max(0, (totalInputPages - outputSheets) * 2)
-      : estChitsForNotes * 2;
+      : noteChits.length * 2;
 
+  // Safe file loader with dual-engine fallback (eliminates "unknown compression method")
   const handleAddFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const picked = e.target.files;
     if (!picked || picked.length === 0) return;
@@ -179,15 +320,33 @@ export const MiniXeroxDialog: React.FC = () => {
       try {
         const ab = await file.arrayBuffer();
         const bytes = new Uint8Array(ab);
-        const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
-        const p1 = doc.getPage(0);
+
+        let pageCount = 1;
+        let dimensions = 'A4';
+
+        try {
+          const doc = await PDFDocument.load(bytes, { ignoreEncryption: true, throwOnInvalidObject: false });
+          pageCount = doc.getPageCount();
+          const p1 = doc.getPage(0);
+          dimensions = `${Math.round(p1.getWidth())} × ${Math.round(p1.getHeight())} pt`;
+        } catch {
+          // Robust Fallback: PDF.js handles all compression methods (JBIG2, CCITT, LZW, etc.)
+          const pdfjsLib = await import('pdfjs-dist');
+          const task = pdfjsLib.getDocument({ data: bytes.slice() });
+          const pDoc = await task.promise;
+          pageCount = pDoc.numPages;
+          const p1 = await pDoc.getPage(1);
+          const vp = p1.getViewport({ scale: 1 });
+          dimensions = `${Math.round(vp.width)} × ${Math.round(vp.height)} pt`;
+        }
+
         newItems.push({
           id: `${file.name}-${Date.now()}-${i}`,
           name: file.name,
           sizeBytes: file.size,
           bytes,
-          pageCount: doc.getPageCount(),
-          dimensions: `${Math.round(p1.getWidth())} × ${Math.round(p1.getHeight())} pt`,
+          pageCount,
+          dimensions,
         });
       } catch (err: any) {
         addToast({
@@ -284,7 +443,7 @@ export const MiniXeroxDialog: React.FC = () => {
       addToast({
         type: 'success',
         title: 'Mini Xerox PDF Ready! 🎉',
-        message: `Condensed into ${outputSheets} sheets (${paperSavingsPercent}% paper saved).`,
+        message: `Condensed into ${outputSheets} sheet(s) (${paperSavingsPercent}% paper saved).`,
       });
 
       setActiveModal(null);
@@ -302,428 +461,652 @@ export const MiniXeroxDialog: React.FC = () => {
     }
   };
 
+  // Current sheet page range calculations for preview
+  const sheetStartIdx = previewSheetIndex * pagesPerSheet;
+  const sheetEndIdx =
+    activeTab === 'pdf'
+      ? Math.min(sheetStartIdx + pagesPerSheet, totalInputPages)
+      : Math.min(sheetStartIdx + pagesPerSheet, noteChits.length);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-      <div className="w-full sm:max-w-3xl bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200/80 overflow-hidden flex flex-col max-h-[95dvh] sm:max-h-[90vh]">
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 bg-gradient-to-r from-red-50/70 via-amber-50/40 to-white">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-red-600 to-amber-500 text-white shadow-xs shadow-red-500/20">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
+      <div className="w-full max-w-6xl bg-white rounded-2xl shadow-2xl border border-slate-200/80 overflow-hidden flex flex-col max-h-[94dvh]">
+        {/* Modal Top Header */}
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-slate-100 bg-gradient-to-r from-red-50/70 via-amber-50/40 to-white shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="p-2 sm:p-2.5 rounded-xl bg-gradient-to-br from-red-600 to-amber-500 text-white shadow-xs shadow-red-500/20 shrink-0">
               <Scissors className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-slate-900">Mini Xerox & Pocket Notes Maker</h2>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700 uppercase tracking-wider">
-                  Exam Revision / Micro Chit
+                <h2 className="text-sm sm:text-base font-bold text-slate-900">
+                  Mini Xerox & Pocket Notes Maker
+                </h2>
+                <span className="hidden sm:inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700 uppercase tracking-wider">
+                  ✂️ 16-in-1 Farra & Revision
                 </span>
               </div>
-              <p className="text-xs text-slate-500">
-                Fit 4, 8, 16, or 25 micro slips on 1 sheet with scissor cut lines • Adjustable text size & zoom
+              <p className="text-[11px] sm:text-xs text-slate-500 line-clamp-1">
+                Condense multiple PDFs or typed formulas into micro-pocket chits with scissor guidelines
               </p>
             </div>
           </div>
-          <button
-            onClick={() => setActiveModal(null)}
-            className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
-            title="Close"
-          >
-            <X className="w-4 h-4" />
-          </button>
+
+          <div className="flex items-center gap-2">
+            {/* Mobile View Switcher Pill */}
+            <div className="flex lg:hidden bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-xs">
+              <button
+                type="button"
+                onClick={() => setMobileView('settings')}
+                className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 transition-all ${
+                  mobileView === 'settings'
+                    ? 'bg-white text-slate-900 shadow-2xs'
+                    : 'text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                <Settings className="w-3.5 h-3.5" />
+                <span>Options</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileView('preview')}
+                className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 transition-all ${
+                  mobileView === 'preview'
+                    ? 'bg-white text-red-600 shadow-2xs'
+                    : 'text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span>Preview ({previewSheetIndex + 1}/{outputSheets})</span>
+              </button>
+            </div>
+
+            <button
+              onClick={() => setActiveModal(null)}
+              className="p-1.5 sm:p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+              title="Close Dialog"
+            >
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+          </div>
         </div>
 
-        {/* Tab Switcher: Multi-PDF vs Direct Notes Writer */}
-        <div className="flex items-center px-4 pt-2 border-b border-slate-100 bg-slate-50/50 gap-2">
-          <button
-            type="button"
-            onClick={() => setActiveTab('pdf')}
-            className={`pb-2.5 px-3.5 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 cursor-pointer ${
-              activeTab === 'pdf'
-                ? 'border-red-600 text-red-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+        {/* Modal Main Body (2 Columns on Desktop, Segmented on Mobile) */}
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden min-h-0">
+          {/* ========================================================= */}
+          {/* LEFT COLUMN: Controls, Uploads, Text Sliders & Layout (col 7) */}
+          {/* ========================================================= */}
+          <div
+            className={`lg:col-span-6 xl:col-span-6 overflow-y-auto p-4 sm:p-5 space-y-4 border-r border-slate-100 ${
+              mobileView === 'settings' ? 'block' : 'hidden lg:block'
             }`}
           >
-            <FileStack className="w-4 h-4" />
-            <span>Multi-PDF Documents ({files.length})</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('notes')}
-            className={`pb-2.5 px-3.5 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 cursor-pointer ${
-              activeTab === 'notes'
-                ? 'border-red-600 text-red-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <Type className="w-4 h-4" />
-            <span>Type / Paste Notes & Formulas (Micro Chits)</span>
-          </button>
-        </div>
+            {/* Mode Switcher Tabs */}
+            <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs gap-1">
+              <button
+                type="button"
+                onClick={() => setActiveTab('pdf')}
+                className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  activeTab === 'pdf'
+                    ? 'bg-white text-red-600 shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <FileStack className="w-3.5 h-3.5" />
+                <span>Multi-PDF Documents ({files.length})</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('notes')}
+                className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  activeTab === 'notes'
+                    ? 'bg-white text-red-600 shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Type className="w-3.5 h-3.5" />
+                <span>Direct Notes & Formulas</span>
+              </button>
+            </div>
 
-        {/* Scrollable Content Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 sm:space-y-5">
-          {/* TAB 1: MULTI-PDF DOCUMENTS */}
-          {activeTab === 'pdf' && (
-            <div className="space-y-4">
-              {/* File Upload List */}
-              <div className="space-y-2">
+            {/* TAB 1: MULTI-PDF DOCUMENTS */}
+            {activeTab === 'pdf' && (
+              <div className="space-y-3.5">
+                {/* File Upload List */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                      <Layers className="w-3.5 h-3.5 text-red-600" />
+                      Source Documents ({files.length}) • {formatFileSize(totalSizeBytes)}
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1 cursor-pointer hover:underline"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Add More PDFs
+                    </button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".pdf,application/pdf"
+                      multiple
+                      className="hidden"
+                      onChange={handleAddFiles}
+                    />
+                  </div>
+
+                  {files.length === 0 ? (
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-2 border-dashed border-slate-200 hover:border-red-400 bg-slate-50/60 hover:bg-red-50/20 rounded-2xl p-5 text-center transition-all cursor-pointer space-y-1.5"
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-red-100 text-red-600 flex items-center justify-center mx-auto">
+                        <Plus className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-slate-800">
+                          Click to select syllabus notes or drop multiple PDFs
+                        </p>
+                        <p className="text-[10px] text-slate-400">
+                          Drop Unit 1, Unit 2, Unit 3... to merge into a single pocket booklet
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                      {files.map((file, idx) => (
+                        <div
+                          key={file.id}
+                          className="flex items-center justify-between p-2 bg-slate-50 border border-slate-200/80 rounded-xl text-xs"
+                        >
+                          <div className="flex items-center gap-2 truncate min-w-0 mr-2">
+                            <span className="font-mono text-[10px] font-bold text-slate-400 w-4">
+                              #{idx + 1}
+                            </span>
+                            <FileText className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                            <div className="truncate">
+                              <span className="font-medium text-slate-800 block truncate">{file.name}</span>
+                              <span className="text-[10px] text-slate-400 font-mono">
+                                {formatFileSize(file.sizeBytes)} • {file.dimensions || 'A4'}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 font-mono text-[10px] font-semibold">
+                              {file.pageCount} {file.pageCount === 1 ? 'page' : 'pages'}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveFile(file.id)}
+                              className="p-1 text-slate-400 hover:text-red-600 rounded hover:bg-slate-200/60 transition-colors"
+                              title="Remove file"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Text Zoom / Content Scaling & Whitespace Trimming Controls */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-3 rounded-xl bg-amber-50/60 border border-amber-200/70">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                        <Sliders className="w-3.5 h-3.5 text-amber-600" />
+                        Text Zoom (Chota ↔ Bada)
+                      </span>
+                      <span className="font-mono font-bold text-amber-700">{contentZoom}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="80"
+                      max="140"
+                      step="5"
+                      value={contentZoom}
+                      onChange={(e) => setContentZoom(parseInt(e.target.value, 10))}
+                      className="w-full accent-amber-600 cursor-pointer"
+                    />
+                    <div className="flex justify-between text-[9px] text-slate-400">
+                      <span>80% (Small)</span>
+                      <span>100% (Normal)</span>
+                      <span>140% (Zoomed)</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col justify-center">
+                    <label className="flex items-center gap-2 p-2 rounded-xl bg-white border border-amber-200/80 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={trimMargins}
+                        onChange={(e) => setTrimMargins(e.target.checked)}
+                        className="rounded text-amber-600 focus:ring-amber-500 w-4 h-4"
+                      />
+                      <div>
+                        <span className="text-xs font-bold text-slate-800">Trim White Margins</span>
+                        <p className="text-[10px] text-slate-500">
+                          Auto-crops empty borders so text expands to fill chit
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 2: DIRECT FORMULAS & NOTES WRITER */}
+            {activeTab === 'notes' && (
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                    <Layers className="w-3.5 h-3.5 text-red-600" />
-                    Source PDF Documents ({files.length}) • Total: {formatFileSize(totalSizeBytes)}
+                    <Type className="w-3.5 h-3.5 text-red-600" />
+                    Paste Formulas & Syllabus Notes
                   </label>
                   <button
                     type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1 cursor-pointer hover:underline"
+                    onClick={() => setNotesText(SAMPLE_CHEAT_NOTES)}
+                    className="text-xs font-bold text-amber-700 hover:text-amber-800 flex items-center gap-1 cursor-pointer hover:underline"
                   >
-                    <Plus className="w-3.5 h-3.5" />
-                    Add More PDFs
+                    Load Sample Formulas
                   </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf,application/pdf"
-                    multiple
-                    className="hidden"
-                    onChange={handleAddFiles}
-                  />
                 </div>
 
-                {files.length === 0 ? (
-                  <div
-                    onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-slate-200 hover:border-red-400 bg-slate-50/60 hover:bg-red-50/20 rounded-2xl p-6 text-center transition-all cursor-pointer space-y-2"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center mx-auto">
-                      <Plus className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="text-xs sm:text-sm font-bold text-slate-800">
-                        Click to select syllabus notes or drop multiple PDFs here
-                      </p>
-                      <p className="text-[11px] text-slate-400">
-                        Drop Unit 1, Unit 2, Unit 3... to merge into a single compact mini xerox
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
-                    {files.map((file, idx) => (
-                      <div
-                        key={file.id}
-                        className="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-xs"
-                      >
-                        <div className="flex items-center gap-2 truncate min-w-0 mr-2">
-                          <span className="font-mono text-[10px] font-bold text-slate-400 w-4">
-                            #{idx + 1}
-                          </span>
-                          <FileText className="w-4 h-4 text-red-600 shrink-0" />
-                          <div className="truncate">
-                            <span className="font-medium text-slate-800 block truncate">{file.name}</span>
-                            <span className="text-[10px] text-slate-400 font-mono">
-                              {formatFileSize(file.sizeBytes)} • {file.dimensions || 'A4'}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 font-mono text-[11px] font-semibold">
-                            {file.pageCount} {file.pageCount === 1 ? 'page' : 'pages'}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveFile(file.id)}
-                            className="p-1 text-slate-400 hover:text-red-600 rounded hover:bg-slate-200/60 transition-colors"
-                            title="Remove file"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                <textarea
+                  value={notesText}
+                  onChange={(e) => setNotesText(e.target.value)}
+                  placeholder="Paste formulas, definitions, questions, key dates, or chemical equations..."
+                  rows={5}
+                  className="w-full p-2.5 font-mono text-xs bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all text-slate-800 placeholder:text-slate-400"
+                />
 
-              {/* Text Zoom / Content Scaling & Whitespace Trimming Controls */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-2xl bg-amber-50/50 border border-amber-200/70">
-                {/* Content Zoom Slider */}
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                      <Sliders className="w-3.5 h-3.5 text-amber-600" />
-                      Text & Content Zoom (Chota ↔ Bada)
-                    </span>
-                    <span className="font-mono font-bold text-amber-700">{contentZoom}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="80"
-                    max="140"
-                    step="5"
-                    value={contentZoom}
-                    onChange={(e) => setContentZoom(parseInt(e.target.value, 10))}
-                    className="w-full accent-amber-600 cursor-pointer"
-                  />
-                  <div className="flex justify-between text-[10px] text-slate-400">
-                    <span>80% (Extra Small)</span>
-                    <span>100% (Normal)</span>
-                    <span>140% (Zoomed & Bigger Text)</span>
-                  </div>
-                </div>
-
-                {/* Auto-Crop Margins */}
-                <div className="flex flex-col justify-center">
-                  <label className="flex items-center gap-2.5 p-2 rounded-xl bg-white border border-amber-200/80 cursor-pointer select-none">
+                {/* Text Size (Chota/Bada) & Columns Per Chit */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-800">Font Size (Chota ↔ Bada)</span>
+                      <span className="font-mono font-bold text-red-600">{notesFontSize} pt</span>
+                    </div>
                     <input
-                      type="checkbox"
-                      checked={trimMargins}
-                      onChange={(e) => setTrimMargins(e.target.checked)}
-                      className="rounded text-amber-600 focus:ring-amber-500 w-4 h-4"
+                      type="range"
+                      min="5"
+                      max="12"
+                      step="0.5"
+                      value={notesFontSize}
+                      onChange={(e) => setNotesFontSize(parseFloat(e.target.value))}
+                      className="w-full accent-red-600 cursor-pointer"
                     />
-                    <div>
-                      <span className="text-xs font-bold text-slate-800">Trim White Margins</span>
-                      <p className="text-[10px] text-slate-500">
-                        Crops empty borders so text expands to fill the entire chit cell
-                      </p>
+                    <div className="flex justify-between text-[9px] text-slate-400">
+                      <span>5 pt (Micro Slip)</span>
+                      <span>7 pt (Pocket)</span>
+                      <span>12 pt (Handout)</span>
                     </div>
-                  </label>
-                </div>
-              </div>
-            </div>
-          )}
+                  </div>
 
-          {/* TAB 2: DIRECT FORMULAS & NOTES WRITER */}
-          {activeTab === 'notes' && (
-            <div className="space-y-3.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                  <Type className="w-3.5 h-3.5 text-red-600" />
-                  Paste Formulas, Questions & Syllabus Notes
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setNotesText(SAMPLE_CHEAT_NOTES)}
-                  className="text-xs font-bold text-amber-700 hover:text-amber-800 flex items-center gap-1 cursor-pointer hover:underline"
-                >
-                  Load Sample Formulas
-                </button>
-              </div>
-
-              <textarea
-                value={notesText}
-                onChange={(e) => setNotesText(e.target.value)}
-                placeholder="Paste your formulas, definitions, questions, key dates, or chemical equations here..."
-                rows={6}
-                className="w-full p-3 font-mono text-xs bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all text-slate-800 placeholder:text-slate-400"
-              />
-
-              {/* Text Size (Chota/Bada) & Columns Per Chit */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
-                {/* Font Size Slider */}
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-slate-800">
-                      Font Size (Text Chota ↔ Bada)
+                  <div>
+                    <span className="text-xs font-bold text-slate-800 block mb-1">
+                      Columns Inside Each Chit
                     </span>
-                    <span className="font-mono font-bold text-red-600">{notesFontSize} pt</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="5"
-                    max="12"
-                    step="0.5"
-                    value={notesFontSize}
-                    onChange={(e) => setNotesFontSize(parseFloat(e.target.value))}
-                    className="w-full accent-red-600 cursor-pointer"
-                  />
-                  <div className="flex justify-between text-[10px] text-slate-400">
-                    <span>5 pt (Micro Slip)</span>
-                    <span>7 pt (Pocket Notes)</span>
-                    <span>12 pt (Readable Handout)</span>
-                  </div>
-                </div>
-
-                {/* Columns per Chit */}
-                <div>
-                  <span className="text-xs font-bold text-slate-800 block mb-1.5">
-                    Columns Inside Each Chit
-                  </span>
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([1, 2, 3] as const).map((cols) => (
-                      <button
-                        key={cols}
-                        type="button"
-                        onClick={() => setNotesColumns(cols)}
-                        className={`py-1.5 rounded-lg text-xs font-bold transition-all ${
-                          notesColumns === cols
-                            ? 'bg-red-600 text-white shadow-2xs'
-                            : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
-                        }`}
-                      >
-                        {cols} {cols === 1 ? 'Column' : 'Columns'}
-                      </button>
-                    ))}
+                    <div className="grid grid-cols-3 gap-1">
+                      {([1, 2, 3] as const).map((cols) => (
+                        <button
+                          key={cols}
+                          type="button"
+                          onClick={() => setNotesColumns(cols)}
+                          className={`py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                            notesColumns === cols
+                              ? 'bg-red-600 text-white shadow-2xs'
+                              : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
+                          }`}
+                        >
+                          {cols} {cols === 1 ? 'Col' : 'Cols'}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Grid Layout Selector */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
-              Select Mini Xerox Grid Mode
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-              {[
-                { id: '4-in-1', label: '4-in-1', desc: 'Large Notes', save: '75% Saved' },
-                { id: '8-in-1', label: '8-in-1', desc: 'Revision Cards', save: '88% Saved' },
-                { id: '9-in-1', label: '9-in-1', desc: 'Handout Grid', save: '89% Saved' },
-                { id: '16-in-1', label: '16-in-1', desc: 'Micro Xerox', save: '94% Saved', hot: true },
-                { id: '25-in-1', label: '25-in-1', desc: 'Ultra Micro Farra', save: '96% Saved' },
-              ].map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => setLayout(opt.id as MiniXeroxLayout)}
-                  className={`p-2.5 rounded-xl border text-left transition-all relative cursor-pointer ${
-                    layout === opt.id
-                      ? 'border-red-600 bg-red-50/50 shadow-xs ring-2 ring-red-500/20'
-                      : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50'
-                  }`}
-                >
-                  {opt.hot && (
-                    <span className="absolute -top-2 right-2 px-1.5 py-0.2 rounded-full bg-red-600 text-[9px] font-extrabold text-white uppercase tracking-wider shadow-2xs">
-                      Popular
-                    </span>
-                  )}
-                  <p className="text-sm font-bold text-slate-900">{opt.label}</p>
-                  <p className="text-[10px] text-slate-500 leading-tight mt-0.5">{opt.desc}</p>
-                  <p className="text-[10px] font-bold text-emerald-600 mt-1">{opt.save}</p>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Savings Scoreboard Banner */}
-          <div className="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/50 border border-emerald-200/80 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black text-sm shadow-xs">
-                {paperSavingsPercent}%
-              </div>
-              <div>
-                <p className="text-xs font-bold text-emerald-900">
-                  {activeTab === 'pdf' ? `${totalInputPages} Pages` : `${estChitsForNotes} Micro Chits`} condensed into {outputSheets} A4 {outputSheets === 1 ? 'Sheet' : 'Sheets'}!
-                </p>
-                <p className="text-[11px] text-emerald-700">
-                  Saves ~{paperSavingsPercent}% paper & estimated ₹{estimatedCostSaved} in photocopy printing
-                </p>
+            {/* Grid Layout Selector */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                Mini Xerox Grid Mode
+              </label>
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
+                {[
+                  { id: '4-in-1', label: '4-in-1', desc: 'Large Notes', save: '75%' },
+                  { id: '8-in-1', label: '8-in-1', desc: 'Revision', save: '88%' },
+                  { id: '9-in-1', label: '9-in-1', desc: 'Handout', save: '89%' },
+                  { id: '16-in-1', label: '16-in-1', desc: 'Micro Xerox', save: '94%', hot: true },
+                  { id: '25-in-1', label: '25-in-1', desc: 'Ultra Farra', save: '96%' },
+                ].map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setLayout(opt.id as MiniXeroxLayout)}
+                    className={`p-2 rounded-xl border text-left transition-all relative cursor-pointer ${
+                      layout === opt.id
+                        ? 'border-red-600 bg-red-50/50 shadow-xs ring-2 ring-red-500/20'
+                        : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50'
+                    }`}
+                  >
+                    {opt.hot && (
+                      <span className="absolute -top-1.5 right-1.5 px-1 py-0.2 rounded-full bg-red-600 text-[8px] font-extrabold text-white uppercase tracking-wider">
+                        Popular
+                      </span>
+                    )}
+                    <p className="text-xs font-bold text-slate-900">{opt.label}</p>
+                    <p className="text-[9px] text-slate-500 leading-tight">{opt.desc}</p>
+                    <p className="text-[9px] font-bold text-emerald-600 mt-0.5">{opt.save} Saved</p>
+                  </button>
+                ))}
               </div>
             </div>
-          </div>
 
-          {/* Cutting Guidelines & Printing Helpers */}
-          <div className="space-y-2 p-3 rounded-2xl bg-slate-50/70 border border-slate-200/80">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-              <Scissors className="w-3.5 h-3.5 text-red-600" />
-              Scissor Lines & Slicing Options
-            </span>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              <label className="flex items-center gap-2 p-2 rounded-xl bg-white border border-slate-200/60 cursor-pointer select-none">
+            {/* Guidelines & Print Helpers */}
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <label className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200/80 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={drawCutGuides}
                   onChange={(e) => setDrawCutGuides(e.target.checked)}
-                  className="rounded text-red-600 focus:ring-red-500 w-4 h-4"
+                  className="rounded text-red-600 focus:ring-red-500 w-3.5 h-3.5"
                 />
-                <div>
-                  <span className="font-semibold text-slate-800">Scissor Cut Guidelines</span>
-                  <p className="text-[10px] text-slate-400">Dashed lines for straight paper-cutter slicing</p>
-                </div>
+                <span className="font-semibold text-slate-800 text-[11px]">Scissor Guidelines</span>
               </label>
 
-              <label className="flex items-center gap-2 p-2 rounded-xl bg-white border border-slate-200/60 cursor-pointer select-none">
+              <label className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200/80 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={drawPageNumbers}
                   onChange={(e) => setDrawPageNumbers(e.target.checked)}
-                  className="rounded text-red-600 focus:ring-red-500 w-4 h-4"
+                  className="rounded text-red-600 focus:ring-red-500 w-3.5 h-3.5"
                 />
-                <div>
-                  <span className="font-semibold text-slate-800">Page Number Badges (#1, #2)</span>
-                  <p className="text-[10px] text-slate-400">Keeps sliced mini pages in exact order</p>
-                </div>
+                <span className="font-semibold text-slate-800 text-[11px]">Badges (#1, #2)</span>
               </label>
 
-              <label className="flex items-center gap-2 p-2 rounded-xl bg-white border border-slate-200/60 cursor-pointer select-none">
+              <label className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200/80 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={drawBorders}
                   onChange={(e) => setDrawBorders(e.target.checked)}
-                  className="rounded text-red-600 focus:ring-red-500 w-4 h-4"
+                  className="rounded text-red-600 focus:ring-red-500 w-3.5 h-3.5"
                 />
-                <div>
-                  <span className="font-semibold text-slate-800">Outer Frame Borders</span>
-                  <p className="text-[10px] text-slate-400">Clean border outline around each chit</p>
-                </div>
+                <span className="font-semibold text-slate-800 text-[11px]">Outer Borders</span>
               </label>
 
-              <label className="flex items-center gap-2 p-2 rounded-xl bg-white border border-slate-200/60 cursor-pointer select-none">
+              <label className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200/80 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={duplexCutSafe}
                   onChange={(e) => setDuplexCutSafe(e.target.checked)}
-                  className="rounded text-red-600 focus:ring-red-500 w-4 h-4"
+                  className="rounded text-red-600 focus:ring-red-500 w-3.5 h-3.5"
                 />
-                <div>
-                  <span className="font-semibold text-slate-800">Duplex Back-to-Back Cut</span>
-                  <p className="text-[10px] text-slate-400">Mirrors reverse side for double-sided print</p>
-                </div>
+                <span className="font-semibold text-slate-800 text-[11px]">Duplex Cut-Safe</span>
               </label>
+            </div>
+
+            {/* Paper Size & Orientation */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[11px] font-semibold text-slate-700 block mb-0.5">
+                  Paper Size
+                </label>
+                <select
+                  value={pageSize}
+                  onChange={(e) => setPageSize(e.target.value as MiniXeroxPageSize)}
+                  className="w-full text-xs font-medium p-2 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-500/20"
+                >
+                  <option value="A4">A4 (Standard Xerox)</option>
+                  <option value="Letter">US Letter</option>
+                  <option value="Legal">Legal</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-semibold text-slate-700 block mb-0.5">
+                  Orientation
+                </label>
+                <select
+                  value={orientation}
+                  onChange={(e) => setOrientation(e.target.value as MiniXeroxOrientation)}
+                  className="w-full text-xs font-medium p-2 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-500/20"
+                >
+                  <option value="auto">Auto (Best Fit)</option>
+                  <option value="portrait">Portrait</option>
+                  <option value="landscape">Landscape</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Mobile Switch to Preview Banner */}
+            <div className="lg:hidden pt-2">
+              <button
+                type="button"
+                onClick={() => setMobileView('preview')}
+                className="w-full py-2.5 px-4 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+              >
+                <Eye className="w-4 h-4 text-amber-400" />
+                <span>Inspect Live Sheet Preview ({previewSheetIndex + 1}/{outputSheets})</span>
+              </button>
             </div>
           </div>
 
-          {/* Paper Size & Orientation */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">
-                Paper Size (Printout)
-              </label>
-              <select
-                value={pageSize}
-                onChange={(e) => setPageSize(e.target.value as MiniXeroxPageSize)}
-                className="w-full text-xs font-medium p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
-              >
-                <option value="A4">A4 (Standard Indian Xerox)</option>
-                <option value="Letter">US Letter</option>
-                <option value="Legal">Legal (Extra Height for 16 & 25-in-1)</option>
-              </select>
+          {/* ========================================================= */}
+          {/* RIGHT COLUMN: Live Interactive Sheet Preview Canvas (col 5/6) */}
+          {/* ========================================================= */}
+          <div
+            className={`lg:col-span-6 xl:col-span-6 bg-slate-100/70 p-3 sm:p-5 flex flex-col overflow-y-auto ${
+              mobileView === 'preview' ? 'block' : 'hidden lg:flex'
+            }`}
+          >
+            {/* Live Sheet Header & Navigator */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200/80 mb-3">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-xs text-slate-800 flex items-center gap-1.5">
+                  <Eye className="w-3.5 h-3.5 text-red-600" />
+                  Live Sheet Preview
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white border border-slate-200 text-slate-700">
+                  Sheet {previewSheetIndex + 1} of {outputSheets}
+                </span>
+              </div>
+
+              {/* Pager Buttons & Zoom Toggle */}
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  disabled={previewSheetIndex <= 0}
+                  onClick={() => setPreviewSheetIndex((prev) => Math.max(0, prev - 1))}
+                  className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shadow-2xs"
+                  title="Previous Sheet"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  disabled={previewSheetIndex >= outputSheets - 1}
+                  onClick={() => setPreviewSheetIndex((prev) => Math.min(outputSheets - 1, prev + 1))}
+                  className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shadow-2xs"
+                  title="Next Sheet"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+
+                <div className="h-4 w-px bg-slate-300 mx-1" />
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setPreviewZoom((z) => (z === 'fit' ? '100' : z === '100' ? '150' : 'fit'))
+                  }
+                  className="px-2 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:bg-slate-50 cursor-pointer shadow-2xs flex items-center gap-1"
+                  title="Toggle Zoom Inspection"
+                >
+                  <ZoomIn className="w-3 h-3 text-red-600" />
+                  <span>{previewZoom === 'fit' ? 'Fit' : previewZoom === '100' ? '100%' : '150%'}</span>
+                </button>
+              </div>
             </div>
 
-            <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">
-                Page Orientation
-              </label>
-              <select
-                value={orientation}
-                onChange={(e) => setOrientation(e.target.value as MiniXeroxOrientation)}
-                className="w-full text-xs font-medium p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+            {/* Attached Pages Range Notification */}
+            <div className="flex items-center justify-between text-[11px] text-slate-500 mb-2 px-1">
+              <span>
+                {activeTab === 'pdf' ? (
+                  totalInputPages > 0 ? (
+                    <>
+                      Showing mini-pages <b>{sheetStartIdx + 1}–{sheetEndIdx}</b> of {totalInputPages}
+                    </>
+                  ) : (
+                    'No documents added yet'
+                  )
+                ) : (
+                  <>
+                    Showing micro-chits <b>{sheetStartIdx + 1}–{sheetEndIdx}</b> of {noteChits.length}
+                  </>
+                )}
+              </span>
+              <span className="font-mono text-emerald-600 font-bold">
+                {paperSavingsPercent}% Paper Saved
+              </span>
+            </div>
+
+            {/* Visual Physical Paper Sheet Container */}
+            <div className="flex-1 flex items-center justify-center p-1 sm:p-2 overflow-auto">
+              <div
+                className={`bg-white rounded-md shadow-xl border border-slate-300/80 transition-all duration-200 relative p-3 sm:p-4 select-none ${
+                  previewZoom === 'fit'
+                    ? 'w-full max-w-[440px] aspect-[1/1.414]'
+                    : previewZoom === '100'
+                    ? 'w-[520px] aspect-[1/1.414]'
+                    : 'w-[700px] aspect-[1/1.414]'
+                }`}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: `repeat(${spec.cols}, minmax(0, 1fr))`,
+                  gridTemplateRows: `repeat(${spec.rows}, minmax(0, 1fr))`,
+                  gap: drawCutGuides ? '4px' : '2px',
+                }}
               >
-                <option value="auto">Auto (Best Grid Fit)</option>
-                <option value="portrait">Portrait</option>
-                <option value="landscape">Landscape</option>
-              </select>
+                {/* Cells inside Sheet */}
+                {Array.from({ length: pagesPerSheet }).map((_, cellIdx) => {
+                  const globalIdx = sheetStartIdx + cellIdx;
+
+                  if (activeTab === 'pdf') {
+                    const pageItem = catalogedPages[globalIdx];
+                    if (!pageItem) {
+                      // Blank / Empty cell placeholder
+                      return (
+                        <div
+                          key={`empty-${cellIdx}`}
+                          className="w-full h-full rounded border border-dashed border-slate-200 bg-slate-50/50 flex flex-col items-center justify-center text-[9px] text-slate-300 p-1"
+                        >
+                          <span>Empty</span>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={`cell-${pageItem.fileIndex}-${pageItem.pageIndexInFile}`}
+                        className={`w-full h-full relative rounded overflow-hidden bg-white flex flex-col ${
+                          drawBorders ? 'border border-slate-300' : 'border border-slate-100'
+                        } ${drawCutGuides ? 'ring-1 ring-red-200/50' : ''}`}
+                      >
+                        {/* Page Content Thumbnail */}
+                        <div className="flex-1 w-full overflow-hidden relative">
+                          <MiniPageThumbnail
+                            bytes={pageItem.fileBytes}
+                            pageIndex={pageItem.pageIndexInFile}
+                          />
+                        </div>
+
+                        {/* Top Badge: #1, #2 */}
+                        {drawPageNumbers && (
+                          <div className="absolute top-0.5 left-0.5 px-1 py-0.2 rounded bg-red-600 text-white font-mono font-bold text-[8px] shadow-2xs">
+                            #{pageItem.globalPageNumber}
+                          </div>
+                        )}
+
+                        {/* Bottom Tag: Doc Index & Page in file */}
+                        <div className="absolute bottom-0 inset-x-0 bg-slate-900/75 text-white text-[7px] font-mono px-1 py-0.2 truncate text-center backdrop-blur-2xs">
+                          P.{pageItem.pageIndexInFile + 1}
+                        </div>
+                      </div>
+                    );
+                  } else {
+                    // Notes Mode Chits
+                    const chitText = noteChits[globalIdx];
+                    if (!chitText) {
+                      return (
+                        <div
+                          key={`empty-note-${cellIdx}`}
+                          className="w-full h-full rounded border border-dashed border-slate-200 bg-slate-50/50 flex items-center justify-center text-[9px] text-slate-300"
+                        >
+                          <span>Empty</span>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={`note-${globalIdx}`}
+                        className={`w-full h-full relative rounded overflow-hidden bg-white p-1 flex flex-col justify-between ${
+                          drawBorders ? 'border border-slate-400' : 'border border-slate-200'
+                        }`}
+                      >
+                        {drawPageNumbers && (
+                          <span className="absolute top-0.5 right-0.5 px-1 py-0.2 rounded bg-amber-600 text-white font-mono font-bold text-[7px]">
+                            #{globalIdx + 1}
+                          </span>
+                        )}
+
+                        <div
+                          className={`w-full h-full font-mono text-[7px] leading-tight overflow-hidden text-slate-800 ${
+                            notesColumns === 1
+                              ? 'columns-1'
+                              : notesColumns === 2
+                              ? 'columns-2'
+                              : 'columns-3'
+                          }`}
+                          style={{
+                            fontSize: `${Math.max(6, Math.min(10, notesFontSize * 0.95))}px`,
+                            columnGap: '4px',
+                          }}
+                        >
+                          {chitText}
+                        </div>
+                      </div>
+                    );
+                  }
+                })}
+              </div>
+            </div>
+
+            {/* Savings & Legibility Feedback Bar */}
+            <div className="mt-3 p-2.5 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 flex items-center justify-between text-xs shrink-0">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span className="font-semibold text-emerald-950 text-[11px]">
+                  {activeTab === 'pdf' ? `${totalInputPages} Pages` : `${noteChits.length} Chits`} on {outputSheets} Sheet(s)
+                </span>
+              </div>
+              <span className="font-bold text-emerald-700 font-mono text-[11px]">
+                Saves ₹{estimatedCostSaved} Xerox Cost
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="text-xs text-slate-500 flex items-center gap-1.5">
+        {/* Modal Bottom Footer Actions */}
+        <div className="p-3 sm:p-4 border-t border-slate-100 bg-slate-50/80 flex flex-col sm:flex-row items-center justify-between gap-2.5 shrink-0">
+          <div className="text-[11px] sm:text-xs text-slate-500 flex items-center gap-1.5">
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>100% Client-Side. Your notes never leave your device.</span>
+            <span>100% Client-Side WebAssembly. Your notes never leave your device.</span>
           </div>
 
           <button
