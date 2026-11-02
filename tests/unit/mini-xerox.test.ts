@@ -221,4 +221,28 @@ d/dx(ln x) = 1/x
     }
     expect(decompressedStreams).toMatch(/re\s+W\s+n/);
   });
+
+  it('should safely transliterate Unicode physics/math symbols without WinAnsi encoding errors', async () => {
+    const complexNotes = `
+# ADVANCED PHYSICS & THERMODYNAMICS
+W = F·d·cos(θ)
+Adiabatic: PV^γ = constant
+Efficiency η = 1 - (Tc / Th)
+Faraday: ε = -dΦ/dt
+Lorentz: F = q(E + v × B) • B = μ0·I / (2πr)
+Wave: v = f·λ • Hooke: T = 2π√(m/k)
+Reactions: 2H2 + O2 → 2H2O • α, β, γ radiation
+    `;
+
+    const outBytes = await createNotesChitsPdf({
+      text: complexNotes,
+      fontSize: 7.5,
+      columnsPerChit: 2,
+      layout: '16-in-1',
+    });
+
+    expect(outBytes).toBeInstanceOf(Uint8Array);
+    const outDoc = await PDFDocument.load(outBytes);
+    expect(outDoc.getPageCount()).toBeGreaterThanOrEqual(1);
+  });
 });

@@ -473,14 +473,76 @@ export async function createMiniXeroxPdf(
 }
 
 /**
+ * Transliterates Unicode mathematical, scientific, and typographical symbols into WinAnsi/ASCII equivalents
+ * so standard PDF fonts (Helvetica) never crash with "WinAnsi cannot encode" errors.
+ */
+export function sanitizeNotesForPdf(text: string): string {
+  const symbolMap: Record<string, string> = {
+    // Greek physics/math symbols
+    'θ': 'theta', 'Θ': 'Theta',
+    'λ': 'lambda', 'Λ': 'Lambda',
+    'π': 'pi', 'Π': 'Pi',
+    'μ': 'mu',
+    'Δ': 'Delta', 'δ': 'delta',
+    'α': 'alpha', 'Α': 'Alpha',
+    'β': 'beta', 'Β': 'Beta',
+    'γ': 'gamma', 'Γ': 'Gamma',
+    'Ω': 'Ohm', 'ω': 'omega',
+    'Σ': 'Sigma', 'σ': 'sigma',
+    'ε': 'eps', 'ϵ': 'eps',
+    'η': 'eta',
+    'Φ': 'Phi', 'ϕ': 'phi', 'φ': 'phi',
+    'ρ': 'rho',
+    'τ': 'tau',
+    'ν': 'nu',
+    'κ': 'kappa',
+    'ψ': 'psi', 'Ψ': 'Psi',
+    'χ': 'chi',
+    'ζ': 'zeta',
+
+    // Mathematical operators & relations
+    '√': 'sqrt',
+    '→': '->', '←': '<-', '↔': '<->', '⇒': '=>', '⇐': '<=', '⇔': '<=>',
+    '≥': '>=', '≤': '<=', '≠': '!=', '≈': '~=', '≡': '==',
+    '±': '+/-', '∓': '-/+',
+    '∞': 'inf',
+    '∂': 'd',
+    '∫': 'int', '∬': 'iint', '∭': 'iiint', '∮': 'oint',
+    '∇': 'nabla',
+    '×': 'x', '÷': '/', '·': '*', '•': '*',
+    '°': ' deg', '℃': ' deg C', '℉': ' deg F',
+
+    // Superscripts & Subscripts
+    '²': '^2', '³': '^3', '¹': '^1', '⁰': '^0', '⁴': '^4', '⁵': '^5', '⁶': '^6', '⁷': '^7', '⁸': '^8', '⁹': '^9',
+    '₀': '_0', '₁': '_1', '₂': '_2', '₃': '_3', '₄': '_4', '₅': '_5', '₆': '_6', '₇': '_7', '₈': '_8', '₉': '_9',
+    '½': '1/2', '¼': '1/4', '¾': '3/4', '⅓': '1/3', '⅔': '2/3',
+
+    // Punctuation & Quotes
+    '–': '-', '—': '-', '―': '-',
+    '‘': "'", '’': "'", '‚': "'", '‛': "'",
+    '“': '"', '”': '"', '„': '"', '‟': '"',
+    '…': '...',
+  };
+
+  let cleaned = text;
+  for (const [key, replacement] of Object.entries(symbolMap)) {
+    cleaned = cleaned.split(key).join(replacement);
+  }
+
+  // Replace any remaining non-WinAnsi / non-Latin characters to prevent encode crashes
+  return cleaned.replace(/[^\x00-\x7F\xA0-\xFF]/g, ' ');
+}
+
+/**
  * Creates an ultra-compact Cheat Sheet / Pocket Farra PDF directly from typed/pasted notes.
  * Automatically flows text through multi-column micro-chits with exact font size control.
  */
 export async function createNotesChitsPdf(options: NotesChitsOptions): Promise<Uint8Array> {
-  const inputText = (options.text || '').trim();
-  if (!inputText) {
+  const rawText = (options.text || '').trim();
+  if (!rawText) {
     throw new Error('Please enter or paste your notes/formulas text.');
   }
+  const inputText = sanitizeNotesForPdf(rawText);
 
   const outDoc = await PDFDocument.create();
   const font = await outDoc.embedFont(StandardFonts.Helvetica);

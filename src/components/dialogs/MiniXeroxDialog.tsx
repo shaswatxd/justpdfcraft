@@ -58,42 +58,42 @@ interface PageCatalogItem {
 }
 
 const SAMPLE_CHEAT_NOTES = `# PHYSICS FORMULAS
-E = mc^2 • F = ma • W = F·d·cos(θ)
+E = mc^2 • F = ma • W = F·d·cos(theta)
 v = u + at • s = ut + (1/2)at^2 • v^2 = u^2 + 2as
-p = mv • F = dp/dt • Impulse = F·Δt
+p = mv • F = dp/dt • Impulse = F·Delta_t
 Kinetic Energy = (1/2)mv^2 • Potential = mgh
-Hooke's Law: F = -k·x • T = 2π√(m/k)
+Hooke's Law: F = -k·x • T = 2*pi*sqrt(m/k)
 Gravitation: F = G(m1·m2)/r^2 • g = GM/R^2
-Escape Velocity: v_e = √(2gR)
+Escape Velocity: v_e = sqrt(2gR)
 
 # THERMODYNAMICS & GAS
 PV = nRT • P1V1/T1 = P2V2/T2
-First Law: ΔQ = ΔU + ΔW • Work = P·ΔV
-Adiabatic: PV^γ = constant
-Efficiency η = 1 - (Tc / Th)
+First Law: Delta_Q = Delta_U + Delta_W • Work = P·Delta_V
+Adiabatic: PV^gamma = constant
+Efficiency eta = 1 - (Tc / Th)
 
 # ELECTRICITY & MAGNETISM
 Ohm's Law: V = IR • Power: P = VI = I^2·R = V^2/R
 Coulomb's Law: F = k(q1·q2)/r^2
 Capacitor: Q = CV • Energy = (1/2)CV^2
 Series: R = R1 + R2 • Parallel: 1/R = 1/R1 + 1/R2
-Lorentz Force: F = q(E + v × B) • B = μ0·I / (2πr)
-Faraday's Law: ε = -dΦ/dt
+Lorentz Force: F = q(E + v x B) • B = mu0·I / (2*pi*r)
+Faraday's Law: eps = -dPhi/dt
 
 # CALCULUS & MATH DERIVATIVES
 d/dx(x^n) = n·x^(n-1) • d/dx(e^x) = e^x
 d/dx(ln x) = 1/x • d/dx(sin x) = cos x
 d/dx(cos x) = -sin x • d/dx(tan x) = sec^2 x
-Integration: ∫ x^n dx = x^(n+1)/(n+1)
-∫ (1/x) dx = ln|x| • ∫ e^x dx = e^x
+Integration: int x^n dx = x^(n+1)/(n+1)
+int (1/x) dx = ln|x| • int e^x dx = e^x
 Product Rule: (uv)' = u'v + uv'
 Quotient Rule: (u/v)' = (u'v - uv') / v^2
 
 # ORGANIC REAGENTS
-Grignard: R-MgX + H2O → R-H
-Wurtz Reaction: 2R-X + 2Na → R-R + 2NaX
-Friedel-Crafts: Ar-H + R-Cl (AlCl3) → Ar-R
-Cannizzaro: 2HCHO + KOH → CH3OH + HCOOK`;
+Grignard: R-MgX + H2O -> R-H
+Wurtz Reaction: 2R-X + 2Na -> R-R + 2NaX
+Friedel-Crafts: Ar-H + R-Cl (AlCl3) -> Ar-R
+Cannizzaro: 2HCHO + KOH -> CH3OH + HCOOK`;
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
