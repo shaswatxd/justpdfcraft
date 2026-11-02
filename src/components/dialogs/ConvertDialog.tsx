@@ -7,6 +7,7 @@ import { PDFDocument } from 'pdf-lib';
 import { NoDocumentState } from '@/components/common/NoDocumentState';
 import { createDocx, DocxParagraph } from '@/utils/docx';
 import { convertToGrayscalePdf } from '@core/pdf/grayscale';
+import { convertToInvertedPdf } from '@core/pdf/invert';
 
 export const ConvertDialog: React.FC = () => {
   const {
@@ -21,8 +22,9 @@ export const ConvertDialog: React.FC = () => {
   } = useUIStore();
   const { documentId, pageCount, currentPage, fileName, loadDocument, closeCurrentDocument } = useDocumentStore();
 
-  const [mode, setMode] = useState<'pdf-to-img' | 'pdf-to-word' | 'pdf-to-powerpoint' | 'pdf-to-grayscale' | 'pdf-to-pdfa' | 'pdf-to-txt' | 'img-to-pdf' | 'txt-to-pdf'>('pdf-to-img');
+  const [mode, setMode] = useState<'pdf-to-img' | 'pdf-to-word' | 'pdf-to-powerpoint' | 'pdf-to-grayscale' | 'pdf-to-invert' | 'pdf-to-pdfa' | 'pdf-to-txt' | 'img-to-pdf' | 'txt-to-pdf'>('pdf-to-img');
   const [grayscaleProgress, setGrayscaleProgress] = useState<{ current: number; total: number } | null>(null);
+  const [invertProgress, setInvertProgress] = useState<{ current: number; total: number } | null>(null);
   const [imageFormat, setImageFormat] = useState<'png' | 'jpeg' | 'webp'>('png');
   const [textFormat, setTextFormat] = useState<'txt' | 'md'>('txt');
   const [resolutionScale, setResolutionScale] = useState<number>(2.0);
@@ -33,7 +35,7 @@ export const ConvertDialog: React.FC = () => {
 
   // Sync mode with activeConvertTab when opened from a tool action
   React.useEffect(() => {
-    if (activeConvertTab && ['pdf-to-img', 'pdf-to-word', 'pdf-to-powerpoint', 'pdf-to-grayscale', 'pdf-to-pdfa', 'pdf-to-txt', 'img-to-pdf', 'txt-to-pdf'].includes(activeConvertTab)) {
+    if (activeConvertTab && ['pdf-to-img', 'pdf-to-word', 'pdf-to-powerpoint', 'pdf-to-grayscale', 'pdf-to-invert', 'pdf-to-pdfa', 'pdf-to-txt', 'img-to-pdf', 'txt-to-pdf'].includes(activeConvertTab)) {
       setMode(activeConvertTab as any);
     }
   }, [activeConvertTab]);
@@ -292,6 +294,48 @@ export const ConvertDialog: React.FC = () => {
     } finally {
       setIsProcessing(false);
       setGrayscaleProgress(null);
+    }
+  };
+
+  const handleConvertToInvert = async () => {
+    if (!documentId) return;
+    setIsProcessing(true);
+    setInvertProgress({ current: 0, total: scope === 'current' ? 1 : pageCount });
+    try {
+      const targetIndices = scope === 'current' ? [currentPage - 1] : Array.from({ length: pageCount }, (_, i) => i);
+      const pdfBytes = await convertToInvertedPdf(documentId, {
+        pageIndices: targetIndices,
+        scale: resolutionScale,
+        onProgress: (current, total) => setInvertProgress({ current, total }),
+      });
+
+      const blob = new Blob([pdfBytes as unknown as BlobPart], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const baseName = (fileName || 'Document').replace(/\.[^/.]+$/, '');
+      a.download = `${baseName}_DarkMode_Inverted.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      addToast({
+        type: 'success',
+        title: 'Dark Mode PDF Exported',
+        message: `Inverted ${targetIndices.length} page${targetIndices.length > 1 ? 's' : ''} for comfortable night reading.`,
+      });
+      handleClose();
+    } catch (err: any) {
+      console.error('Invert export failed:', err);
+      addToast({
+        type: 'error',
+        title: 'Export Failed',
+        message: err?.message || 'Could not invert PDF colors.',
+      });
+    } finally {
+      setIsProcessing(false);
+      setInvertProgress(null);
     }
   };
 
@@ -758,6 +802,19 @@ export const ConvertDialog: React.FC = () => {
           </button>
           <button
             type="button"
+            onClick={() => setMode('pdf-to-invert')}
+            data-active={mode === 'pdf-to-invert' ? 'true' : 'false'}
+            className={`pb-2.5 px-3 flex items-center gap-1.5 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+              mode === 'pdf-to-invert'
+                ? 'border-slate-800 text-slate-900 bg-white rounded-t-lg shadow-2xs'
+                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 rounded-t-lg'
+            }`}
+          >
+            <Moon className="w-4 h-4 shrink-0 text-slate-900" />
+            <span>Invert (Dark Mode)</span>
+          </button>
+          <button
+            type="button"
             onClick={() => setMode('pdf-to-pdfa')}
             data-active={mode === 'pdf-to-pdfa' ? 'true' : 'false'}
             className={`pb-2.5 px-3 flex items-center gap-1.5 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer ${
@@ -1059,6 +1116,88 @@ export const ConvertDialog: React.FC = () => {
             </div>
           )}
 
+          {mode === 'pdf-to-invert' && (
+            <div className="space-y-4">
+              {!documentId ? (
+                <NoDocumentState
+                  toolName="Invert / Dark Mode PDF"
+                  description="Please select a PDF document first to invert bright backgrounds to dark mode for comfortable reading."
+                  icon={Moon}
+                  actionText="Select PDF to Convert"
+                />
+              ) : (
+                <>
+                  <div className="bg-slate-900 text-slate-100 border border-slate-800 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold text-slate-200">Export Scope</label>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setScope('current')}
+                          className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
+                            scope === 'current'
+                              ? 'bg-slate-800 border-white text-white font-bold'
+                              : 'bg-slate-800/50 border-slate-700 text-slate-400'
+                          }`}
+                        >
+                          Page {currentPage}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setScope('all')}
+                          className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
+                            scope === 'all'
+                              ? 'bg-slate-800 border-white text-white font-bold'
+                              : 'bg-slate-800/50 border-slate-700 text-slate-400'
+                          }`}
+                        >
+                          All ({pageCount} Pages)
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-slate-300 block mb-1">DPI / Resolution</label>
+                      <select
+                        value={resolutionScale}
+                        onChange={(e) => setResolutionScale(parseFloat(e.target.value))}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white"
+                      >
+                        <option value="1.0">Standard 72 DPI (Compact File)</option>
+                        <option value="2.0">High-Res 144 DPI (Recommended for Tablets & Reading)</option>
+                        <option value="3.0">Ultra-Sharp 216 DPI (Crisp Text)</option>
+                      </select>
+                    </div>
+
+                    {isProcessing && invertProgress && (
+                      <div className="p-3 bg-slate-800 border border-slate-700 rounded-xl space-y-1.5">
+                        <div className="flex justify-between text-xs text-slate-200 font-semibold">
+                          <span>Inverting PDF pages...</span>
+                          <span>{invertProgress.current} / {invertProgress.total} Pages</span>
+                        </div>
+                        <div className="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                          <div
+                            className="bg-white h-full transition-all duration-200"
+                            style={{ width: `${Math.round((invertProgress.current / invertProgress.total) * 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="pt-3 border-t border-slate-800 text-[11px] text-slate-400 space-y-1.5">
+                      <p className="font-semibold text-slate-200">Dark Mode Advantages:</p>
+                      <ul className="list-disc list-inside space-y-0.5 text-[10px] text-slate-400">
+                        <li>Eliminates blinding white glare for late-night textbook and research reading</li>
+                        <li>Saves substantial battery on OLED phones, iPads, and AMOLED laptops</li>
+                        <li>High contrast inversion keeps diagrams and formulas sharp and readable</li>
+                        <li>100% Client-side processing inside your browser. Zero cloud uploads</li>
+                      </ul>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
           {mode === 'pdf-to-grayscale' && (
             <div className="space-y-4">
               {!documentId ? (
@@ -1336,6 +1475,17 @@ export const ConvertDialog: React.FC = () => {
               >
                 <Download className="w-3.5 h-3.5" />
                 {isProcessing ? 'Converting...' : 'Download Grayscale PDF'}
+              </button>
+            ) : null
+          ) : mode === 'pdf-to-invert' ? (
+            documentId ? (
+              <button
+                onClick={handleConvertToInvert}
+                disabled={isProcessing}
+                className="px-5 py-2 rounded-xl bg-slate-900 hover:bg-black disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-slate-900/20 flex items-center gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5" />
+                {isProcessing ? 'Inverting...' : 'Download Dark Mode PDF'}
               </button>
             ) : null
           ) : mode === 'pdf-to-word' ? (

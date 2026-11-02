@@ -27,6 +27,9 @@ import {
   Download,
   Layers,
   Sparkles,
+  Image as ImageIcon,
+  LayoutGrid,
+  Moon,
   Scissors,
   FileArchive,
   Table,
@@ -917,6 +920,7 @@ export const AppHeader: React.FC = () => {
                 { name: 'Merge PDF', icon: Layers, color: 'text-red-500 hover:bg-red-50', action: () => handleOpenTool('merge') },
                 { name: 'Split PDF', icon: Scissors, color: 'text-orange-500 hover:bg-orange-50', action: () => handleOpenTool('split') },
                 { name: 'Organize PDF', icon: Grid, color: 'text-purple-600 hover:bg-purple-50', action: () => handleOpenTool('organize') },
+                { name: 'N-Up Multi-Page', icon: LayoutGrid, color: 'text-purple-700 hover:bg-purple-50', action: () => handleOpenTool('n-up') },
                 { name: 'Scan to PDF', icon: Camera, color: 'text-teal-600 hover:bg-teal-50', action: () => handleOpenTool('scan') },
               ].map((item) => {
                 const Icon = item.icon;
@@ -940,6 +944,8 @@ export const AppHeader: React.FC = () => {
               </div>
               {[
                 { name: 'Compress PDF', icon: FileArchive, color: 'text-emerald-500 hover:bg-emerald-50', action: () => handleOpenTool('compress') },
+                { name: 'Grayscale (B&W)', icon: Printer, color: 'text-slate-700 hover:bg-slate-100', action: () => handleOpenTool('convert', 'pdf-to-grayscale') },
+                { name: 'Invert (Dark Mode)', icon: Moon, color: 'text-indigo-900 hover:bg-indigo-50', action: () => handleOpenTool('convert', 'pdf-to-invert') },
                 { name: 'Repair PDF', icon: RefreshCw, color: 'text-amber-500 hover:bg-amber-50', action: () => handleOpenTool('repair') },
                 { name: 'OCR PDF (Searchable)', icon: ScanText, color: 'text-indigo-600 hover:bg-indigo-50', action: () => handleOpenTool('ocr') },
               ].map((item) => {
@@ -990,6 +996,7 @@ export const AppHeader: React.FC = () => {
               </div>
               {[
                 { name: 'PDF to JPG', icon: RefreshCw, color: 'text-amber-500 hover:bg-amber-50', action: () => handleOpenTool('convert', 'pdf-to-img') },
+                { name: 'Extract Images (ZIP)', icon: ImageIcon, color: 'text-amber-600 hover:bg-amber-50', action: () => handleOpenTool('extract-images') },
                 { name: 'PDF to Word', icon: FileType, color: 'text-blue-700 hover:bg-blue-50', action: () => handleOpenTool('convert', 'pdf-to-word') },
                 { name: 'PDF to PowerPoint', icon: FileType, color: 'text-orange-500 hover:bg-orange-50', action: () => handleOpenTool('convert', 'pdf-to-powerpoint') },
                 { name: 'PDF to Excel', icon: Table, color: 'text-emerald-700 hover:bg-emerald-50', action: () => handleOpenTool('extract-table') },
@@ -1016,6 +1023,7 @@ export const AppHeader: React.FC = () => {
               </div>
               {[
                 { name: 'Rotate PDF', icon: RefreshCw, color: 'text-blue-500 hover:bg-blue-50', action: () => handleOpenTool('organize') },
+                { name: 'Flatten PDF', icon: Layers, color: 'text-indigo-600 hover:bg-indigo-50', action: () => handleOpenTool('flatten') },
                 { name: 'Add Page Numbers', icon: Tag, color: 'text-rose-500 hover:bg-rose-50', action: () => handleOpenTool('bates') },
                 { name: 'Add Watermark', icon: Droplets, color: 'text-teal-500 hover:bg-teal-50', action: () => handleOpenTool('watermark') },
                 { name: 'Crop PDF', icon: Crop, color: 'text-fuchsia-600 hover:bg-fuchsia-50', action: () => handleOpenTool('crop') },
@@ -1043,6 +1051,7 @@ export const AppHeader: React.FC = () => {
               {[
                 { name: 'Unlock PDF', icon: Lock, color: 'text-red-500 hover:bg-red-50', action: () => handleOpenTool('protect', undefined, 'unlock') },
                 { name: 'Protect PDF', icon: ShieldCheck, color: 'text-emerald-600 hover:bg-emerald-50', action: () => handleOpenTool('protect', undefined, 'protect') },
+                { name: 'Edit Metadata', icon: Tag, color: 'text-slate-700 hover:bg-slate-100', action: () => handleOpenTool('metadata') },
                 { name: 'Sign PDF', icon: PenTool, color: 'text-sky-500 hover:bg-sky-50', action: () => handleOpenTool('sign') },
                 { name: 'Compare PDF', icon: GitCompare, color: 'text-purple-500 hover:bg-purple-50', action: () => handleOpenTool('compare') },
                 { name: '✍️ Handwriting Gen', icon: Sparkles, color: 'text-red-600 bg-red-50/70 hover:bg-red-100/80 font-extrabold', action: () => handleOpenTool('handwriting') },

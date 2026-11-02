@@ -13,6 +13,16 @@ const TOOL_PATH_ALIASES: Record<string, string> = {
   'jpg-to-pdf': 'image-to-pdf-tool',
   'handwriting': 'handwriting-generator',
   'resizer': 'target-kb-resizer',
+  'grayscale': 'pdf-to-grayscale',
+  'black-and-white': 'pdf-to-grayscale',
+  'extract-images': 'extract-images-pdf',
+  'delete-pages': 'delete-pdf-pages',
+  'extract-pages': 'extract-pdf-pages',
+  'nup': 'n-up-pdf',
+  'n-up': 'n-up-pdf',
+  'invert': 'invert-pdf',
+  'metadata': 'metadata-pdf',
+  'flatten': 'flatten-pdf',
 };
 
 /**

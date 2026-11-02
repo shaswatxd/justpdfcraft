@@ -51,6 +51,39 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     tags: ['scan', 'camera', 'photo to pdf', 'document scanner', 'capture'],
     action: { type: 'modal', modal: 'scan' },
   },
+  {
+    id: 'delete-pdf-pages',
+    name: 'Delete PDF Pages',
+    shortDesc: 'Quickly remove unwanted, blank, or duplicate pages from your PDF with 1-click download.',
+    category: 'organize',
+    iconName: 'Trash2',
+    color: 'text-rose-600',
+    badge: 'popular',
+    tags: ['delete pages', 'remove pages', 'delete page from pdf', 'trash pages', 'cut page', 'delete pdf pages', 'remove blank pages'],
+    action: { type: 'modal', modal: 'organize' },
+  },
+  {
+    id: 'extract-pdf-pages',
+    name: 'Extract PDF Pages',
+    shortDesc: 'Select specific pages or custom page ranges to export into a brand-new PDF file.',
+    category: 'organize',
+    iconName: 'ExternalLink',
+    color: 'text-amber-600',
+    badge: 'popular',
+    tags: ['extract pages', 'separate pages', 'save specific pages', 'extract page ranges', 'export selected pages'],
+    action: { type: 'modal', modal: 'split', label: 'Extract Pages' },
+  },
+  {
+    id: 'n-up-pdf',
+    name: 'N-Up (Multi-Page Sheet)',
+    shortDesc: 'Fit 2, 4, 6, 8, or 9 pages per printable sheet for college handouts and cheat sheets.',
+    category: 'organize',
+    iconName: 'LayoutGrid',
+    color: 'text-purple-600',
+    badge: 'special',
+    tags: ['n-up', 'multiple pages per sheet', '2 up', '4 up', 'handouts', 'slides print', 'cheat sheet', 'booklet layout', 'nup'],
+    action: { type: 'modal', modal: 'n-up' },
+  },
 
   // =========================================================================
   // 2. OPTIMIZE PDF
@@ -85,6 +118,28 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     color: 'text-indigo-600',
     tags: ['ocr', 'searchable', 'text recognition', 'scanned pdf to text', 'tesseract'],
     action: { type: 'modal', modal: 'ocr' },
+  },
+  {
+    id: 'pdf-to-grayscale',
+    name: 'Grayscale PDF (B&W)',
+    shortDesc: 'Convert color documents to monochrome black & white to save printer toner and compress size.',
+    category: 'optimize',
+    iconName: 'Printer',
+    color: 'text-slate-700',
+    badge: 'popular',
+    tags: ['grayscale', 'black and white', 'b&w', 'monochrome', 'ink saver', 'print ink', 'convert black and white', 'toner saver'],
+    action: { type: 'modal', modal: 'convert', initialTab: 'pdf-to-grayscale', label: 'Grayscale PDF' },
+  },
+  {
+    id: 'invert-pdf',
+    name: 'Invert / Dark Mode PDF',
+    shortDesc: 'Transform bright white PDF pages into dark-mode high-contrast colors for comfortable night reading.',
+    category: 'optimize',
+    iconName: 'Moon',
+    color: 'text-indigo-900',
+    badge: 'new',
+    tags: ['invert', 'dark mode', 'night mode', 'high contrast', 'inverted colors', 'invert pdf colors', 'oled pdf'],
+    action: { type: 'modal', modal: 'convert', initialTab: 'pdf-to-invert', label: 'Dark Mode PDF' },
   },
 
   // =========================================================================
@@ -198,6 +253,17 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     tags: ['pdf to pdfa', 'pdf/a', 'archiving', 'iso standard'],
     action: { type: 'modal', modal: 'convert', initialTab: 'pdf-to-pdfa' },
   },
+  {
+    id: 'extract-images-pdf',
+    name: 'Extract Images from PDF',
+    shortDesc: 'Extract all embedded photos and high-resolution figures from your PDF into a clean ZIP archive.',
+    category: 'convert-from-pdf',
+    iconName: 'Image',
+    color: 'text-amber-500',
+    badge: 'popular',
+    tags: ['extract images', 'extract photos', 'pdf to images', 'save images', 'pull images from pdf', 'download pictures', 'rip images'],
+    action: { type: 'modal', modal: 'extract-images' },
+  },
 
   // =========================================================================
   // 5. EDIT PDF
@@ -253,6 +319,17 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     color: 'text-fuchsia-600',
     tags: ['crop', 'margins', 'trim', 'cut borders', 'bleed'],
     action: { type: 'modal', modal: 'crop' },
+  },
+  {
+    id: 'flatten-pdf',
+    name: 'Flatten PDF',
+    shortDesc: 'Bake interactive forms, signatures, and annotations permanently into the page canvas.',
+    category: 'edit',
+    iconName: 'Layers',
+    color: 'text-indigo-600',
+    badge: 'popular',
+    tags: ['flatten', 'flatten pdf', 'make uneditable', 'lock form', 'flatten annotations', 'read only pdf', 'tamper proof'],
+    action: { type: 'modal', modal: 'flatten' },
   },
 
   // =========================================================================
@@ -310,6 +387,16 @@ export const TOOLS_CATALOG: ToolDefinition[] = [
     color: 'text-purple-500',
     tags: ['compare', 'diff', 'side by side', 'revisions', 'differences'],
     action: { type: 'modal', modal: 'compare' },
+  },
+  {
+    id: 'metadata-pdf',
+    name: 'Edit PDF Metadata',
+    shortDesc: 'View and update Document Title, Author, Subject, Keywords, or wipe all tracking data with 1 click.',
+    category: 'security',
+    iconName: 'Tag',
+    color: 'text-slate-700',
+    tags: ['metadata', 'author', 'title', 'edit metadata', 'privacy scrubber', 'clean pdf info', 'properties', 'wipe metadata'],
+    action: { type: 'modal', modal: 'metadata' },
   },
 
   // =========================================================================

@@ -112,7 +112,7 @@ export const HandwritingDialog: React.FC = () => {
     }
   };
   const [selectedFont, setSelectedFont] = useState<string>('Caveat');
-  const [paperType, setPaperType] = useState<'ruled' | 'plain' | 'grid'>('ruled');
+  const [paperType, setPaperType] = useState<'ruled' | 'legal' | 'plain' | 'grid'>('ruled');
   const [inkColor, setInkColor] = useState<string>('#1d3557');
   const [fontSize, setFontSize] = useState<number>(26);
   const [lineHeight, setLineHeight] = useState<number>(40);
@@ -248,7 +248,11 @@ export const HandwritingDialog: React.FC = () => {
       const ph = targetCanvas.height;
 
       // 1. Natural warm paper background
-      ctx.fillStyle = '#faf9f5';
+      if (paperType === 'legal') {
+        ctx.fillStyle = '#fefce8'; // soft canary yellow legal pad
+      } else {
+        ctx.fillStyle = '#faf9f5'; // natural notebook white
+      }
       ctx.fillRect(0, 0, pw, ph);
 
       const topMargin = 160;
@@ -256,12 +260,12 @@ export const HandwritingDialog: React.FC = () => {
       const leftMargin = 150;
 
       // 2. Paper styling
-      if (paperType === 'ruled') {
+      if (paperType === 'ruled' || paperType === 'legal') {
         // Red vertical margin line
         ctx.beginPath();
         ctx.moveTo(140, 0);
         ctx.lineTo(140, ph);
-        ctx.strokeStyle = 'rgba(255, 90, 120, 0.45)';
+        ctx.strokeStyle = paperType === 'legal' ? 'rgba(239, 68, 68, 0.55)' : 'rgba(255, 90, 120, 0.45)';
         ctx.lineWidth = 2.5;
         ctx.stroke();
 
@@ -269,13 +273,13 @@ export const HandwritingDialog: React.FC = () => {
         ctx.beginPath();
         ctx.moveTo(0, topMargin - lineHeight);
         ctx.lineTo(pw, topMargin - lineHeight);
-        ctx.strokeStyle = 'rgba(255, 90, 120, 0.35)';
+        ctx.strokeStyle = paperType === 'legal' ? 'rgba(239, 68, 68, 0.45)' : 'rgba(255, 90, 120, 0.35)';
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
         // Horizontal ruled lines
         ctx.beginPath();
-        ctx.strokeStyle = 'rgba(80, 140, 240, 0.28)';
+        ctx.strokeStyle = paperType === 'legal' ? 'rgba(59, 130, 246, 0.30)' : 'rgba(80, 140, 240, 0.28)';
         ctx.lineWidth = 1.0;
         for (let y = topMargin; y < ph - bottomMargin; y += lineHeight) {
           ctx.moveTo(0, y);
@@ -643,19 +647,19 @@ export const HandwritingDialog: React.FC = () => {
                   <Layers className="w-3.5 h-3.5 text-teal-400" />
                   Paper Style
                 </label>
-                <div className="grid grid-cols-3 gap-1.5 p-1 bg-white/70 border border-gray-300/80 rounded-xl">
-                  {(['ruled', 'plain', 'grid'] as const).map((type) => (
+                <div className="grid grid-cols-4 gap-1.5 p-1 bg-white/70 border border-gray-300/80 rounded-xl">
+                  {(['ruled', 'legal', 'plain', 'grid'] as const).map((type) => (
                     <button
                       key={type}
                       type="button"
                       onClick={() => setPaperType(type)}
                       className={`py-1.5 text-xs font-semibold rounded-lg capitalize transition-all ${
                         paperType === type
-                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          ? 'bg-amber-500/20 text-amber-700 border border-amber-500/30 font-bold'
                           : 'text-gray-500 hover:text-gray-800'
                       }`}
                     >
-                      {type}
+                      {type === 'legal' ? 'Legal Pad' : type}
                     </button>
                   ))}
                 </div>

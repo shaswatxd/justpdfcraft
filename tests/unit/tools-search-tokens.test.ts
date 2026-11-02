@@ -8,7 +8,7 @@ import { TOOLS_CATALOG, searchTools } from '@/data/toolsCatalog';
  */
 describe('tokenized tool search', () => {
   it('keeps exactly the expected catalogue shape', () => {
-    expect(TOOLS_CATALOG.length).toBe(29);
+    expect(TOOLS_CATALOG.length).toBe(37);
   });
 
   it.each([
@@ -22,6 +22,12 @@ describe('tokenized tool search', () => {
     ['pdf to word', 'pdf-to-word-doc'],
     ['images to pdf', 'image-to-pdf-tool'],
     ['handwriting', 'handwriting-generator'],
+    ['flatten pdf', 'flatten-pdf'],
+    ['black and white', 'pdf-to-grayscale'],
+    ['extract images', 'extract-images-pdf'],
+    ['delete pages', 'delete-pdf-pages'],
+    ['dark mode', 'invert-pdf'],
+    ['edit metadata', 'metadata-pdf'],
   ])('finds the right tool for "%s"', (query, expectedId) => {
     const results = searchTools(query);
     expect(results.map((t) => t.id)).toContain(expectedId);

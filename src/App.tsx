@@ -77,6 +77,10 @@ const DocumentToolsDialog = safeLazy(() => import('@/components/dialogs/Document
 const AIToolsDialog = safeLazy(() => import('@/components/dialogs/AIToolsDialog'), 'AIToolsDialog');
 const OrganizeDialog = safeLazy(() => import('@/components/dialogs/OrganizeDialog'), 'OrganizeDialog');
 const RepairDialog = safeLazy(() => import('@/components/dialogs/RepairDialog'), 'RepairDialog');
+const FlattenDialog = safeLazy(() => import('@/components/dialogs/FlattenDialog'), 'FlattenDialog');
+const ExtractImagesDialog = safeLazy(() => import('@/components/dialogs/ExtractImagesDialog'), 'ExtractImagesDialog');
+const NUpDialog = safeLazy(() => import('@/components/dialogs/NUpDialog'), 'NUpDialog');
+const MetadataDialog = safeLazy(() => import('@/components/dialogs/MetadataDialog'), 'MetadataDialog');
 
 
 const ContactAboutModal = safeLazy(() => import('@/components/dialogs/ContactAboutModal'), 'ContactAboutModal');
@@ -643,6 +647,10 @@ export const App: React.FC = () => {
           {activeModal === 'ai-tools' && <AIToolsDialog />}
           {activeModal === 'organize' && <OrganizeDialog />}
           {activeModal === 'repair' && <RepairDialog />}
+          {activeModal === 'flatten' && <FlattenDialog />}
+          {activeModal === 'extract-images' && <ExtractImagesDialog />}
+          {activeModal === 'n-up' && <NUpDialog />}
+          {activeModal === 'metadata' && <MetadataDialog />}
 
 
           {(activeModal === 'contact' || activeModal === 'about') && <ContactAboutModal />}

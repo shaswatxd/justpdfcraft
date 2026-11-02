@@ -30,6 +30,10 @@ const VALID_MODALS = new Set([
   'ai-tools',
   'organize',
   'repair',
+  'flatten',
+  'extract-images',
+  'n-up',
+  'metadata',
   'contact',
   'about',
 ]);

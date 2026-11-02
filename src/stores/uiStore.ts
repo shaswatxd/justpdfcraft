@@ -33,6 +33,10 @@ export type ModalType =
   | 'ai-tools'
   | 'organize'
   | 'repair'
+  | 'flatten'
+  | 'extract-images'
+  | 'n-up'
+  | 'metadata'
   | 'contact'
   | 'about'
   | null;

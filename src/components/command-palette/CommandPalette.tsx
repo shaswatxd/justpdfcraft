@@ -130,6 +130,54 @@ export const CommandPalette: React.FC = () => {
       action: () => setActiveModal('convert'),
     },
     {
+      id: 'flatten',
+      title: 'Flatten PDF (Lock Forms, Signatures & Annotations Permanently)',
+      category: 'Tools',
+      icon: Files,
+      action: () => setActiveModal('flatten'),
+    },
+    {
+      id: 'extract_images',
+      title: 'Extract Images from PDF (Save High-Res Photos to ZIP)',
+      category: 'Tools',
+      icon: ImageIcon,
+      action: () => setActiveModal('extract-images'),
+    },
+    {
+      id: 'nup',
+      title: 'N-Up Multi-Page Layout (2, 4, 6, 8 Pages Per Sheet for Handouts)',
+      category: 'Tools',
+      icon: Grid,
+      action: () => setActiveModal('n-up'),
+    },
+    {
+      id: 'metadata',
+      title: 'Edit PDF Metadata & Privacy Scrubber (Title, Author, Clean Tracking)',
+      category: 'Tools',
+      icon: FileText,
+      action: () => setActiveModal('metadata'),
+    },
+    {
+      id: 'grayscale',
+      title: 'Grayscale PDF (Convert to Black & White Ink Saver)',
+      category: 'Tools',
+      icon: Printer,
+      action: () => {
+        useUIStore.getState().setActiveConvertTab('pdf-to-grayscale');
+        setActiveModal('convert');
+      },
+    },
+    {
+      id: 'invert',
+      title: 'Invert / Dark Mode PDF (High-Contrast Night Reading)',
+      category: 'Tools',
+      icon: Code2,
+      action: () => {
+        useUIStore.getState().setActiveConvertTab('pdf-to-invert');
+        setActiveModal('convert');
+      },
+    },
+    {
       id: 'protect',
       title: 'Password Protect & Encrypt PDF (AES-256)',
       category: 'Tools',

@@ -14,6 +14,20 @@ import {
   CompressTargetResult,
 } from '@core/image/student-resizer';
 
+const PORTAL_PRESETS = [
+  { name: 'UPSC Photo', min: 20, max: 50, w: 350, h: 350, tag: 'UPSC' },
+  { name: 'UPSC Signature', min: 20, max: 50, w: 350, h: 350, tag: 'UPSC' },
+  { name: 'SSC Photo', min: 20, max: 50, w: 138, h: 177, tag: 'SSC' },
+  { name: 'SSC Signature', min: 10, max: 20, w: 140, h: 60, tag: 'SSC' },
+  { name: 'JEE / NEET Photo', min: 10, max: 200, w: 400, h: 500, tag: 'NTA' },
+  { name: 'JEE / NEET Signature', min: 4, max: 30, w: 200, h: 100, tag: 'NTA' },
+  { name: 'IBPS / SBI Photo', min: 20, max: 50, w: 200, h: 230, tag: 'Bank PO' },
+  { name: 'IBPS / SBI Signature', min: 10, max: 20, w: 140, h: 60, tag: 'Bank PO' },
+  { name: 'Passport / Visa (2×2")', min: 20, max: 100, w: 600, h: 600, tag: 'Passport' },
+  { name: 'Under 50 KB', min: 10, max: 50, w: 300, h: 300, tag: 'Quick' },
+  { name: 'Under 100 KB', min: 20, max: 100, w: 500, h: 500, tag: 'Quick' },
+];
+
 export const StudentToolsDialog: React.FC = () => {
   const {
     activeModal,
@@ -301,6 +315,42 @@ export const StudentToolsDialog: React.FC = () => {
 
             {/* Right Column: Settings & Download */}
             <div className="w-full lg:col-span-6 space-y-4">
+              {/* 1-Click Official Exam & Govt Portal Presets */}
+              <div className="bg-blue-50/50 border border-blue-200/70 rounded-xl p-3.5 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-blue-950 flex items-center gap-1.5">
+                    <span>🏛️ Official Exam & Portal Presets</span>
+                  </span>
+                  <span className="text-[10px] text-blue-600 font-semibold bg-blue-100/70 px-2 py-0.5 rounded-full">
+                    1-Click Setup
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto no-scrollbar pt-1">
+                  {PORTAL_PRESETS.map((preset) => (
+                    <button
+                      key={preset.name}
+                      type="button"
+                      onClick={() => {
+                        setTargetMinKb(preset.min);
+                        setTargetMaxKb(preset.max);
+                        setCustomWidthPx(preset.w);
+                        setCustomHeightPx(preset.h);
+                        setKeepAspect(false);
+                        addToast({
+                          type: 'info',
+                          title: `${preset.name} Preset`,
+                          message: `Set to ${preset.min}–${preset.max} KB (${preset.w}×${preset.h} px)`,
+                        });
+                      }}
+                      className="text-[11px] font-semibold bg-white hover:bg-blue-600 hover:text-white text-slate-700 px-2.5 py-1.5 rounded-lg border border-blue-200 shadow-2xs transition-all flex items-center gap-1 shrink-0 cursor-pointer"
+                    >
+                      <span>{preset.name}</span>
+                      <span className="text-[9px] opacity-70 font-mono">({preset.min}–{preset.max}KB)</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Target KB Limits */}
               <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3">
                 <div className="flex items-center justify-between">
