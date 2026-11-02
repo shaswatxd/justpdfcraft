@@ -15,7 +15,18 @@
  * - 100% Client-Side via WebAssembly & pdf-lib (zero server uploads)
  */
 
-import { PDFDocument, rgb, StandardFonts, LineCapStyle, degrees } from 'pdf-lib';
+import {
+  PDFDocument,
+  rgb,
+  StandardFonts,
+  LineCapStyle,
+  degrees,
+  pushGraphicsState,
+  popGraphicsState,
+  rectangle,
+  clip,
+  endPath,
+} from 'pdf-lib';
 import { getPDFEngine } from './engine.factory';
 
 export type MiniXeroxLayout = '4-in-1' | '6-in-1' | '8-in-1' | '9-in-1' | '16-in-1' | '25-in-1';
@@ -38,6 +49,7 @@ export interface MiniXeroxOptions {
   trimMargins?: boolean;            // Crop 10% outer whitespace margins so text is bigger
   margin?: number;                  // Outer sheet margin in points (default: 14)
   spacing?: number;                 // Gap between mini pages in points (default: 4)
+  cellPadding?: number;             // Inner safety padding per cell to avoid cut line collision (default: 2.5)
   onProgress?: (currentSheet: number, totalSheets: number, status: string) => void;
 }
 
@@ -235,7 +247,21 @@ export async function createMiniXeroxPdf(
   const cellWidth = availableWidth / spec.cols;
   const cellHeight = availableHeight / spec.rows;
 
-  const contentZoom = Math.max(0.7, Math.min(options.contentZoom ?? (options.trimMargins ? 1.18 : 1.0), 1.6));
+  const contentZoom = Math.max(
+    0.6,
+    Math.min(
+      options.contentZoom !== undefined
+        ? options.contentZoom
+        : options.trimMargins
+        ? 1.08
+        : 1.0,
+      1.4
+    )
+  );
+
+  const cellPadding = options.cellPadding ?? (spacing === 0 ? 1.5 : 2.5);
+  const availCellW = Math.max(10, cellWidth - 2 * cellPadding);
+  const availCellH = Math.max(10, cellHeight - 2 * cellPadding);
 
   // 3. Cache embedded pages to avoid redundant embedding
   const embeddedPageCache = new Map<string, any>();
@@ -303,21 +329,32 @@ export async function createMiniXeroxPdf(
       const origHeight = embeddedPage ? embeddedPage.height : embeddedJpg!.height;
 
       // Check scale without rotation
-      const scaleNoRot = Math.min(cellWidth / origWidth, cellHeight / origHeight) * contentZoom;
+      const baseScaleNoRot = Math.min(availCellW / origWidth, availCellH / origHeight);
 
       // Check scale with 90° rotation
-      const scaleWithRot = Math.min(cellWidth / origHeight, cellHeight / origWidth) * contentZoom;
+      const baseScaleWithRot = Math.min(availCellW / origHeight, availCellH / origWidth);
 
       // Auto-rotate if enabled and rotation yields >= 12% bigger text
-      const shouldRotate = Boolean(options.autoRotate && scaleWithRot > scaleNoRot * 1.12);
+      const shouldRotate = Boolean(options.autoRotate && baseScaleWithRot > baseScaleNoRot * 1.12);
 
-      const effectiveScale = shouldRotate ? scaleWithRot : scaleNoRot;
+      const chosenBaseScale = shouldRotate ? baseScaleWithRot : baseScaleNoRot;
+      const effectiveScale = chosenBaseScale * contentZoom;
       const fittedWidth = (shouldRotate ? origHeight : origWidth) * effectiveScale;
       const fittedHeight = (shouldRotate ? origWidth : origHeight) * effectiveScale;
 
-      // Center within the cell
-      const drawX = cellX + (cellWidth - fittedWidth) / 2;
-      const drawY = cellY + (cellHeight - fittedHeight) / 2;
+      // Center within the cell (accounting for inner padding)
+      const drawX = cellX + cellPadding + (availCellW - fittedWidth) / 2;
+      const drawY = cellY + cellPadding + (availCellH - fittedHeight) / 2;
+
+      // HARD PDF CELL CLIPPING:
+      // Strictly clip any graphics to the bounds of [cellX, cellY, cellWidth, cellHeight]
+      // to guarantee zero bleed across scissor cut lines or sheet boundaries.
+      outPage.pushOperators(
+        pushGraphicsState(),
+        rectangle(cellX, cellY, cellWidth, cellHeight),
+        clip(),
+        endPath()
+      );
 
       // Embed the mini-page
       if (embeddedPage) {
@@ -345,6 +382,9 @@ export async function createMiniXeroxPdf(
           height: fittedHeight,
         });
       }
+
+      // Restore graphics state before drawing borders, badges, and guides
+      outPage.pushOperators(popGraphicsState());
 
       // Optional cell border
       if (options.drawBorders) {

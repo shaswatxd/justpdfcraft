@@ -197,8 +197,8 @@ export const MiniXeroxDialog: React.FC = () => {
 
   // Multi-PDF State
   const [files, setFiles] = useState<LoadedFileItem[]>([]);
-  const [contentZoom, setContentZoom] = useState<number>(100); // 80% to 150% (chota/bada scale)
-  const [trimMargins, setTrimMargins] = useState<boolean>(true);
+  const [contentZoom, setContentZoom] = useState<number>(100); // 80% to 140% (chota/bada scale)
+  const [trimMargins, setTrimMargins] = useState<boolean>(false);
   const [pageRange, setPageRange] = useState<string>('all'); // 'all', '1-10', 'odd', 'even'
 
   // Pro Layout & Alignment Options (Matched with Sejda, DeftPDF & Xerox Shops)
@@ -854,7 +854,7 @@ export const MiniXeroxDialog: React.FC = () => {
                       <div>
                         <span className="text-xs font-bold text-slate-800">Trim White Margins</span>
                         <p className="text-[10px] text-slate-500">
-                          Auto-crops borders so text expands to fill chit
+                          Auto-crops book/notes margins (Keep OFF for ID cards & certificates)
                         </p>
                       </div>
                     </label>
@@ -1299,7 +1299,7 @@ export const MiniXeroxDialog: React.FC = () => {
                         title="Click to magnify & inspect this page"
                       >
                         {/* Page Content Thumbnail */}
-                        <div className="flex-1 w-full overflow-hidden relative">
+                        <div className="flex-1 w-full overflow-hidden relative p-0.5">
                           <MiniPageThumbnail
                             pdfjsDoc={activeFile?.pdfjsDoc}
                             bytes={pageItem.fileBytes}

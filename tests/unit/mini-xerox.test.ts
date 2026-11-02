@@ -173,4 +173,52 @@ d/dx(ln x) = 1/x
     const outDoc = await PDFDocument.load(outBytes, { throwOnInvalidObject: false });
     expect(outDoc.getPageCount()).toBe(1);
   });
+
+  it('should apply hard PDF clipping (W n) and inner cell safety padding to prevent card overlap', async () => {
+    const doc = await PDFDocument.create();
+    const page = doc.addPage([300, 450]);
+    page.drawRectangle({ x: 0, y: 0, width: 300, height: 450 });
+    const bytes = await doc.save();
+
+    const outBytes = await createMiniXeroxPdf([bytes], {
+      layout: '16-in-1',
+      pageSize: 'A4',
+      orientation: 'portrait',
+      pageOrder: 'horizontal',
+      contentZoom: 1.25, // even when zoomed, clipping must enclose it
+      trimMargins: true,
+      drawCutGuides: true,
+      drawPageNumbers: true,
+      drawBorders: true,
+    });
+
+    expect(outBytes).toBeInstanceOf(Uint8Array);
+    const outDoc = await PDFDocument.load(outBytes);
+    expect(outDoc.getPageCount()).toBe(1);
+
+    // Verify stream contains hard clipping sequence 're W n'
+    const zlib = await import('zlib');
+    const page0 = outDoc.getPage(0);
+    const contentsArr = page0.node.Contents() as any;
+    let decompressedStreams = '';
+    if (contentsArr && typeof contentsArr.size === 'function') {
+      for (let k = 0; k < contentsArr.size(); k++) {
+        const s = outDoc.context.lookup(contentsArr.get(k)) as any;
+        if (s && s.contents) {
+          try {
+            decompressedStreams += zlib.inflateSync(s.contents).toString() + '\n';
+          } catch {
+            decompressedStreams += s.contents.toString() + '\n';
+          }
+        }
+      }
+    } else if (contentsArr && contentsArr.contents) {
+      try {
+        decompressedStreams += zlib.inflateSync(contentsArr.contents).toString() + '\n';
+      } catch {
+        decompressedStreams += contentsArr.contents.toString() + '\n';
+      }
+    }
+    expect(decompressedStreams).toMatch(/re\s+W\s+n/);
+  });
 });
