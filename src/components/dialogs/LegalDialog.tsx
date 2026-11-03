@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ShieldCheck, Mail, FileText, Scale, AlertTriangle, Send } from 'lucide-react';
+import { X, ShieldCheck, Mail, FileText, Scale, AlertTriangle, Send, Copy } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 
 type LegalTab = 'about' | 'privacy' | 'terms' | 'disclaimer' | 'contact';
@@ -18,6 +18,17 @@ export const LegalDialog: React.FC = () => {
       setActiveTab(activeLegalTab as LegalTab);
     }
   }, [activeLegalTab]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -47,23 +58,33 @@ export const LegalDialog: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 select-none" role="dialog" aria-modal="true" aria-label="Legal Dialog">
-      <div className="w-full max-w-3xl h-[85vh] max-h-[750px] bg-white border border-gray-300/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden text-gray-900">
+    <div
+      className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Legal Dialog"
+      onClick={handleClose}
+    >
+      <div
+        className="w-full max-w-3xl h-[85vh] max-h-[85dvh] max-h-[750px] bg-white dark:bg-slate-900 border border-gray-300/80 dark:border-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden text-gray-900 dark:text-slate-100 animate-scale-in"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="h-14 px-4 sm:px-6 bg-gray-100 border-b border-gray-300/80 flex items-center justify-between shrink-0">
-          <h2 className="text-sm sm:text-base font-bold text-gray-900 flex items-center gap-2">
+        <div className="h-14 px-4 sm:px-6 bg-gray-100 dark:bg-slate-800/80 border-b border-gray-300/80 dark:border-slate-800 flex items-center justify-between shrink-0">
+          <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-slate-100 flex items-center gap-2">
             JustPDFCraft Legal & Information Hub
           </h2>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg text-gray-500 hover:text-gray-800 hover:bg-gray-200/60 transition-colors"
+            aria-label="Close"
+            className="p-1.5 rounded-lg text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 hover:bg-gray-200/60 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Ribbon */}
-        <div className="bg-white/60 border-b border-gray-200 px-4 py-2 flex items-center gap-2 overflow-x-auto shrink-0 scrollbar-none text-xs">
+        <div className="bg-white/60 dark:bg-slate-900/60 border-b border-gray-200 dark:border-slate-800 px-4 py-2 flex items-center gap-2 overflow-x-auto shrink-0 scrollbar-none text-xs">
           {[
             { id: 'about' as const, label: 'About Us', icon: FileText },
             { id: 'privacy' as const, label: 'Privacy Policy', icon: ShieldCheck },
@@ -77,10 +98,10 @@ export const LegalDialog: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer ${
                   isActive
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -91,19 +112,19 @@ export const LegalDialog: React.FC = () => {
         </div>
 
         {/* Body Content */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-7 text-xs sm:text-sm text-gray-700 leading-relaxed space-y-4">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-7 text-xs sm:text-sm text-gray-700 dark:text-slate-300 leading-relaxed space-y-4">
           {activeTab === 'about' && (
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-gray-900">About JustPDFCraft</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100">About JustPDFCraft</h3>
               <p>
                 JustPDFCraft was created with a single mission: to empower students, educators, and working professionals with a fast, comprehensive, and privacy-respecting document and image toolkit.
               </p>
               <p>
                 Unlike traditional online PDF converters that force users to upload sensitive files, contracts, marksheets, and signatures to third-party cloud servers, JustPDFCraft is engineered from the ground up as a <strong>100% client-side, local-first web application</strong>.
               </p>
-              <div className="p-4 rounded-xl bg-gray-50 border border-gray-300/60 space-y-2">
-                <h4 className="font-bold text-gray-900">Our Core Commitments:</h4>
-                <ul className="list-disc list-inside space-y-1 text-gray-500">
+              <div className="p-4 rounded-xl bg-gray-50 dark:bg-slate-800/60 border border-gray-300/60 dark:border-slate-700 space-y-2">
+                <h4 className="font-bold text-gray-900 dark:text-slate-100">Our Core Commitments:</h4>
+                <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-slate-300">
                   <li>Zero file uploads: Everything is processed in your device's memory.</li>
                   <li>No subscription paywalls or hidden file limits on essential tools.</li>
                   <li>Dedicated student utilities designed specifically for competitive exam forms and university portals.</li>
@@ -115,42 +136,42 @@ export const LegalDialog: React.FC = () => {
 
           {activeTab === 'privacy' && (
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-gray-900">Privacy Policy</h3>
-              <p className="text-xs text-gray-500">Effective Date: September 2026</p>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100">Privacy Policy</h3>
+              <p className="text-xs text-gray-500 dark:text-slate-400">Effective Date: September 2026</p>
               <p>
                 At JustPDFCraft (accessible at <code>https://justpdfcraft.xyz</code>), the privacy and confidentiality of your documents and personal data is our foundational priority.
               </p>
-              <h4 className="text-base font-bold text-gray-900">1. Client-Side Document Processing</h4>
+              <h4 className="text-base font-bold text-gray-900 dark:text-slate-100">1. Client-Side Document Processing</h4>
               <p>
                 All PDF manipulations (merging, splitting, compression, direct text editing, OCR, watermarking, page organization) and image transformations (target KB resizing) execute strictly within your local browser environment using JavaScript and WebAssembly.
                 <strong> None of your documents, photos, or signatures are ever transmitted to or stored on our servers.</strong>
               </p>
-              <h4 className="text-base font-bold text-gray-900">2. Local Storage Usage</h4>
+              <h4 className="text-base font-bold text-gray-900 dark:text-slate-100">2. Local Storage Usage</h4>
               <p>
                 We store lightweight non-sensitive preferences locally on your browser (such as your favorite tools, recently used tools list, dark mode preference, and reading comfort tones). You can clear this data at any time through your browser settings.
               </p>
-              <h4 className="text-base font-bold text-gray-900">3. AI Services & API Keys</h4>
+              <h4 className="text-base font-bold text-gray-900 dark:text-slate-100">3. AI Services & API Keys</h4>
               <p>
-                When utilizing AI features, API calls are dispatched directly from your browser to your chosen provider (Google Gemini or OpenAI) using the personal API key you provide. Your key is stored solely in your browser's localStorage and is never proxied or seen by JustPDFCraft.
+                When utilizing AI features, API calls are dispatched directly from your browser to your chosen provider (Google Gemini or OpenAI) using the personal API key you provide. Your key is stored solely in your browser's session/local storage and is never proxied or seen by JustPDFCraft.
               </p>
             </div>
           )}
 
           {activeTab === 'terms' && (
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-gray-900">Terms & Conditions of Service</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100">Terms & Conditions of Service</h3>
               <p>
                 By accessing or using JustPDFCraft, you agree to these Terms. If you disagree with any part of these terms, you may refrain from using the application.
               </p>
-              <h4 className="text-base font-bold text-gray-900">1. License & Usage</h4>
+              <h4 className="text-base font-bold text-gray-900 dark:text-slate-100">1. License & Usage</h4>
               <p>
                 JustPDFCraft grants you a personal, non-exclusive, royalty-free license to use all provided tools for personal, academic, and commercial document editing purposes.
               </p>
-              <h4 className="text-base font-bold text-gray-900">2. Acceptable Use</h4>
+              <h4 className="text-base font-bold text-gray-900 dark:text-slate-100">2. Acceptable Use</h4>
               <p>
                 You agree not to use JustPDFCraft for any unlawful purposes, including but not limited to forging official government documents, modifying protected certificates fraudulently, or attempting to compromise service integrity.
               </p>
-              <h4 className="text-base font-bold text-gray-900">3. Disclaimer of Warranties</h4>
+              <h4 className="text-base font-bold text-gray-900 dark:text-slate-100">3. Disclaimer of Warranties</h4>
               <p>
                 JustPDFCraft is provided on an "as-is" and "as-available" basis without warranties of any kind. While our tools undergo rigorous testing, users are responsible for verifying compliance with specific exam or submission guidelines.
               </p>
@@ -159,7 +180,7 @@ export const LegalDialog: React.FC = () => {
 
           {activeTab === 'disclaimer' && (
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-gray-900">Legal & Exam Portal Disclaimer</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100">Legal & Exam Portal Disclaimer</h3>
               <p>
                 JustPDFCraft provides automated digital tools (such as target KB photo compressors) to help students and candidates format files according to published exam notifications.
               </p>
@@ -175,46 +196,45 @@ export const LegalDialog: React.FC = () => {
           {activeTab === 'contact' && (
             <div className="space-y-4 max-w-lg mx-auto">
               <div>
-                <h3 className="text-lg font-bold text-gray-900">Contact & Feedback</h3>
-                <p className="text-xs text-gray-500">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100">Contact & Feedback</h3>
+                <p className="text-xs text-gray-500 dark:text-slate-400">
                   Have a suggestion, found a bug, or want a new tool added? We'd love to hear from you.
                 </p>
               </div>
 
               <form onSubmit={handleSendMessage} className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-gray-700">Your Name</label>
+                  <label className="text-xs font-semibold text-gray-700 dark:text-slate-300">Your Name (Optional)</label>
                   <input
                     type="text"
-                    required
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
-                    placeholder="e.g. Rahul Sharma"
-                    className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    placeholder="e.g. John Doe"
+                    className="w-full bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-gray-700">Email Address</label>
+                  <label className="text-xs font-semibold text-gray-700 dark:text-slate-300">Your Email Address</label>
                   <input
                     type="email"
                     required
                     value={contactEmail}
                     onChange={(e) => setContactEmail(e.target.value)}
                     placeholder="name@domain.com"
-                    className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-gray-700">Message / Bug Report</label>
+                  <label className="text-xs font-semibold text-gray-700 dark:text-slate-300">Message / Bug Report</label>
                   <textarea
                     rows={4}
                     required
                     value={contactMessage}
                     onChange={(e) => setContactMessage(e.target.value)}
                     placeholder="Describe your suggestion, tool request, or issue..."
-                    className="w-full bg-white border border-gray-300 rounded-xl p-3 text-xs text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"
+                    className="w-full bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"
                   />
                 </div>
 
@@ -223,17 +243,17 @@ export const LegalDialog: React.FC = () => {
                   className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors shadow-lg shadow-blue-500/20 active:scale-[0.99] cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  Send Feedback
+                  <span>Send Feedback</span>
                 </button>
               </form>
 
-              {/* Direct email fallback (works even without a configured mail app) */}
-              <div className="flex items-center justify-between gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs">
-                <span className="text-gray-600 truncate">
+              {/* Direct email fallback & Quick copy button */}
+              <div className="flex items-center justify-between gap-2 bg-gray-50 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs">
+                <span className="text-gray-600 dark:text-slate-300 truncate">
                   Prefer email?{' '}
                   <a
                     href="mailto:hello@justpdfcraft.xyz"
-                    className="font-semibold text-blue-600 hover:text-blue-700 underline underline-offset-2"
+                    className="font-semibold text-blue-600 dark:text-blue-400 hover:underline underline-offset-2"
                   >
                     hello@justpdfcraft.xyz
                   </a>
@@ -245,12 +265,13 @@ export const LegalDialog: React.FC = () => {
                     addToast({
                       type: 'success',
                       title: 'Copied',
-                      message: 'Email address copied to clipboard.',
+                      message: 'hello@justpdfcraft.xyz copied to clipboard.',
                     });
                   }}
-                  className="shrink-0 px-2.5 py-1.5 rounded-lg bg-white border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 transition-colors"
+                  className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-200 font-semibold hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
                 >
-                  Copy
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copy Email Address</span>
                 </button>
               </div>
             </div>

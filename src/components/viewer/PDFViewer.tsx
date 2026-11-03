@@ -74,6 +74,8 @@ function isPointNearAnnotation(
   );
 }
 
+const notifiedNoTextDocs = new Set<string>();
+
 const PageCanvas: React.FC<PageCanvasProps> = ({
   pageIndex,
   scale,
@@ -178,7 +180,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
         // Calculate high-DPI scaling factor for crisp mobile/Retina rendering
         const dpr = typeof window !== 'undefined' ? Math.max(1, Math.min(window.devicePixelRatio || 1, 3)) : 1;
         // Cap max canvas dimension to 4096px to prevent mobile GPU texture overflow on extreme zoom levels
-        const maxDim = Math.max(dimensions.width, dimensions.height);
+        const maxDim = Math.max(dimensions?.width || 0, dimensions?.height || 0);
         const maxSafeScale = maxDim > 0 ? 4096 / maxDim : 3;
         const renderScale = Math.min(scale * dpr, maxSafeScale);
 
@@ -211,7 +213,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
         canvasRef.current.height = 0;
       }
     };
-  }, [documentId, pageIndex, scale, dimensions, renderVersion, externalRenderVersion, width, height]);
+  }, [documentId, pageIndex, scale, dimensions?.width, dimensions?.height, dimensions?.rotation, renderVersion, externalRenderVersion, width, height]);
 
   // Load existing page text items when Selection HUD, Markup Tools, or In-Place Edit Text mode is active
   useEffect(() => {
@@ -227,7 +229,8 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
         if (!isCancelled) {
           const items = (textContent.items || []).filter((item) => item.str && item.str.trim().length > 0);
           setPageTextItems(items);
-          if (currentTool === 'edit_text' && items.length === 0 && _isActive) {
+          if (currentTool === 'edit_text' && items.length === 0 && _isActive && !notifiedNoTextDocs.has(documentId)) {
+            notifiedNoTextDocs.add(documentId);
             addToast({
               type: 'info',
               title: 'No Digital Text Detected',
@@ -992,7 +995,7 @@ const PageCanvas: React.FC<PageCanvasProps> = ({
     <div
       ref={pageContainerRef}
       className={`relative shadow-2xl select-none transition-shadow hover:shadow-cyan-950/20 ${
-        ['draw', 'measure', 'rectangle', 'circle', 'line', 'arrow', 'snip_ocr', 'redact', 'eraser'].includes(currentTool)
+        ['draw', 'measure', 'rectangle', 'circle', 'line', 'arrow', 'snip_ocr', 'redact', 'eraser', 'highlight', 'underline', 'strikethrough', 'form_text', 'form_checkbox', 'form_dropdown'].includes(currentTool)
           ? 'touch-none'
           : 'touch-pan-x touch-pan-y'
       } ${

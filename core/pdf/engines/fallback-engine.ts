@@ -44,14 +44,47 @@ import { extractImagesFromDocument } from '../image-extractor';
 
 // Configure pdfjs worker if in browser environment
 if (typeof window !== 'undefined') {
-  // Use worker from local bundle or CDN fallback
+  // Use worker from local bundle
   try {
     pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
       'pdfjs-dist/build/pdf.worker.min.mjs',
       import.meta.url
     ).toString();
   } catch {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = './pdf.worker.min.mjs';
+  }
+}
+
+/**
+ * Sanitizes input text so pdf-lib StandardFonts (WinAnsi / Windows-1252) never crash.
+ * Maps Indian Rupee (₹), smart quotes, dashes, bullets, ellipses, and converts unsupported
+ * Unicode glyphs above 0xFF to safe ASCII equivalents.
+ */
+export function sanitizeWinAnsiText(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/\u20B9/g, 'Rs.') // Indian Rupee
+    .replace(/[\u2018\u2019]/g, "'") // Single smart quotes
+    .replace(/[\u201C\u201D]/g, '"') // Double smart quotes
+    .replace(/\u2013/g, '-') // En dash
+    .replace(/\u2014/g, '--') // Em dash
+    .replace(/\u2026/g, '...') // Ellipsis
+    .replace(/\u2022/g, '*') // Bullet
+    .replace(/\u00A0/g, ' ') // Non-breaking space
+    .replace(/[^\x00-\xFF]/g, '?'); // Fallback for code points > 0xFF
+}
+
+export function safeDrawText(page: any, text: string, options: any): void {
+  const sanitized = sanitizeWinAnsiText(text);
+  try {
+    page.drawText(sanitized, options);
+  } catch {
+    const asciiFallback = sanitized.replace(/[^\x20-\x7E\r\n\t]/g, '?');
+    try {
+      page.drawText(asciiFallback, options);
+    } catch {
+      // Best-effort silent suppression
+    }
   }
 }
 
@@ -90,8 +123,19 @@ export class FallbackPDFEngine implements PDFEngine {
       throw new Error(`Failed to parse PDF binary stream: ${err?.message || err}`);
     }
 
+    let pdfVersion = '1.7';
+    try {
+      const header = new TextDecoder().decode(source.subarray(0, 12));
+      const match = header.match(/%PDF-(\d+\.\d+)/);
+      if (match && match[1]) {
+        pdfVersion = match[1];
+      }
+    } catch {
+      pdfVersion = '1.7';
+    }
+
     let pdfjsDoc: any = null;
-    let isEncrypted = false;
+    let isEncrypted = Boolean(password) || Boolean((pdfLibDoc as any).isEncrypted);
     try {
       const loadingTask = pdfjsLib.getDocument({
         data: source.slice(),
@@ -101,6 +145,12 @@ export class FallbackPDFEngine implements PDFEngine {
     } catch (err: any) {
       if (err?.name === 'PasswordException') {
         isEncrypted = true;
+        const passError: any = new Error(
+          err.code === 2 ? 'Invalid password provided for encrypted PDF.' : 'Password required to open encrypted PDF.'
+        );
+        passError.name = 'PasswordException';
+        passError.code = err.code === 2 ? 'INVALID_PASSWORD' : 'PASSWORD_REQUIRED';
+        throw passError;
       }
       // If in Node/test environment without canvas, pdfjsDoc might fail gracefully
     }
@@ -124,7 +174,7 @@ export class FallbackPDFEngine implements PDFEngine {
       modificationDate,
       isEncrypted,
       pageCount,
-      pdfVersion: '1.7',
+      pdfVersion,
       fileSizeBytes: source.byteLength,
     };
 
@@ -161,8 +211,7 @@ export class FallbackPDFEngine implements PDFEngine {
         algorithm: 'AES-256',
         ...doc.pendingEncryptionOptions,
       });
-      doc.pendingPassword = undefined;
-      doc.pendingEncryptionOptions = undefined;
+      // Preserve pendingPassword and pendingEncryptionOptions until removePassword is explicitly called
     }
     doc.rawBytes = bytes;
     doc.metadata.fileSizeBytes = bytes.byteLength;
@@ -499,7 +548,7 @@ export class FallbackPDFEngine implements PDFEngine {
 
     const { r, g, b } = hexToRgb(options.color || '#000000');
 
-    page.drawText(options.text, {
+    safeDrawText(page, options.text, {
       x: options.x,
       y: options.y,
       size: options.size || 12,
@@ -803,7 +852,7 @@ export class FallbackPDFEngine implements PDFEngine {
       const snippet = annotation.content
         ? annotation.content.substring(0, 22) + (annotation.content.length > 22 ? '...' : '')
         : 'Note';
-      page.drawText(snippet, {
+      safeDrawText(page, snippet, {
         x: x + 6,
         y: y + noteH / 2 - 3,
         size: 9,
@@ -812,7 +861,7 @@ export class FallbackPDFEngine implements PDFEngine {
       });
     } else if (annotation.type === 'text' && annotation.content) {
       const font = await pdfLibDoc.embedFont(StandardFonts.Helvetica);
-      page.drawText(annotation.content, {
+      safeDrawText(page, annotation.content, {
         x,
         y,
         size: 11,
@@ -981,7 +1030,7 @@ export class FallbackPDFEngine implements PDFEngine {
         // Overlay text if provided or stamp REDACTED
         const overlay = redaction.overlayText || '[REDACTED]';
         const fontSize = Math.max(6, Math.min(h * 0.5, 10));
-        page.drawText(overlay, {
+        safeDrawText(page, overlay, {
           x: x + 4,
           y: y + h / 2 - fontSize / 2,
           size: fontSize,
@@ -1531,15 +1580,16 @@ export class FallbackPDFEngine implements PDFEngine {
       const { r, g, b } = hexToRgb(options.color || '#EF4444');
       const fontSize = options.fontSize || 54;
 
+      const sanitizedText = sanitizeWinAnsiText(options.text);
       for (const pageIdx of targets) {
         if (pageIdx < totalPages) {
           const page = doc.pdfLibDoc.getPage(pageIdx);
           const { width, height } = page.getSize();
           
-          const textWidth = font.widthOfTextAtSize(options.text, fontSize);
+          const textWidth = font.widthOfTextAtSize(sanitizedText, fontSize);
           const textHeight = font.heightAtSize(fontSize);
 
-          page.drawText(options.text, {
+          safeDrawText(page, options.text, {
             x: width / 2 - (textWidth / 2) * Math.cos((rotDeg * Math.PI) / 180),
             y: height / 2 - (textHeight / 2) * Math.sin((rotDeg * Math.PI) / 180),
             size: fontSize,
@@ -1607,7 +1657,8 @@ export class FallbackPDFEngine implements PDFEngine {
       const formattedNum = String(currentNumber).padStart(options.digitsCount, '0');
       const batesText = `${options.prefix || ''}${formattedNum}${options.suffix || ''}`;
 
-      const textWidth = font.widthOfTextAtSize(batesText, fontSize);
+      const sanitizedBates = sanitizeWinAnsiText(batesText);
+      const textWidth = font.widthOfTextAtSize(sanitizedBates, fontSize);
       const textHeight = fontSize;
 
       const { x, y } = calculateHeaderFooterCoords(
@@ -1619,7 +1670,7 @@ export class FallbackPDFEngine implements PDFEngine {
         margin
       );
 
-      page.drawText(batesText, {
+      safeDrawText(page, batesText, {
         x,
         y,
         size: fontSize,
@@ -1666,7 +1717,8 @@ export class FallbackPDFEngine implements PDFEngine {
         .replace(/\{totalPages\}/gi, String(totalPages))
         .replace(/\{date\}/gi, dateStr);
 
-      const textWidth = font.widthOfTextAtSize(renderedText, fontSize);
+      const sanitizedText = sanitizeWinAnsiText(renderedText);
+      const textWidth = font.widthOfTextAtSize(sanitizedText, fontSize);
       const textHeight = fontSize;
 
       const { x, y } = calculateHeaderFooterCoords(
@@ -1678,7 +1730,7 @@ export class FallbackPDFEngine implements PDFEngine {
         margin
       );
 
-      page.drawText(renderedText, {
+      safeDrawText(page, renderedText, {
         x,
         y,
         size: fontSize,
@@ -1958,7 +2010,7 @@ export class FallbackPDFEngine implements PDFEngine {
         if (cleanLine.length === 0) continue;
 
         try {
-          page.drawText(cleanLine, {
+          safeDrawText(page, cleanLine, {
             x: margin,
             y: currentY,
             size: fontSize,
@@ -2007,7 +2059,7 @@ export class FallbackPDFEngine implements PDFEngine {
     const { r, g, b } = hexToRgb(options.color || '#000000');
     const fSize = options.fontSize || Math.max(9, Math.min(18, h * 0.85));
 
-    page.drawText(options.newText, {
+    safeDrawText(page, options.newText, {
       x,
       y: y + Math.max(1, (h - fSize) / 2),
       size: fSize,

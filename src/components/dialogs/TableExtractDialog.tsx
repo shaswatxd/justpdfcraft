@@ -119,7 +119,7 @@ export const TableExtractDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm p-4 animate-fade-in" role="dialog" aria-modal="true" aria-label="Table Extract Dialog">
-      <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-4xl max-h-[85vh] max-h-[85dvh] flex flex-col shadow-2xl overflow-hidden">
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white/80">
           <div className="flex items-center gap-3">

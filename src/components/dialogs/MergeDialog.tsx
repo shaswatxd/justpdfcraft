@@ -120,7 +120,7 @@ export const MergeDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-gray-50/40 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Merge Dialog">
-      <div className="w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-in text-slate-800">
+      <div className="w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] max-h-[85dvh] animate-scale-in text-slate-800">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
           <div className="flex items-center gap-2.5">

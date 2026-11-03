@@ -43,14 +43,22 @@ export const AIToolsDialog: React.FC = () => {
   const [aiOutput, setAiOutput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [rememberKey, setRememberKey] = useState(false);
 
-  // Load saved provider config from localStorage safely
+  // Load saved provider config safely (sessionStorage by default for API keys)
   useEffect(() => {
     try {
       const savedProvider = localStorage.getItem('justpdfcraft_ai_provider');
       if (savedProvider) setProvider(savedProvider as any);
-      const savedKey = localStorage.getItem('justpdfcraft_ai_key');
-      if (savedKey) setApiKey(savedKey);
+      const localKey = localStorage.getItem('justpdfcraft_ai_key');
+      const sessionKey = sessionStorage.getItem('justpdfcraft_ai_key');
+      if (localKey) {
+        setApiKey(localKey);
+        setRememberKey(true);
+      } else if (sessionKey) {
+        setApiKey(sessionKey);
+        setRememberKey(false);
+      }
       const savedOllama = localStorage.getItem('justpdfcraft_ai_ollama');
       if (savedOllama) setOllamaUrl(savedOllama);
       const savedModel = localStorage.getItem('justpdfcraft_ai_model');
@@ -67,7 +75,13 @@ export const AIToolsDialog: React.FC = () => {
   const saveSettings = () => {
     try {
       localStorage.setItem('justpdfcraft_ai_provider', provider);
-      localStorage.setItem('justpdfcraft_ai_key', apiKey);
+      if (rememberKey) {
+        localStorage.setItem('justpdfcraft_ai_key', apiKey);
+        sessionStorage.removeItem('justpdfcraft_ai_key');
+      } else {
+        sessionStorage.setItem('justpdfcraft_ai_key', apiKey);
+        localStorage.removeItem('justpdfcraft_ai_key');
+      }
       localStorage.setItem('justpdfcraft_ai_ollama', ollamaUrl);
       localStorage.setItem('justpdfcraft_ai_model', modelName);
       addToast({ type: 'success', title: 'AI Settings Saved' });
@@ -295,6 +309,15 @@ export const AIToolsDialog: React.FC = () => {
                       className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white font-mono shadow-2xs"
                       placeholder="sk-..."
                     />
+                    <label className="flex items-center gap-2 mt-2 text-xs text-slate-600 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={rememberKey}
+                        onChange={(e) => setRememberKey(e.target.checked)}
+                        className="rounded text-violet-600 focus:ring-violet-500"
+                      />
+                      <span>Remember API key on this device (Persistent storage; default is session-only)</span>
+                    </label>
                   </div>
                 )}
 

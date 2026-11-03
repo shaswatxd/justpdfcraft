@@ -52,6 +52,8 @@ export const CommandPalette: React.FC = () => {
   const {
     currentPage,
     documentId,
+    selectedPageIndices,
+    rotatePage,
     rotateSelectedPages,
     deletePage,
     insertBlankPageAt,
@@ -68,6 +70,7 @@ export const CommandPalette: React.FC = () => {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   // Global Ctrl+K listener
   useEffect(() => {
@@ -90,6 +93,15 @@ export const CommandPalette: React.FC = () => {
       setSelectedIndex(0);
     }
   }, [isCommandPaletteOpen]);
+
+  useEffect(() => {
+    if (listRef.current) {
+      const activeEl = listRef.current.children[selectedIndex] as HTMLElement;
+      if (activeEl?.scrollIntoView) {
+        activeEl.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }, [selectedIndex]);
 
   if (!isCommandPaletteOpen) return null;
 
@@ -240,28 +252,28 @@ export const CommandPalette: React.FC = () => {
       icon: Sparkles,
       action: () => setActiveModal('ai-tools'),
     },
-    {
-      id: 'save',
-      title: 'Save Current Document',
-      category: 'Document',
-      icon: Save,
-      shortcut: 'Ctrl+S',
-      action: () => {
-        saveDirectly().then((saved) => {
-          if (saved) {
-            addToast({
-              type: 'success',
-              title: fileHandle ? 'Saved Directly to Disk' : 'File Saved',
-              message: fileHandle
-                ? `Saved directly to ${fileName}`
-                : 'File saved and downloaded successfully.',
-            });
-          }
-        });
-      },
-    },
     ...(documentId
       ? [
+          {
+            id: 'save',
+            title: 'Save Current Document',
+            category: 'Document' as const,
+            icon: Save,
+            shortcut: 'Ctrl+S',
+            action: () => {
+              saveDirectly().then((saved) => {
+                if (saved) {
+                  addToast({
+                    type: 'success',
+                    title: fileHandle ? 'Saved Directly to Disk' : 'File Saved',
+                    message: fileHandle
+                      ? `Saved directly to ${fileName}`
+                      : 'File saved and downloaded successfully.',
+                  });
+                }
+              });
+            },
+          },
           {
             id: 'print',
             title: 'Print Document (PDF Pages Only)',
@@ -270,53 +282,81 @@ export const CommandPalette: React.FC = () => {
             shortcut: 'Ctrl+P',
             action: () => window.print(),
           },
+          {
+            id: 'view_organize',
+            title: 'Switch to Visual Page Organizer Grid',
+            category: 'Pages' as const,
+            icon: Grid,
+            action: () => setViewMode('organize'),
+          },
+          {
+            id: 'rotate_cw',
+            title: 'Rotate Page 90° Clockwise',
+            category: 'Pages' as const,
+            icon: RotateCw,
+            shortcut: 'R',
+            action: () => {
+              if (selectedPageIndices.length > 0) {
+                rotateSelectedPages(90);
+              } else {
+                rotatePage(currentPage - 1, 90);
+              }
+            },
+          },
+          {
+            id: 'rotate_ccw',
+            title: 'Rotate Page 90° Counter-Clockwise',
+            category: 'Pages' as const,
+            icon: RotateCcw,
+            shortcut: 'Shift+R',
+            action: () => {
+              if (selectedPageIndices.length > 0) {
+                rotateSelectedPages(-90);
+              } else {
+                rotatePage(currentPage - 1, -90);
+              }
+            },
+          },
+          {
+            id: 'delete_page',
+            title: `Delete Page ${currentPage}`,
+            category: 'Pages' as const,
+            icon: Trash2,
+            shortcut: 'Del',
+            action: () => deletePage(currentPage - 1),
+          },
+          {
+            id: 'insert_blank',
+            title: 'Insert Blank Page After Current',
+            category: 'Pages' as const,
+            icon: Plus,
+            action: () => insertBlankPageAt(currentPage),
+          },
+          {
+            id: 'reverse_pages',
+            title: 'Reverse Page Order of Entire Document',
+            category: 'Pages' as const,
+            icon: ArrowUpDown,
+            action: () => reverseAllPages(),
+          },
+          {
+            id: 'search_doc',
+            title: 'Search in Document',
+            category: 'Document' as const,
+            icon: Search,
+            shortcut: 'Ctrl+F',
+            action: () => setSidebarTab('search'),
+          },
+          {
+            id: 'close_doc',
+            title: 'Close Document',
+            category: 'Document' as const,
+            icon: X,
+            shortcut: 'Ctrl+W',
+            action: () => closeCurrentDocument(),
+          },
         ]
       : []),
-    {
-      id: 'view_organize',
-      title: 'Switch to Visual Page Organizer Grid',
-      category: 'Pages',
-      icon: Grid,
-      action: () => setViewMode('organize'),
-    },
-    {
-      id: 'rotate_cw',
-      title: 'Rotate Page 90° Clockwise',
-      category: 'Pages',
-      icon: RotateCw,
-      shortcut: 'R',
-      action: () => rotateSelectedPages(90),
-    },
-    {
-      id: 'rotate_ccw',
-      title: 'Rotate Page 90° Counter-Clockwise',
-      category: 'Pages',
-      icon: RotateCcw,
-      shortcut: 'Shift+R',
-      action: () => rotateSelectedPages(-90),
-    },
-    {
-      id: 'delete_page',
-      title: `Delete Page ${currentPage}`,
-      category: 'Pages',
-      icon: Trash2,
-      shortcut: 'Del',
-      action: () => deletePage(currentPage - 1),
-    },
-    {
-      id: 'insert_blank',
-      title: 'Insert Blank Page After Current',
-      category: 'Pages',
-      icon: Plus,
-      action: () => insertBlankPageAt(currentPage),
-    },
-    {
-      id: 'reverse_pages',
-      title: 'Reverse Page Order of Entire Document',
-      category: 'Pages',
-      icon: ArrowUpDown,
-      action: () => reverseAllPages(),
-    },
     {
       id: 'tts_read',
       title: 'Read Aloud with Text-to-Speech (TTS)',
@@ -334,14 +374,6 @@ export const CommandPalette: React.FC = () => {
       action: () => toggleFullscreen(),
     },
     {
-      id: 'search_doc',
-      title: 'Search in Document',
-      category: 'Document',
-      icon: Search,
-      shortcut: 'Ctrl+F',
-      action: () => setSidebarTab('search'),
-    },
-    {
       id: 'zoom_in',
       title: 'Zoom In',
       category: 'View',
@@ -356,14 +388,6 @@ export const CommandPalette: React.FC = () => {
       icon: ZoomOut,
       shortcut: 'Ctrl+-',
       action: () => setZoom((z) => z - 0.25),
-    },
-    {
-      id: 'close_doc',
-      title: 'Close Document',
-      category: 'Document',
-      icon: X,
-      shortcut: 'Ctrl+W',
-      action: () => closeCurrentDocument(),
     },
   ];
 
@@ -427,7 +451,7 @@ export const CommandPalette: React.FC = () => {
         </div>
 
         {/* Results List */}
-        <div className="max-h-80 overflow-y-auto p-2 divide-y divide-gray-100">
+        <div ref={listRef} className="max-h-80 overflow-y-auto p-2 divide-y divide-gray-100">
           {filtered.length === 0 ? (
             <div className="py-8 text-center text-gray-500 text-xs">
               No matching commands found.

@@ -7,6 +7,7 @@ import './index.css';
 if (typeof window !== 'undefined') {
   window.addEventListener('vite:preloadError', (event) => {
     event.preventDefault();
+    if (!navigator.onLine) return;
     const lastReload = sessionStorage.getItem('justpdfcraft_chunk_reload');
     const now = Date.now();
     if (!lastReload || now - parseInt(lastReload, 10) > 10000) {

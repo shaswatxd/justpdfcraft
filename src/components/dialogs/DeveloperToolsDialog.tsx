@@ -253,20 +253,24 @@ export const DeveloperToolsDialog: React.FC = () => {
   const [regexError, setRegexError] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      if (!regexPattern) {
-        setRegexMatches([]);
+    const timer = setTimeout(() => {
+      try {
+        if (!regexPattern) {
+          setRegexMatches([]);
+          setRegexError(null);
+          return;
+        }
+        const re = new RegExp(regexPattern, regexFlags);
+        const matches = regexTestText.match(re) || [];
+        setRegexMatches(matches);
         setRegexError(null);
-        return;
+      } catch (e: any) {
+        setRegexError(e.message);
+        setRegexMatches([]);
       }
-      const re = new RegExp(regexPattern, regexFlags);
-      const matches = regexTestText.match(re) || [];
-      setRegexMatches(matches);
-      setRegexError(null);
-    } catch (e: any) {
-      setRegexError(e.message);
-      setRegexMatches([]);
-    }
+    }, 150);
+
+    return () => clearTimeout(timer);
   }, [regexPattern, regexFlags, regexTestText]);
 
   // 10. Timestamp Converter
@@ -294,18 +298,18 @@ export const DeveloperToolsDialog: React.FC = () => {
       if (parts.length !== 4 || parts.some((p) => isNaN(p) || p < 0 || p > 255)) {
         return null;
       }
-      const maskNum = -1 << (32 - cidrMask);
+      const maskNum = cidrMask === 0 ? 0 : (~0 << (32 - cidrMask)) >>> 0;
       const netMaskParts = [
         (maskNum >>> 24) & 255,
         (maskNum >>> 16) & 255,
         (maskNum >>> 8) & 255,
         maskNum & 255,
       ];
-      const ipNum = (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3];
-      const netNum = ipNum & maskNum;
-      const bcastNum = netNum | ~maskNum;
+      const ipNum = (((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0);
+      const netNum = (ipNum & maskNum) >>> 0;
+      const bcastNum = (cidrMask === 0 ? 0xFFFFFFFF : (netNum | (~maskNum >>> 0))) >>> 0;
       const totalHosts = Math.pow(2, 32 - cidrMask);
-      const usableHosts = Math.max(0, totalHosts - 2);
+      const usableHosts = cidrMask >= 31 ? (cidrMask === 31 ? 2 : 1) : Math.max(0, totalHosts - 2);
 
       const numToIp = (n: number) =>
         `${(n >>> 24) & 255}.${(n >>> 16) & 255}.${(n >>> 8) & 255}.${n & 255}`;
@@ -314,8 +318,8 @@ export const DeveloperToolsDialog: React.FC = () => {
         subnetMask: netMaskParts.join('.'),
         networkId: numToIp(netNum),
         broadcast: numToIp(bcastNum),
-        firstHost: numToIp(netNum + 1),
-        lastHost: numToIp(bcastNum - 1),
+        firstHost: numToIp(cidrMask === 0 ? 0 : netNum + 1),
+        lastHost: numToIp(cidrMask === 0 ? 0xFFFFFFFF : bcastNum - 1),
         usableHosts,
       };
     } catch {

@@ -47,23 +47,45 @@ const isUserBookmark = (item: unknown): item is UserBookmark => {
   );
 };
 
-function getBookmarkStorageKey(filePath: string | null, fileName: string | null, legacy: boolean = false): string | null {
-  const key = filePath || fileName;
+function getBookmarkStorageKey(
+  filePath: string | null,
+  fileName: string | null,
+  legacy: boolean = false,
+  fileSizeBytes?: number | null
+): string | null {
   const prefix = legacy ? LEGACY_BOOKMARKS_STORAGE_PREFIX : BOOKMARKS_STORAGE_PREFIX;
-  return key ? `${prefix}${key}` : null;
+  if (filePath) {
+    return `${prefix}${filePath}`;
+  }
+  if (!fileName) return null;
+  if (fileSizeBytes) {
+    return `${prefix}${fileName}_${fileSizeBytes}`;
+  }
+  return `${prefix}${fileName}`;
 }
 
-export function loadBookmarksFromStorage(filePath: string | null, fileName: string | null): UserBookmark[] {
+export function loadBookmarksFromStorage(
+  filePath: string | null,
+  fileName: string | null,
+  fileSizeBytes?: number | null
+): UserBookmark[] {
   try {
     if (typeof localStorage === 'undefined') return [];
-    const key = getBookmarkStorageKey(filePath, fileName);
+    const key = getBookmarkStorageKey(filePath, fileName, false, fileSizeBytes);
     if (!key) return [];
     // One-time migration from the swifteditoo brand key, then read the current key only
-    const legacyKey = getBookmarkStorageKey(filePath, fileName, true);
+    const legacyKey = getBookmarkStorageKey(filePath, fileName, true, fileSizeBytes);
     if (legacyKey) {
       migrateLegacyStorageKey(legacyKey, key, { validate: isJsonArrayOf(isUserBookmark) });
     }
-    const saved = localStorage.getItem(key);
+    let saved = localStorage.getItem(key);
+    // Backward-compatibility fallback if keyed without fileSizeBytes previously
+    if (!saved && !filePath && fileSizeBytes && fileName) {
+      const fallbackKey = getBookmarkStorageKey(null, fileName, false);
+      if (fallbackKey) {
+        saved = localStorage.getItem(fallbackKey);
+      }
+    }
     if (saved) {
       return JSON.parse(saved);
     }
@@ -73,10 +95,15 @@ export function loadBookmarksFromStorage(filePath: string | null, fileName: stri
   return [];
 }
 
-export function saveBookmarksToStorage(filePath: string | null, fileName: string | null, bookmarks: UserBookmark[]): void {
+export function saveBookmarksToStorage(
+  filePath: string | null,
+  fileName: string | null,
+  bookmarks: UserBookmark[],
+  fileSizeBytes?: number | null
+): void {
   try {
     if (typeof localStorage === 'undefined') return;
-    const key = getBookmarkStorageKey(filePath, fileName);
+    const key = getBookmarkStorageKey(filePath, fileName, false, fileSizeBytes);
     if (!key) return;
     localStorage.setItem(key, JSON.stringify(bookmarks));
   } catch (e) {
@@ -206,13 +233,21 @@ interface DocumentState {
   markDirty: () => void;
 }
 
-let autoSaveTimer: any = null;
+export const MAX_UNDO_STEPS = 12;
+
+const autoSaveTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
 function scheduleDraftAutoSave(get: () => DocumentState, set: (partial: Partial<DocumentState>) => void) {
-  if (autoSaveTimer) clearTimeout(autoSaveTimer);
-  autoSaveTimer = setTimeout(async () => {
-    const { documentId, fileName, currentPage, isDirty } = get();
-    if (!documentId || !fileName || !isDirty) return;
+  const { documentId, fileName, currentPage, isDirty } = get();
+  if (!documentId || !fileName || !isDirty) return;
+
+  const existingTimer = autoSaveTimers.get(documentId);
+  if (existingTimer) {
+    clearTimeout(existingTimer);
+  }
+
+  const timer = setTimeout(async () => {
+    autoSaveTimers.delete(documentId);
     try {
       set({ isAutoSavingDraft: true });
       const engine = getPDFEngine();
@@ -224,6 +259,8 @@ function scheduleDraftAutoSave(get: () => DocumentState, set: (partial: Partial<
       set({ isAutoSavingDraft: false });
     }
   }, 1200);
+
+  autoSaveTimers.set(documentId, timer);
 }
 
 export const useDocumentStore = create<DocumentState>((set, get) => ({
@@ -262,7 +299,29 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     set({ isLoading: true, errorMessage: null });
     try {
       const engine = getPDFEngine();
-      const { documentId, metadata } = await engine.openDocument(bytes, password);
+      let openResult;
+      try {
+        openResult = await engine.openDocument(bytes, password);
+      } catch (err: any) {
+        if (
+          (err?.name === 'PasswordException' ||
+            err?.code === 'PASSWORD_REQUIRED' ||
+            err?.code === 'INVALID_PASSWORD') &&
+          typeof window !== 'undefined' &&
+          typeof window.prompt === 'function'
+        ) {
+          const promptMessage =
+            err?.code === 'INVALID_PASSWORD'
+              ? `The password for "${fileName}" was incorrect. Please enter the password:`
+              : `"${fileName}" is password-protected. Please enter the password:`;
+          const enteredPassword = window.prompt(promptMessage);
+          if (enteredPassword !== null) {
+            return await get().loadDocument(bytes, fileName, filePath, enteredPassword, fileHandle);
+          }
+        }
+        throw err;
+      }
+      const { documentId, metadata } = openResult;
       const pageCount = engine.getPageCount(documentId);
 
       const dimensions: PageDimensions[] = [];
@@ -284,7 +343,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         console.warn('Document outline extraction notice:', e);
       }
 
-      const userBookmarks = loadBookmarksFromStorage(filePath || null, fileName);
+      const userBookmarks = loadBookmarksFromStorage(filePath || null, fileName, bytes.byteLength);
 
       // Save to local recents
       localDb.addRecentDocument({
@@ -466,6 +525,27 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     const { tabs, activeTabId, ...currentState } = get();
     if (tabId === activeTabId) return;
 
+    // Flush pending auto-save for outgoing active tab if dirty
+    if (currentState.documentId && currentState.fileName && currentState.isDirty) {
+      const pendingTimer = autoSaveTimers.get(currentState.documentId);
+      if (pendingTimer) {
+        clearTimeout(pendingTimer);
+        autoSaveTimers.delete(currentState.documentId);
+      }
+      const outgoingDocId = currentState.documentId;
+      const outgoingFileName = currentState.fileName;
+      const outgoingPage = currentState.currentPage;
+      (async () => {
+        try {
+          const engine = getPDFEngine();
+          const bytes = await engine.saveDocument(outgoingDocId);
+          await saveDraftToOPFS(outgoingDocId, outgoingFileName, bytes, { currentPage: outgoingPage, isDirty: true });
+        } catch (e) {
+          console.warn('Flush auto-save on switchTab failed:', e);
+        }
+      })();
+    }
+
     // 1. Snapshot current active tab state
     const updatedTabs = tabs.map((t) => {
       if (t.id === activeTabId) {
@@ -532,6 +612,12 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       }
     } catch (e) {
       console.warn('Error closing tab document:', e);
+    }
+
+    const timer = autoSaveTimers.get(tabToClose.documentId);
+    if (timer) {
+      clearTimeout(timer);
+      autoSaveTimers.delete(tabToClose.documentId);
     }
 
     try {
@@ -714,14 +800,23 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   },
 
   pushHistory: async (description: string) => {
-    const { documentId, fileBytes, undoStack } = get();
+    const { documentId, fileBytes, undoStack, tabs, activeTabId } = get();
     if (!documentId || !fileBytes) return;
 
+    const newUndoStack = [
+      ...undoStack,
+      { description, bytes: fileBytes, timestamp: Date.now() },
+    ].slice(-MAX_UNDO_STEPS);
+
+    const updatedTabs = tabs.map((tab) =>
+      tab.id === activeTabId
+        ? { ...tab, undoStack: newUndoStack, redoStack: [], isDirty: true }
+        : tab
+    );
+
     set({
-      undoStack: [
-        ...undoStack.slice(-20), // limit to 20 history states
-        { description, bytes: fileBytes, timestamp: Date.now() },
-      ],
+      tabs: updatedTabs,
+      undoStack: newUndoStack,
       redoStack: [],
       isDirty: true,
     });
@@ -1102,7 +1197,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   },
 
   addUserBookmark: (title: string, pageIndex?: number) => {
-    const { currentPage, userBookmarks, activeTabId, tabs, filePath, fileName } = get();
+    const { currentPage, userBookmarks, activeTabId, tabs, filePath, fileName, fileBytes } = get();
     const targetPageIndex = pageIndex !== undefined ? pageIndex : Math.max(0, currentPage - 1);
     const newBookmark: UserBookmark = {
       id: `bm_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
@@ -1111,7 +1206,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       createdAt: new Date().toISOString(),
     };
     const updated = [...userBookmarks, newBookmark].sort((a, b) => a.pageIndex - b.pageIndex);
-    saveBookmarksToStorage(filePath, fileName, updated);
+    saveBookmarksToStorage(filePath, fileName, updated, fileBytes?.byteLength);
     set({
       userBookmarks: updated,
       tabs: tabs.map((t) => (t.id === activeTabId ? { ...t, userBookmarks: updated } : t)),
@@ -1119,9 +1214,9 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   },
 
   deleteUserBookmark: (id: string) => {
-    const { userBookmarks, activeTabId, tabs, filePath, fileName } = get();
+    const { userBookmarks, activeTabId, tabs, filePath, fileName, fileBytes } = get();
     const updated = userBookmarks.filter((bm) => bm.id !== id);
-    saveBookmarksToStorage(filePath, fileName, updated);
+    saveBookmarksToStorage(filePath, fileName, updated, fileBytes?.byteLength);
     set({
       userBookmarks: updated,
       tabs: tabs.map((t) => (t.id === activeTabId ? { ...t, userBookmarks: updated } : t)),

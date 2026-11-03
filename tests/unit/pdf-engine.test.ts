@@ -214,4 +214,57 @@ describe('FallbackPDFEngine Core Operations', () => {
     const loadedEncrypted = await PDFDocument.load(encryptedBytes, { ignoreEncryption: true });
     expect(loadedEncrypted.getPageCount()).toBe(1);
   });
+
+  it('should preserve pendingPassword across multiple saveDocument invocations until removed', async () => {
+    const pdfBytes = await createSamplePdf(1);
+    const { documentId } = await engine.openDocument(pdfBytes);
+    await engine.encryptDocument(documentId, 'PersistentPass123!');
+
+    // First save (e.g. background snapshot / undo stack push)
+    const firstSaveBytes = await engine.saveDocument(documentId);
+    await expect(PDFDocument.load(firstSaveBytes)).rejects.toThrow();
+
+    // Second save (e.g. user final download/export) - must still be encrypted
+    const secondSaveBytes = await engine.saveDocument(documentId);
+    await expect(PDFDocument.load(secondSaveBytes)).rejects.toThrow();
+
+    // After explicit removePassword, saving results in unencrypted PDF
+    await engine.removePassword(documentId);
+    const unencryptedBytes = await engine.saveDocument(documentId);
+    const loadedNormal = await PDFDocument.load(unencryptedBytes);
+    expect(loadedNormal.getPageCount()).toBe(1);
+  });
+
+  it('should safely handle Unicode and Rupee symbol without WinAnsi encoding crash', async () => {
+    const pdfBytes = await createSamplePdf(1);
+    const { documentId } = await engine.openDocument(pdfBytes);
+
+    // Inserting text with Rupee symbol, smart quotes, emojis, and Hindi
+    await expect(
+      engine.insertText(documentId, {
+        pageIndex: 0,
+        text: 'Total Fee: ₹500 • “Exam Pass” — Success! 🎉 नमस्ते',
+        x: 50,
+        y: 200,
+        size: 14,
+      })
+    ).resolves.not.toThrow();
+
+    const saved = await engine.saveDocument(documentId);
+    expect(saved.byteLength).toBeGreaterThan(0);
+  });
+
+  it('should dynamically detect PDF version from header bytes', async () => {
+    const customHeader = new TextEncoder().encode('%PDF-1.4\n%âãÏÓ\n');
+    const doc = await PDFDocument.create();
+    doc.addPage([200, 200]);
+    const originalBytes = await doc.save();
+    // Prepend %PDF-1.4 header
+    const combinedBytes = new Uint8Array(customHeader.length + originalBytes.length);
+    combinedBytes.set(customHeader, 0);
+    combinedBytes.set(originalBytes, customHeader.length);
+
+    const { metadata } = await engine.openDocument(combinedBytes);
+    expect(metadata.pdfVersion).toBe('1.4');
+  });
 });

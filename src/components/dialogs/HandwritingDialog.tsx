@@ -396,6 +396,8 @@ export const HandwritingDialog: React.FC = () => {
             ctx.globalCompositeOperation = 'multiply';
             ctx.fillRect(0, 0, pw, ph);
           }
+          noiseCanvas.width = 0;
+          noiseCanvas.height = 0;
         }
         ctx.restore();
       }
@@ -421,6 +423,15 @@ export const HandwritingDialog: React.FC = () => {
 
     await drawPage(canvasRef.current, pageLines, cur * 101);
   }, [selectedFont, fontSize, calculatePages, text, lineHeight, currentPage, drawPage]);
+
+  useEffect(() => {
+    return () => {
+      if (canvasRef.current) {
+        canvasRef.current.width = 0;
+        canvasRef.current.height = 0;
+      }
+    };
+  }, []);
 
   // Debounced re-render when controls change
   useEffect(() => {
@@ -466,6 +477,9 @@ export const HandwritingDialog: React.FC = () => {
         await drawPage(offCanvas, pages[i], (i + 1) * 101);
 
         const imgDataUrl = offCanvas.toDataURL('image/jpeg', 0.92);
+        // Immediately free offscreen canvas dimensions
+        offCanvas.width = 0;
+        offCanvas.height = 0;
         const imgBytes = await fetch(imgDataUrl).then((r) => r.arrayBuffer());
         const embeddedImg = await pdfDoc.embedJpg(imgBytes);
 
@@ -536,7 +550,7 @@ export const HandwritingDialog: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-gray-50/50 backdrop-blur-xs animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Handwriting Dialog">
-      <div className="relative w-full max-w-6xl max-h-[92vh] flex flex-col bg-white border border-gray-300/70 rounded-2xl shadow-2xl overflow-hidden text-gray-900">
+      <div className="relative w-full max-w-6xl max-h-[92vh] max-h-[92dvh] flex flex-col bg-white border border-gray-300/70 rounded-2xl shadow-2xl overflow-hidden text-gray-900">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white/90 shrink-0">
           <div className="flex items-center gap-3">

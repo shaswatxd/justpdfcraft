@@ -84,7 +84,7 @@ export const ShortcutsDialog: React.FC = () => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-3xl bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-in"
+        className="w-full max-w-3xl bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] max-h-[85dvh] animate-scale-in"
       >
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-white/90">
