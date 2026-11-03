@@ -14,27 +14,48 @@ export function App() {
 
   // Sync with URL Hash for seamless linking
   useEffect(() => {
-    const handleHashChange = () => {
+    const handleUrlChange = () => {
       const hash = window.location.hash.replace('#', '') as ToolId;
       if (TOOLS.some(t => t.id === hash)) {
         setCurrentToolId(hash);
       } else {
         setCurrentToolId(null);
       }
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     };
 
-    handleHashChange();
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    handleUrlChange();
+    window.addEventListener('hashchange', handleUrlChange);
+    window.addEventListener('popstate', handleUrlChange);
+    return () => {
+      window.removeEventListener('hashchange', handleUrlChange);
+      window.removeEventListener('popstate', handleUrlChange);
+    };
   }, []);
+
+  // Always reset scroll to top whenever tool changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [currentToolId]);
 
   const handleSelectTool = (id: ToolId | null) => {
     setCurrentToolId(id);
     if (id) {
-      window.location.hash = id;
+      if (window.location.hash !== `#${id}`) {
+        window.history.pushState(null, '', `#${id}`);
+      }
     } else {
-      window.location.hash = '';
+      if (window.location.hash) {
+        window.history.pushState(null, '', window.location.pathname);
+      }
     }
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   };
 
   const activeTool = TOOLS.find(t => t.id === currentToolId);

@@ -62,7 +62,7 @@ Logic gates are the fundamental building blocks of digital electronic circuits. 
 
 1. AND Gate:
 Output is HIGH (1) if and only if all input signals are concurrently HIGH.
-Boolean Equation: Y = A · B
+Boolean Equation: Y = A Â· B
 
 2. OR Gate:
 Output is HIGH if at least one input condition is HIGH.
@@ -109,6 +109,13 @@ export const HandwritingStudio: React.FC<HandwritingStudioProps> = ({ onBack }) 
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTimerRef = useRef<any>(null);
+
+  // Always scroll to top when opening Handwriting Studio
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, []);
 
   const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
     setNotification({ type, message });
@@ -504,7 +511,7 @@ export const HandwritingStudio: React.FC<HandwritingStudioProps> = ({ onBack }) 
       const blob = new Blob([pdfBytes as unknown as BlobPart], { type: 'application/pdf' });
 
       setGeneratedBlob(blob);
-      setGeneratedInfo(`${total} page${total > 1 ? 's' : ''} • ${(blob.size / 1024).toFixed(1)} KB`);
+      setGeneratedInfo(`${total} page${total > 1 ? 's' : ''} â€¢ ${(blob.size / 1024).toFixed(1)} KB`);
       showNotification(`Generated ${total} realistic handwritten page${total > 1 ? 's' : ''}.`);
     } catch (err: any) {
       console.error('Handwriting generation error:', err);
@@ -575,7 +582,7 @@ export const HandwritingStudio: React.FC<HandwritingStudioProps> = ({ onBack }) 
         <div className="flex items-center gap-2">
           <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-medium">
             <ShieldCheck size={14} className="text-emerald-600" />
-            <span>100% Client-Side • Zero Uploads</span>
+            <span>100% Client-Side â€¢ Zero Uploads</span>
           </div>
 
           <button
@@ -655,7 +662,7 @@ export const HandwritingStudio: React.FC<HandwritingStudioProps> = ({ onBack }) 
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all placeholder:text-slate-400 font-mono resize-y leading-relaxed"
               />
               <div className="flex justify-between items-center mt-1 px-1 text-[11px] text-slate-400">
-                <span>{wordCount} words • {charCount} characters</span>
+                <span>{wordCount} words â€¢ {charCount} characters</span>
                 <span>Calculated Pages: {totalPages}</span>
               </div>
             </div>
@@ -901,7 +908,7 @@ export const HandwritingStudio: React.FC<HandwritingStudioProps> = ({ onBack }) 
             </div>
 
             <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
-              <span>1240 × 1754 High-Res A4 Canvas</span>
+              <span>1240 Ã— 1754 High-Res A4 Canvas</span>
               <span>Camera scanner shadow & natural word jitter applied</span>
             </div>
           </div>

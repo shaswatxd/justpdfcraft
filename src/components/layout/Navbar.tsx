@@ -58,7 +58,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentToolId, onSelectTool }) =
     setToolsDropdownOpen(false);
     setConvertDropdownOpen(false);
     setMobileMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   };
 
   const getToolIcon = (name: string, size = 18, color?: string) => {
@@ -271,7 +273,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentToolId, onSelectTool }) =
           {/* Privacy Pill (Replaces Auth buttons) */}
           <div className="hidden md:flex items-center gap-2 px-3.5 py-1.5 bg-slate-50 border border-slate-200/80 rounded-full text-xs font-semibold text-slate-600">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Zero Uploads • 100% In-Browser</span>
+            <span>Zero Uploads â€¢ 100% In-Browser</span>
           </div>
 
           {/* Mobile menu button */}
@@ -288,7 +290,51 @@ export const Navbar: React.FC<NavbarProps> = ({ currentToolId, onSelectTool }) =
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-8 space-y-4 max-h-[80vh] overflow-y-auto">
+        <div className="lg:hidden border-t border-slate-200 bg-white px-4 pt-4 pb-8 space-y-4 max-h-[80vh] overflow-y-auto">
+          {/* Quick featured tools for mobile */}
+          <div className="grid grid-cols-2 gap-2 pb-3 border-b border-slate-100">
+            <button
+              onClick={() => handleToolClick('handwriting')}
+              className="flex items-center gap-2 p-3 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl text-left transition-colors"
+            >
+              <PenTool size={18} className="text-amber-600 shrink-0" />
+              <div>
+                <div className="text-xs font-bold text-amber-900">Handwriting</div>
+                <div className="text-[10px] text-amber-700">Assignment Studio</div>
+              </div>
+            </button>
+            <button
+              onClick={() => handleToolClick('merge-pdf')}
+              className="flex items-center gap-2 p-3 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl text-left transition-colors"
+            >
+              <Layers size={18} className="text-indigo-600 shrink-0" />
+              <div>
+                <div className="text-xs font-bold text-indigo-900">Merge PDF</div>
+                <div className="text-[10px] text-indigo-700">Combine files</div>
+              </div>
+            </button>
+            <button
+              onClick={() => handleToolClick('compress-pdf')}
+              className="flex items-center gap-2 p-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl text-left transition-colors"
+            >
+              <FileArchive size={18} className="text-emerald-600 shrink-0" />
+              <div>
+                <div className="text-xs font-bold text-emerald-900">Compress PDF</div>
+                <div className="text-[10px] text-emerald-700">Reduce size</div>
+              </div>
+            </button>
+            <button
+              onClick={() => handleToolClick('sign-pdf')}
+              className="flex items-center gap-2 p-3 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-xl text-left transition-colors"
+            >
+              <Stamp size={18} className="text-sky-600 shrink-0" />
+              <div>
+                <div className="text-xs font-bold text-sky-900">Sign PDF</div>
+                <div className="text-[10px] text-sky-700">Digital signature</div>
+              </div>
+            </button>
+          </div>
+
           {CATEGORIES.map(cat => (
             <div key={cat.id} className="space-y-1">
               <div className="font-bold text-xs uppercase text-slate-400 tracking-wider px-2 pt-2">

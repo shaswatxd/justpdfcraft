@@ -1,4 +1,4 @@
-const CACHE_NAME = 'justpdfcraft-hw-v1';
+const CACHE_NAME = 'justpdfcraft-hw-v2';
 
 const STATIC_ASSETS = [
   '/',

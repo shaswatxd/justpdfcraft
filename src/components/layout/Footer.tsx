@@ -72,7 +72,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTool }) => {
           <div>
             <h5 className="font-bold text-white uppercase text-[11px] tracking-wider mb-4">Studio & Security</h5>
             <ul className="space-y-2.5">
-              <li><button onClick={() => onSelectTool('handwriting')} className="hover:text-white transition-colors text-amber-400 font-medium">✍️ Handwriting Studio</button></li>
+              <li><button onClick={() => onSelectTool('handwriting')} className="hover:text-white transition-colors text-amber-400 font-medium">âœï¸ Handwriting Studio</button></li>
               <li><button onClick={() => onSelectTool('sign-pdf')} className="hover:text-white transition-colors">Digital Signature Pad</button></li>
               <li><button onClick={() => onSelectTool('edit-pdf')} className="hover:text-white transition-colors">PDF Canvas Editor</button></li>
               <li><button onClick={() => onSelectTool('protect-pdf')} className="hover:text-white transition-colors">AES-256 Encrypt</button></li>
@@ -84,8 +84,12 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTool }) => {
 
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
-                <Sparkles size={14} className="text-white" />
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 flex items-center justify-center shadow-md shadow-indigo-500/20">
+                <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                  <polyline points="2 17 12 22 22 17"/>
+                  <polyline points="2 12 12 17 22 12"/>
+                </svg>
               </div>
               <span className="font-extrabold text-white text-sm">JustPDFCraft</span>
             </div>
@@ -101,7 +105,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTool }) => {
         {/* Bottom bar */}
         <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>
-            © 2026 JustPDFCraft Studio • Built for privacy and speed
+            Â© 2026 JustPDFCraft Studio â€¢ Built for privacy and speed
           </div>
           <div className="flex gap-4">
             <span className="hover:text-slate-400 cursor-pointer">Privacy Architecture</span>

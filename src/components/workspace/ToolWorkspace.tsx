@@ -79,6 +79,18 @@ export const ToolWorkspace: React.FC<ToolWorkspaceProps> = ({ tool, onBack, onSe
   }[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  // Scroll to top whenever tool mounts or changes
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [tool.id]);
+
+  // Scroll to top when stage changes (e.g. from upload to configure or complete)
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  }, [stage]);
+
   // Progress & Result
   const [progress, setProgress] = useState<ProcessingProgress>({ message: '', percent: 0 });
   const [result, setResult] = useState<ProcessResult | null>(null);
