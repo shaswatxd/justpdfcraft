@@ -1,14 +1,14 @@
 {
-  "name": "JustPDFCraft — All-in-One PDF, Image & Student Toolkit",
+  "name": "JustPDFCraft — Modern Client-Side PDF & Handwriting Studio",
   "short_name": "JustPDFCraft",
-  "description": "Fast, 100% private, in-browser PDF editor, handwritten assignment generator, target KB image resizer, and student toolkit.",
+  "description": "Fast, 100% private in-browser PDF suite and handwriting assignment generator. Zero server uploads.",
   "start_url": "/",
   "id": "/",
   "lang": "en",
   "dir": "ltr",
   "display": "standalone",
   "background_color": "#f8fafc",
-  "theme_color": "#ffffff",
+  "theme_color": "#4f46e5",
   "icons": [
     {
       "src": "/favicon.svg",

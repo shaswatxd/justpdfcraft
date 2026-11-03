@@ -1,52 +1,73 @@
-# JustPDFCraft — All-in-One PDF, Image & Student Toolkit
+# JustPDFCraft 📄✨
 
-🌐 **Live Website**: [https://justpdfcraft.xyz](https://justpdfcraft.xyz)
+**JustPDFCraft** is a private, client-side document studio built with **Vite**, **React 18**, **TypeScript**, and **Tailwind CSS**.
 
-100% Private, Client-Side Web Application for students, educators, and working professionals. Zero server uploads.
-
-## ✨ Highlights & Features
-
-### 📄 Comprehensive PDF Suite
-- **Merge PDF**: Combine multiple PDF files into one clean document with custom order.
-- **Split PDF**: Extract single pages or custom ranges in separate documents.
-- **Compress PDF**: Streamline and compress files without compromising visual clarity.
-- **Convert PDF**: PDF to Images (JPG, PNG, WebP), PDF to Markdown/Text, and Images to PDF.
-- **Visual Page Organizer**: Drag-and-drop page reordering, rotation, deletion, duplication, and extraction.
-- **In-Place Text Editor**: Edit text directly on the PDF canvas with font detection.
-- **Optical Character Recognition (OCR)**: Extract text and generate searchable PDFs with text overlays.
-- **Protect & Unlock**: AES password encryption & client-side permission unlocking.
-- **Digital Signatures & Stamps**: Draw, type, or upload signature with transparency cleaner.
-- **Watermark & Page Numbers**: Diagonal/horizontal watermark and dynamic page numbering macros.
-- **Bates Numbering**: Legal-grade Bates numbering with custom prefixes and padding.
-- **Compare Documents**: Visual side-by-side and pixel diff comparison.
-- **Crop & Margin Trimmer**: Precision margin trimming.
-- **Batch Processing**: Run actions on dozens of files in parallel.
-
-### ✍️ Handwritten Notes & Assignment Generator
-- Realistic handwriting generation on **Ruled Notebook**, **Plain A4**, or **Grid Paper**.
-- 8 natural handwriting fonts (`Caveat`, `Homemade Apple`, `Shadows Into Light`, `Patrick Hand`, `Architects Daughter`, `Gochi Hand`, `Reenie Beanie`, `Delius`).
-- Realistic human jitter (word angle variations, vertical drift, baseline bounce).
-- Authentic pen inks (Royal Blue Gel, Black Gel, Red Pen, Teal Fountain Ink, and custom hex).
-- Camera scanner simulation with subtle vignette shadows and paper grain texture.
-- Instant live preview with multi-page navigation and 1-click A4 PDF export.
-
-### 🎓 Student & Exam Utilities
-- **Target KB Photo Resizer**: Binary-search compression to exact portal limits (e.g. 20–50 KB, 50–100 KB).
-- **CGPA & SGPA Calculators**: Cumulative and semester GPA with credit weighting and goal projection.
-- **Attendance & Bunk Planner**: Find how many classes you can skip or must attend to hit 75%.
-- **Percentage Calculator & Age Eligibility**: Exact date calculations for exam notifications.
-- **Weekly Revision Timetable**: Printable study schedule builder.
-- **Exam Countdown Tracker**: Live countdowns to test dates and deadlines.
-- **Student Scratchpad & QR Code Generator**: Offline notes and high-res study link QR codes.
-
-### 🤖 AI Study Assistant
-- In-browser AI connection to Google Gemini & OpenAI using your personal API key (stored exclusively in your local storage).
-- Summarize documents, extract key takeaways, generate flashcards, create practice MCQs, and explain difficult concepts.
+100% of PDF processing, manipulation, OCR, conversion, and encryption executes **locally inside your browser** using WebAssembly, `pdf-lib`, `pdfjs-dist`, `docx`, and `xlsx`. **No files or telemetry ever leave your device.**
 
 ---
 
-## 🔒 Security & Privacy Guarantee
+## 🎨 Brand & Design System
 
-- **100% Client-Side**: All file processing happens locally in your browser memory via WebAssembly and Web Workers.
-- **Zero Cloud Uploads**: Your files never travel across any external servers.
-- **Zero Subscriptions / Paywalls**: Free for everyone.
+- **Brand Name**: JustPDFCraft
+- **Visual Style**: Clean glassmorphism, modern Indigo & Violet accents, Plus Jakarta Sans typography, deep slate contrast.
+- **Zero Authentication**: Open access with zero logins, signups, or paywalls.
+- **Privacy Guarantee**: 100% in-browser WebAssembly execution.
+
+---
+
+## 🛠️ Complete Suite of 26 Studio Tools
+
+### 1. Organize
+- **Merge PDF**: Combine multiple PDFs into a single document in any custom order.
+- **Split PDF**: Extract page ranges or burst all pages into individual files in a ZIP archive.
+- **Organize Pages**: Visual thumbnail workspace to reorder, duplicate, rotate, and delete pages.
+- **Rotate PDF**: Permanently rotate pages clockwise or counter-clockwise (90°, 180°, 270°).
+
+### 2. Optimize
+- **Compress PDF**: Optimize streams and downsample imagery with tailored compression profiles.
+- **Repair PDF**: Rebuild damaged xref cross-reference tables and recover corrupted objects.
+- **OCR Text Extractor**: Extract raw text streams and generate searchable document layers.
+
+### 3. Convert to PDF
+- **Images to PDF**: Convert JPG, PNG, WebP, and BMP graphics into clean PDF documents.
+- **Word to PDF**: Transform Microsoft Word (.docx/.doc) and rich text files into universal PDFs.
+- **Excel to PDF**: Render Microsoft Excel (.xlsx/.xls/.csv) spreadsheets into formatted PDF tables.
+- **PowerPoint to PDF**: Convert presentation slides (.pptx/.ppt) into portable PDF documents.
+- **HTML to PDF**: Convert raw HTML code or web snippets into styled PDF documents.
+
+### 4. Convert from PDF
+- **PDF to Images**: Render pages into high-resolution JPG/PNG images or ZIP archives.
+- **PDF to Word**: Extract formatted text and layout into editable Microsoft Word (.docx).
+- **PDF to Excel**: Pull tables and structured data directly into Microsoft Excel spreadsheets (.xlsx).
+- **PDF to PowerPoint**: Transform PDF pages into editable slide decks (.ppt).
+- **PDF to PDF/A**: Convert PDF to ISO 19005-1 compliant PDF/A-1b archiving format.
+
+### 5. Security & Studio
+- **Sign Document**: Interactive signature pad to draw with bezier smoothing or type legal signatures.
+- **Edit PDF**: Add text annotations, review notes, and yellow highlights directly onto pages.
+- **Watermark**: Stamp custom security watermarks with 9-point grid alignment and opacity.
+- **Page Numbers**: Insert sequential page numbers with flexible positioning and format presets.
+- **Protect PDF**: Military-grade AES-256 standard encryption with custom passwords.
+- **Unlock PDF**: Strip security restrictions and decrypt protected PDF files client-side.
+- **Scan to PDF**: Capture physical documents using your device webcam or camera.
+- **Compare PDFs**: Inspect two documents side-by-side to detect structural and page differences.
+- **Redact PDF**: Permanently blackout confidential and sensitive personal information.
+
+---
+
+## 🚀 Running Locally
+
+```bash
+# Start development server
+npm run dev
+
+# Run automated verification tests
+node scripts/verify-all-11-tools.js
+node scripts/verify-extended-tools.js
+
+# Build production bundle
+npm run build
+```
+
+Available locally at:
+**`http://localhost:5173/`**
