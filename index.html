@@ -21,5 +21,25 @@
   <body class="bg-[#f8fafc] text-slate-800 font-['Plus_Jakarta_Sans',sans-serif] antialiased selection:bg-indigo-500 selection:text-white">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Force clear stale service worker and browser cache from previous site build -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for (var i = 0; i < registrations.length; i++) {
+            registrations[i].unregister();
+          }
+        });
+      }
+      if ('caches' in window) {
+        caches.keys().then(function(names) {
+          for (var i = 0; i < names.length; i++) {
+            if (names[i].indexOf('hw-v1') === -1) {
+              caches.delete(names[i]);
+            }
+          }
+        });
+      }
+    </script>
   </body>
 </html>
