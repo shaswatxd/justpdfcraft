@@ -164,6 +164,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentToolId, onSelectTool }) =
             >
               Sign
             </button>
+            <button
+              onClick={() => handleToolClick('handwriting')}
+              className={`px-3.5 py-2 text-xs xl:text-sm font-semibold uppercase tracking-wider rounded-xl transition-all ${
+                currentToolId === 'handwriting'
+                  ? 'text-amber-700 bg-amber-100/70 font-bold'
+                  : 'text-amber-700 hover:text-amber-800 hover:bg-amber-50'
+              }`}
+            >
+              Handwriting
+            </button>
 
             {/* Convert Dropdown */}
             <div className="relative">

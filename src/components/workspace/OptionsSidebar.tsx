@@ -415,13 +415,13 @@ export const OptionsSidebar: React.FC<OptionsSidebarProps> = ({
           </div>
         )}
 
-        {/* 10. OCR Callout */}
+        {/* 10. Extract Text Callout */}
         {tool.id === 'ocr-pdf' && (
           <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl text-xs text-indigo-800 space-y-1.5">
             <div className="font-bold flex items-center gap-1.5">
-              <Search size={16} /> Text Layer Extraction
+              <Search size={16} /> Text Transcript Extraction
             </div>
-            <p>Extracts selectable text and outputs a searchable, selectable document.</p>
+            <p>Extracts all selectable text content page by page and exports as a clean text document.</p>
           </div>
         )}
 
@@ -435,13 +435,13 @@ export const OptionsSidebar: React.FC<OptionsSidebarProps> = ({
           </div>
         )}
 
-        {/* 12. Redact PDF Callout */}
+        {/* 12. Sanitize PDF Callout */}
         {tool.id === 'redact-pdf' && (
           <div className="p-4 bg-zinc-100 border border-zinc-200 rounded-2xl text-xs text-zinc-800 space-y-1.5">
             <div className="font-bold flex items-center gap-1.5">
-              <EyeOff size={16} /> Permanent Blackout
+              <EyeOff size={16} /> Document Sanitization
             </div>
-            <p>Draws permanent black redaction blocks over sensitive and confidential zones.</p>
+            <p>Removes all hidden author metadata, revision timestamps, software producer tags, and keywords from the PDF file.</p>
           </div>
         )}
 

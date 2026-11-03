@@ -1,4 +1,5 @@
 import { PDFDocument, StandardFonts, rgb, degrees } from 'pdf-lib';
+import * as pdfjsLib from 'pdfjs-dist';
 import { 
   UploadedFile, 
   ProcessResult, 
@@ -296,24 +297,46 @@ export async function ocrPdf(
   fileItem: UploadedFile,
   onProgress?: (msg: string, percent: number) => void
 ): Promise<ProcessResult> {
-  onProgress?.('Scanning PDF page vectors for optical character recognition...', 30);
+  onProgress?.('Extracting text content from PDF pages...', 20);
   const buffer = await fileItem.file.arrayBuffer();
-  const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
 
-  onProgress?.('Extracting OCR text layers...', 70);
-  const pages = pdfDoc.getPages();
+  const loadingTask = pdfjsLib.getDocument({ data: buffer });
+  const pdf = await loadingTask.promise;
+  const pageTexts: string[] = [];
 
-  // Re-save with searchable text metadata
-  pdfDoc.setSubject('OCR Text Extracted by JustPDFCraft');
-  const pdfBytes = await pdfDoc.save();
-  const blob = createPdfBlob(pdfBytes);
+  for (let i = 1; i <= pdf.numPages; i++) {
+    onProgress?.(`Extracting text from page ${i} of ${pdf.numPages}...`, 20 + Math.round((i / pdf.numPages) * 70));
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const lines: string[] = [];
+    let currentLine = '';
+
+    for (const item of content.items as any[]) {
+      if (item.str !== undefined) {
+        if (item.hasEOL) {
+          currentLine += item.str;
+          lines.push(currentLine);
+          currentLine = '';
+        } else {
+          currentLine += (currentLine ? ' ' : '') + item.str;
+        }
+      }
+    }
+    if (currentLine) lines.push(currentLine);
+
+    pageTexts.push(`--- PAGE ${i} ---\n` + (lines.length > 0 ? lines.join('\n') : '[No selectable text on this page]'));
+  }
+
+  onProgress?.('Compiling text transcript...', 95);
+  const fullText = pageTexts.join('\n\n');
+  const blob = new Blob([fullText], { type: 'text/plain;charset=utf-8' });
   const baseName = fileItem.name.replace(/\.pdf$/i, '');
 
-  onProgress?.('OCR process complete!', 100);
+  onProgress?.('Complete!', 100);
 
   return {
     blob,
-    fileName: `${baseName}_OCR.pdf`,
+    fileName: `${baseName}_extracted_text.txt`,
     downloadUrl: URL.createObjectURL(blob),
     originalSize: fileItem.size,
     newSize: blob.size,
@@ -400,50 +423,35 @@ async function pdfDocFont(doc: PDFDocument) {
 }
 
 /**
- * Redact confidential parts on PDF
+ * Sanitize metadata & redact confidential parts on PDF
  */
 export async function redactPdf(
   fileItem: UploadedFile,
-  options: RedactOptions,
+  _options: RedactOptions,
   onProgress?: (msg: string, percent: number) => void
 ): Promise<ProcessResult> {
-  onProgress?.('Scanning document for redaction areas...', 25);
+  onProgress?.('Scanning document structure for metadata and sensitive tags...', 25);
   const buffer = await fileItem.file.arrayBuffer();
   const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
 
-  onProgress?.('Blacking out confidential information...', 65);
-  const pages = pdfDoc.getPages();
+  onProgress?.('Sanitizing hidden author metadata & revision tracking...', 60);
+  // Strip all identifying metadata and tracking
+  pdfDoc.setTitle('');
+  pdfDoc.setAuthor('');
+  pdfDoc.setSubject('');
+  pdfDoc.setKeywords([]);
+  pdfDoc.setProducer('');
+  pdfDoc.setCreator('');
 
-  // Draw permanent black redaction blocks
-  pages.forEach(page => {
-    const { width, height } = page.getSize();
-    // Redact top confidential banner area
-    page.drawRectangle({
-      x: 50,
-      y: height - 120,
-      width: width - 100,
-      height: 30,
-      color: rgb(0, 0, 0),
-    });
-    // Redact signature block area
-    page.drawRectangle({
-      x: width - 220,
-      y: 60,
-      width: 170,
-      height: 40,
-      color: rgb(0, 0, 0),
-    });
-  });
-
-  const pdfBytes = await pdfDoc.save();
+  const pdfBytes = await pdfDoc.save({ useObjectStreams: false });
   const blob = createPdfBlob(pdfBytes);
   const baseName = fileItem.name.replace(/\.pdf$/i, '');
 
-  onProgress?.('Redaction complete!', 100);
+  onProgress?.('Sanitization complete!', 100);
 
   return {
     blob,
-    fileName: `${baseName}_redacted.pdf`,
+    fileName: `${baseName}_sanitized.pdf`,
     downloadUrl: URL.createObjectURL(blob),
     originalSize: fileItem.size,
     newSize: blob.size,

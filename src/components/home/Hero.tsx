@@ -32,7 +32,7 @@ export const Hero: React.FC<HeroProps> = ({ searchQuery, onSearchChange }) => {
           type="text"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search 26 tools (e.g. merge, word, sign, protect, ocr)..."
+          placeholder="Search all tools (e.g. handwriting, merge, word, sign, protect)..."
           className="w-full pl-11 pr-24 py-3.5 bg-white border border-slate-200/90 rounded-2xl shadow-sm text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
         />
         <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center gap-1.5 pointer-events-none">

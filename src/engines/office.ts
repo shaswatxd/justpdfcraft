@@ -5,6 +5,7 @@ import * as XLSX from 'xlsx';
 import { UploadedFile, ProcessResult } from '../types/pdf';
 import { createPdfBlob } from '../utils/blob';
 import { renderPdfPageToCanvas } from '../utils/pdfRenderer';
+import { parseDocx, parsePptx } from '../utils/docxParser';
 
 /**
  * Extract all text lines from PDF using pdfjs-dist
@@ -92,58 +93,104 @@ export async function convertPdfToWord(
 }
 
 /**
- * Convert Word DOCX / Text to PDF
+ * Convert Word DOCX / PPTX / Text to PDF
  */
 export async function convertWordToPdf(
   fileItem: UploadedFile,
   onProgress?: (msg: string, percent: number) => void
 ): Promise<ProcessResult> {
-  onProgress?.('Reading Word document...', 20);
-  const text = await fileItem.file.text();
-  const lines = text
-    .split(/\r?\n/)
-    .map(l => l.replace(/[^\x20-\x7E\xA0-\xFF]/g, ' ').trim())
-    .filter(Boolean);
+  const isPptx = fileItem.name.toLowerCase().endsWith('.pptx');
+  const isDocx = fileItem.name.toLowerCase().endsWith('.docx');
+  const buffer = await fileItem.file.arrayBuffer();
 
-  onProgress?.('Rendering PDF pages...', 60);
   const pdfDoc = await PDFDocument.create();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  const fontSize = 11;
-  const lineHeight = 16;
-  const margin = 50;
+  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  let currentPage = pdfDoc.addPage([595.28, 841.89]); // A4
-  let y = 841.89 - margin;
+  if (isPptx) {
+    onProgress?.('Parsing PowerPoint slide decks...', 25);
+    const slides = await parsePptx(buffer);
 
-  // Add header
-  currentPage.drawText(fileItem.name, {
-    x: margin,
-    y: y,
-    size: 14,
-    font,
-    color: rgb(0.17, 0.34, 0.6),
-  });
-  y -= 30;
+    for (let i = 0; i < slides.length; i++) {
+      onProgress?.(`Rendering slide ${i + 1} of ${slides.length}...`, 25 + Math.round((i / Math.max(1, slides.length)) * 65));
+      const slideLines = slides[i];
+      const page = pdfDoc.addPage([841.89, 595.28]); // A4 Landscape
+      const margin = 50;
+      let y = 595.28 - margin;
 
-  for (const line of lines) {
-    if (y < margin + 20) {
-      currentPage = pdfDoc.addPage([595.28, 841.89]);
-      y = 841.89 - margin;
+      page.drawText(`Slide ${i + 1}`, {
+        x: margin,
+        y,
+        size: 18,
+        font: boldFont,
+        color: rgb(0.8, 0.25, 0.1),
+      });
+      y -= 35;
+
+      for (const line of slideLines) {
+        if (y < margin + 20) break;
+        page.drawText(`• ${line.slice(0, 110)}`, {
+          x: margin + 15,
+          y,
+          size: 12,
+          font,
+          color: rgb(0.2, 0.2, 0.2),
+        });
+        y -= 20;
+      }
     }
-    const truncatedLine = line.slice(0, 95);
-    currentPage.drawText(truncatedLine, {
+  } else {
+    onProgress?.('Parsing document paragraphs...', 25);
+    let lines: string[] = [];
+    if (isDocx) {
+      lines = await parseDocx(buffer);
+    } else {
+      const text = await fileItem.file.text();
+      lines = text
+        .split(/\r?\n/)
+        .map(l => l.replace(/[^\x20-\x7E\xA0-\xFF]/g, ' ').trim())
+        .filter(Boolean);
+    }
+
+    onProgress?.('Rendering PDF pages...', 60);
+    const fontSize = 11;
+    const lineHeight = 16;
+    const margin = 50;
+
+    let currentPage = pdfDoc.addPage([595.28, 841.89]); // A4 Portrait
+    let y = 841.89 - margin;
+
+    // Header
+    currentPage.drawText(fileItem.name, {
       x: margin,
       y,
-      size: fontSize,
-      font,
-      color: rgb(0.15, 0.15, 0.15),
+      size: 13,
+      font: boldFont,
+      color: rgb(0.17, 0.34, 0.6),
     });
-    y -= lineHeight;
+    y -= 30;
+
+    for (const line of lines) {
+      if (y < margin + 20) {
+        currentPage = pdfDoc.addPage([595.28, 841.89]);
+        y = 841.89 - margin;
+      }
+      const truncatedLine = line.slice(0, 95);
+      currentPage.drawText(truncatedLine, {
+        x: margin,
+        y,
+        size: fontSize,
+        font,
+        color: rgb(0.15, 0.15, 0.15),
+      });
+      y -= lineHeight;
+    }
   }
 
+  onProgress?.('Finalizing PDF document...', 92);
   const pdfBytes = await pdfDoc.save();
   const blob = createPdfBlob(pdfBytes);
-  const baseName = fileItem.name.replace(/\.(docx?|txt)$/i, '');
+  const baseName = fileItem.name.replace(/\.(docx?|pptx?|txt)$/i, '');
 
   onProgress?.('Complete!', 100);
 

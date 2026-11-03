@@ -38,8 +38,8 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTool }) => {
               <Lock size={26} />
             </div>
             <div>
-              <h4 className="font-bold text-white text-sm">Military-Grade Security</h4>
-              <p className="text-xs text-slate-400 mt-0.5">Integrated AES-256 encryption and decryption compliant with enterprise standards.</p>
+              <h4 className="font-bold text-white text-sm">Client-Side Encryption</h4>
+              <p className="text-xs text-slate-400 mt-0.5">Built-in AES-256 encryption and decryption running locally in your browser.</p>
             </div>
           </div>
         </div>
@@ -72,6 +72,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTool }) => {
           <div>
             <h5 className="font-bold text-white uppercase text-[11px] tracking-wider mb-4">Studio & Security</h5>
             <ul className="space-y-2.5">
+              <li><button onClick={() => onSelectTool('handwriting')} className="hover:text-white transition-colors text-amber-400 font-medium">✍️ Handwriting Studio</button></li>
               <li><button onClick={() => onSelectTool('sign-pdf')} className="hover:text-white transition-colors">Digital Signature Pad</button></li>
               <li><button onClick={() => onSelectTool('edit-pdf')} className="hover:text-white transition-colors">PDF Canvas Editor</button></li>
               <li><button onClick={() => onSelectTool('protect-pdf')} className="hover:text-white transition-colors">AES-256 Encrypt</button></li>

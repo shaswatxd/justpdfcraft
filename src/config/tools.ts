@@ -78,15 +78,15 @@ export const TOOLS: ToolDefinition[] = [
   },
   {
     id: 'ocr-pdf',
-    title: 'OCR Text Extractor',
-    shortTitle: 'OCR',
-    description: 'Extract raw text streams and generate selectable, searchable text layers from scanned PDFs.',
+    title: 'Extract Text',
+    shortTitle: 'Extract Text',
+    description: 'Extract raw text streams and transcripts from all PDF pages into a clean text document.',
     category: 'optimize',
     iconName: 'FileSearch',
-    badge: 'STUDIO',
+    badge: 'POPULAR',
     accept: '.pdf,application/pdf',
     multiple: false,
-    actionText: 'Run OCR Extraction',
+    actionText: 'Extract Text Content',
     color: '#0284c7' // Sky
   },
 
@@ -329,14 +329,14 @@ export const TOOLS: ToolDefinition[] = [
   },
   {
     id: 'redact-pdf',
-    title: 'Redact PDF',
-    shortTitle: 'Redact',
-    description: 'Permanently blackout confidential information, signatures, and private data.',
+    title: 'Sanitize PDF',
+    shortTitle: 'Sanitize',
+    description: 'Permanently scrub confidential document metadata, author information, and private tracking data.',
     category: 'edit-security',
     iconName: 'EyeOff',
     accept: '.pdf,application/pdf',
     multiple: false,
-    actionText: 'Apply Redaction',
+    actionText: 'Sanitize Document',
     color: '#0f172a'
   }
 ];
