@@ -1,0 +1,3 @@
+Physics Lab Experiment 1
+Objective: Measure acceleration due to gravity.
+Result: 9.8 m/s^2 confirmed.

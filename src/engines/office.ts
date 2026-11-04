@@ -5,37 +5,42 @@ import * as XLSX from 'xlsx';
 import { UploadedFile, ProcessResult } from '../types/pdf';
 import { createPdfBlob } from '../utils/blob';
 import { parseDocx, parsePptx } from '../utils/docxParser';
+import { getSafeBuffer } from '../utils/pdfRenderer';
 
 /**
  * Extract all text lines from PDF using pdfjs-dist
  */
 async function extractTextFromPdf(data: ArrayBuffer): Promise<string[][]> {
-  const loadingTask = pdfjsLib.getDocument({ data });
+  const loadingTask = pdfjsLib.getDocument({ data: getSafeBuffer(data) });
   const pdf = await loadingTask.promise;
-  const pagesText: string[][] = [];
+  try {
+    const pagesText: string[][] = [];
 
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const textContent = await page.getTextContent();
-    const pageLines: string[] = [];
-    let currentLine = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+      const pageLines: string[] = [];
+      let currentLine = '';
 
-    for (const item of textContent.items as any[]) {
-      if (item.str !== undefined) {
-        if (item.hasEOL) {
-          currentLine += item.str;
-          pageLines.push(currentLine);
-          currentLine = '';
-        } else {
-          currentLine += (currentLine ? ' ' : '') + item.str;
+      for (const item of textContent.items as any[]) {
+        if (item.str !== undefined) {
+          if (item.hasEOL) {
+            currentLine += item.str;
+            pageLines.push(currentLine);
+            currentLine = '';
+          } else {
+            currentLine += (currentLine ? ' ' : '') + item.str;
+          }
         }
       }
+      if (currentLine) pageLines.push(currentLine);
+      pagesText.push(pageLines);
     }
-    if (currentLine) pageLines.push(currentLine);
-    pagesText.push(pageLines);
-  }
 
-  return pagesText;
+    return pagesText;
+  } finally {
+    await pdf.destroy().catch(() => {});
+  }
 }
 
 /**
@@ -74,6 +79,17 @@ export async function convertPdfToWord(
       ),
     ],
   }));
+
+  if (sections.length === 0) {
+    sections.push({
+      properties: {},
+      children: [
+        new docx.Paragraph({
+          children: [new docx.TextRun({ text: 'No selectable text content found in the source PDF document.', size: 22 })],
+        }),
+      ],
+    });
+  }
 
   const doc = new docx.Document({ sections });
   const docxBlob = await docx.Packer.toBlob(doc);

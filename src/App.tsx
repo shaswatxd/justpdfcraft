@@ -67,6 +67,7 @@ export function App() {
       <main className="flex-1">
         {activeTool ? (
           <ToolWorkspace
+            key={activeTool.id}
             tool={activeTool}
             onBack={() => handleSelectTool(null)}
             onSelectTool={handleSelectTool}

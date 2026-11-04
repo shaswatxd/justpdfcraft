@@ -8,6 +8,7 @@ import {
   HtmlToPdfOptions, 
   RedactOptions 
 } from '../types/pdf';
+import { getSafeBuffer } from '../utils/pdfRenderer';
 import { createPdfBlob } from '../utils/blob';
 
 /**
@@ -73,7 +74,7 @@ export async function signPdf(
       color: rgb(0.4, 0.4, 0.4),
     });
 
-    lastPage.drawText(`Digitally Verified • ${new Date().toLocaleDateString()}`, {
+    lastPage.drawText(`Digitally Verified â€¢ ${new Date().toLocaleDateString()}`, {
       x,
       y: y - 5,
       size: 8,
@@ -300,47 +301,51 @@ export async function ocrPdf(
   onProgress?.('Extracting text content from PDF pages...', 20);
   const buffer = await fileItem.file.arrayBuffer();
 
-  const loadingTask = pdfjsLib.getDocument({ data: buffer });
+  const loadingTask = pdfjsLib.getDocument({ data: getSafeBuffer(buffer) });
   const pdf = await loadingTask.promise;
-  const pageTexts: string[] = [];
+  try {
+    const pageTexts: string[] = [];
 
-  for (let i = 1; i <= pdf.numPages; i++) {
-    onProgress?.(`Extracting text from page ${i} of ${pdf.numPages}...`, 20 + Math.round((i / pdf.numPages) * 70));
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    const lines: string[] = [];
-    let currentLine = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      onProgress?.(`Extracting text from page ${i} of ${pdf.numPages}...`, 20 + Math.round((i / pdf.numPages) * 70));
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const lines: string[] = [];
+      let currentLine = '';
 
-    for (const item of content.items as any[]) {
-      if (item.str !== undefined) {
-        if (item.hasEOL) {
-          currentLine += item.str;
-          lines.push(currentLine);
-          currentLine = '';
-        } else {
-          currentLine += (currentLine ? ' ' : '') + item.str;
+      for (const item of content.items as any[]) {
+        if (item.str !== undefined) {
+          if (item.hasEOL) {
+            currentLine += item.str;
+            lines.push(currentLine);
+            currentLine = '';
+          } else {
+            currentLine += (currentLine ? ' ' : '') + item.str;
+          }
         }
       }
+      if (currentLine) lines.push(currentLine);
+
+      pageTexts.push(`--- PAGE ${i} ---\n` + (lines.length > 0 ? lines.join('\n') : '[No selectable text on this page]'));
     }
-    if (currentLine) lines.push(currentLine);
 
-    pageTexts.push(`--- PAGE ${i} ---\n` + (lines.length > 0 ? lines.join('\n') : '[No selectable text on this page]'));
+    onProgress?.('Compiling text transcript...', 95);
+    const fullText = pageTexts.join('\n\n');
+    const blob = new Blob([fullText], { type: 'text/plain;charset=utf-8' });
+    const baseName = fileItem.name.replace(/\.pdf$/i, '');
+
+    onProgress?.('Complete!', 100);
+
+    return {
+      blob,
+      fileName: `${baseName}_extracted_text.txt`,
+      downloadUrl: URL.createObjectURL(blob),
+      originalSize: fileItem.size,
+      newSize: blob.size,
+    };
+  } finally {
+    await pdf.destroy().catch(() => {});
   }
-
-  onProgress?.('Compiling text transcript...', 95);
-  const fullText = pageTexts.join('\n\n');
-  const blob = new Blob([fullText], { type: 'text/plain;charset=utf-8' });
-  const baseName = fileItem.name.replace(/\.pdf$/i, '');
-
-  onProgress?.('Complete!', 100);
-
-  return {
-    blob,
-    fileName: `${baseName}_extracted_text.txt`,
-    downloadUrl: URL.createObjectURL(blob),
-    originalSize: fileItem.size,
-    newSize: blob.size,
-  };
 }
 
 /**
@@ -395,11 +400,15 @@ export async function comparePdf(
     color: pageDiff === 0 ? rgb(0.1, 0.6, 0.2) : rgb(0.8, 0.2, 0.2),
   });
 
-  // Include pages from both
-  const p1 = await compDoc.copyPages(doc1, [0]);
-  const p2 = await compDoc.copyPages(doc2, [0]);
-  compDoc.addPage(p1[0]);
-  compDoc.addPage(p2[0]);
+  // Include sample preview pages if available
+  if (doc1.getPageCount() > 0) {
+    const p1 = await compDoc.copyPages(doc1, [0]);
+    compDoc.addPage(p1[0]);
+  }
+  if (doc2.getPageCount() > 0) {
+    const p2 = await compDoc.copyPages(doc2, [0]);
+    compDoc.addPage(p2[0]);
+  }
 
   const pdfBytes = await compDoc.save();
   const blob = createPdfBlob(pdfBytes);

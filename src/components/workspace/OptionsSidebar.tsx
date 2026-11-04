@@ -464,6 +464,34 @@ export const OptionsSidebar: React.FC<OptionsSidebarProps> = ({
           </div>
         )}
 
+        {/* 13b. Unlock Options */}
+        {tool.id === 'unlock-pdf' && (
+          <div className="space-y-3">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-600 block">
+              Enter Document Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={unlockOptions.password}
+                onChange={e => setUnlockOptions(prev => ({ ...prev, password: e.target.value }))}
+                placeholder="Enter document password..."
+                className="w-full p-3 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3.5 text-gray-400"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+            <p className="text-xs text-slate-500">
+              Leave blank if the document has no password or if permissions only are restricted.
+            </p>
+          </div>
+        )}
+
         {/* 14. Watermark Options */}
         {tool.id === 'watermark-pdf' && (
           <div className="space-y-4">

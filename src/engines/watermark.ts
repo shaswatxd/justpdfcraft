@@ -2,9 +2,11 @@ import { PDFDocument, StandardFonts, rgb, degrees } from 'pdf-lib';
 import { UploadedFile, ProcessResult, WatermarkOptions } from '../types/pdf';
 import { createPdfBlob } from '../utils/blob';
 
-function hexToRgb(hex: string): { r: number; g: number; b: number } {
+function hexToRgb(hex?: string): { r: number; g: number; b: number } {
+  if (!hex) return { r: 0.9, g: 0.2, b: 0.2 };
   const cleanHex = hex.replace('#', '');
   const bigint = parseInt(cleanHex, 16);
+  if (isNaN(bigint)) return { r: 0.9, g: 0.2, b: 0.2 };
   return {
     r: ((bigint >> 16) & 255) / 255,
     g: ((bigint >> 8) & 255) / 255,

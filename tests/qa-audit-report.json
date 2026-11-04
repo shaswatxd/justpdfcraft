@@ -1,0 +1,445 @@
+{
+  "timestamp": "2026-11-04T06:05:56.533Z",
+  "baseUrl": "http://localhost:4173",
+  "totalTests": 62,
+  "passed": 62,
+  "failed": 0,
+  "results": [
+    {
+      "id": "nav-home",
+      "name": "Home Page & Brand Header",
+      "category": "Navigation",
+      "status": "PASS",
+      "details": "Title: \"JustPDFCraft | The Modern Client-Side PDF Studio\""
+    },
+    {
+      "id": "asset-favicon",
+      "name": "SVG Favicon Asset",
+      "category": "Assets",
+      "status": "PASS",
+      "details": "Status 200 OK"
+    },
+    {
+      "id": "asset-manifest",
+      "name": "PWA Web Manifest",
+      "category": "Assets",
+      "status": "PASS",
+      "details": "Status 200 OK"
+    },
+    {
+      "id": "search-filter",
+      "name": "Tool Search Filter (\"merge\")",
+      "category": "Search & Filter",
+      "status": "PASS",
+      "details": "1 card(s) matched"
+    },
+    {
+      "id": "search-clear",
+      "name": "Clear Search Input",
+      "category": "Search & Filter",
+      "status": "PASS",
+      "details": "Restored to 27 cards"
+    },
+    {
+      "id": "category-filter",
+      "name": "Category Filter Pills",
+      "category": "Search & Filter",
+      "status": "PASS",
+      "details": "Organize filter shows 4 tools"
+    },
+    {
+      "id": "mega-menu",
+      "name": "All Tools Mega Menu Dropdown",
+      "category": "Navigation",
+      "status": "PASS",
+      "details": "27 items listed"
+    },
+    {
+      "id": "route-merge-pdf",
+      "name": "Route #merge-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Merge PDF\""
+    },
+    {
+      "id": "route-split-pdf",
+      "name": "Route #split-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Split PDF\""
+    },
+    {
+      "id": "route-organize-pdf",
+      "name": "Route #organize-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Organize Pages\""
+    },
+    {
+      "id": "route-rotate-pdf",
+      "name": "Route #rotate-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Rotate PDF\""
+    },
+    {
+      "id": "route-compress-pdf",
+      "name": "Route #compress-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Compress PDF\""
+    },
+    {
+      "id": "route-repair-pdf",
+      "name": "Route #repair-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Repair PDF\""
+    },
+    {
+      "id": "route-ocr-pdf",
+      "name": "Route #ocr-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Extract Text\""
+    },
+    {
+      "id": "route-jpg-to-pdf",
+      "name": "Route #jpg-to-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Images to PDF\""
+    },
+    {
+      "id": "route-word-to-pdf",
+      "name": "Route #word-to-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Word to PDF\""
+    },
+    {
+      "id": "route-excel-to-pdf",
+      "name": "Route #excel-to-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Excel to PDF\""
+    },
+    {
+      "id": "route-powerpoint-to-pdf",
+      "name": "Route #powerpoint-to-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"PowerPoint to PDF\""
+    },
+    {
+      "id": "route-html-to-pdf",
+      "name": "Route #html-to-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"HTML to PDF\""
+    },
+    {
+      "id": "route-pdf-to-jpg",
+      "name": "Route #pdf-to-jpg Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"PDF to Images\""
+    },
+    {
+      "id": "route-pdf-to-word",
+      "name": "Route #pdf-to-word Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"PDF to Word\""
+    },
+    {
+      "id": "route-pdf-to-excel",
+      "name": "Route #pdf-to-excel Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"PDF to Excel\""
+    },
+    {
+      "id": "route-pdf-to-powerpoint",
+      "name": "Route #pdf-to-powerpoint Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"PDF to PowerPoint\""
+    },
+    {
+      "id": "route-pdf-to-pdfa",
+      "name": "Route #pdf-to-pdfa Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"PDF to PDF/A\""
+    },
+    {
+      "id": "route-sign-pdf",
+      "name": "Route #sign-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Sign Document\""
+    },
+    {
+      "id": "route-edit-pdf",
+      "name": "Route #edit-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Edit PDF\""
+    },
+    {
+      "id": "route-watermark-pdf",
+      "name": "Route #watermark-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Watermark\""
+    },
+    {
+      "id": "route-page-numbers",
+      "name": "Route #page-numbers Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Page Numbers\""
+    },
+    {
+      "id": "route-protect-pdf",
+      "name": "Route #protect-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Protect PDF\""
+    },
+    {
+      "id": "route-unlock-pdf",
+      "name": "Route #unlock-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Unlock PDF\""
+    },
+    {
+      "id": "route-scan-to-pdf",
+      "name": "Route #scan-to-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Scan to PDF\""
+    },
+    {
+      "id": "route-compare-pdf",
+      "name": "Route #compare-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Compare PDFs\""
+    },
+    {
+      "id": "route-handwriting",
+      "name": "Route #handwriting Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Handwriting & Assignment Studio\""
+    },
+    {
+      "id": "route-redact-pdf",
+      "name": "Route #redact-pdf Loading",
+      "category": "Routes",
+      "status": "PASS",
+      "details": "Header: \"Sanitize PDF\""
+    },
+    {
+      "id": "tool-merge",
+      "name": "Merge PDF Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "2 files merged successfully"
+    },
+    {
+      "id": "tool-split",
+      "name": "Split PDF Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Extracted page ranges successfully"
+    },
+    {
+      "id": "tool-organize",
+      "name": "Organize Pages Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Unpacked and saved reordered pages"
+    },
+    {
+      "id": "tool-compress",
+      "name": "Compress PDF Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Compressed PDF streams cleanly"
+    },
+    {
+      "id": "tool-repair",
+      "name": "Repair PDF Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Reconstructed XRef tables and object catalog"
+    },
+    {
+      "id": "tool-rotate",
+      "name": "Rotate PDF Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Reoriented pages successfully"
+    },
+    {
+      "id": "tool-page-numbers",
+      "name": "Page Numbers Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Numbered pages successfully"
+    },
+    {
+      "id": "tool-watermark",
+      "name": "Watermark PDF Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Stamped watermark successfully"
+    },
+    {
+      "id": "tool-protect",
+      "name": "AES-256 PDF Encryption Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Encrypted with AES-256"
+    },
+    {
+      "id": "tool-unlock",
+      "name": "Unlock PDF Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Validated security permissions and exported unlocked PDF"
+    },
+    {
+      "id": "tool-jpg-to-pdf",
+      "name": "Images to PDF Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Generated PDF from image"
+    },
+    {
+      "id": "tool-pdf-to-jpg",
+      "name": "PDF to Images Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Rendered PDF pages to image"
+    },
+    {
+      "id": "tool-pdf-to-word",
+      "name": "PDF to Word DOCX Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Converted text stream to DOCX"
+    },
+    {
+      "id": "tool-word-to-pdf",
+      "name": "Word to PDF Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Parsed OpenXML DOCX to PDF"
+    },
+    {
+      "id": "tool-excel-to-pdf",
+      "name": "Excel to PDF Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Converted XLSX table to PDF"
+    },
+    {
+      "id": "tool-html-to-pdf",
+      "name": "HTML to PDF Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Sanitized HTML and rendered to PDF canvas"
+    },
+    {
+      "id": "tool-pdf-to-excel",
+      "name": "PDF to Excel Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Parsed tabular lines and created XLSX workbook"
+    },
+    {
+      "id": "tool-pdf-to-pptx",
+      "name": "PDF to PowerPoint Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Converted pages to PPTX slide presentation"
+    },
+    {
+      "id": "tool-pdf-to-pdfa",
+      "name": "PDF to PDF/A Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Injected PDF/A-1b archiving metadata"
+    },
+    {
+      "id": "tool-edit-pdf",
+      "name": "Edit PDF Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Added annotation layer and exported document"
+    },
+    {
+      "id": "tool-compare-pdf",
+      "name": "Compare PDFs Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Generated side-by-side comparison report"
+    },
+    {
+      "id": "tool-ocr-pdf",
+      "name": "Text Extraction (OCR) Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Extracted raw text transcript to .txt"
+    },
+    {
+      "id": "tool-redact-pdf",
+      "name": "Metadata Sanitization Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Scrubbed tracking and metadata streams"
+    },
+    {
+      "id": "tool-sign-pdf",
+      "name": "Digital Signature Pad Workflow",
+      "category": "Tool Engines",
+      "status": "PASS",
+      "details": "Captured signature and stamped on PDF"
+    },
+    {
+      "id": "tool-handwriting",
+      "name": "Handwriting Studio Assignment Workflow",
+      "category": "Studio",
+      "status": "PASS",
+      "details": "Rendered notebook preview & generated PDF"
+    },
+    {
+      "id": "responsive-mobile",
+      "name": "Mobile Viewport (375x667)",
+      "category": "Responsive",
+      "status": "PASS",
+      "details": "Hamburger menu verified"
+    },
+    {
+      "id": "responsive-tablet",
+      "name": "Tablet Viewport (768x1024)",
+      "category": "Responsive",
+      "status": "PASS",
+      "details": "Grid rendered cleanly with 27 cards"
+    },
+    {
+      "id": "a11y-basics",
+      "name": "HTML Semantic & Accessibility Basics",
+      "category": "Accessibility",
+      "status": "PASS",
+      "details": "lang=\"en\", viewport defined, h1 present"
+    }
+  ],
+  "consoleErrors": [],
+  "failedRequests": []
+}

@@ -7,12 +7,29 @@ if (typeof window !== 'undefined') {
 }
 
 /**
+ * Creates a defensive copy of byte buffer so PDF.js worker transfers
+ * never detach the caller's ArrayBuffer.
+ */
+export function getSafeBuffer(data: ArrayBuffer | Uint8Array): Uint8Array {
+  if (data instanceof Uint8Array) {
+    const copy = new Uint8Array(data.byteLength);
+    copy.set(data);
+    return copy;
+  }
+  const copy = new Uint8Array(data.byteLength);
+  copy.set(new Uint8Array(data));
+  return copy;
+}
+
+/**
  * Get the total number of pages in a PDF
  */
 export async function getPdfPageCount(data: ArrayBuffer | Uint8Array): Promise<number> {
-  const loadingTask = pdfjsLib.getDocument({ data });
+  const loadingTask = pdfjsLib.getDocument({ data: getSafeBuffer(data) });
   const pdf = await loadingTask.promise;
-  return pdf.numPages;
+  const count = pdf.numPages;
+  await pdf.destroy();
+  return count;
 }
 
 /**
@@ -24,26 +41,30 @@ export async function renderPdfPageToCanvas(
   scale: number = 1.0,
   rotationOffset: number = 0
 ): Promise<HTMLCanvasElement> {
-  const loadingTask = pdfjsLib.getDocument({ data });
+  const loadingTask = pdfjsLib.getDocument({ data: getSafeBuffer(data) });
   const pdf = await loadingTask.promise;
-  const page = await pdf.getPage(pageNumber);
+  try {
+    const page = await pdf.getPage(pageNumber);
 
-  const rotation = (page.rotate + rotationOffset) % 360;
-  const viewport = page.getViewport({ scale, rotation });
+    const rotation = (page.rotate + rotationOffset) % 360;
+    const viewport = page.getViewport({ scale, rotation });
 
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-  if (!context) throw new Error('Could not get 2d context');
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Could not get 2d context');
 
-  canvas.height = viewport.height;
-  canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
 
-  await page.render({
-    canvasContext: context,
-    viewport: viewport
-  }).promise;
+    await page.render({
+      canvasContext: context,
+      viewport: viewport
+    }).promise;
 
-  return canvas;
+    return canvas;
+  } finally {
+    await pdf.destroy();
+  }
 }
 
 /**
@@ -55,9 +76,10 @@ export async function renderPdfThumbnail(
   maxWidth: number = 220,
   rotationOffset: number = 0
 ): Promise<string> {
+  let pdf: any = null;
   try {
-    const loadingTask = pdfjsLib.getDocument({ data });
-    const pdf = await loadingTask.promise;
+    const loadingTask = pdfjsLib.getDocument({ data: getSafeBuffer(data) });
+    pdf = await loadingTask.promise;
     const page = await pdf.getPage(pageNumber);
 
     const rotation = (page.rotate + rotationOffset) % 360;
@@ -82,6 +104,10 @@ export async function renderPdfThumbnail(
     console.error('Error rendering thumbnail:', error);
     // Return a fallback SVG placeholder
     return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="220" viewBox="0 0 160 220"><rect width="100%" height="100%" fill="%23f1f1f1"/><text x="50%" y="50%" fill="%23888" font-family="sans-serif" font-size="14" text-anchor="middle" dominant-baseline="middle">Page ${pageNumber}</text></svg>`;
+  } finally {
+    if (pdf) {
+      await pdf.destroy().catch(() => {});
+    }
   }
 }
 
@@ -93,16 +119,30 @@ export async function renderAllPagesThumbnails(
   maxWidth: number = 200,
   onProgress?: (current: number, total: number) => void
 ): Promise<string[]> {
-  const loadingTask = pdfjsLib.getDocument({ data });
+  const loadingTask = pdfjsLib.getDocument({ data: getSafeBuffer(data) });
   const pdf = await loadingTask.promise;
-  const numPages = pdf.numPages;
   const thumbnails: string[] = [];
 
-  for (let i = 1; i <= numPages; i++) {
-    const thumb = await renderPdfThumbnail(data, i, maxWidth);
-    thumbnails.push(thumb);
-    if (onProgress) onProgress(i, numPages);
-  }
+  try {
+    const numPages = pdf.numPages;
+    for (let i = 1; i <= numPages; i++) {
+      const page = await pdf.getPage(i);
+      const unscaledViewport = page.getViewport({ scale: 1.0, rotation: page.rotate });
+      const scale = maxWidth / unscaledViewport.width;
+      const viewport = page.getViewport({ scale, rotation: page.rotate });
 
-  return thumbnails;
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (context) {
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: context, viewport }).promise;
+        thumbnails.push(canvas.toDataURL('image/jpeg', 0.85));
+      }
+      if (onProgress) onProgress(i, numPages);
+    }
+    return thumbnails;
+  } finally {
+    await pdf.destroy().catch(() => {});
+  }
 }

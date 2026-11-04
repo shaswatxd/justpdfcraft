@@ -60,7 +60,7 @@ import {
 } from '../../engines/advanced';
 
 // Utils
-import { renderPdfThumbnail, getPdfPageCount } from '../../utils/pdfRenderer';
+import { renderPdfThumbnail, getPdfPageCount, renderAllPagesThumbnails } from '../../utils/pdfRenderer';
 
 interface ToolWorkspaceProps {
   tool: ToolDefinition;
@@ -79,8 +79,13 @@ export const ToolWorkspace: React.FC<ToolWorkspaceProps> = ({ tool, onBack, onSe
   }[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // Scroll to top whenever tool mounts or changes
+  // Scroll to top and reset state whenever tool mounts or changes
   React.useEffect(() => {
+    setFiles([]);
+    setPages([]);
+    setResult(null);
+    setStage('select');
+    setError(null);
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
@@ -183,17 +188,13 @@ export const ToolWorkspace: React.FC<ToolWorkspaceProps> = ({ tool, onBack, onSe
       if (tool.id === 'organize-pdf' && updatedFiles.length > 0) {
         const firstFile = updatedFiles[0];
         const buffer = await firstFile.file.arrayBuffer();
-        const total = firstFile.pageCount || (await getPdfPageCount(buffer));
-        const initialPages = [];
-        for (let i = 1; i <= total; i++) {
-          const thumb = await renderPdfThumbnail(buffer, i, 180);
-          initialPages.push({
-            pageNumber: i,
-            rotation: 0,
-            thumbnail: thumb,
-            originalIndex: i - 1,
-          });
-        }
+        const thumbnails = await renderAllPagesThumbnails(buffer, 180);
+        const initialPages = thumbnails.map((thumb, idx) => ({
+          pageNumber: idx + 1,
+          rotation: 0,
+          thumbnail: thumb,
+          originalIndex: idx,
+        }));
         setPages(initialPages);
       }
 
