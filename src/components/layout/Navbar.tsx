@@ -25,8 +25,7 @@ import {
   FileSearch,
   GitCompare,
   EyeOff,
-  Sparkles,
-  Zap
+  Sparkles
 } from 'lucide-react';
 import { ToolId } from '../../types/pdf';
 import { TOOLS, CATEGORIES } from '../../config/tools';

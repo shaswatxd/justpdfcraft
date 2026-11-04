@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Zap, Lock, Globe, Sparkles } from 'lucide-react';
+import { ShieldCheck, Zap, Lock } from 'lucide-react';
 import { ToolId } from '../../types/pdf';
 
 interface FooterProps {

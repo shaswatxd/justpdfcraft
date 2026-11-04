@@ -1,21 +1,15 @@
 import React, { useRef, useEffect } from 'react';
 import { 
-  ArrowRight, 
-  RotateCcw, 
-  RotateCw, 
   SortAsc, 
   SortDesc, 
   Sliders, 
   Eye, 
   EyeOff,
-  PenTool,
-  CheckCircle2,
   FileText,
   Shield,
   Wrench,
   Search,
-  GitCompare,
-  FileSpreadsheet
+  GitCompare
 } from 'lucide-react';
 import { 
   ToolDefinition, 

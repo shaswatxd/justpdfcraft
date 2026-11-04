@@ -4,7 +4,6 @@ import * as docx from 'docx';
 import * as XLSX from 'xlsx';
 import { UploadedFile, ProcessResult } from '../types/pdf';
 import { createPdfBlob } from '../utils/blob';
-import { renderPdfPageToCanvas } from '../utils/pdfRenderer';
 import { parseDocx, parsePptx } from '../utils/docxParser';
 
 /**

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Cpu, Smartphone, Sparkles, CheckCircle2, Lock, FileCode2 } from 'lucide-react';
+import { Cpu, Sparkles, CheckCircle2, Lock, FileCode2 } from 'lucide-react';
 
 export const FeatureBanners: React.FC = () => {
   return (

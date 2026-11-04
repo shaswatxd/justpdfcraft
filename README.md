@@ -15,7 +15,7 @@
 
 ---
 
-## 🛠️ Complete Suite of 26 Studio Tools
+## 🛠️ Complete Suite of 27 Studio Tools
 
 ### 1. Organize
 - **Merge PDF**: Combine multiple PDFs into a single document in any custom order.
@@ -26,7 +26,7 @@
 ### 2. Optimize
 - **Compress PDF**: Optimize streams and downsample imagery with tailored compression profiles.
 - **Repair PDF**: Rebuild damaged xref cross-reference tables and recover corrupted objects.
-- **OCR Text Extractor**: Extract raw text streams and generate searchable document layers.
+- **Extract Text**: Extract raw text streams and generate clean text transcripts from all pages.
 
 ### 3. Convert to PDF
 - **Images to PDF**: Convert JPG, PNG, WebP, and BMP graphics into clean PDF documents.
@@ -43,6 +43,7 @@
 - **PDF to PDF/A**: Convert PDF to ISO 19005-1 compliant PDF/A-1b archiving format.
 
 ### 5. Security & Studio
+- **Handwriting Generator (Student Fav)**: Transform typed text or Word docs into authentic handwritten notes on notebook paper with realistic ink jitter, custom fonts, and scanner shadows.
 - **Sign Document**: Interactive signature pad to draw with bezier smoothing or type legal signatures.
 - **Edit PDF**: Add text annotations, review notes, and yellow highlights directly onto pages.
 - **Watermark**: Stamp custom security watermarks with 9-point grid alignment and opacity.
@@ -51,19 +52,18 @@
 - **Unlock PDF**: Strip security restrictions and decrypt protected PDF files client-side.
 - **Scan to PDF**: Capture physical documents using your device webcam or camera.
 - **Compare PDFs**: Inspect two documents side-by-side to detect structural and page differences.
-- **Redact PDF**: Permanently blackout confidential and sensitive personal information.
+- **Sanitize PDF**: Permanently scrub confidential document metadata, author information, and private tracking data.
 
 ---
 
 ## 🚀 Running Locally
 
 ```bash
+# Install dependencies
+npm install
+
 # Start development server
 npm run dev
-
-# Run automated verification tests
-node scripts/verify-all-11-tools.js
-node scripts/verify-extended-tools.js
 
 # Build production bundle
 npm run build
