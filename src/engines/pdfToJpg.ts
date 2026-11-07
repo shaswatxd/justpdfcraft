@@ -29,7 +29,7 @@ export async function convertPdfToJpg(
       if (!context) throw new Error('Could not get 2d context');
       canvas.height = viewport.height;
       canvas.width = viewport.width;
-      await page.render({ canvasContext: context, viewport }).promise;
+      await (page.render as any)({ canvasContext: context, viewport, canvas }).promise;
       return canvas;
     };
 
@@ -88,6 +88,6 @@ export async function convertPdfToJpg(
       isZip: true,
     };
   } finally {
-    await pdf.destroy().catch(() => {});
+    await (pdf as any).destroy?.();
   }
 }

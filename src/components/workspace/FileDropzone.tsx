@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { UploadCloud, FolderPlus, ArrowLeft, Sparkles } from 'lucide-react';
+import { UploadCloud, FolderPlus, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { ToolDefinition } from '../../types/pdf';
 
 interface FileDropzoneProps {
@@ -39,26 +39,22 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({ tool, onFilesSelecte
   const isImageTool = tool.id === 'jpg-to-pdf';
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-6">
       {/* Back button */}
       <button
         onClick={onBack}
-        className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-indigo-600 mb-8 transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 mb-6 transition-colors"
       >
-        <ArrowLeft size={16} />
-        <span>Back to Studio Catalog</span>
+        <ArrowLeft size={15} />
+        <span>Back to all tools</span>
       </button>
 
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full mb-3">
-          <Sparkles size={12} />
-          <span>JustPDFCraft Workshop</span>
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+        <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
           {tool.title}
         </h1>
-        <p className="mt-3 text-sm text-slate-500 max-w-xl mx-auto leading-relaxed">
+        <p className="mt-2 text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">
           {tool.description}
         </p>
       </div>
@@ -68,10 +64,10 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({ tool, onFilesSelecte
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`relative border-2 border-dashed rounded-3xl p-12 sm:p-16 text-center transition-all duration-300 ${
+        className={`relative border-2 border-dashed rounded-2xl p-10 sm:p-14 text-center transition-all duration-200 ${
           isDragOver
-            ? 'border-indigo-500 bg-indigo-50/60 scale-[1.01]'
-            : 'border-slate-300/80 hover:border-indigo-400 bg-white shadow-sm'
+            ? 'border-indigo-500 bg-indigo-50/50'
+            : 'border-slate-300 hover:border-slate-400 bg-white shadow-xs'
         }`}
       >
         <input
@@ -86,22 +82,22 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({ tool, onFilesSelecte
         <div className="flex flex-col items-center justify-center">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="group relative inline-flex items-center justify-center gap-3 px-8 sm:px-12 py-4 sm:py-5 text-base sm:text-lg font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-2xl shadow-lg shadow-indigo-600/25 hover:shadow-indigo-600/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+            className="group inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 text-sm sm:text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-98 rounded-xl shadow-xs transition-all cursor-pointer"
           >
-            <FolderPlus size={22} className="transition-transform group-hover:scale-110" />
+            <FolderPlus size={18} className="transition-transform group-hover:scale-105" />
             <span>{isImageTool ? 'Select Images' : tool.multiple ? 'Select PDF Files' : 'Select PDF File'}</span>
           </button>
 
-          <p className="mt-5 text-xs sm:text-sm font-semibold text-slate-500">
-            or drop {isImageTool ? 'images' : 'documents'} here directly
+          <p className="mt-3.5 text-xs sm:text-sm text-slate-500">
+            or drop {isImageTool ? 'images' : 'PDF files'} here directly
           </p>
 
-          <div className="mt-8 flex items-center justify-center gap-3 text-xs font-bold text-slate-400">
-            <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-full border border-slate-100">
-              <UploadCloud size={14} /> Drag &amp; Drop
+          <div className="mt-6 flex items-center justify-center gap-2.5 text-xs text-slate-400">
+            <span className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-md border border-slate-200/60 font-medium">
+              <UploadCloud size={13} className="text-slate-500" /> Drag &amp; Drop
             </span>
-            <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-full border border-slate-100">
-              100% In-Browser Privacy
+            <span className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-md border border-slate-200/60 font-medium text-slate-600">
+              <ShieldCheck size={13} className="text-emerald-600" /> Processed Locally in Browser
             </span>
           </div>
         </div>

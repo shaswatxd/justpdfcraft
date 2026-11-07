@@ -74,7 +74,7 @@ export async function signPdf(
       color: rgb(0.4, 0.4, 0.4),
     });
 
-    lastPage.drawText(`Digitally Verified â€¢ ${new Date().toLocaleDateString()}`, {
+    lastPage.drawText(`Digitally Verified - ${new Date().toLocaleDateString()}`, {
       x,
       y: y - 5,
       size: 8,
@@ -344,7 +344,7 @@ export async function ocrPdf(
       newSize: blob.size,
     };
   } finally {
-    await pdf.destroy().catch(() => {});
+    await (pdf as any).destroy?.();
   }
 }
 

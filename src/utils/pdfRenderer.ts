@@ -1,24 +1,21 @@
 import * as pdfjsLib from 'pdfjs-dist';
-import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.js?url';
 
-// Configure worker using local bundled asset (with fallback)
-if (typeof window !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker || `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+// Configure the worker from cdnjs or local bundle
+if (typeof window !== 'undefined' && 'Worker' in window) {
+  // Use official unpkg or cdnjs worker corresponding to pdfjs-dist
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 }
 
 /**
- * Creates a defensive copy of byte buffer so PDF.js worker transfers
- * never detach the caller's ArrayBuffer.
+ * Safely ensure an ArrayBuffer is copied into a clean, detached-safe ArrayBuffer
  */
-export function getSafeBuffer(data: ArrayBuffer | Uint8Array): Uint8Array {
+export function getSafeBuffer(data: ArrayBuffer | Uint8Array): ArrayBuffer {
   if (data instanceof Uint8Array) {
     const copy = new Uint8Array(data.byteLength);
     copy.set(data);
-    return copy;
+    return copy.buffer;
   }
-  const copy = new Uint8Array(data.byteLength);
-  copy.set(new Uint8Array(data));
-  return copy;
+  return data.slice(0);
 }
 
 /**
@@ -28,7 +25,7 @@ export async function getPdfPageCount(data: ArrayBuffer | Uint8Array): Promise<n
   const loadingTask = pdfjsLib.getDocument({ data: getSafeBuffer(data) });
   const pdf = await loadingTask.promise;
   const count = pdf.numPages;
-  await pdf.destroy();
+  await (pdf as any).destroy?.();
   return count;
 }
 
@@ -56,14 +53,15 @@ export async function renderPdfPageToCanvas(
     canvas.height = viewport.height;
     canvas.width = viewport.width;
 
-    await page.render({
+    await (page.render as any)({
       canvasContext: context,
-      viewport: viewport
+      viewport: viewport,
+      canvas: canvas
     }).promise;
 
     return canvas;
   } finally {
-    await pdf.destroy();
+    await (pdf as any).destroy?.();
   }
 }
 
@@ -94,9 +92,10 @@ export async function renderPdfThumbnail(
     canvas.width = viewport.width;
     canvas.height = viewport.height;
 
-    await page.render({
+    await (page.render as any)({
       canvasContext: context,
-      viewport: viewport
+      viewport: viewport,
+      canvas: canvas
     }).promise;
 
     return canvas.toDataURL('image/jpeg', 0.85);
@@ -106,7 +105,7 @@ export async function renderPdfThumbnail(
     return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="220" viewBox="0 0 160 220"><rect width="100%" height="100%" fill="%23f1f1f1"/><text x="50%" y="50%" fill="%23888" font-family="sans-serif" font-size="14" text-anchor="middle" dominant-baseline="middle">Page ${pageNumber}</text></svg>`;
   } finally {
     if (pdf) {
-      await pdf.destroy().catch(() => {});
+      await (pdf as any).destroy?.();
     }
   }
 }
@@ -136,13 +135,17 @@ export async function renderAllPagesThumbnails(
       if (context) {
         canvas.width = viewport.width;
         canvas.height = viewport.height;
-        await page.render({ canvasContext: context, viewport }).promise;
+        await (page.render as any)({
+          canvasContext: context,
+          viewport: viewport,
+          canvas: canvas
+        }).promise;
         thumbnails.push(canvas.toDataURL('image/jpeg', 0.85));
       }
       if (onProgress) onProgress(i, numPages);
     }
     return thumbnails;
   } finally {
-    await pdf.destroy().catch(() => {});
+    await (pdf as any).destroy?.();
   }
 }

@@ -3,7 +3,7 @@ import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { Hero } from './components/home/Hero';
 import { ToolGrid } from './components/home/ToolGrid';
-import { FeatureBanners } from './components/home/FeatureBanners';
+// No FeatureBanners
 import { ToolWorkspace } from './components/workspace/ToolWorkspace';
 import { TOOLS } from './config/tools';
 import { ToolId } from './types/pdf';
@@ -73,14 +73,14 @@ export function App() {
             onSelectTool={handleSelectTool}
           />
         ) : (
-          <div className="space-y-8 pb-12">
+          <div className="space-y-3 pb-12">
             <Hero searchQuery={searchQuery} onSearchChange={setSearchQuery} />
             <ToolGrid
               tools={TOOLS}
               searchQuery={searchQuery}
               onSelectTool={handleSelectTool}
             />
-            {!searchQuery && <FeatureBanners />}
+
           </div>
         )}
       </main>

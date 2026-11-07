@@ -39,7 +39,7 @@ async function extractTextFromPdf(data: ArrayBuffer): Promise<string[][]> {
 
     return pagesText;
   } finally {
-    await pdf.destroy().catch(() => {});
+    await (pdf as any).destroy?.();
   }
 }
 

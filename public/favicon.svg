@@ -1,19 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="craftGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+    <linearGradient id="craftGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#4f46e5"/>
-      <stop offset="50%" stop-color="#6366f1"/>
-      <stop offset="100%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#4338ca"/>
     </linearGradient>
   </defs>
 
-  <!-- Background tile matching JustPDFCraft Navbar Brand Mark -->
-  <rect width="512" height="512" rx="112" fill="url(#craftGrad)"/>
+  <!-- Background tile matching JustPDFCraft Brand Mark -->
+  <rect width="512" height="512" rx="120" fill="url(#craftGrad)"/>
 
-  <!-- Geometric craft emblem (24x24 Lucide layers/craft glyph scaled and centered) -->
-  <g transform="translate(256, 256) scale(16) translate(-12, -12)" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-    <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-    <polyline points="2 17 12 22 22 17"/>
-    <polyline points="2 12 12 17 22 12"/>
+  <!-- Unified PDF document craft mark scaled and centered -->
+  <g transform="translate(256, 256) scale(15) translate(-12, -12)" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <path d="M9 9v9"/>
+    <path d="M9 9h3a2 2 0 0 1 0 4H9"/>
   </g>
 </svg>

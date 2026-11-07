@@ -33,65 +33,85 @@ interface ToolCardProps {
 
 export const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelect }) => {
   const renderIcon = () => {
-    const props = { size: 26, className: 'transition-transform duration-300 group-hover:scale-110' };
+    const props = { 
+      size: 20, 
+      strokeWidth: 1.8, 
+      className: 'transition-transform duration-200 group-hover:scale-105',
+      style: { color: tool.color }
+    };
     switch (tool.iconName) {
-      case 'Layers': return <Layers {...props} style={{ color: tool.color }} />;
-      case 'Scissors': return <Scissors {...props} style={{ color: tool.color }} />;
-      case 'FileArchive': return <FileArchive {...props} style={{ color: tool.color }} />;
-      case 'RotateCw': return <RotateCw {...props} style={{ color: tool.color }} />;
-      case 'LayoutGrid': return <LayoutGrid {...props} style={{ color: tool.color }} />;
-      case 'Stamp': return <Stamp {...props} style={{ color: tool.color }} />;
-      case 'Hash': return <Hash {...props} style={{ color: tool.color }} />;
-      case 'Lock': return <Lock {...props} style={{ color: tool.color }} />;
-      case 'Unlock': return <Unlock {...props} style={{ color: tool.color }} />;
-      case 'ImagePlus': return <ImagePlus {...props} style={{ color: tool.color }} />;
-      case 'FileImage': return <FileImage {...props} style={{ color: tool.color }} />;
-      case 'FileText': return <FileText {...props} style={{ color: tool.color }} />;
-      case 'Presentation': return <Presentation {...props} style={{ color: tool.color }} />;
-      case 'FileSpreadsheet': return <FileSpreadsheet {...props} style={{ color: tool.color }} />;
-      case 'FileCode': return <FileCode {...props} style={{ color: tool.color }} />;
-      case 'PenTool': return <PenTool {...props} style={{ color: tool.color }} />;
-      case 'Wrench': return <Wrench {...props} style={{ color: tool.color }} />;
-      case 'Shield': return <Shield {...props} style={{ color: tool.color }} />;
-      case 'Camera': return <Camera {...props} style={{ color: tool.color }} />;
-      case 'FileSearch': return <FileSearch {...props} style={{ color: tool.color }} />;
-      case 'GitCompare': return <GitCompare {...props} style={{ color: tool.color }} />;
-      case 'EyeOff': return <EyeOff {...props} style={{ color: tool.color }} />;
-      default: return <Layers {...props} style={{ color: tool.color }} />;
+      case 'Layers': return <Layers {...props} />;
+      case 'Scissors': return <Scissors {...props} />;
+      case 'FileArchive': return <FileArchive {...props} />;
+      case 'RotateCw': return <RotateCw {...props} />;
+      case 'LayoutGrid': return <LayoutGrid {...props} />;
+      case 'Stamp': return <Stamp {...props} />;
+      case 'Hash': return <Hash {...props} />;
+      case 'Lock': return <Lock {...props} />;
+      case 'Unlock': return <Unlock {...props} />;
+      case 'ImagePlus': return <ImagePlus {...props} />;
+      case 'FileImage': return <FileImage {...props} />;
+      case 'FileText': return <FileText {...props} />;
+      case 'Presentation': return <Presentation {...props} />;
+      case 'FileSpreadsheet': return <FileSpreadsheet {...props} />;
+      case 'FileCode': return <FileCode {...props} />;
+      case 'PenTool': return <PenTool {...props} />;
+      case 'Wrench': return <Wrench {...props} />;
+      case 'Shield': return <Shield {...props} />;
+      case 'Camera': return <Camera {...props} />;
+      case 'FileSearch': return <FileSearch {...props} />;
+      case 'GitCompare': return <GitCompare {...props} />;
+      case 'EyeOff': return <EyeOff {...props} />;
+      default: return <Layers {...props} />;
     }
   };
 
   return (
     <div
       onClick={() => onSelect(tool.id)}
-      className="group relative bg-white border border-slate-200/90 hover:border-indigo-400/80 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+      className="group relative bg-white border border-slate-200/90 hover:border-slate-300 rounded-xl p-5 shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col justify-between"
     >
       <div>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-start justify-between gap-3 mb-3.5">
           <div 
-            className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-105"
-            style={{ backgroundColor: `${tool.color}15` }}
+            className="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-50 border border-slate-100 group-hover:bg-white group-hover:border-slate-200 group-hover:shadow-xs transition-all"
           >
             {renderIcon()}
           </div>
-          {tool.badge && (
-            <span className="px-2.5 py-0.5 text-[10px] font-extrabold rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 uppercase tracking-wider">
-              {tool.badge}
-            </span>
-          )}
+
+          <div className="flex items-center gap-1.5">
+            {tool.badge && (
+              <span className={`px-2 py-0.5 text-[11px] font-medium rounded-md border ${
+                tool.badge === 'Popular'
+                  ? 'bg-blue-50 text-blue-700 border-blue-200/80'
+                  : tool.badge === 'New'
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80'
+                  : 'bg-amber-50 text-amber-700 border-amber-200/80'
+              }`}>
+                {tool.badge}
+              </span>
+            )}
+            <div className="text-slate-300 group-hover:text-slate-600 transition-colors p-1">
+              <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </div>
+          </div>
         </div>
 
-        <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+        <h3 className="text-sm sm:text-base font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors">
           {tool.title}
         </h3>
-        <p className="mt-1.5 text-xs text-slate-500 leading-relaxed line-clamp-2">
+        <p className="mt-1 text-xs text-slate-500 leading-relaxed line-clamp-2">
           {tool.description}
         </p>
       </div>
 
-      <div className="mt-6 pt-3.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-400 group-hover:text-indigo-600 transition-colors">
-        <span>Open studio</span>
-        <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+      <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+        <span className="font-medium text-slate-500 capitalize">
+          {tool.category.replace(/-/g, ' ')}
+        </span>
+        <span className="font-medium text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity">
+          Open tool →
+        </span>
       </div>
     </div>
   );

@@ -6,49 +6,49 @@ export const TOOLS: ToolDefinition[] = [
     id: 'merge-pdf',
     title: 'Merge PDF',
     shortTitle: 'Merge',
-    description: 'Combine multiple PDF documents into a unified, seamless document in any custom sequence.',
+    description: 'Combine multiple PDF files into a single organized document in any order.',
     category: 'organize',
     iconName: 'Layers',
     accept: '.pdf,application/pdf',
     multiple: true,
     actionText: 'Merge Files',
-    color: '#4f46e5' // Indigo
+    color: '#4f46e5'
   },
   {
     id: 'split-pdf',
     title: 'Split PDF',
     shortTitle: 'Split',
-    description: 'Extract specific page ranges or burst every page into individual files packaged in a ZIP archive.',
+    description: 'Extract specific page ranges or split each page into a separate PDF file.',
     category: 'organize',
     iconName: 'Scissors',
     accept: '.pdf,application/pdf',
     multiple: false,
     actionText: 'Split Document',
-    color: '#6366f1' // Light Indigo
+    color: '#4f46e5'
   },
   {
     id: 'organize-pdf',
     title: 'Organize Pages',
     shortTitle: 'Organize',
-    description: 'Visually sort, duplicate, delete, and rearrange pages using a real-time thumbnail workspace.',
+    description: 'Rearrange, rotate, delete, or duplicate individual pages with visual previews.',
     category: 'organize',
     iconName: 'LayoutGrid',
     accept: '.pdf,application/pdf',
     multiple: true,
     actionText: 'Save Reordered PDF',
-    color: '#8b5cf6' // Violet
+    color: '#4f46e5'
   },
   {
     id: 'rotate-pdf',
     title: 'Rotate PDF',
     shortTitle: 'Rotate',
-    description: 'Permanently reorient pages clockwise or counter-clockwise by 90°, 180°, or 270° degrees.',
+    description: 'Rotate pages clockwise or counter-clockwise by 90°, 180°, or 270° degrees.',
     category: 'organize',
     iconName: 'RotateCw',
     accept: '.pdf,application/pdf',
     multiple: true,
     actionText: 'Apply Rotation',
-    color: '#06b6d4' // Cyan
+    color: '#4f46e5'
   },
 
   // --- 2. OPTIMIZE ---
@@ -56,38 +56,38 @@ export const TOOLS: ToolDefinition[] = [
     id: 'compress-pdf',
     title: 'Compress PDF',
     shortTitle: 'Compress',
-    description: 'Optimize PDF streams and downsample imagery with tailored compression profiles.',
+    description: 'Reduce file size while preserving document resolution and text sharpness.',
     category: 'optimize',
     iconName: 'FileArchive',
     accept: '.pdf,application/pdf',
+    badge: 'Popular',
     multiple: true,
     actionText: 'Compress PDF',
-    color: '#10b981' // Emerald
+    color: '#059669'
   },
   {
     id: 'repair-pdf',
     title: 'Repair PDF',
     shortTitle: 'Repair',
-    description: 'Rebuild damaged cross-reference xref streams and recover lost data from broken PDF files.',
+    description: 'Fix corrupt PDF structures, damaged cross-reference tables, and recover content.',
     category: 'optimize',
     iconName: 'Wrench',
     accept: '.pdf,application/pdf',
     multiple: false,
     actionText: 'Repair Document',
-    color: '#14b8a6' // Teal
+    color: '#059669'
   },
   {
     id: 'ocr-pdf',
     title: 'Extract Text',
     shortTitle: 'Extract Text',
-    description: 'Extract raw text streams and transcripts from all PDF pages into a clean text document.',
+    description: 'Extract plain text and tabular content from all pages into a clean text file.',
     category: 'optimize',
     iconName: 'FileSearch',
-    badge: 'POPULAR',
     accept: '.pdf,application/pdf',
     multiple: false,
     actionText: 'Extract Text Content',
-    color: '#0284c7' // Sky
+    color: '#059669'
   },
 
   // --- 3. CONVERT TO PDF ---
@@ -95,61 +95,62 @@ export const TOOLS: ToolDefinition[] = [
     id: 'jpg-to-pdf',
     title: 'Images to PDF',
     shortTitle: 'Images to PDF',
-    description: 'Convert JPG, PNG, WebP, and BMP graphics into clean, high-fidelity PDF documents.',
+    description: 'Convert JPG, PNG, WebP, and BMP images into clean, standardized PDF pages.',
     category: 'convert-to-pdf',
     iconName: 'ImagePlus',
+    badge: 'Popular',
     accept: 'image/jpeg,image/png,image/webp,image/bmp',
     multiple: true,
     actionText: 'Create PDF Document',
-    color: '#f59e0b' // Amber
+    color: '#d97706'
   },
   {
     id: 'word-to-pdf',
     title: 'Word to PDF',
     shortTitle: 'DOCX to PDF',
-    description: 'Transform Microsoft Word (.docx/.doc) and rich text files into universal PDF files.',
+    description: 'Convert Microsoft Word (.docx/.doc) and plain text files directly into PDF.',
     category: 'convert-to-pdf',
     iconName: 'FileText',
     accept: '.docx,.doc,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword,text/plain',
     multiple: false,
     actionText: 'Convert to PDF',
-    color: '#2563eb' // Blue
+    color: '#2563eb'
   },
   {
     id: 'excel-to-pdf',
     title: 'Excel to PDF',
     shortTitle: 'XLSX to PDF',
-    description: 'Render Microsoft Excel (.xlsx/.xls/.csv) spreadsheets into formatted PDF tables.',
+    description: 'Convert Excel (.xlsx/.xls/.csv) spreadsheets into formatted PDF tables.',
     category: 'convert-to-pdf',
     iconName: 'FileSpreadsheet',
     accept: '.xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel',
     multiple: false,
     actionText: 'Export as PDF',
-    color: '#059669' // Green
+    color: '#16a34a'
   },
   {
     id: 'powerpoint-to-pdf',
     title: 'PowerPoint to PDF',
     shortTitle: 'PPT to PDF',
-    description: 'Convert presentation slides (.pptx/.ppt) into portable PDF documents.',
+    description: 'Convert PowerPoint slide presentations (.pptx/.ppt) into portable PDF format.',
     category: 'convert-to-pdf',
     iconName: 'Presentation',
     accept: '.pptx,.ppt,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.ms-powerpoint',
     multiple: false,
     actionText: 'Convert Presentation',
-    color: '#ea580c' // Orange
+    color: '#ea580c'
   },
   {
     id: 'html-to-pdf',
     title: 'HTML to PDF',
     shortTitle: 'HTML to PDF',
-    description: 'Convert raw HTML code, snippets, or web content into styled PDF documents.',
+    description: 'Render raw HTML documents, CSS styling, and web snippets into PDF pages.',
     category: 'convert-to-pdf',
     iconName: 'FileCode',
     accept: '.html,.htm,text/html,text/plain',
     multiple: false,
     actionText: 'Render HTML to PDF',
-    color: '#4f46e5'
+    color: '#6366f1'
   },
 
   // --- 4. CONVERT FROM PDF ---
@@ -157,7 +158,7 @@ export const TOOLS: ToolDefinition[] = [
     id: 'pdf-to-jpg',
     title: 'PDF to Images',
     shortTitle: 'PDF to JPG',
-    description: 'Render every PDF page into crisp, high-resolution JPG/PNG images or ZIP archives.',
+    description: 'Convert each PDF page into high-resolution JPG or PNG images in a ZIP package.',
     category: 'convert-from-pdf',
     iconName: 'FileImage',
     accept: '.pdf,application/pdf',
@@ -169,44 +170,44 @@ export const TOOLS: ToolDefinition[] = [
     id: 'pdf-to-word',
     title: 'PDF to Word',
     shortTitle: 'PDF to DOCX',
-    description: 'Extract formatted text and structure into native editable Microsoft Word (.docx) format.',
+    description: 'Extract formatted document text and structure into editable Microsoft Word (.docx).',
     category: 'convert-from-pdf',
     iconName: 'FileText',
-    badge: 'POPULAR',
+    badge: 'Popular',
     accept: '.pdf,application/pdf',
     multiple: false,
     actionText: 'Convert to Word',
-    color: '#1d4ed8'
+    color: '#2563eb'
   },
   {
     id: 'pdf-to-excel',
     title: 'PDF to Excel',
     shortTitle: 'PDF to XLSX',
-    description: 'Pull tables and structured data directly into Microsoft Excel spreadsheets.',
+    description: 'Extract tables, columns, and numeric records into structured Excel spreadsheets.',
     category: 'convert-from-pdf',
     iconName: 'FileSpreadsheet',
     accept: '.pdf,application/pdf',
     multiple: false,
     actionText: 'Export to Excel',
-    color: '#047857'
+    color: '#16a34a'
   },
   {
     id: 'pdf-to-powerpoint',
     title: 'PDF to PowerPoint',
     shortTitle: 'PDF to PPT',
-    description: 'Transform PDF pages into editable slide decks (.ppt) with structured layout.',
+    description: 'Convert PDF document pages into editable Microsoft PowerPoint presentation slides.',
     category: 'convert-from-pdf',
     iconName: 'Presentation',
     accept: '.pdf,application/pdf',
     multiple: false,
     actionText: 'Export Slides',
-    color: '#c2410c'
+    color: '#ea580c'
   },
   {
     id: 'pdf-to-pdfa',
     title: 'PDF to PDF/A',
     shortTitle: 'PDF/A Archive',
-    description: 'Convert PDF to ISO 19005-1 compliant PDF/A-1b standard for guaranteed long-term archiving.',
+    description: 'Convert PDF into ISO 19005-1 compliant PDF/A standard for long-term digital preservation.',
     category: 'convert-from-pdf',
     iconName: 'Shield',
     accept: '.pdf,application/pdf',
@@ -218,12 +219,12 @@ export const TOOLS: ToolDefinition[] = [
   // --- 5. EDIT & SECURITY ---
   {
     id: 'sign-pdf',
-    title: 'Sign Document',
+    title: 'Sign PDF',
     shortTitle: 'Sign',
-    description: 'Draw your digital signature with bezier smoothing or type your legal name to stamp securely.',
+    description: 'Create and place smooth digital signatures or typed legal names onto any PDF page.',
     category: 'edit-security',
     iconName: 'PenTool',
-    badge: 'POPULAR',
+    badge: 'Popular',
     accept: '.pdf,application/pdf',
     multiple: false,
     actionText: 'Sign & Export',
@@ -233,10 +234,10 @@ export const TOOLS: ToolDefinition[] = [
     id: 'edit-pdf',
     title: 'Edit PDF',
     shortTitle: 'Editor',
-    description: 'Add text annotations, custom notes, review stamps, and yellow highlighter directly onto pages.',
+    description: 'Add text notes, highlights, custom callouts, and annotation stamps directly onto pages.',
     category: 'edit-security',
     iconName: 'PenTool',
-    badge: 'NEW',
+    badge: 'New',
     accept: '.pdf,application/pdf',
     multiple: false,
     actionText: 'Save Changes',
@@ -244,9 +245,9 @@ export const TOOLS: ToolDefinition[] = [
   },
   {
     id: 'watermark-pdf',
-    title: 'Watermark',
+    title: 'Add Watermark',
     shortTitle: 'Watermark',
-    description: 'Stamp custom security watermarks with customizable opacity, rotation, and 9-point grid alignment.',
+    description: 'Stamp custom confidentiality or ownership watermarks with custom rotation and opacity.',
     category: 'edit-security',
     iconName: 'Stamp',
     accept: '.pdf,application/pdf',
@@ -258,19 +259,19 @@ export const TOOLS: ToolDefinition[] = [
     id: 'page-numbers',
     title: 'Page Numbers',
     shortTitle: 'Numbering',
-    description: 'Insert sequential page numbers with flexible positioning and numbering format presets.',
+    description: 'Add sequential page numbering with flexible alignment, margins, and format options.',
     category: 'edit-security',
     iconName: 'Hash',
     accept: '.pdf,application/pdf',
     multiple: false,
     actionText: 'Stamp Numbers',
-    color: '#9333ea'
+    color: '#64748b'
   },
   {
     id: 'protect-pdf',
     title: 'Protect PDF',
     shortTitle: 'Encrypt',
-    description: 'Encrypt your PDF with military-grade AES-256 standard and custom passwords.',
+    description: 'Encrypt your document with AES-256 standard and secure user passwords.',
     category: 'edit-security',
     iconName: 'Lock',
     accept: '.pdf,application/pdf',
@@ -282,7 +283,7 @@ export const TOOLS: ToolDefinition[] = [
     id: 'unlock-pdf',
     title: 'Unlock PDF',
     shortTitle: 'Decrypt',
-    description: 'Strip security restrictions and decrypt protected PDF files client-side.',
+    description: 'Remove password protection and permission restrictions from authorized PDF files.',
     category: 'edit-security',
     iconName: 'Unlock',
     accept: '.pdf,application/pdf',
@@ -294,7 +295,7 @@ export const TOOLS: ToolDefinition[] = [
     id: 'scan-to-pdf',
     title: 'Scan to PDF',
     shortTitle: 'Scanner',
-    description: 'Capture real physical documents using your device webcam or camera directly into PDF.',
+    description: 'Capture physical documents using your webcam or mobile camera directly into PDF.',
     category: 'edit-security',
     iconName: 'Camera',
     accept: 'image/*,.pdf',
@@ -306,7 +307,7 @@ export const TOOLS: ToolDefinition[] = [
     id: 'compare-pdf',
     title: 'Compare PDFs',
     shortTitle: 'Compare',
-    description: 'Inspect two documents side-by-side to detect structural, page, and textual differences.',
+    description: 'View two PDF versions side-by-side to inspect structural and textual changes.',
     category: 'edit-security',
     iconName: 'GitCompare',
     accept: '.pdf,application/pdf',
@@ -316,35 +317,35 @@ export const TOOLS: ToolDefinition[] = [
   },
   {
     id: 'handwriting',
-    title: 'Handwriting Generator',
+    title: 'Handwriting Studio',
     shortTitle: 'Handwriting',
-    description: 'Transform typed text and Word documents into authentic handwritten notes on notebook paper with realistic ink jitter and camera scan shadows.',
+    description: 'Convert typed text or DOCX into realistic handwritten notebook pages with natural variations.',
     category: 'edit-security',
     iconName: 'PenTool',
-    badge: 'STUDENT FAV',
+    badge: 'Featured',
     accept: '.txt,.md,.docx,text/plain',
     multiple: false,
     actionText: 'Generate Handwritten PDF',
-    color: '#d97706' // Amber
+    color: '#b45309'
   },
   {
     id: 'redact-pdf',
-    title: 'Sanitize PDF',
+    title: 'Sanitize Metadata',
     shortTitle: 'Sanitize',
-    description: 'Permanently scrub confidential document metadata, author information, and private tracking data.',
+    description: 'Permanently remove hidden author names, creation software, and tracking metadata.',
     category: 'edit-security',
     iconName: 'EyeOff',
     accept: '.pdf,application/pdf',
     multiple: false,
     actionText: 'Sanitize Document',
-    color: '#0f172a'
+    color: '#475569'
   }
 ];
 
 export const CATEGORIES = [
-  { id: 'organize', name: 'Organize', description: 'Merge, split, reorder and rotate' },
-  { id: 'optimize', name: 'Optimize', description: 'Compress, repair and extract text' },
+  { id: 'organize', name: 'Organize', description: 'Merge, split, reorder, and rotate' },
+  { id: 'optimize', name: 'Optimize', description: 'Compress, repair, and extract text' },
   { id: 'convert-to-pdf', name: 'Convert to PDF', description: 'Images, Word, Excel, PowerPoint & HTML' },
-  { id: 'convert-from-pdf', name: 'Convert from PDF', description: 'Word, Excel, PowerPoint, Images & PDF/A' },
-  { id: 'edit-security', name: 'Security & Studio', description: 'Sign, edit, watermark, encrypt & redact' }
+  { id: 'convert-from-pdf', name: 'Convert from PDF', description: 'Images, Word, Excel, PowerPoint & PDF/A' },
+  { id: 'edit-security', name: 'Security & Tools', description: 'Sign, edit, watermark, protect & sanitize' }
 ];
